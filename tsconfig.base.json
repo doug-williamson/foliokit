@@ -1,0 +1,26 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@foliokit/cms-core": ["libs/cms-core/src/index.ts"],
+      "@foliokit/cms-ui": ["libs/cms-ui/src/index.ts"],
+      "@foliokit/cms-markdown": ["libs/cms-markdown/src/index.ts"],
+      "@foliokit/cms-admin-ui": ["libs/cms-admin-ui/src/index.ts"],
+      "@foliokit/docs-ui": ["libs/docs-ui/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
