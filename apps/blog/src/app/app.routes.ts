@@ -1,3 +1,25 @@
 import { Route } from '@angular/router';
 
-export const appRoutes: Route[] = [];
+export const appRoutes: Route[] = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./post-list/post-list.component').then(
+        (m) => m.PostListComponent,
+      ),
+  },
+  {
+    path: 'posts/:slug',
+    loadComponent: () =>
+      import('./post-detail/post-detail.component').then(
+        (m) => m.PostDetailComponent,
+      ),
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
+  },
+];

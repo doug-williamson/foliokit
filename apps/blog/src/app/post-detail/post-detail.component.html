@@ -1,0 +1,72 @@
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  @if (post() === undefined) {
+    <!-- Loading skeleton -->
+    <div class="animate-pulse">
+      <div class="h-10 rounded mb-4 w-3/4" style="background-color: var(--mat-sys-surface-variant)"></div>
+      <div class="h-5 rounded mb-6 w-1/2" style="background-color: var(--mat-sys-surface-variant)"></div>
+      <div class="h-64 rounded-xl mb-8" style="background-color: var(--mat-sys-surface-variant)"></div>
+      @for (line of [1,2,3,4,5]; track line) {
+        <div class="h-4 rounded mb-3 w-full" style="background-color: var(--mat-sys-surface-variant)"></div>
+      }
+    </div>
+  } @else if (post() === null) {
+    <!-- Not found state -->
+    <div class="text-center py-20">
+      <h1 class="text-4xl font-bold mb-4" style="color: var(--mat-sys-on-surface)">Post not found</h1>
+      <p class="mb-6" style="color: var(--mat-sys-on-surface-variant)">
+        This post may have been removed or the link is incorrect.
+      </p>
+      <a mat-flat-button routerLink="/">
+        <mat-icon>arrow_back</mat-icon>
+        Back to all posts
+      </a>
+    </div>
+  } @else {
+    <!-- Back link -->
+    <a
+      mat-button
+      routerLink="/"
+      class="mb-6 -ml-2 inline-flex items-center"
+      style="color: var(--mat-sys-primary)"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      All posts
+    </a>
+
+    <!-- Cover image -->
+    @if (post()!.coverImage) {
+      <img
+        [src]="post()!.coverImage"
+        [alt]="post()!.title"
+        class="w-full h-64 object-cover rounded-xl mb-8"
+      />
+    }
+
+    <!-- Title -->
+    <h1 class="text-4xl font-bold leading-tight mb-3" style="color: var(--mat-sys-on-surface)">
+      {{ post()!.title }}
+    </h1>
+
+    <!-- Meta row -->
+    <div class="flex flex-wrap items-center gap-4 mb-6 text-sm" style="color: var(--mat-sys-on-surface-variant)">
+      @if (post()!.publishedAt) {
+        <span>{{ post()!.publishedAt.toDate() | date: 'MMMM d, yyyy' }}</span>
+      }
+      @if (post()!.readingTimeMinutes) {
+        <span>·</span>
+        <span>{{ post()!.readingTimeMinutes }} min read</span>
+      }
+    </div>
+
+    <mat-divider class="mb-8" />
+
+    <!-- Markdown content -->
+    <div class="prose-container">
+      <folio-markdown
+        [content]="post()!.content"
+        [embeddedMedia]="post()!.embeddedMedia"
+      />
+    </div>
+  }
+</div>

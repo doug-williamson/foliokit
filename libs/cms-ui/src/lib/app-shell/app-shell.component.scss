@@ -1,0 +1,48 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.shell-container {
+  height: 100%;
+  background-color: var(--mat-sys-surface);
+}
+
+.shell-sidenav {
+  width: 260px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+}
+
+.shell-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--mat-sys-surface-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  gap: 4px;
+}
+
+.shell-logo {
+  height: 32px;
+  width: auto;
+  margin-right: 8px;
+}
+
+.shell-app-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+}
+
+.shell-content {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--mat-sys-surface);
+}
+
+.shell-main {
+  flex: 1;
+  overflow-y: auto;
+}
