@@ -53,3 +53,7 @@ __screenshots__/
 .env.production
 *.env
 !.env.example
+
+# Service account key — never commit
+*service-account*.json
+*serviceAccount*.json

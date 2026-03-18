@@ -1,6 +1,5 @@
 {
   "projects": {
-    "default": "foliokit-dev",
-    "prod": "foliokit-prod"
+    "default": "foliokit-6f974"
   }
 }
