@@ -1,0 +1,43 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "hosting": [
+    {
+      "target": "foliokit-blog",
+      "public": "dist/apps/blog/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "appHosting": "foliokit-blog"
+        }
+      ]
+    },
+    {
+      "target": "foliokit-admin",
+      "public": "dist/apps/admin/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "foliokit-docs",
+      "public": "dist/apps/docs/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "appHosting": "foliokit-docs"
+        }
+      ]
+    }
+  ]
+}
