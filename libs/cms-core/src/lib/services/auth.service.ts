@@ -24,10 +24,10 @@ export class AuthService {
       }
       return onAuthStateChanged(this.auth, (u) => subscriber.next(u));
     }),
-    { requireSync: false, initialValue: null },
+    { requireSync: false, initialValue: undefined },
   );
 
-  readonly isAuthenticated = computed(() => this.user() !== null);
+  readonly isAuthenticated = computed(() => this.user() != null);
 
   readonly isAdmin = computed(() => {
     const email = this.user()?.email;
