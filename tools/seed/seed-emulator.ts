@@ -5,7 +5,7 @@
  *   1. Start the Firebase emulator suite:
  *        npm run emulator
  *   2. In a separate terminal, run:
- *        nx run seed:emulator
+ *        npm run seed
  *
  * Re-running this script will overwrite all seed documents.
  */
@@ -21,6 +21,8 @@ initializeApp({ projectId: FIREBASE_EMULATOR_PROJECT_ID });
 
 const db = getFirestore();
 
+const now = Timestamp.now();
+
 async function seed(): Promise<void> {
   try {
     console.log('[seed:emulator] Writing /authors/author-1...');
@@ -28,30 +30,26 @@ async function seed(): Promise<void> {
       {
         id: 'author-1',
         name: 'Dev Author',
-        bio: 'Test bio',
-        avatarUrl: '',
-        socialLinks: [],
+        slug: 'dev-author',
+        bio: 'Test bio for local development.',
+        avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
+        email: '',
+        social: [],
+        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
+        updatedAt: now,
       },
       { merge: false }
     );
 
     console.log('[seed:emulator] Writing /tags/tag-web...');
     await db.collection('tags').doc('tag-web').set(
-      {
-        id: 'tag-web',
-        label: 'Web',
-        slug: 'web',
-      },
+      { id: 'tag-web', label: 'Web', slug: 'web' },
       { merge: false }
     );
 
     console.log('[seed:emulator] Writing /tags/tag-angular...');
     await db.collection('tags').doc('tag-angular').set(
-      {
-        id: 'tag-angular',
-        label: 'Angular',
-        slug: 'angular',
-      },
+      { id: 'tag-angular', label: 'Angular', slug: 'angular' },
       { merge: false }
     );
 
@@ -60,17 +58,18 @@ async function seed(): Promise<void> {
       {
         id: 'default',
         siteName: 'FolioKit Blog',
-        siteUrl: 'http://localhost:4200',
+        siteUrl: 'http://localhost:4201',
+        description: 'A developer portfolio and blog.',
         defaultAuthorId: 'author-1',
         nav: [
-          { label: 'Home', url: '/', icon: 'home' },
-          { label: 'Blog', url: '/posts', icon: 'article' },
-          { label: 'About', url: '/about', icon: 'person' },
+          { label: 'Home', url: '/', order: 0 },
+          { label: 'Blog', url: '/posts', order: 1 },
+          { label: 'About', url: '/about', order: 2 },
         ],
-        defaultSeo: {
-          metaTitle: 'FolioKit Blog',
-          metaDescription: 'A dev blog.',
-        },
+        social: [
+          { platform: 'github', url: 'https://github.com', label: 'GitHub' },
+        ],
+        updatedAt: now,
       },
       { merge: false }
     );
@@ -83,24 +82,21 @@ async function seed(): Promise<void> {
         title: 'Hello World',
         subtitle: 'First post on FolioKit',
         excerpt: 'This is the first post seeded into the emulator.',
-        content:
-          '## Hello\n\nThis is **markdown** content.\n\nLorem ipsum dolor sit amet.',
-        contentFormat: 'markdown',
+        content: '## Hello\n\nThis is **markdown** content.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
         embeddedMedia: {},
-        contentVersion: 1,
         thumbnailUrl: 'https://picsum.photos/seed/post1/800/450',
         thumbnailAlt: 'Hello World thumbnail',
         authorId: 'author-1',
         tags: ['tag-web', 'tag-angular'],
         status: 'published',
-        publishedAt: Timestamp.fromDate(new Date('2025-01-01')),
-        updatedAt: Timestamp.fromDate(new Date('2025-01-01')),
-        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
         readingTimeMinutes: 2,
         seo: {
-          metaTitle: 'Hello World',
-          metaDescription: 'First post.',
+          title: 'Hello World',
+          description: 'First post.',
         },
+        publishedAt: Timestamp.fromDate(new Date('2025-01-01')),
+        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
+        updatedAt: Timestamp.fromDate(new Date('2025-01-01')),
       },
       { merge: false }
     );
@@ -112,31 +108,27 @@ async function seed(): Promise<void> {
         slug: 'angular-signals',
         title: 'Angular Signals Deep Dive',
         subtitle: 'Everything you need to know',
-        excerpt:
-          'Signals are the future of Angular reactivity. Here is a deep dive.',
-        content:
-          '## Signals\n\nAngular signals replace zone.js-based change detection.\n\n### Usage\n\nUse `signal()` to create reactive state.',
-        contentFormat: 'markdown',
+        excerpt: 'Signals are the future of Angular reactivity. Here is a deep dive.',
+        content: '## Signals\n\nAngular signals replace zone.js-based change detection.\n\n### Usage\n\nUse `signal()` to create reactive state.\n\n```ts\nconst count = signal(0);\ncount.update(n => n + 1);\n```',
         embeddedMedia: {},
-        contentVersion: 1,
         thumbnailUrl: 'https://picsum.photos/seed/post2/800/450',
         thumbnailAlt: 'Angular Signals Deep Dive thumbnail',
         authorId: 'author-1',
         tags: ['tag-angular'],
         status: 'published',
-        publishedAt: Timestamp.fromDate(new Date('2025-02-01')),
-        updatedAt: Timestamp.fromDate(new Date('2025-02-01')),
-        createdAt: Timestamp.fromDate(new Date('2025-02-01')),
         readingTimeMinutes: 3,
         seo: {
-          metaTitle: 'Angular Signals Deep Dive',
-          metaDescription: 'Signals are the future of Angular reactivity.',
+          title: 'Angular Signals Deep Dive',
+          description: 'Signals are the future of Angular reactivity.',
         },
+        publishedAt: Timestamp.fromDate(new Date('2025-02-01')),
+        createdAt: Timestamp.fromDate(new Date('2025-02-01')),
+        updatedAt: Timestamp.fromDate(new Date('2025-02-01')),
       },
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done.');
+    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config, 2 posts written.');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);
