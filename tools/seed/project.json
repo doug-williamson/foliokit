@@ -15,6 +15,21 @@
         "outputPath": "dist/tools/seed",
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }
+    },
+    "emulator": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-emulator",
+        "watch": false
+      }
+    },
+    "build-emulator": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-emulator.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
     }
   }
 }

@@ -1,0 +1,64 @@
+<div class="p-6">
+  <h1 class="text-3xl font-bold mb-8" style="color: var(--mat-sys-on-surface)">Latest Posts</h1>
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (s of skeletons; track s) {
+        <mat-card class="animate-pulse">
+          <div class="h-48 rounded-t-xl bg-gray-200"></div>
+          <mat-card-content class="pt-4">
+            <div class="h-5 rounded mb-3 w-3/4 bg-gray-200"></div>
+            <div class="h-4 rounded mb-2 w-full bg-gray-200"></div>
+            <div class="h-4 rounded mb-2 w-5/6 bg-gray-200"></div>
+            <div class="h-4 rounded w-2/3 bg-gray-200"></div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else if (posts()?.length === 0) {
+    <div class="text-center py-20" style="color: var(--mat-sys-on-surface-variant)">
+      <p class="text-xl">No posts published yet. Check back soon!</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (post of posts(); track post.id) {
+        <mat-card class="flex flex-col h-full">
+          @if (post.thumbnailUrl) {
+            <img
+              mat-card-image
+              [src]="post.thumbnailUrl"
+              [alt]="post.thumbnailAlt || post.title"
+              class="object-cover h-48 w-full"
+            />
+          } @else {
+            <div class="h-48 flex items-center justify-center rounded-t-xl" style="background-color: var(--mat-sys-surface-variant)">
+              <span class="text-4xl" style="color: var(--mat-sys-on-surface-variant)">📝</span>
+            </div>
+          }
+
+          <mat-card-header class="pt-4">
+            <mat-card-title class="text-lg leading-snug">{{ post.title }}</mat-card-title>
+            <mat-card-subtitle>
+              {{ post.publishedAt.toDate() | date: 'MMM d, yyyy' }}
+              @if (post.readingTimeMinutes) {
+                · {{ post.readingTimeMinutes }} min read
+              }
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="flex-1 pt-2">
+            @if (post.excerpt) {
+              <p class="text-sm line-clamp-3" style="color: var(--mat-sys-on-surface-variant)">
+                {{ post.excerpt }}
+              </p>
+            }
+          </mat-card-content>
+
+          <mat-card-actions>
+            <a mat-button [routerLink]="['/posts', post.slug]">Read more</a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

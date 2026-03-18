@@ -2,11 +2,13 @@ import type { FirebaseOptions } from 'firebase/app';
 
 export interface Environment {
   isProd: boolean;
+  useEmulator: boolean;
   firebase: FirebaseOptions;
 }
 
 export const environment: Environment = {
   isProd: true,
+  useEmulator: false,
   firebase: {
     apiKey: import.meta.env['NG_APP_FIREBASE_API_KEY'],
     authDomain: import.meta.env['NG_APP_FIREBASE_AUTH_DOMAIN'],
