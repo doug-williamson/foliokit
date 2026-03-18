@@ -7,6 +7,7 @@ export * from './lib/models/site-config.model';
 export * from './lib/models/page.model';
 export * from './lib/models/tag.model';
 export * from './lib/models/author.model';
+export * from './lib/services/auth.service';
 export * from './lib/services/post.service';
 export * from './lib/services/site-config.service';
 export * from './lib/services/tag.service';
