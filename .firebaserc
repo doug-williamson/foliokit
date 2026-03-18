@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "foliokit-dev",
+    "prod": "foliokit-prod"
+  }
+}

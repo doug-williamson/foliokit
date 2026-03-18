@@ -45,6 +45,8 @@
   },
   "dependencies": {
     "@angular-devkit/build-angular": "~21.1.0",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.7.0",
     "@angular/cdk": "^21.2.2",
     "@angular/common": "~21.1.0",
     "@angular/compiler": "~21.1.0",

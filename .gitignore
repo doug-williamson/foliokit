@@ -44,3 +44,10 @@ Thumbs.db
 .angular
 
 __screenshots__/
+
+# Firebase credentials — never commit real env files
+.env.dev
+.env.prod
+.env.local
+*.env
+!.env.example

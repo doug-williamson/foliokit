@@ -24,6 +24,7 @@
       },
       "configurations": {
         "production": {
+          "envFile": ".env.prod",
           "budgets": [
             {
               "type": "initial",
@@ -39,6 +40,7 @@
           "outputHashing": "all"
         },
         "development": {
+          "envFile": ".env.dev",
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
