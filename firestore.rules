@@ -1,13 +1,17 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'dev.foliokit@gmail.com';
+    }
+
     match /posts/{postId} {
       allow read: if resource.data.status == 'published';
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
-    match /pages/{pageId} { allow read; allow write: if request.auth != null; }
-    match /tags/{tagId} { allow read; allow write: if request.auth != null; }
-    match /site-config/{siteId} { allow read; allow write: if request.auth != null; }
-    match /authors/{authorId} { allow read, write: if request.auth != null; }
+    match /pages/{pageId} { allow read; allow write: if isAdmin(); }
+    match /tags/{tagId} { allow read; allow write: if isAdmin(); }
+    match /site-config/{siteId} { allow read; allow write: if isAdmin(); }
+    match /authors/{authorId} { allow read; allow write: if isAdmin(); }
   }
 }

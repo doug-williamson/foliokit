@@ -8,11 +8,12 @@ import {
   signOut,
   User,
 } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../firebase/firebase.config';
+import { ADMIN_EMAIL, FIREBASE_AUTH } from '../firebase/firebase.config';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth = inject(FIREBASE_AUTH);
+  private readonly adminEmail = inject(ADMIN_EMAIL, { optional: true });
 
   readonly user = toSignal(
     new Observable<User | null>((subscriber) => {
@@ -27,6 +28,12 @@ export class AuthService {
   );
 
   readonly isAuthenticated = computed(() => this.user() !== null);
+
+  readonly isAdmin = computed(() => {
+    const email = this.user()?.email;
+    if (!email) return false;
+    return this.adminEmail ? email === this.adminEmail : false;
+  });
 
   async signInWithGoogle(): Promise<void> {
     if (!this.auth) return;
