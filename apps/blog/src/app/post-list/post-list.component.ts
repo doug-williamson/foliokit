@@ -9,7 +9,6 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { PostService } from '@foliokit/cms-core';
 
 @Component({
@@ -17,7 +16,7 @@ import { PostService } from '@foliokit/cms-core';
   templateUrl: './post-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MatCardModule, MatButtonModule, MatChipsModule],
+  imports: [RouterLink, DatePipe, MatCardModule, MatButtonModule],
 })
 export class PostListComponent {
   private readonly postService = inject(PostService);

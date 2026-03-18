@@ -21,6 +21,7 @@
     "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
 
     "emulator": "firebase emulators:start",
+    "emulator:seed": "firebase emulators:start --only auth,firestore,storage",
     "emulator:data": "firebase emulators:start --import .firebase/emulator-data --export-on-exit"
   },
   "private": false,

@@ -25,7 +25,8 @@ export interface BlogPost {
   status: 'published' | 'draft' | 'scheduled';
   content: string;
   excerpt?: string;
-  coverImage?: string;
+  thumbnailUrl?: string;
+  thumbnailAlt?: string;
   tags: string[];
   authorId?: string;
   readingTimeMinutes?: number;

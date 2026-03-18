@@ -35,10 +35,10 @@
     </a>
 
     <!-- Cover image -->
-    @if (post()!.coverImage) {
+    @if (post()!.thumbnailUrl) {
       <img
-        [src]="post()!.coverImage"
-        [alt]="post()!.title"
+        [src]="post()!.thumbnailUrl"
+        [alt]="post()!.thumbnailAlt || post()!.title"
         class="w-full h-64 object-cover rounded-xl mb-8"
       />
     }

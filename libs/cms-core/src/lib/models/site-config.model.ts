@@ -2,8 +2,8 @@ import type { Timestamp } from 'firebase/firestore';
 
 export interface NavItem {
   label: string;
-  href: string;
-  order: number;
+  url: string;
+  order?: number;
   external?: boolean;
   icon?: string;
 }

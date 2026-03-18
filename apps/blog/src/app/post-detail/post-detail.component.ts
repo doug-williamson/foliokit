@@ -52,7 +52,7 @@ export class PostDetailComponent {
 
       const pageTitle = p.seo?.title ?? p.title;
       const description = p.seo?.description ?? p.excerpt ?? '';
-      const ogImage = p.seo?.ogImage ?? p.coverImage ?? '';
+      const ogImage = p.seo?.ogImage ?? p.thumbnailUrl ?? '';
 
       this.titleService.setTitle(pageTitle);
       this.meta.updateTag({ name: 'description', content: description });

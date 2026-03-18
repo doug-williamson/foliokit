@@ -5,8 +5,13 @@ import {
   makeEnvironmentProviders,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { FirebaseOptions, initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { FirebaseOptions, getApp, getApps, initializeApp } from 'firebase/app';
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  initializeFirestore,
+  memoryLocalCache,
+} from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import {
@@ -17,19 +22,40 @@ import {
   FIRESTORE,
 } from './firebase.config';
 
-export function provideFirebase(options: FirebaseOptions): EnvironmentProviders {
+export function provideFirebase(
+  options: FirebaseOptions,
+  useEmulator = false
+): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: FIREBASE_OPTIONS,
       useValue: options,
     },
     {
+      // Firebase app is a Node.js-process-level singleton. In SSR, each request
+      // creates a new DI context but shares the same global Firebase registry, so
+      // we must reuse the existing app rather than calling initializeApp again.
       provide: FIREBASE_APP,
-      useFactory: () => initializeApp(inject(FIREBASE_OPTIONS)),
+      useFactory: () =>
+        getApps().length ? getApp() : initializeApp(inject(FIREBASE_OPTIONS)),
     },
     {
+      // Same singleton constraint applies to the Firestore instance.
+      // initializeFirestore throws if called a second time for the same app, so
+      // fall back to getFirestore() which returns the already-configured instance.
       provide: FIRESTORE,
-      useFactory: () => getFirestore(inject(FIREBASE_APP)),
+      useFactory: () => {
+        const app = inject(FIREBASE_APP);
+        try {
+          const db = initializeFirestore(app, { localCache: memoryLocalCache() });
+          if (useEmulator) {
+            connectFirestoreEmulator(db, '127.0.0.1', 8080);
+          }
+          return db;
+        } catch {
+          return getFirestore(app);
+        }
+      },
     },
     {
       provide: FIREBASE_STORAGE,

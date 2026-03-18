@@ -19,6 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
     provideMarkdown(),
-    provideFirebase(environment.firebase),
+    provideFirebase(environment.firebase, environment.useEmulator),
   ],
 };

@@ -14,13 +14,13 @@
   },
   "hosting": [
     {
-      "target": "foliokit-blog",
+      "target": "foliokit-6f974",
       "public": "dist/apps/blog/browser",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
           "source": "**",
-          "appHosting": "foliokit-blog"
+          "appHosting": "foliokit-6f974"
         }
       ]
     },
