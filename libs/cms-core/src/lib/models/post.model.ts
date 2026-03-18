@@ -22,6 +22,7 @@ export interface BlogPost {
   id: string;
   slug: string;
   title: string;
+  subtitle?: string;
   status: 'published' | 'draft' | 'scheduled';
   content: string;
   excerpt?: string;

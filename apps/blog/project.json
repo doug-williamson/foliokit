@@ -7,7 +7,7 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular/build:application",
+      "executor": "@ngx-env/builder:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/blog",
@@ -53,7 +53,7 @@
     },
     "serve": {
       "continuous": true,
-      "executor": "@angular/build:dev-server",
+      "executor": "@ngx-env/builder:dev-server",
       "options": {
         "port": 4201
       },
