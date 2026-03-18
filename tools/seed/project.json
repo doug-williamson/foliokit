@@ -1,0 +1,20 @@
+{
+  "name": "seed",
+  "targets": {
+    "firestore": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build",
+        "watch": false
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-firestore.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
+    }
+  }
+}
