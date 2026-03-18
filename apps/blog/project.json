@@ -29,7 +29,6 @@
       },
       "configurations": {
         "production": {
-          "envFile": ".env.prod",
           "budgets": [
             {
               "type": "initial",
@@ -45,7 +44,6 @@
           "outputHashing": "all"
         },
         "development": {
-          "envFile": ".env.dev",
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
@@ -56,6 +54,9 @@
     "serve": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
+      "options": {
+        "port": 4201
+      },
       "configurations": {
         "production": {
           "buildTarget": "blog:build:production"

@@ -2,7 +2,27 @@
   "name": "foliokit",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:blog": "nx serve blog --port=4201",
+    "start:docs": "nx serve docs --port=4202",
+    "start:admin": "nx serve admin --port=4203",
+
+    "build:blog": "nx build blog",
+    "build:docs": "nx build docs",
+    "build:admin": "nx build admin",
+    "build:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui",
+    "build:all": "nx run-many --target=build",
+
+    "publish:cms-core": "nx build cms-core && npm publish dist/libs/cms-core --access public",
+    "publish:cms-ui": "nx build cms-ui && npm publish dist/libs/cms-ui --access public",
+    "publish:cms-admin-ui": "nx build cms-admin-ui && npm publish dist/libs/cms-admin-ui --access public",
+    "publish:cms-markdown": "nx build cms-markdown && npm publish dist/libs/cms-markdown --access public",
+    "publish:docs-ui": "nx build docs-ui && npm publish dist/libs/docs-ui --access public",
+    "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
+
+    "emulator": "firebase emulators:start",
+    "emulator:data": "firebase emulators:start --import .firebase/emulator-data --export-on-exit"
+  },
   "private": false,
   "devDependencies": {
     "@angular-devkit/core": "~21.1.0",

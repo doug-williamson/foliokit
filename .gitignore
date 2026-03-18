@@ -49,5 +49,7 @@ __screenshots__/
 .env.dev
 .env.prod
 .env.local
+.env.development
+.env.production
 *.env
 !.env.example
