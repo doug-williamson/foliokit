@@ -63,8 +63,9 @@ async function seed(): Promise<void> {
         siteUrl: 'http://localhost:4200',
         defaultAuthorId: 'author-1',
         nav: [
-          { label: 'Home', url: '/' },
-          { label: 'About', url: '/about' },
+          { label: 'Home', url: '/', icon: 'home' },
+          { label: 'Blog', url: '/posts', icon: 'article' },
+          { label: 'About', url: '/about', icon: 'person' },
         ],
         defaultSeo: {
           metaTitle: 'FolioKit Blog',

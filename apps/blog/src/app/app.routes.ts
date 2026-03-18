@@ -4,6 +4,11 @@ export const appRoutes: Route[] = [
   {
     path: '',
     loadComponent: () =>
+      import('./home/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'posts',
+    loadComponent: () =>
       import('./post-list/post-list.component').then(
         (m) => m.PostListComponent,
       ),

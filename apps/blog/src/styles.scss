@@ -48,3 +48,22 @@ body {
   height: 100%;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.prose {
+  --tw-prose-body: var(--mat-sys-on-surface);
+  --tw-prose-headings: var(--mat-sys-on-surface);
+  --tw-prose-links: var(--mat-sys-primary);
+  --tw-prose-code: var(--mat-sys-on-surface);
+  --tw-prose-quotes: var(--mat-sys-on-surface-variant);
+  --tw-prose-quote-borders: var(--mat-sys-outline-variant);
+  --tw-prose-captions: var(--mat-sys-on-surface-variant);
+}
+
+:root[data-theme='dark'] .prose {
+  --tw-prose-body: var(--mat-sys-on-surface);
+  --tw-prose-headings: var(--mat-sys-on-surface);
+  --tw-prose-links: var(--mat-sys-primary);
+  --tw-prose-code: var(--mat-sys-on-surface);
+  --tw-prose-invert-body: var(--mat-sys-on-surface);
+  --tw-prose-invert-headings: var(--mat-sys-on-surface);
+}

@@ -7,22 +7,10 @@ import type { EmbeddedMediaEntry } from '@foliokit/cms-core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [NgxMarkdownComponent],
-  template: `<markdown [data]="processedContent()" />`,
+  template: `<markdown class="prose prose-neutral max-w-none" [data]="processedContent()" />`,
   styles: [`
     :host { display: block; }
     :host ::ng-deep img { max-width: 100%; height: auto; border-radius: 0.5rem; }
-    :host ::ng-deep pre { overflow-x: auto; border-radius: 0.5rem; padding: 1rem; }
-    :host ::ng-deep h1, :host ::ng-deep h2, :host ::ng-deep h3,
-    :host ::ng-deep h4, :host ::ng-deep h5, :host ::ng-deep h6 {
-      color: var(--mat-sys-on-surface);
-    }
-    :host ::ng-deep a { color: var(--mat-sys-primary); }
-    :host ::ng-deep blockquote {
-      border-left: 4px solid var(--mat-sys-outline-variant);
-      margin: 0;
-      padding-left: 1rem;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `],
 })
 export class MarkdownComponent {
@@ -31,6 +19,7 @@ export class MarkdownComponent {
 
   readonly processedContent = computed(() => {
     const raw = this.content();
+    console.log('raw', raw);
     const media = this.embeddedMedia();
     if (!media || Object.keys(media).length === 0) return raw;
 

@@ -6,20 +6,17 @@
     "start:blog": "nx serve blog --port=4201",
     "start:docs": "nx serve docs --port=4202",
     "start:admin": "nx serve admin --port=4203",
-
     "build:blog": "nx build blog",
     "build:docs": "nx build docs",
     "build:admin": "nx build admin",
     "build:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui",
     "build:all": "nx run-many --target=build",
-
     "publish:cms-core": "nx build cms-core && npm publish dist/libs/cms-core --access public",
     "publish:cms-ui": "nx build cms-ui && npm publish dist/libs/cms-ui --access public",
     "publish:cms-admin-ui": "nx build cms-admin-ui && npm publish dist/libs/cms-admin-ui --access public",
     "publish:cms-markdown": "nx build cms-markdown && npm publish dist/libs/cms-markdown --access public",
     "publish:docs-ui": "nx build docs-ui && npm publish dist/libs/docs-ui --access public",
     "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
-
     "emulator": "firebase emulators:start",
     "emulator:seed": "firebase emulators:start --only auth,firestore,storage",
     "emulator:data": "firebase emulators:start --import .firebase/emulator-data --export-on-exit"
@@ -46,6 +43,7 @@
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.15.5",
     "@swc/helpers": "~0.5.18",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/express": "^4.17.21",
     "@types/node": "20.19.9",
     "@typescript-eslint/utils": "^8.40.0",
@@ -66,8 +64,6 @@
   },
   "dependencies": {
     "@angular-devkit/build-angular": "~21.1.0",
-    "firebase": "^11.10.0",
-    "firebase-admin": "^13.7.0",
     "@angular/cdk": "^21.2.2",
     "@angular/common": "~21.1.0",
     "@angular/compiler": "~21.1.0",
@@ -81,6 +77,8 @@
     "@ngrx/signals": "^21.0.1",
     "autoprefixer": "^10.4.27",
     "express": "^4.21.2",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.7.0",
     "marked": "^17.0.4",
     "ngx-markdown": "^21.1.0",
     "postcss": "^8.5.8",
