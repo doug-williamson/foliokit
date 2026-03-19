@@ -18,7 +18,7 @@ export const appRoutes: Route[] = [
       {
         path: 'posts',
         loadComponent: () =>
-          import('./post-list/post-list.component').then((m) => m.PostListComponent),
+          import('@foliokit/cms-admin-ui').then((m) => m.PostsListComponent),
       },
       {
         path: 'posts/new',

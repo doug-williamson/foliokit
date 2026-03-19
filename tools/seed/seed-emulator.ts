@@ -74,7 +74,9 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /posts/post-1...');
+    // ── published ──────────────────────────────────────────────────────────────
+
+    console.log('[seed:emulator] Writing /posts/post-1 (published)...');
     await db.collection('posts').doc('post-1').set(
       {
         id: 'post-1',
@@ -90,18 +92,15 @@ async function seed(): Promise<void> {
         tags: ['tag-web', 'tag-angular'],
         status: 'published',
         readingTimeMinutes: 2,
-        seo: {
-          title: 'Hello World',
-          description: 'First post.',
-        },
+        seo: { title: 'Hello World', description: 'First post.' },
         publishedAt: Timestamp.fromDate(new Date('2025-01-01')),
         createdAt: Timestamp.fromDate(new Date('2025-01-01')),
-        updatedAt: Timestamp.fromDate(new Date('2025-01-01')),
+        updatedAt: Timestamp.fromDate(new Date('2025-03-10')),
       },
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /posts/post-2...');
+    console.log('[seed:emulator] Writing /posts/post-2 (published)...');
     await db.collection('posts').doc('post-2').set(
       {
         id: 'post-2',
@@ -117,18 +116,69 @@ async function seed(): Promise<void> {
         tags: ['tag-angular'],
         status: 'published',
         readingTimeMinutes: 3,
-        seo: {
-          title: 'Angular Signals Deep Dive',
-          description: 'Signals are the future of Angular reactivity.',
-        },
+        seo: { title: 'Angular Signals Deep Dive', description: 'Signals are the future of Angular reactivity.' },
         publishedAt: Timestamp.fromDate(new Date('2025-02-01')),
         createdAt: Timestamp.fromDate(new Date('2025-02-01')),
-        updatedAt: Timestamp.fromDate(new Date('2025-02-01')),
+        updatedAt: Timestamp.fromDate(new Date('2025-03-12')),
       },
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config, 2 posts written.');
+    // ── scheduled ──────────────────────────────────────────────────────────────
+
+    console.log('[seed:emulator] Writing /posts/post-3 (scheduled)...');
+    await db.collection('posts').doc('post-3').set(
+      {
+        id: 'post-3',
+        slug: 'tailwind-v4-first-look',
+        title: 'Tailwind v4 First Look',
+        subtitle: 'What changes, what stays the same',
+        excerpt: 'Tailwind CSS v4 brings a new engine and CSS-first configuration. Here is what to expect.',
+        content: '## What is New\n\nTailwind v4 ditches `tailwind.config.js` in favour of CSS-native configuration using `@theme`.\n\n```css\n@theme {\n  --color-primary: oklch(0.6 0.2 270);\n}\n```',
+        embeddedMedia: {},
+        thumbnailUrl: 'https://picsum.photos/seed/post3/800/450',
+        thumbnailAlt: 'Tailwind v4 thumbnail',
+        authorId: 'author-1',
+        tags: ['tag-web'],
+        status: 'scheduled',
+        readingTimeMinutes: 4,
+        seo: { title: 'Tailwind v4 First Look', description: 'What changes in Tailwind v4.' },
+        publishedAt: Timestamp.fromDate(new Date('2099-01-01')),
+        scheduledPublishAt: Timestamp.fromDate(new Date('2026-04-01')),
+        createdAt: Timestamp.fromDate(new Date('2026-03-14')),
+        updatedAt: Timestamp.fromDate(new Date('2026-03-15')),
+      },
+      { merge: false }
+    );
+
+    // ── draft ──────────────────────────────────────────────────────────────────
+
+    console.log('[seed:emulator] Writing /posts/post-4 (draft)...');
+    await db.collection('posts').doc('post-4').set(
+      {
+        id: 'post-4',
+        slug: 'ngrx-signals-patterns',
+        title: 'NgRx Signals Store Patterns',
+        subtitle: '',
+        excerpt: '',
+        content: '## WIP\n\nNotes on component-scoped stores, `withMethods`, and lazy loading.\n\n_More coming soon..._',
+        embeddedMedia: {},
+        thumbnailUrl: '',
+        thumbnailAlt: '',
+        authorId: 'author-1',
+        tags: ['tag-angular'],
+        status: 'draft',
+        readingTimeMinutes: 0,
+        seo: {},
+        publishedAt: Timestamp.fromDate(new Date('2099-01-01')),
+        scheduledPublishAt: null,
+        createdAt: Timestamp.fromDate(new Date('2026-03-18')),
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18')),
+      },
+      { merge: false }
+    );
+
+    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config, 4 posts written (2 published, 1 scheduled, 1 draft).');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

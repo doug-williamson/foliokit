@@ -79,7 +79,7 @@ export class PostService {
   getAllPosts(): Observable<BlogPost[]> {
     const q = query(
       collection(this.firestore, 'posts'),
-      orderBy('createdAt', 'desc'),
+      orderBy('updatedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
       map((snapshot) =>

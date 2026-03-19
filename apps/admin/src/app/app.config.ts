@@ -9,7 +9,7 @@ import { environment } from '../environments/environment';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes, withComponentInputBinding()),
-    provideFirebase(environment.firebase),
+    provideFirebase(environment.firebase, environment.useEmulator),
     { provide: ADMIN_EMAIL, useValue: environment.adminEmail },
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
