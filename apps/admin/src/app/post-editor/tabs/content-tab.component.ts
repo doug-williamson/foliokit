@@ -1,30 +1,57 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
 
 @Component({
   selector: 'folio-content-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatChipsModule,
-    MatIconModule,
-    MatButtonModule,
+  imports: [FormsModule, MatFormFieldModule, MatInputModule],
+  styles: [
+    `
+      /*
+       * The host must stretch to fill the flex column inside
+       * .mat-mdc-tab-body-content so the textarea can grow into the
+       * remaining space via flex: 1. overflow: hidden prevents the host
+       * from creating its own scroll context and interfering with the
+       * textarea's flex sizing.
+       */
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .markdown-textarea {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        resize: none;
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        padding: 0.5rem;
+        outline: none;
+        background: transparent;
+        color: inherit;
+        border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+        border-radius: 4px;
+      }
+      .markdown-textarea:focus {
+        border-color: var(--mat-sys-primary);
+        outline: none;
+      }
+    `,
   ],
   template: `
     @if (store.post(); as post) {
-      <div class="flex flex-col gap-4 p-4">
+      <div class="flex flex-col flex-1 min-h-0 p-4 gap-4">
         <!-- Title -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full shrink-0">
           <mat-label>Title</mat-label>
           <input
             matInput
@@ -35,7 +62,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
         </mat-form-field>
 
         <!-- Subtitle -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full shrink-0">
           <mat-label>Subtitle</mat-label>
           <input
             matInput
@@ -46,7 +73,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
         </mat-form-field>
 
         <!-- Excerpt -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full shrink-0">
           <mat-label>Excerpt</mat-label>
           <textarea
             matInput
@@ -57,38 +84,17 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
           ></textarea>
         </mat-form-field>
 
-        <!-- Content (plain textarea) -->
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-gray-600">Content (Markdown)</label>
+        <!-- Markdown editor — fills remaining height -->
+        <div class="flex flex-col flex-1 min-h-0 gap-1">
+          <label class="text-xs font-medium opacity-60">
+            Content (Markdown)
+          </label>
           <textarea
-            class="w-full font-mono text-sm border border-gray-300 rounded p-2 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style="min-height: 400px"
+            class="markdown-textarea"
             [value]="post.content"
             (input)="store.updateField('content', $any($event.target).value)"
             placeholder="Write your post content in Markdown…"
           ></textarea>
-        </div>
-
-        <!-- Tags -->
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-gray-600">Tags</label>
-          <mat-chip-grid #chipGrid>
-            @for (tag of post.tags; track tag) {
-              <mat-chip-row (removed)="removeTag(tag, post.tags)">
-                {{ tag }}
-                <button matChipRemove>
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
-            }
-          </mat-chip-grid>
-          <input
-            placeholder="Add tag…"
-            [matChipInputFor]="chipGrid"
-            [matChipInputSeparatorKeyCodes]="separatorKeys"
-            (matChipInputTokenEnd)="addTag($event, post.tags)"
-            class="mt-1 border-b border-gray-300 focus:outline-none focus:border-blue-500 text-sm py-1"
-          />
         </div>
       </div>
     }
@@ -96,20 +102,4 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 })
 export class ContentTabComponent {
   readonly store = inject(PostEditorStore);
-  readonly separatorKeys = [ENTER, COMMA];
-
-  addTag(event: MatChipInputEvent, currentTags: string[]): void {
-    const value = (event.value ?? '').trim();
-    if (value && !currentTags.includes(value)) {
-      this.store.updateField('tags', [...currentTags, value]);
-    }
-    event.chipInput.clear();
-  }
-
-  removeTag(tag: string, currentTags: string[]): void {
-    this.store.updateField(
-      'tags',
-      currentTags.filter((t) => t !== tag),
-    );
-  }
 }
