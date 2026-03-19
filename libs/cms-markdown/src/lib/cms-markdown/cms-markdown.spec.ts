@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CmsMarkdown } from './cms-markdown';
+import { provideMarkdown } from 'ngx-markdown';
+import { MarkdownComponent } from './cms-markdown';
 
-describe('CmsMarkdown', () => {
-  let component: CmsMarkdown;
-  let fixture: ComponentFixture<CmsMarkdown>;
+describe('MarkdownComponent', () => {
+  let component: MarkdownComponent;
+  let fixture: ComponentFixture<MarkdownComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CmsMarkdown],
+      imports: [MarkdownComponent],
+      providers: [provideMarkdown()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CmsMarkdown);
+    fixture = TestBed.createComponent(MarkdownComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('content', '');
     await fixture.whenStable();
   });
 

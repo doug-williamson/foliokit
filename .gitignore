@@ -44,3 +44,16 @@ Thumbs.db
 .angular
 
 __screenshots__/
+
+# Firebase credentials — never commit real env files
+.env.dev
+.env.prod
+.env.local
+.env.development
+.env.production
+*.env
+!.env.example
+
+# Service account key — never commit
+*service-account*.json
+*serviceAccount*.json

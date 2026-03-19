@@ -1,0 +1,50 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": { "port": 9099 },
+    "firestore": { "port": 8080 },
+    "storage": { "port": 9199 },
+    "ui": { "enabled": true, "port": 4000 },
+    "singleProjectMode": true
+  },
+  "hosting": [
+    {
+      "target": "foliokit-6f974",
+      "public": "dist/apps/blog/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "appHosting": "foliokit-6f974"
+        }
+      ]
+    },
+    {
+      "target": "foliokit-admin",
+      "public": "dist/apps/admin/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "foliokit-docs",
+      "public": "dist/apps/docs/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "appHosting": "foliokit-docs"
+        }
+      ]
+    }
+  ]
+}

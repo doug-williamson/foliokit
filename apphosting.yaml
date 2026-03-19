@@ -1,0 +1,10 @@
+runConfig:
+  concurrency: 80
+  minInstances: 0
+  maxInstances: 4
+
+env:
+  - variable: GOOGLE_APPLICATION_CREDENTIALS
+    secret: google-application-credentials
+    availability:
+      - RUNTIME
