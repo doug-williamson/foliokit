@@ -21,6 +21,7 @@ export interface PostEditorState {
   saveError: string | null;
   mode: 'new' | 'edit';
   cursorPosition: number;
+  tempPostId: string;
 }
 
 const initialState: PostEditorState = {
@@ -30,6 +31,7 @@ const initialState: PostEditorState = {
   saveError: null,
   mode: 'new',
   cursorPosition: 0,
+  tempPostId: crypto.randomUUID(),
 };
 
 function blankPost(): BlogPost {

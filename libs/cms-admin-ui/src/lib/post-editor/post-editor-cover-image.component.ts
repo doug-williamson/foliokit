@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { FIREBASE_STORAGE } from '@foliokit/cms-core';
+import { FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 
 @Component({
@@ -126,6 +126,7 @@ export class PostEditorCoverImageComponent {
 
   readonly store = inject(PostEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly postService = inject(PostService);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -134,6 +135,7 @@ export class PostEditorCoverImageComponent {
   readonly uploadProgress = signal(0);
   readonly uploadError = signal<string | null>(null);
   readonly isDragOver = signal(false);
+  readonly storagePath = signal<string | null>(null);
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -163,14 +165,34 @@ export class PostEditorCoverImageComponent {
   }
 
   onDeleteCover(): void {
-    if (!window.confirm('Remove the cover image?')) return;
-    this.store.updateField('thumbnailUrl', undefined);
-    this.store.updateField('thumbnailAlt', undefined);
+    if (!window.confirm('Remove cover image?')) return;
+    const path = this.storagePath();
+    if (path) {
+      this.postService.deleteStorageFile(path).subscribe({
+        next: () => this.clearCover(),
+        error: () => this.clearCover(),
+      });
+    } else {
+      this.clearCover();
+    }
+  }
+
+  private clearCover(): void {
+    this.store.updateField('thumbnailUrl', '');
+    this.store.updateField('thumbnailAlt', '');
+    this.storagePath.set(null);
+    this.uploadProgress.set(0);
   }
 
   private upload(file: File): void {
-    const postId = this.store.post()?.id || 'draft-temp';
+    const previousPath = this.storagePath();
+    const postId = this.store.post()?.id || this.store.tempPostId();
     const storagePath = `posts/${postId}/cover/${file.name}`;
+
+    if (previousPath) {
+      this.postService.deleteStorageFile(previousPath).subscribe();
+    }
+
     const fileRef = ref(this.storage, storagePath);
 
     this.uploading.set(true);
@@ -194,6 +216,7 @@ export class PostEditorCoverImageComponent {
         getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
           this.store.updateField('thumbnailUrl', downloadUrl);
           this.store.updateField('thumbnailAlt', file.name);
+          this.storagePath.set(storagePath);
           this.uploading.set(false);
         });
       },
