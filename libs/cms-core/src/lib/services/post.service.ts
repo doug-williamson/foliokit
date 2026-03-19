@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import {
-  addDoc,
   collection,
   doc,
+  DocumentData,
   getDoc,
   getDocs,
   limit,
@@ -10,6 +10,7 @@ import {
   query,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
@@ -30,9 +31,7 @@ export class PostService {
       orderBy('publishedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as BlogPost),
-      ),
+      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
       catchError((err) => {
         console.error('[PostService.getPublishedPosts]', err);
         return of([]);
@@ -50,8 +49,8 @@ export class PostService {
     return from(getDocs(q)).pipe(
       map((snapshot) => {
         if (snapshot.empty) return null;
-        const doc = snapshot.docs[0];
-        return { id: doc.id, ...doc.data() } as BlogPost;
+        const d = snapshot.docs[0];
+        return this.toPost(d.id, d.data());
       }),
       catchError((err) => {
         console.error('[PostService.getPostBySlug]', err);
@@ -68,9 +67,7 @@ export class PostService {
       orderBy('publishedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as BlogPost),
-      ),
+      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
       catchError((err) => {
         console.error('[PostService.getPostsByTag]', err);
         return of([]);
@@ -84,9 +81,7 @@ export class PostService {
       orderBy('updatedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as BlogPost),
-      ),
+      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
       catchError((err) => {
         console.error('[PostService.getAllPosts]', err);
         return of([]);
@@ -94,16 +89,11 @@ export class PostService {
     );
   }
 
-  getPostById(id: string): Observable<BlogPost | null> {
-    const ref = doc(collection(this.firestore, 'posts'), id);
-    return from(getDoc(ref)).pipe(
+  getPostById(id: string): Observable<BlogPost> {
+    return from(getDoc(doc(this.firestore, 'posts', id))).pipe(
       map((snapshot) => {
-        if (!snapshot.exists()) return null;
-        return { id: snapshot.id, ...snapshot.data() } as BlogPost;
-      }),
-      catchError((err) => {
-        console.error('[PostService.getPostById]', err);
-        return of(null);
+        if (!snapshot.exists()) throw new Error(`Post not found: ${id}`);
+        return this.toPost(snapshot.id, snapshot.data());
       }),
     );
   }
@@ -115,13 +105,14 @@ export class PostService {
 
   savePost(post: BlogPost): Observable<BlogPost> {
     const now = Timestamp.now();
-    const isNew = !post.id;
 
-    if (isNew) {
-      const { id: _id, ...data } = post;
-      const payload = { ...data, createdAt: now, updatedAt: now };
-      return from(addDoc(collection(this.firestore, 'posts'), payload)).pipe(
-        map((ref) => ({ ...post, id: ref.id, createdAt: now, updatedAt: now })),
+    if (post.id === '') {
+      const newId = doc(collection(this.firestore, 'posts')).id;
+      const createdAt = now;
+      const updatedAt = now;
+      const payload = { ...post, id: newId, createdAt, updatedAt };
+      return from(setDoc(doc(this.firestore, 'posts', newId), payload)).pipe(
+        map(() => payload),
         catchError((err) => {
           console.error('[PostService.savePost/create]', err);
           throw err;
@@ -129,15 +120,37 @@ export class PostService {
       );
     }
 
-    const { id, ...data } = post;
-    const payload = { ...data, updatedAt: now };
-    const ref = doc(collection(this.firestore, 'posts'), id);
-    return from(setDoc(ref, payload, { merge: true })).pipe(
-      map(() => ({ ...post, updatedAt: now })),
+    const updatedAt = now;
+    const payload = { ...post, updatedAt };
+    return from(updateDoc(doc(this.firestore, 'posts', post.id), payload)).pipe(
+      map(() => payload),
       catchError((err) => {
         console.error('[PostService.savePost/update]', err);
         throw err;
       }),
     );
+  }
+
+  private toPost(id: string, data: DocumentData): BlogPost {
+    return {
+      id,
+      slug: data['slug'],
+      title: data['title'],
+      subtitle: data['subtitle'],
+      status: data['status'],
+      content: data['content'],
+      excerpt: data['excerpt'],
+      thumbnailUrl: data['thumbnailUrl'],
+      thumbnailAlt: data['thumbnailAlt'],
+      tags: data['tags'] ?? [],
+      authorId: data['authorId'],
+      readingTimeMinutes: data['readingTimeMinutes'],
+      embeddedMedia: data['embeddedMedia'] ?? {},
+      seo: data['seo'] ?? {},
+      publishedAt: data['publishedAt'],
+      scheduledPublishAt: data['scheduledPublishAt'],
+      updatedAt: data['updatedAt'],
+      createdAt: data['createdAt'],
+    };
   }
 }

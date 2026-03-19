@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { lastValueFrom } from 'rxjs';
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
@@ -10,6 +9,7 @@ import {
   query,
   setDoc,
   Timestamp,
+  updateDoc,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
@@ -29,11 +29,11 @@ import {
 // ---------------------------------------------------------------------------
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(() => ({})),
-  doc: vi.fn(() => ({})),
+  doc: vi.fn(() => ({ id: 'generated-xyz' })),
   getDoc: vi.fn(),
   getDocs: vi.fn(),
-  addDoc: vi.fn(),
   setDoc: vi.fn(),
+  updateDoc: vi.fn(),
   query: vi.fn((ref: unknown) => ref),
   orderBy: vi.fn((...args: unknown[]) => args),
   where: vi.fn((...args: unknown[]) => args),
@@ -56,7 +56,7 @@ describe('PostService', () => {
 
     // collection always returns an opaque ref object; doc and query pass it through
     vi.mocked(collection).mockReturnValue({} as ReturnType<typeof collection>);
-    vi.mocked(doc).mockReturnValue({} as ReturnType<typeof doc>);
+    vi.mocked(doc).mockReturnValue({ id: 'generated-xyz' } as ReturnType<typeof doc>);
     vi.mocked(query).mockImplementation((ref) => ref as ReturnType<typeof query>);
 
     TestBed.configureTestingModule({
@@ -94,14 +94,14 @@ describe('PostService', () => {
       expect(result).toEqual({ id: 'post-abc', ...raw });
     });
 
-    it('returns null when the document does not exist', async () => {
+    it('throws an error when the document does not exist', async () => {
       vi.mocked(getDoc).mockResolvedValue(
         mockDocSnapshot('missing', null) as Awaited<ReturnType<typeof getDoc>>,
       );
 
-      const result = await lastValueFrom(service.getPostById('missing'));
-
-      expect(result).toBeNull();
+      await expect(lastValueFrom(service.getPostById('missing'))).rejects.toThrow(
+        'Post not found: missing',
+      );
     });
   });
 
@@ -150,26 +150,32 @@ describe('PostService', () => {
 
   // -------------------------------------------------------------------------
   describe('savePost — new post (id === "")', () => {
-    it('calls addDoc and returns the post with the generated id', async () => {
+    it('calls setDoc with the generated id and returns the post with that id', async () => {
       const newPost = makeBlogPost({ id: '' });
-      const generatedId = 'generated-xyz';
-
-      vi.mocked(addDoc).mockResolvedValue(
-        { id: generatedId } as Awaited<ReturnType<typeof addDoc>>,
-      );
+      vi.mocked(setDoc).mockResolvedValue(undefined);
 
       const result = await lastValueFrom(service.savePost(newPost));
 
-      expect(vi.mocked(addDoc)).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(setDoc)).not.toHaveBeenCalled();
-      expect(result.id).toBe(generatedId);
+      expect(vi.mocked(setDoc)).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(updateDoc)).not.toHaveBeenCalled();
+      expect(result.id).toBe('generated-xyz');
+    });
+
+    it('stores the id field inside the document payload', async () => {
+      const newPost = makeBlogPost({ id: '' });
+      vi.mocked(setDoc).mockResolvedValue(undefined);
+
+      await lastValueFrom(service.savePost(newPost));
+
+      expect(vi.mocked(setDoc)).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ id: 'generated-xyz' }),
+      );
     });
 
     it('stamps createdAt and updatedAt with Timestamp.now()', async () => {
       const newPost = makeBlogPost({ id: '' });
-      vi.mocked(addDoc).mockResolvedValue(
-        { id: 'gen-1' } as Awaited<ReturnType<typeof addDoc>>,
-      );
+      vi.mocked(setDoc).mockResolvedValue(undefined);
 
       const result = await lastValueFrom(service.savePost(newPost));
 
@@ -180,19 +186,18 @@ describe('PostService', () => {
 
   // -------------------------------------------------------------------------
   describe('savePost — existing post (id !== "")', () => {
-    it('calls setDoc with merge:true and returns the post with updated updatedAt', async () => {
+    it('calls updateDoc and returns the post with updated updatedAt', async () => {
       const existingPost = makeBlogPost({ id: 'post-existing' });
-      vi.mocked(setDoc).mockResolvedValue(undefined);
+      vi.mocked(updateDoc).mockResolvedValue(undefined);
 
       const result = await lastValueFrom(service.savePost(existingPost));
 
-      expect(vi.mocked(setDoc)).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(setDoc)).toHaveBeenCalledWith(
+      expect(vi.mocked(updateDoc)).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(updateDoc)).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({ updatedAt: fakeTimestamp }),
-        { merge: true },
       );
-      expect(vi.mocked(addDoc)).not.toHaveBeenCalled();
+      expect(vi.mocked(setDoc)).not.toHaveBeenCalled();
       expect(result.id).toBe('post-existing');
       expect(result.updatedAt).toEqual(fakeTimestamp);
     });
@@ -220,7 +225,7 @@ describe('PostService', () => {
 
     it('calls deleteObject with the ref returned by ref()', async () => {
       const fakeRef = { _path: 'posts/p1/cover/img.jpg' };
-      vi.mocked(ref).mockReturnValue(fakeRef as ReturnType<typeof ref>);
+      vi.mocked(ref).mockReturnValue(fakeRef as unknown as ReturnType<typeof ref>);
       vi.mocked(deleteObject).mockResolvedValue(undefined);
 
       await lastValueFrom(service.deleteStorageFile('posts/p1/cover/img.jpg'));
