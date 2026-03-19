@@ -6,7 +6,7 @@ service cloud.firestore {
     }
 
     match /posts/{postId} {
-      allow read: if resource.data.status == 'published';
+      allow read: if resource.data.status == 'published' || isAdmin();
       allow write: if isAdmin();
     }
     match /pages/{pageId} { allow read; allow write: if isAdmin(); }
