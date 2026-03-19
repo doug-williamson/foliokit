@@ -20,6 +20,7 @@ export interface PostEditorState {
   isSaving: boolean;
   saveError: string | null;
   mode: 'new' | 'edit';
+  cursorPosition: number;
 }
 
 const initialState: PostEditorState = {
@@ -28,6 +29,7 @@ const initialState: PostEditorState = {
   isSaving: false,
   saveError: null,
   mode: 'new',
+  cursorPosition: 0,
 };
 
 function blankPost(): BlogPost {
@@ -124,6 +126,38 @@ export const PostEditorStore = signalStore(
             patchState(store, { isSaving: false, saveError: message });
           },
         });
+      },
+
+      setCursorPosition(position: number): void {
+        patchState(store, { cursorPosition: position });
+      },
+
+      insertMediaAtCursor(token: string): void {
+        const post = store.post();
+        const pos = store.cursorPosition();
+        if (!post) return;
+        const before = post.content.slice(0, pos);
+        const after = post.content.slice(pos);
+        const insertion = `![alt](${token})`;
+        patchState(store, {
+          post: { ...post, content: `${before}${insertion}${after}` },
+          isDirty: true,
+          cursorPosition: pos + insertion.length,
+        });
+      },
+
+      removeEmbeddedMedia(token: string): void {
+        const post = store.post();
+        if (!post) return;
+        const entry = post.embeddedMedia[token];
+        const { [token]: _, ...remaining } = post.embeddedMedia;
+        patchState(store, {
+          post: { ...post, embeddedMedia: remaining },
+          isDirty: true,
+        });
+        if (entry) {
+          postService.deleteStorageFile(entry.storagePath).subscribe();
+        }
       },
 
       publish(): void {

@@ -10,12 +10,11 @@ export interface SeoMeta {
 }
 
 export interface EmbeddedMediaEntry {
-  type: 'image' | 'video' | 'youtube' | 'vimeo' | 'codepen' | 'iframe';
-  url: string;
-  alt?: string;
-  caption?: string;
-  width?: number;
-  height?: number;
+  token: string;
+  storagePath: string;
+  downloadUrl: string;
+  alt: string;
+  mimeType: string;
 }
 
 export interface BlogPost {

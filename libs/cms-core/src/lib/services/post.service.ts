@@ -12,14 +12,16 @@ import {
   Timestamp,
   where,
 } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { FIRESTORE } from '../firebase/firebase.config';
+import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
   private readonly firestore = inject(FIRESTORE);
+  private readonly storage = inject(FIREBASE_STORAGE);
 
   getPublishedPosts(): Observable<BlogPost[]> {
     const q = query(
@@ -104,6 +106,11 @@ export class PostService {
         return of(null);
       }),
     );
+  }
+
+  deleteStorageFile(storagePath: string): Observable<void> {
+    const fileRef = ref(this.storage, storagePath);
+    return from(deleteObject(fileRef));
   }
 
   savePost(post: BlogPost): Observable<BlogPost> {

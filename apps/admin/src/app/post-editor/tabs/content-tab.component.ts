@@ -93,6 +93,8 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
             class="markdown-textarea"
             [value]="post.content"
             (input)="store.updateField('content', $any($event.target).value)"
+            (click)="store.setCursorPosition($any($event.target).selectionStart)"
+            (keyup)="store.setCursorPosition($any($event.target).selectionStart)"
             placeholder="Write your post content in Markdown…"
           ></textarea>
         </div>

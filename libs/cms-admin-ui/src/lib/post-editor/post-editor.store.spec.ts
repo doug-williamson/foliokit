@@ -40,6 +40,7 @@ function setup() {
   const postServiceStub = {
     getPostById: vi.fn(),
     savePost: vi.fn(),
+    deleteStorageFile: vi.fn().mockReturnValue(of(undefined)),
   };
 
   TestBed.configureTestingModule({
@@ -458,5 +459,157 @@ describe('PostEditorStore autosave pipeline', () => {
     vi.advanceTimersByTime(1500);
 
     expect(postServiceStub.savePost).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// setCursorPosition
+// ---------------------------------------------------------------------------
+
+describe('PostEditorStore.setCursorPosition(position)', () => {
+  it('sets cursorPosition to the given value', () => {
+    const { store } = setup();
+    store.setCursorPosition(42);
+    expect(store.cursorPosition()).toBe(42);
+  });
+
+  it('updates cursorPosition when called a second time', () => {
+    const { store } = setup();
+    store.setCursorPosition(10);
+    store.setCursorPosition(99);
+    expect(store.cursorPosition()).toBe(99);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// insertMediaAtCursor
+// ---------------------------------------------------------------------------
+
+describe('PostEditorStore.insertMediaAtCursor(token)', () => {
+  it('does nothing when post is null', () => {
+    const { store } = setup();
+    // post starts as null; no initNew called
+    store.insertMediaAtCursor('tok-1');
+    expect(store.post()).toBeNull();
+    expect(store.isDirty()).toBe(false);
+  });
+
+  it('prepends insertion when cursorPosition is 0', () => {
+    const { store } = setup();
+    store.initNew();
+    store.updateField('content', 'world');
+    store.setCursorPosition(0);
+    store.insertMediaAtCursor('tok-1');
+    expect(store.post()!.content).toBe('![alt](tok-1)world');
+  });
+
+  it('inserts at the correct mid-string position', () => {
+    const { store } = setup();
+    store.initNew();
+    store.updateField('content', 'helloworld');
+    store.setCursorPosition(5);
+    store.insertMediaAtCursor('tok-2');
+    expect(store.post()!.content).toBe('hello![alt](tok-2)world');
+  });
+
+  it('advances cursorPosition by the length of the insertion', () => {
+    const { store } = setup();
+    store.initNew();
+    store.updateField('content', 'abc');
+    store.setCursorPosition(3);
+    store.insertMediaAtCursor('tok-3');
+    const insertion = '![alt](tok-3)';
+    expect(store.cursorPosition()).toBe(3 + insertion.length);
+  });
+
+  it('sets isDirty to true', () => {
+    const { store } = setup();
+    store.initNew();
+    // Reset isDirty that updateField sets
+    store.setCursorPosition(0);
+    // initNew itself leaves isDirty false; just call insertMediaAtCursor
+    store.initNew();
+    store.insertMediaAtCursor('tok-4');
+    expect(store.isDirty()).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// removeEmbeddedMedia
+// ---------------------------------------------------------------------------
+
+describe('PostEditorStore.removeEmbeddedMedia(token)', () => {
+  const fakeTs = { seconds: 1_700_000_000, nanoseconds: 0 } as unknown as BlogPost['publishedAt'];
+
+  function makeEntry(token: string) {
+    return {
+      token,
+      storagePath: `posts/post-1/media/${token}.png`,
+      downloadUrl: `https://cdn.example.com/${token}.png`,
+      alt: `${token}.png`,
+      mimeType: 'image/png',
+    };
+  }
+
+  it('does nothing when post is null', () => {
+    const { store, postServiceStub } = setup();
+    store.removeEmbeddedMedia('missing');
+    expect(store.post()).toBeNull();
+    expect(postServiceStub.deleteStorageFile).not.toHaveBeenCalled();
+  });
+
+  it('removes the entry with the given token from embeddedMedia', () => {
+    const { store, postServiceStub } = setup();
+    postServiceStub.getPostById.mockReturnValue(
+      of(makePost({
+        embeddedMedia: {
+          'tok-a': makeEntry('tok-a'),
+          'tok-b': makeEntry('tok-b'),
+        },
+      })),
+    );
+    store.loadPost('post-1');
+
+    store.removeEmbeddedMedia('tok-a');
+
+    expect(store.post()!.embeddedMedia).not.toHaveProperty('tok-a');
+    expect(store.post()!.embeddedMedia).toHaveProperty('tok-b');
+  });
+
+  it('sets isDirty to true', () => {
+    const { store, postServiceStub } = setup();
+    postServiceStub.getPostById.mockReturnValue(
+      of(makePost({ embeddedMedia: { 'tok-a': makeEntry('tok-a') } })),
+    );
+    store.loadPost('post-1');
+
+    store.removeEmbeddedMedia('tok-a');
+
+    expect(store.isDirty()).toBe(true);
+  });
+
+  it('calls postService.deleteStorageFile with the entry storagePath', () => {
+    const { store, postServiceStub } = setup();
+    const entry = makeEntry('tok-a');
+    postServiceStub.getPostById.mockReturnValue(
+      of(makePost({ embeddedMedia: { 'tok-a': entry } })),
+    );
+    store.loadPost('post-1');
+
+    store.removeEmbeddedMedia('tok-a');
+
+    expect(postServiceStub.deleteStorageFile).toHaveBeenCalledWith(entry.storagePath);
+  });
+
+  it('does NOT call deleteStorageFile when the token is not in embeddedMedia', () => {
+    const { store, postServiceStub } = setup();
+    postServiceStub.getPostById.mockReturnValue(
+      of(makePost({ embeddedMedia: {} })),
+    );
+    store.loadPost('post-1');
+
+    store.removeEmbeddedMedia('non-existent');
+
+    expect(postServiceStub.deleteStorageFile).not.toHaveBeenCalled();
   });
 });

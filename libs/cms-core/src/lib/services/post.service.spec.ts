@@ -11,7 +11,8 @@ import {
   setDoc,
   Timestamp,
 } from 'firebase/firestore';
-import { FIRESTORE } from '../firebase/firebase.config';
+import { deleteObject, ref } from 'firebase/storage';
+import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import { PostService } from './post.service';
 import {
   fakeTimestamp,
@@ -22,8 +23,8 @@ import {
 } from '../../../testing/firestore.stub';
 
 // ---------------------------------------------------------------------------
-// Module mock — hoisted before all imports by Vitest.
-// Replaces every firebase/firestore export with a vi.fn() so the real SDK
+// Module mocks — hoisted before all imports by Vitest.
+// Replaces every firebase SDK export with vi.fn() so the real SDK
 // is never imported or initialised.
 // ---------------------------------------------------------------------------
 vi.mock('firebase/firestore', () => ({
@@ -42,6 +43,11 @@ vi.mock('firebase/firestore', () => ({
   },
 }));
 
+vi.mock('firebase/storage', () => ({
+  ref: vi.fn(() => ({})),
+  deleteObject: vi.fn(),
+}));
+
 describe('PostService', () => {
   let service: PostService;
 
@@ -57,6 +63,7 @@ describe('PostService', () => {
       providers: [
         PostService,
         { provide: FIRESTORE, useValue: firestoreStub },
+        { provide: FIREBASE_STORAGE, useValue: {} },
       ],
     });
 
@@ -195,6 +202,38 @@ describe('PostService', () => {
   describe('Timestamp.now mock', () => {
     it('does not call the real Firebase SDK', () => {
       expect(vi.mocked(Timestamp.now)).toBeDefined();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  describe('deleteStorageFile', () => {
+    it('calls ref() with the storage instance and the given path', async () => {
+      vi.mocked(deleteObject).mockResolvedValue(undefined);
+
+      await lastValueFrom(service.deleteStorageFile('posts/p1/cover/img.jpg'));
+
+      expect(vi.mocked(ref)).toHaveBeenCalledWith(
+        expect.anything(),
+        'posts/p1/cover/img.jpg',
+      );
+    });
+
+    it('calls deleteObject with the ref returned by ref()', async () => {
+      const fakeRef = { _path: 'posts/p1/cover/img.jpg' };
+      vi.mocked(ref).mockReturnValue(fakeRef as ReturnType<typeof ref>);
+      vi.mocked(deleteObject).mockResolvedValue(undefined);
+
+      await lastValueFrom(service.deleteStorageFile('posts/p1/cover/img.jpg'));
+
+      expect(vi.mocked(deleteObject)).toHaveBeenCalledWith(fakeRef);
+    });
+
+    it('returns an Observable that resolves to void when deleteObject succeeds', async () => {
+      vi.mocked(deleteObject).mockResolvedValue(undefined);
+
+      const result = await lastValueFrom(service.deleteStorageFile('any/path'));
+
+      expect(result).toBeUndefined();
     });
   });
 });
