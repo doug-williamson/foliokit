@@ -11,6 +11,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { EmbeddedMediaEntry, FIREBASE_STORAGE } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
@@ -20,7 +21,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
   selector: 'folio-post-editor-embedded-media',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, PostEditorEmbeddedMediaItemComponent],
+  imports: [MatButtonModule, MatIconModule, MatProgressBarModule, PostEditorEmbeddedMediaItemComponent],
   styles: [
     `
       :host {
@@ -51,6 +52,11 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
         class="hidden"
         (change)="onFileSelected($any($event.target).files)"
       />
+
+      <!-- Upload progress -->
+      @if (uploading()) {
+        <mat-progress-bar mode="indeterminate" />
+      }
 
       <!-- Upload error -->
       @if (uploadError()) {
@@ -100,7 +106,7 @@ export class PostEditorEmbeddedMediaComponent {
   }
 
   private upload(file: File): void {
-    const postId = this.store.post()?.id || 'draft-temp';
+    const postId = this.store.post()?.id || this.store.tempPostId();
     const storagePath = `posts/${postId}/media/${file.name}`;
     const fileRef = ref(this.storage, storagePath);
     const token = crypto.randomUUID();

@@ -77,7 +77,7 @@ export class PostEditorEmbeddedMediaItemComponent {
   }
 
   onDelete(): void {
-    if (!window.confirm(`Remove "${this.entry().alt}" from embedded media?`)) return;
+    if (!window.confirm('Remove this image? It will be removed from Storage and any markdown references will break.')) return;
     this.store.removeEmbeddedMedia(this.token());
   }
 }
