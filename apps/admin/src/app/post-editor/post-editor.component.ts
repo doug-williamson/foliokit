@@ -9,27 +9,65 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
 import { ContentTabComponent } from './tabs/content-tab.component';
+import { MediaTabComponent } from './tabs/media-tab.component';
+import { MetadataTabComponent } from './tabs/metadata-tab.component';
+import { SeoTabComponent } from './tabs/seo-tab.component';
+import { ArticlePreviewComponent } from './preview/article-preview.component';
+import { CardPreviewComponent } from './preview/card-preview.component';
+import { SeoPreviewComponent } from './preview/seo-preview.component';
 
 @Component({
   selector: 'admin-post-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PostEditorStore],
-  imports: [MatButtonModule, MatTabsModule, ContentTabComponent],
+  imports: [
+    MatButtonModule,
+    MatTabsModule,
+    ContentTabComponent,
+    MediaTabComponent,
+    MetadataTabComponent,
+    SeoTabComponent,
+    ArticlePreviewComponent,
+    CardPreviewComponent,
+    SeoPreviewComponent,
+  ],
+  styles: [
+    `
+      /*
+       * Force mat-tab-group to participate in flex height layout.
+       * The tab body wrapper must stretch to fill remaining space; the tab
+       * body content area provides the scroll context for each tab independently.
+       */
+      ::ng-deep .mat-mdc-tab-body-wrapper {
+        flex: 1;
+        overflow: hidden;
+      }
+      ::ng-deep .mat-mdc-tab-body-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+    `,
+  ],
   template: `
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
-      <div class="flex items-center gap-3 px-4 py-2 border-b border-gray-200 bg-white shrink-0">
-        <span class="flex-1 text-sm font-medium text-gray-700 truncate">
+      <div
+        class="flex items-center gap-3 px-4 py-2 border-b shrink-0"
+        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+      >
+        <span class="flex-1 text-sm font-medium truncate opacity-80">
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
         @if (store.isSaving()) {
-          <span class="text-xs text-gray-400">Saving…</span>
+          <span class="text-xs opacity-40">Saving…</span>
         } @else if (store.saveError()) {
           <span class="text-xs text-red-500">{{ store.saveError() }}</span>
         } @else if (!store.isDirty() && store.post()) {
-          <span class="text-xs text-gray-400">Saved</span>
+          <span class="text-xs opacity-40">Saved</span>
         }
 
         <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
@@ -37,7 +75,6 @@ import { ContentTabComponent } from './tabs/content-tab.component';
         </button>
         <button
           mat-flat-button
-          color="primary"
           (click)="store.publish()"
           [disabled]="!store.canPublish() || store.isSaving()"
         >
@@ -48,36 +85,43 @@ import { ContentTabComponent } from './tabs/content-tab.component';
       <!-- Split pane -->
       <div class="flex flex-1 overflow-hidden">
         <!-- Left pane: editing -->
-        <div class="w-1/2 flex flex-col overflow-hidden border-r border-gray-200">
-          <mat-tab-group class="flex-1 overflow-hidden" animationDuration="0">
+        <div
+          class="w-1/2 flex flex-col overflow-hidden border-r"
+          style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+        >
+          <mat-tab-group
+            class="flex flex-col flex-1 overflow-hidden"
+            animationDuration="0"
+          >
             <mat-tab label="Content">
-              <div class="h-full overflow-y-auto">
-                <folio-content-tab />
-              </div>
-            </mat-tab>
-            <mat-tab label="Media">
-              <div class="p-4 text-gray-400">Media</div>
+              <folio-content-tab />
             </mat-tab>
             <mat-tab label="Metadata">
-              <div class="p-4 text-gray-400">Metadata</div>
+              <folio-metadata-tab />
             </mat-tab>
             <mat-tab label="SEO">
-              <div class="p-4 text-gray-400">SEO</div>
+              <folio-seo-tab />
+            </mat-tab>
+            <mat-tab label="Media">
+              <folio-media-tab />
             </mat-tab>
           </mat-tab-group>
         </div>
 
         <!-- Right pane: preview -->
         <div class="w-1/2 flex flex-col overflow-hidden">
-          <mat-tab-group class="flex-1 overflow-hidden" animationDuration="0">
+          <mat-tab-group
+            class="flex flex-col flex-1 overflow-hidden"
+            animationDuration="0"
+          >
             <mat-tab label="Article">
-              <div class="p-4 text-gray-400">Article</div>
+              <folio-article-preview />
             </mat-tab>
             <mat-tab label="Card">
-              <div class="p-4 text-gray-400">Card</div>
+              <folio-card-preview />
             </mat-tab>
             <mat-tab label="SEO">
-              <div class="p-4 text-gray-400">SEO</div>
+              <folio-seo-preview />
             </mat-tab>
           </mat-tab-group>
         </div>
