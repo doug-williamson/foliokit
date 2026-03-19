@@ -27,7 +27,7 @@ export class MarkdownComponent {
     return raw.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, alt, token) => {
       const entry = media[token];
       if (!entry) return _match;
-      return `![${alt}](${entry.url})`;
+      return `![${alt}](${entry.downloadUrl})`;
     });
   });
 }
