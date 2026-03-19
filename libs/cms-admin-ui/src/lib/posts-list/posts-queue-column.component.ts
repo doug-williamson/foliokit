@@ -6,6 +6,7 @@ import {
   CdkDrag,
   CdkDragDrop,
   CdkDragHandle,
+  CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { BlogPost } from '@foliokit/cms-core';
@@ -14,7 +15,7 @@ import { BlogPost } from '@foliokit/cms-core';
   selector: 'folio-posts-queue-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatIconModule, CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [DatePipe, MatCardModule, MatIconModule, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder],
   host: { class: 'contents' },
   styles: [`
     .cdk-drag-preview {
