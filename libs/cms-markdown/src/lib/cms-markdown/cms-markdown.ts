@@ -7,7 +7,7 @@ import type { EmbeddedMediaEntry } from '@foliokit/cms-core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [NgxMarkdownComponent],
-  template: `<markdown class="prose prose-neutral max-w-none" [data]="processedContent()" />`,
+  template: `<markdown class="prose prose-neutral dark:prose-invert max-w-none" [data]="processedContent()" />`,
   styles: [`
     :host { display: block; }
     :host ::ng-deep img { max-width: 100%; height: auto; border-radius: 0.5rem; }
