@@ -1,19 +1,14 @@
 <folio-app-shell>
   <mat-nav-list shellNav>
-    @if (siteConfig()) {
-      @for (item of navItems(); track item.url) {
-        <a
-          mat-list-item
-          [routerLink]="item.url"
-          routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: item.url === '/' }"
-        >
-          @if (item.icon) {
-            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          }
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      }
+    @for (item of navItems; track item.url) {
+      <a
+        mat-list-item
+        [routerLink]="item.url"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span matListItemTitle>{{ item.label }}</span>
+      </a>
     }
   </mat-nav-list>
 

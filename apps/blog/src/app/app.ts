@@ -1,14 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { SiteConfigService } from '@foliokit/cms-core';
 import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
 @Component({
@@ -30,18 +23,15 @@ import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
       useFactory: (): ShellConfig => ({
         appName: 'FolioKit Blog',
         showAuth: false,
+        nav: [
+          { label: 'Home', url: '/' },
+          { label: 'Posts', url: '/posts' },
+        ],
       }),
     },
   ],
 })
 export class App {
-  private readonly siteConfigService = inject(SiteConfigService);
-
-  protected readonly siteConfig = toSignal(
-    this.siteConfigService.getDefaultSiteConfig(),
-  );
-
-  protected readonly navItems = computed(
-    () => this.siteConfig()?.nav ?? [],
-  );
+  private readonly config = inject(SHELL_CONFIG);
+  protected readonly navItems = this.config.nav ?? [];
 }

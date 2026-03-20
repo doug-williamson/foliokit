@@ -3,7 +3,7 @@
   "version": "0.3.7",
   "license": "MIT",
   "scripts": {
-    "start:blog": "nx serve blog --port=4201",
+    "start:blog": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 nx serve blog --port=4201",
     "start:docs": "nx serve docs --port=4202",
     "start:admin": "nx serve admin --port=4203",
     "build:blog": "nx build blog",
