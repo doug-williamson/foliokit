@@ -1,15 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { map } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { PostService } from '@foliokit/cms-core';
+import type { BlogPost } from '@foliokit/cms-core';
 
 @Component({
   selector: 'app-post-list',
@@ -19,14 +19,10 @@ import { PostService } from '@foliokit/cms-core';
   imports: [RouterLink, DatePipe, MatCardModule, MatButtonModule],
 })
 export class PostListComponent {
-  private readonly postService = inject(PostService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly posts = toSignal(
-    this.postService.getPublishedPosts(),
-    { initialValue: undefined },
+    this.route.data.pipe(map((d) => d['posts'] as BlogPost[])),
+    { initialValue: this.route.snapshot.data['posts'] as BlogPost[] },
   );
-
-  protected readonly loading = computed(() => this.posts() === undefined);
-
-  protected readonly skeletons = [1, 2, 3];
 }

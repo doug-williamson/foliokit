@@ -1,0 +1,10 @@
+runConfig:
+  concurrency: 80
+  minInstances: 0
+
+env:
+  - variable: FIREBASE_PROJECT_ID
+    value: foliokit-prod
+    availability:
+      - BUILD
+      - RUNTIME

@@ -1,5 +1,4 @@
 import { inject } from '@angular/core';
-import { Timestamp } from 'firebase/firestore';
 import {
   patchState,
   signalStore,
@@ -35,7 +34,7 @@ const initialState: PostEditorState = {
 };
 
 function blankPost(): BlogPost {
-  const now = Timestamp.now();
+  const now = Date.now();
   return {
     id: '',
     slug: '',
@@ -165,7 +164,7 @@ export const PostEditorStore = signalStore(
       publish(): void {
         const post = store.post();
         if (!post) return;
-        const now = Timestamp.now();
+        const now = Date.now();
         patchState(store, {
           post: { ...post, status: 'published', publishedAt: now },
           isDirty: true,

@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import {
   collection,
   doc,
-  DocumentData,
   getDoc,
   getDocs,
   limit,
@@ -18,6 +17,7 @@ import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
+import { normalizePost } from '../utils/normalize-post';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
@@ -31,7 +31,9 @@ export class PostService {
       orderBy('publishedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
+      map((snapshot) =>
+        snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
+      ),
       catchError((err) => {
         console.error('[PostService.getPublishedPosts]', err);
         return of([]);
@@ -50,7 +52,7 @@ export class PostService {
       map((snapshot) => {
         if (snapshot.empty) return null;
         const d = snapshot.docs[0];
-        return this.toPost(d.id, d.data());
+        return normalizePost({ id: d.id, ...d.data() });
       }),
       catchError((err) => {
         console.error('[PostService.getPostBySlug]', err);
@@ -67,7 +69,9 @@ export class PostService {
       orderBy('publishedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
+      map((snapshot) =>
+        snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
+      ),
       catchError((err) => {
         console.error('[PostService.getPostsByTag]', err);
         return of([]);
@@ -81,7 +85,9 @@ export class PostService {
       orderBy('updatedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
-      map((snapshot) => snapshot.docs.map((d) => this.toPost(d.id, d.data()))),
+      map((snapshot) =>
+        snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
+      ),
       catchError((err) => {
         console.error('[PostService.getAllPosts]', err);
         return of([]);
@@ -93,7 +99,7 @@ export class PostService {
     return from(getDoc(doc(this.firestore, 'posts', id))).pipe(
       map((snapshot) => {
         if (!snapshot.exists()) throw new Error(`Post not found: ${id}`);
-        return this.toPost(snapshot.id, snapshot.data());
+        return normalizePost({ id: snapshot.id, ...snapshot.data() });
       }),
     );
   }
@@ -104,15 +110,18 @@ export class PostService {
   }
 
   savePost(post: BlogPost): Observable<BlogPost> {
-    const now = Timestamp.now();
+    const nowMs = Date.now();
+    const nowTs = Timestamp.fromMillis(nowMs);
 
     if (post.id === '') {
       const newId = doc(collection(this.firestore, 'posts')).id;
-      const createdAt = now;
-      const updatedAt = now;
-      const payload = { ...post, id: newId, createdAt, updatedAt };
-      return from(setDoc(doc(this.firestore, 'posts', newId), payload)).pipe(
-        map(() => payload),
+      const savedPost: BlogPost = { ...post, id: newId, createdAt: nowMs, updatedAt: nowMs };
+      // Write Timestamp objects to Firestore for proper ordering/querying
+      const firestorePayload = { ...savedPost, createdAt: nowTs, updatedAt: nowTs };
+      return from(
+        setDoc(doc(this.firestore, 'posts', newId), firestorePayload),
+      ).pipe(
+        map(() => savedPost),
         catchError((err) => {
           console.error('[PostService.savePost/create]', err);
           throw err;
@@ -120,37 +129,16 @@ export class PostService {
       );
     }
 
-    const updatedAt = now;
-    const payload = { ...post, updatedAt };
-    return from(updateDoc(doc(this.firestore, 'posts', post.id), payload)).pipe(
-      map(() => payload),
+    const savedPost: BlogPost = { ...post, updatedAt: nowMs };
+    const firestorePayload = { ...savedPost, updatedAt: nowTs };
+    return from(
+      updateDoc(doc(this.firestore, 'posts', post.id), firestorePayload),
+    ).pipe(
+      map(() => savedPost),
       catchError((err) => {
         console.error('[PostService.savePost/update]', err);
         throw err;
       }),
     );
-  }
-
-  private toPost(id: string, data: DocumentData): BlogPost {
-    return {
-      id,
-      slug: data['slug'],
-      title: data['title'],
-      subtitle: data['subtitle'],
-      status: data['status'],
-      content: data['content'],
-      excerpt: data['excerpt'],
-      thumbnailUrl: data['thumbnailUrl'],
-      thumbnailAlt: data['thumbnailAlt'],
-      tags: data['tags'] ?? [],
-      authorId: data['authorId'],
-      readingTimeMinutes: data['readingTimeMinutes'],
-      embeddedMedia: data['embeddedMedia'] ?? {},
-      seo: data['seo'] ?? {},
-      publishedAt: data['publishedAt'],
-      scheduledPublishAt: data['scheduledPublishAt'],
-      updatedAt: data['updatedAt'],
-      createdAt: data['createdAt'],
-    };
   }
 }
