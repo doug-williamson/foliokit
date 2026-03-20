@@ -26,7 +26,7 @@ import { BlogPost } from '@foliokit/cms-core';
             (click)="postSelected.emit(post.id)"
           >
             <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
-            <span class="shrink-0 text-xs opacity-50">{{ post.updatedAt.toDate() | date: 'mediumDate' }}</span>
+            <span class="shrink-0 text-xs opacity-50">{{ post.updatedAt | date: 'mediumDate' }}</span>
           </button>
         } @empty {
           <div class="py-10 text-center text-sm opacity-40">No drafts</div>

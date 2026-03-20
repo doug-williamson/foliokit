@@ -47,7 +47,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
           <!-- Meta row: Author · date · read time -->
           <p class="text-sm opacity-50 mb-8">
             Author
-            · {{ post.publishedAt.toDate() | date: 'MMM d, yyyy' }}
+            · {{ post.publishedAt | date: 'MMM d, yyyy' }}
             @if (post.readingTimeMinutes) {
               · {{ post.readingTimeMinutes }} min read
             }

@@ -3,7 +3,7 @@
 
 .folio-prose {
   color: var(--folio-blog-text-primary);
-  font-family: var(--folio-blog-font-sans);
+  font-family: var(--folio-blog-font-serif);
   font-size: 1.0625rem;
   line-height: 1.8;
   word-break: break-word;
@@ -22,14 +22,19 @@
   }
 
   h1 { font-size: 2rem; margin-top: 0; }
-  h2 { font-size: 1.5rem; }
+  h2 {
+    font-size: 1.5rem;
+    border-top: 1px solid var(--folio-blog-border);
+    padding-top: 1.5em;
+    margin-top: 2.5em;
+  }
   h3 { font-size: 1.25rem; }
   h4 { font-size: 1.0625rem; }
 
   // ── Body text ───────────────────────────────────────────────────────────────
   p {
     margin-top: 0;
-    margin-bottom: 1.25em;
+    margin-bottom: 1.4em;
   }
 
   // ── Links ───────────────────────────────────────────────────────────────────
@@ -79,7 +84,8 @@
   code {
     font-family: var(--folio-blog-font-mono);
     font-size: 0.875em;
-    background-color: color-mix(in srgb, var(--folio-blog-accent) 10%, var(--folio-blog-surface-raised));
+    background-color: color-mix(in srgb, var(--folio-blog-accent) 14%, var(--folio-blog-surface-raised));
+    border: 1px solid var(--folio-blog-border);
     color: var(--folio-blog-text-primary);
     border-radius: 0.25rem;
     padding: 0.125em 0.375em;
@@ -102,6 +108,7 @@
       font-family: inherit;
       font-size: inherit;
       background: none;
+      border: none;
       color: inherit;
       padding: 0;
       border-radius: 0;

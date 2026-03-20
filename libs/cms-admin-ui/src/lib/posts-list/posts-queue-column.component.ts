@@ -61,7 +61,7 @@ import { BlogPost } from '@foliokit/cms-core';
             >
               <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
               <span class="shrink-0 text-xs opacity-50">
-                {{ post.scheduledPublishAt?.toDate() | date: 'mediumDate' }}
+                {{ post.scheduledPublishAt | date: 'mediumDate' }}
               </span>
             </button>
 
