@@ -1,5 +1,3 @@
-import type { Timestamp } from 'firebase/firestore';
-
 export interface SeoMeta {
   title?: string;
   description?: string;
@@ -32,8 +30,12 @@ export interface BlogPost {
   readingTimeMinutes?: number;
   embeddedMedia: Record<string, EmbeddedMediaEntry>;
   seo: SeoMeta;
-  publishedAt: Timestamp;
-  scheduledPublishAt?: Timestamp;
-  updatedAt: Timestamp;
-  createdAt: Timestamp;
+  /** Unix milliseconds. Stored as Firestore Timestamp but always normalized on read. */
+  publishedAt: number;
+  /** Unix milliseconds, optional. */
+  scheduledPublishAt?: number;
+  /** Unix milliseconds. */
+  updatedAt: number;
+  /** Unix milliseconds. */
+  createdAt: number;
 }

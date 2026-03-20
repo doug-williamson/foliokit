@@ -11,7 +11,7 @@
  * entry files (e.g. apps/blog/src/server.ts) — it is intentionally excluded
  * from the @foliokit/cms-core barrel export.
  */
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 
 let initialized = false;
 
@@ -19,6 +19,7 @@ export function initAdminApp(): admin.app.App {
   if (!initialized) {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
+      projectId: process.env['FIREBASE_PROJECT_ID'],
     });
     initialized = true;
   }

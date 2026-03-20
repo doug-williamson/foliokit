@@ -8,8 +8,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
-import { PostService } from '@foliokit/cms-core';
+import { map } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
+import type { BlogPost } from '@foliokit/cms-core';
 
 @Component({
   selector: 'app-post-detail',
@@ -20,15 +21,12 @@ import { MarkdownComponent } from '@foliokit/cms-markdown';
 })
 export class PostDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly postService = inject(PostService);
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
 
-  private readonly slug = this.route.snapshot.paramMap.get('slug') ?? '';
-
   protected readonly post = toSignal(
-    this.postService.getPostBySlug(this.slug),
-    { initialValue: undefined },
+    this.route.data.pipe(map((d) => d['post'] as BlogPost | null)),
+    { initialValue: this.route.snapshot.data['post'] as BlogPost | null },
   );
 
   constructor() {

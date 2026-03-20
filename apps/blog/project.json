@@ -25,7 +25,8 @@
         "ssr": {
           "entry": "apps/blog/src/server.ts"
         },
-        "outputMode": "server"
+        "outputMode": "server",
+        "externalDependencies": ["firebase-admin"]
       },
       "configurations": {
         "production": {

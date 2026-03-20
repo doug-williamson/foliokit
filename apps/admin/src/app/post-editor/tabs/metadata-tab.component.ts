@@ -13,7 +13,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Timestamp } from 'firebase/firestore';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
 import { BlogPost } from '@foliokit/cms-core';
 
@@ -145,17 +144,17 @@ export class MetadataTabComponent {
     );
   }
 
-  toDate(ts: Timestamp | null | undefined): Date | null {
-    return ts ? ts.toDate() : null;
+  toDate(ms: number | null | undefined): Date | null {
+    return ms ? new Date(ms) : null;
   }
 
   onPublishedAtChange(date: Date | null, post: BlogPost): void {
     if (!date) return;
-    this.store.updateField('publishedAt', Timestamp.fromDate(date));
+    this.store.updateField('publishedAt', date.getTime());
   }
 
   onScheduledAtChange(date: Date | null, post: BlogPost): void {
     if (!date) return;
-    this.store.updateField('scheduledPublishAt', Timestamp.fromDate(date));
+    this.store.updateField('scheduledPublishAt', date.getTime());
   }
 }

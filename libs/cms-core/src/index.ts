@@ -11,3 +11,5 @@ export * from './lib/services/auth.service';
 export * from './lib/services/post.service';
 export * from './lib/services/site-config.service';
 export * from './lib/services/tag.service';
+export * from './lib/tokens/post-service.token';
+export * from './lib/utils/normalize-post';
