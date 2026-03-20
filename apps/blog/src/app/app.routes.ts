@@ -6,17 +6,13 @@ export const appRoutes: Route[] = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'home',
-  },
-  {
-    path: 'home',
     loadComponent: () =>
-      import('./home/home.component').then((m) => m.HomeComponent),
+      import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'posts',
     loadComponent: () =>
-      import('./post-list/post-list.component').then(
+      import('./features/post-list/post-list.component').then(
         (m) => m.PostListComponent,
       ),
     resolve: { posts: postsResolver },
@@ -24,16 +20,13 @@ export const appRoutes: Route[] = [
   {
     path: 'posts/:slug',
     loadComponent: () =>
-      import('./post-detail/post-detail.component').then(
+      import('./features/post-detail/post-detail.component').then(
         (m) => m.PostDetailComponent,
       ),
     resolve: { post: postResolver },
   },
   {
     path: '**',
-    loadComponent: () =>
-      import('./not-found/not-found.component').then(
-        (m) => m.NotFoundComponent,
-      ),
+    redirectTo: '',
   },
 ];

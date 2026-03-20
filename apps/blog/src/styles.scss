@@ -1,4 +1,9 @@
 @use '@angular/material' as mat;
+@use './styles/tokens';
+@use './styles/prose';
+
+// Google Fonts — Lora (serif, used for headings via --folio-blog-font-serif)
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
