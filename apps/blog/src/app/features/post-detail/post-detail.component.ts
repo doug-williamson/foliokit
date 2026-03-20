@@ -113,29 +113,31 @@ import type { BlogPost } from '@foliokit/cms-core';
             }
           </div>
 
-          <!-- Thumbnail -->
-          @if (post()!.thumbnailUrl) {
-            <div
-              class="w-full mb-8 overflow-hidden rounded-[var(--folio-blog-radius-card)]"
-              style="aspect-ratio: 16/9; max-height: 480px"
-            >
-              <img
-                [src]="post()!.thumbnailUrl"
-                [alt]="post()!.thumbnailAlt || post()!.title"
-                class="w-full h-full object-cover"
+          <!-- Surface card -->
+          <div class="mt-6 rounded-2xl shadow-sm bg-white dark:bg-zinc-900 p-6 md:p-10">
+
+            <!-- Thumbnail -->
+            @if (post()!.thumbnailUrl) {
+              <div
+                class="w-full overflow-hidden rounded-[var(--folio-blog-radius-card)]"
+                style="aspect-ratio: 16/9; max-height: 480px"
+              >
+                <img
+                  [src]="post()!.thumbnailUrl"
+                  [alt]="post()!.thumbnailAlt || post()!.title"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+            }
+
+            <!-- Article body -->
+            <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+              <folio-markdown
+                [content]="post()!.content"
+                [embeddedMedia]="post()!.embeddedMedia"
               />
             </div>
-          }
 
-          <!-- Divider -->
-          <hr style="border-color: var(--folio-blog-border); margin-bottom: 2rem" />
-
-          <!-- Article body -->
-          <div class="folio-prose">
-            <folio-markdown
-              [content]="post()!.content"
-              [embeddedMedia]="post()!.embeddedMedia"
-            />
           </div>
         </article>
       }

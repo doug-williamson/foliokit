@@ -1,6 +1,6 @@
 {
   "name": "foliokit",
-  "version": "0.3.7",
+  "version": "0.4.2",
   "license": "MIT",
   "scripts": {
     "start:blog": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 nx serve blog --port=4201",
