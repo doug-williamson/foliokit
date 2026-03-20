@@ -71,7 +71,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
             <div class="flex items-center justify-between mt-4 text-xs opacity-50">
               <span>{{ post.authorId ?? 'Unknown author' }}</span>
               @if (post.publishedAt) {
-                <span>{{ post.publishedAt.toDate() | date: 'MMM d, y' }}</span>
+                <span>{{ post.publishedAt | date: 'MMM d, y' }}</span>
               }
             </div>
           </mat-card-content>
