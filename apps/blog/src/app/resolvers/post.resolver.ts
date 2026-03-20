@@ -1,4 +1,5 @@
-import { inject, TransferState } from '@angular/core';
+import { inject, PLATFORM_ID, TransferState } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
 import { ResolveFn } from '@angular/router';
 import { tap, take } from 'rxjs/operators';
 import {
@@ -10,6 +11,7 @@ import type { BlogPost } from '@foliokit/cms-core';
 export const postResolver: ResolveFn<BlogPost | null> = (route) => {
   const transferState = inject(TransferState);
   const service = inject(BLOG_POST_SERVICE);
+  const platformId = inject(PLATFORM_ID);
   const slug = route.paramMap.get('slug') ?? '';
 
   if (transferState.hasKey(POST_TRANSFER_KEY)) {
@@ -20,6 +22,10 @@ export const postResolver: ResolveFn<BlogPost | null> = (route) => {
 
   return service.getPostBySlug(slug).pipe(
     take(1),
-    tap((post) => transferState.set(POST_TRANSFER_KEY, post)),
+    tap((post) => {
+      if (isPlatformServer(platformId)) {
+        transferState.set(POST_TRANSFER_KEY, post);
+      }
+    }),
   );
 };
