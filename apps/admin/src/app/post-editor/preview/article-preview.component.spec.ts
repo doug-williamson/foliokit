@@ -230,3 +230,33 @@ describe('ArticlePreviewComponent — reactivity', () => {
     expect(fixture.debugElement.query(By.css('h1'))).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// publishedAt date rendering
+// ---------------------------------------------------------------------------
+
+describe('ArticlePreviewComponent — publishedAt date', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('renders publishedAt as a sane date (not in the 2090s)', () => {
+    const { fixture, postSignal } = setup();
+    postSignal.set(makePost({ publishedAt: Date.now() }));
+    fixture.detectChanges();
+
+    const metaText: string = fixture.debugElement.query(By.css('p')).nativeElement.textContent;
+    expect(metaText).not.toMatch(/209\d/);
+    expect(metaText).toContain('2026');
+  });
+
+  it('formats publishedAt as "MMM d, yyyy"', () => {
+    const { fixture, postSignal } = setup();
+    // Use a fixed, known timestamp: Jan 15, 2026 00:00:00 UTC
+    const jan15 = new Date('2026-01-15T12:00:00Z').getTime();
+    postSignal.set(makePost({ publishedAt: jan15 }));
+    fixture.detectChanges();
+
+    const metaText: string = fixture.debugElement.query(By.css('p')).nativeElement.textContent;
+    expect(metaText).toContain('2026');
+    expect(metaText).toMatch(/Jan\s+\d+,\s+2026/);
+  });
+});
