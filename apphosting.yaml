@@ -45,6 +45,11 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  # Angular SSR SSRF protection — allow the App Hosting hostname(s)
+  - variable: NG_ALLOWED_HOSTS
+    value: foliokit-6f974--foliokit-6f974.us-central1.hosted.app
+    availability:
+      - RUNTIME
   # Service account key pulled from Secret Manager at runtime
   - variable: GOOGLE_APPLICATION_CREDENTIALS
     secret: google-application-credentials
