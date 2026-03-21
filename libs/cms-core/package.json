@@ -1,10 +1,19 @@
 {
   "name": "@foliokit/cms-core",
-  "version": "0.4.0",
+  "version": "0.4.2",
+  "description": "Core Firebase services, models, and tokens for FolioKit CMS",
+  "keywords": ["angular", "cms", "foliokit", "firebase", "firestore"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dougwilliamson/foliokit"
+  },
   "publishConfig": { "access": "public" },
   "peerDependencies": {
-    "@angular/common": "^21.1.0",
-    "@angular/core": "^21.1.0"
+    "@angular/common": "^21.2.4",
+    "@angular/core": "^21.2.4",
+    "firebase": "^11.10.0",
+    "rxjs": "~7.8.0"
   },
   "sideEffects": false
 }
