@@ -5,6 +5,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import type { Tag } from '@foliokit/cms-core';
 
 @Component({
   selector: 'app-tag-filter',
@@ -19,13 +20,13 @@ import {
       >
         All
       </button>
-      @for (tag of tags(); track tag) {
+      @for (tag of tags(); track tag.id) {
         <button
           class="tag-chip"
-          [class.tag-chip--active]="activeTag() === tag"
-          (click)="select(tag)"
+          [class.tag-chip--active]="activeTag() === tag.id"
+          (click)="select(tag.id)"
         >
-          {{ tag }}
+          {{ tag.label }}
         </button>
       }
     </div>
@@ -68,7 +69,7 @@ import {
   `],
 })
 export class TagFilterComponent {
-  readonly tags = input.required<string[]>();
+  readonly tags = input.required<Tag[]>();
   readonly tagSelected = output<string | null>();
 
   protected readonly activeTag = signal<string | null>(null);
