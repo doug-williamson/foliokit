@@ -164,6 +164,8 @@ export const PostEditorStore = signalStore(
       publish(): void {
         const post = store.post();
         if (!post) return;
+        const prevStatus = post.status;
+        const prevPublishedAt = post.publishedAt;
         const now = Date.now();
         patchState(store, {
           post: { ...post, status: 'published', publishedAt: now },
@@ -183,7 +185,14 @@ export const PostEditorStore = signalStore(
           error: (err: unknown) => {
             const message =
               err instanceof Error ? err.message : 'Publish failed';
-            patchState(store, { isSaving: false, saveError: message });
+            const current = store.post();
+            patchState(store, {
+              post: current
+                ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
+                : current,
+              isSaving: false,
+              saveError: message,
+            });
           },
         });
       },
@@ -210,7 +219,7 @@ export const PostEditorStore = signalStore(
         .subscribe(() => store.save());
 
       watchState(store, (state) => {
-        if (state.isDirty && state.post?.status === 'draft') {
+        if (state.isDirty && state.post?.status === 'draft' && !state.isSaving) {
           trigger$.next('save');
         }
       });
