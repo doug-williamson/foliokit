@@ -1,39 +1,45 @@
-import type { Timestamp } from 'firebase/firestore';
-import type { SeoMeta } from './post.model';
+import type { SeoMeta, EmbeddedMediaEntry } from './post.model';
+import type { SocialPlatform } from './site-config.model';
 
-export interface CmsPage {
+export interface CmsPageBase {
   id: string;
+  type: 'about' | 'links';
   slug: string;
   title: string;
-  status: 'published' | 'draft';
-  content?: string;
+  status: 'draft' | 'published';
   seo: SeoMeta;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  /** Unix milliseconds — same convention as BlogPost. */
+  updatedAt: number;
+  /** Unix milliseconds. */
+  createdAt: number;
 }
 
-export interface LinktreeLink {
+export interface AboutPage extends CmsPageBase {
+  type: 'about';
+  heroImageUrl?: string;
+  heroImageAlt?: string;
+  body: string;
+  contentVersion: number;
+  embeddedMedia: Record<string, EmbeddedMediaEntry>;
+}
+
+export interface LinksLink {
+  id: string;
   label: string;
   url: string;
   icon?: string;
+  platform?: SocialPlatform;
+  highlighted?: boolean;
   order: number;
 }
 
-export interface HomePage extends CmsPage {
-  heroHeadline?: string;
-  heroSubheadline?: string;
-  heroCta?: { label: string; href: string };
-  featuredPostIds?: string[];
-}
-
-export interface AboutPage extends CmsPage {
+export interface LinksPage extends CmsPageBase {
+  type: 'links';
+  avatarUrl?: string;
+  avatarAlt?: string;
+  headline?: string;
   bio?: string;
-  skills?: string[];
-  avatarUrl?: string;
+  links: LinksLink[];
 }
 
-export interface LinktreePage extends CmsPage {
-  links: LinktreeLink[];
-  avatarUrl?: string;
-  displayName?: string;
-}
+export type CmsPageUnion = AboutPage | LinksPage;

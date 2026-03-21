@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { postsResolver } from './resolvers/posts.resolver';
 import { postResolver } from './resolvers/post.resolver';
+import { pageResolver } from './resolvers/page.resolver';
 
 export const appRoutes: Route[] = [
   {
@@ -24,6 +25,14 @@ export const appRoutes: Route[] = [
         (m) => m.PostDetailComponent,
       ),
     resolve: { post: postResolver },
+  },
+  {
+    path: ':slug',
+    loadComponent: () =>
+      import('./features/page-detail/page-detail.component').then(
+        (m) => m.PageDetailComponent,
+      ),
+    resolve: { page: pageResolver },
   },
   {
     path: '**',

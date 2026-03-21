@@ -8,8 +8,19 @@ export interface NavItem {
   icon?: string;
 }
 
+export type SocialPlatform =
+  | 'twitter'
+  | 'instagram'
+  | 'github'
+  | 'linkedin'
+  | 'youtube'
+  | 'tiktok'
+  | 'facebook'
+  | 'email'
+  | 'website';
+
 export interface SocialLink {
-  platform: string;
+  platform: SocialPlatform;
   url: string;
   label?: string;
   icon?: string;
