@@ -25,7 +25,7 @@ import type { AboutPage } from '@foliokit/cms-core';
           [alt]="page().heroImageAlt || page().title"
         />
       }
-      <markdown [data]="page().body" class="prose dark:prose-invert max-w-none" />
+      <markdown [data]="page().body" class="folio-prose" />
     </article>
   `,
 })

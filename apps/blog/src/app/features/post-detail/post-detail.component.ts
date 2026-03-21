@@ -5,11 +5,14 @@ import {
   effect,
   inject,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
-import type { BlogPost } from '@foliokit/cms-core';
+import type { BlogPost, Tag } from '@foliokit/cms-core';
+import { TagService } from '@foliokit/cms-core';
 
 @Component({
   selector: 'app-post-detail',
@@ -68,12 +71,7 @@ import type { BlogPost } from '@foliokit/cms-core';
 
           <!-- Subtitle -->
           @if (post()!.subtitle) {
-            <p
-              class="text-lg md:text-xl leading-relaxed mb-5"
-              style="color: var(--folio-blog-text-secondary)"
-            >
-              {{ post()!.subtitle }}
-            </p>
+            <p class="folio-post-subtitle">{{ post()!.subtitle }}</p>
           }
 
           <!-- Meta row -->
@@ -106,7 +104,7 @@ import type { BlogPost } from '@foliokit/cms-core';
                     class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
                     style="background-color: color-mix(in srgb, var(--folio-blog-accent) 12%, transparent); color: var(--folio-blog-accent)"
                   >
-                    {{ tag }}
+                    {{ tagLookup().get(tag)?.label ?? tag }}
                   </a>
                 }
               </div>
@@ -131,7 +129,7 @@ import type { BlogPost } from '@foliokit/cms-core';
             }
 
             <!-- Article body -->
-            <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+            <div class="mt-8 folio-prose">
               <folio-markdown
                 [content]="post()!.content"
                 [embeddedMedia]="post()!.embeddedMedia"
@@ -149,6 +147,16 @@ export class PostDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly tagService = inject(TagService);
+
+  private readonly fetchedTags = toSignal(
+    this.tagService.getAllTags().pipe(take(1)),
+    { initialValue: [] as Tag[] },
+  );
+
+  protected readonly tagLookup = computed(
+    () => new Map(this.fetchedTags().map((t) => [t.id, t])),
+  );
 
   protected readonly post = computed(
     () => this.route.snapshot.data['post'] as BlogPost | null,

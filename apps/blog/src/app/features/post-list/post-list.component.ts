@@ -7,8 +7,11 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import type { BlogPost } from '@foliokit/cms-core';
+import { take } from 'rxjs/operators';
+import type { BlogPost, Tag } from '@foliokit/cms-core';
+import { TagService } from '@foliokit/cms-core';
 import { PostCardComponent } from './post-card.component';
 import { TagFilterComponent } from './tag-filter.component';
 
@@ -24,11 +27,11 @@ import { TagFilterComponent } from './tag-filter.component';
       style="margin-inline: auto"
     >
       <!-- Tag filter -->
-      @if (allTags().length > 0) {
+      @if (allTagOptions().length > 0) {
         <div class="mb-8" [style.padding-bottom]="'0.5rem'">
           <app-tag-filter
             #tagFilter
-            [tags]="allTags()"
+            [tags]="allTagOptions()"
             (tagSelected)="onTagSelected($event)"
           />
         </div>
@@ -68,6 +71,7 @@ import { TagFilterComponent } from './tag-filter.component';
 export class PostListComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly tagService = inject(TagService);
 
   @ViewChild('tagFilter') private tagFilterRef?: TagFilterComponent;
 
@@ -79,14 +83,28 @@ export class PostListComponent implements AfterViewInit {
     (this.route.snapshot.queryParamMap.get('tag') ?? null),
   );
 
-  protected readonly allTags = computed(() => {
-    const tagSet = new Set<string>();
+  private readonly fetchedTags = toSignal(
+    this.tagService.getAllTags().pipe(take(1)),
+    { initialValue: [] as Tag[] },
+  );
+
+  private readonly tagLookup = computed(
+    () => new Map(this.fetchedTags().map((t) => [t.id, t])),
+  );
+
+  protected readonly allTagOptions = computed<Tag[]>(() => {
+    const lookup = this.tagLookup();
+    const seen = new Set<string>();
+    const options: Tag[] = [];
     for (const post of this.posts()) {
-      for (const tag of post.tags) {
-        tagSet.add(tag);
+      for (const id of post.tags) {
+        if (!seen.has(id)) {
+          seen.add(id);
+          options.push(lookup.get(id) ?? { id, label: id, slug: id });
+        }
       }
     }
-    return Array.from(tagSet).sort();
+    return options.sort((a, b) => a.label.localeCompare(b.label));
   });
 
   protected readonly filteredPosts = computed(() => {

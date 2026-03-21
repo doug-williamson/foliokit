@@ -1,8 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { take } from 'rxjs/operators';
+import { SiteConfigService } from '@foliokit/cms-core';
 import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
+import type { NavItem } from '@foliokit/cms-core';
+
+const DEFAULT_NAV: NavItem[] = [
+  { label: 'Home', url: '/' },
+  { label: 'Posts', url: '/posts' },
+  { label: 'About', url: '/about' },
+  { label: 'Links', url: '/links' },
+];
 
 @Component({
   selector: 'app-root',
@@ -23,15 +34,20 @@ import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
       useFactory: (): ShellConfig => ({
         appName: 'FolioKit Blog',
         showAuth: false,
-        nav: [
-          { label: 'Home', url: '/' },
-          { label: 'Posts', url: '/posts' },
-        ],
+        nav: DEFAULT_NAV,
       }),
     },
   ],
 })
 export class App {
-  private readonly config = inject(SHELL_CONFIG);
-  protected readonly navItems = this.config.nav ?? [];
+  private readonly siteConfigService = inject(SiteConfigService);
+
+  private readonly siteConfig = toSignal(
+    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
+    { initialValue: null },
+  );
+
+  protected readonly navItems = computed(
+    () => this.siteConfig()?.nav ?? DEFAULT_NAV,
+  );
 }
