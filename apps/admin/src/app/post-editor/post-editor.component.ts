@@ -20,7 +20,6 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
   selector: 'admin-post-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [PostEditorStore],
   imports: [
     MatButtonModule,
     MatTabsModule,

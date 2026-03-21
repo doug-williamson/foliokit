@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { ShellLayoutComponent } from './shell-layout/shell-layout.component';
+import { PostEditorStore } from '@foliokit/cms-admin-ui';
 
 export const appRoutes: Route[] = [
   {
@@ -24,12 +25,14 @@ export const appRoutes: Route[] = [
         path: 'posts/new',
         loadComponent: () =>
           import('./post-editor/post-editor.component').then((m) => m.PostEditorComponent),
+        providers: [PostEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
       {
         path: 'posts/:id/edit',
         loadComponent: () =>
           import('./post-editor/post-editor.component').then((m) => m.PostEditorComponent),
+        providers: [PostEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
       {
