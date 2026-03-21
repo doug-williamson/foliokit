@@ -15,6 +15,7 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
         appName: 'FolioKit Admin',
         nav: [
           { label: 'Posts', url: '/posts' },
+          { label: 'Pages', url: '/pages' },
           { label: 'Site Config', url: '/site-config' },
         ],
       },
@@ -25,6 +26,9 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
       <mat-nav-list shellNav>
         <a mat-list-item routerLink="/posts" routerLinkActive="active-link">
           <span matListItemTitle>Posts</span>
+        </a>
+        <a mat-list-item routerLink="/pages" routerLinkActive="active-link">
+          <span matListItemTitle>Pages</span>
         </a>
         <a mat-list-item routerLink="/site-config" routerLinkActive="active-link">
           <span matListItemTitle>Site Config</span>

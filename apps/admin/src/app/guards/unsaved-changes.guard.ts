@@ -1,7 +1,10 @@
 import { CanDeactivateFn } from '@angular/router';
-import { PostEditorComponent } from '../post-editor/post-editor.component';
 
-export const unsavedChangesGuard: CanDeactivateFn<PostEditorComponent> = (
+export interface HasDirtyStore {
+  store: { isDirty: () => boolean };
+}
+
+export const unsavedChangesGuard: CanDeactivateFn<HasDirtyStore> = (
   component,
 ) => {
   if (!component.store.isDirty()) return true;
