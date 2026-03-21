@@ -1,4 +1,10 @@
 {
+  "apphosting": [
+    {
+      "backendId": "foliokit-6f974",
+      "rootDir": "."
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules"
   },
