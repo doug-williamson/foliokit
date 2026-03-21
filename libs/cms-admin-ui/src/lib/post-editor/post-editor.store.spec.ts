@@ -288,10 +288,12 @@ describe('PostEditorStore.publish()', () => {
     expect(store.isSaving()).toBe(false);
   });
 
-  it('on error: sets saveError', () => {
+  it('on error: sets saveError, rolls back status to pre-publish value, restores publishedAt', () => {
     const { store, postServiceStub } = setup();
     store.initNew();
     store.updateField('title', 'My Post');
+
+    const prevPublishedAt = store.post()!.publishedAt;
 
     postServiceStub.savePost.mockReturnValue(
       throwError(() => new Error('Publish failed')),
@@ -301,6 +303,8 @@ describe('PostEditorStore.publish()', () => {
 
     expect(store.saveError()).toBe('Publish failed');
     expect(store.isSaving()).toBe(false);
+    expect(store.post()!.status).toBe('draft');
+    expect(store.post()!.publishedAt).toBe(prevPublishedAt);
   });
 
   it('does nothing when post is null', () => {
@@ -441,6 +445,26 @@ describe('PostEditorStore autosave pipeline', () => {
 
     expect(postServiceStub.savePost).toHaveBeenCalledTimes(1);
     expect(store.isDirty()).toBe(false);
+  });
+
+  it('debounces rapid updates into a single save call', () => {
+    const { store, postServiceStub } = autosaveSetup();
+    store.initNew();
+
+    store.updateField('title', 'v1');
+    TestBed.flushEffects();
+    vi.advanceTimersByTime(1000);
+
+    store.updateField('title', 'v2');
+    TestBed.flushEffects();
+    vi.advanceTimersByTime(1000);
+
+    store.updateField('title', 'v3');
+    TestBed.flushEffects();
+    vi.advanceTimersByTime(2000);
+
+    expect(postServiceStub.savePost).toHaveBeenCalledTimes(1);
+    expect(store.post()!.title).toBe('v3');
   });
 
   it('does NOT fire a second autosave after a successful manual save clears isDirty', () => {
