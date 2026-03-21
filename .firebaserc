@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "foliokit-6f974"
-  }
+  },
+  "targets": {
+    "foliokit-6f974": {
+      "hosting": {
+        "foliokit-6f974": [
+          "foliokit-6f974"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -1,9 +1,56 @@
+scripts:
+  buildCommand: npx nx build blog
+  runCommand: node dist/apps/blog/server/server.mjs
+
 runConfig:
   concurrency: 80
   minInstances: 0
   maxInstances: 4
 
 env:
+  # Firebase client SDK config — inlined at build time by @ngx-env/builder
+  - variable: NG_APP_FIREBASE_API_KEY
+    value: AIzaSyDlmd0n-lwYUbSr9sC5tiye1icCIQ0D4ss
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NG_APP_FIREBASE_AUTH_DOMAIN
+    value: foliokit-6f974.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NG_APP_FIREBASE_PROJECT_ID
+    value: foliokit-6f974
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NG_APP_FIREBASE_STORAGE_BUCKET
+    value: foliokit-6f974.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NG_APP_FIREBASE_MESSAGING_SENDER_ID
+    value: "897410998393"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NG_APP_FIREBASE_APP_ID
+    value: 1:897410998393:web:80cc5f51627f499c20b4a8
+    availability:
+      - BUILD
+      - RUNTIME
+  # Firebase Admin SDK — project ID for server-side Firestore
+  - variable: FIREBASE_PROJECT_ID
+    value: foliokit-6f974
+    availability:
+      - BUILD
+      - RUNTIME
+  # Angular SSR SSRF protection — allow the App Hosting hostname(s)
+  - variable: NG_ALLOWED_HOSTS
+    value: foliokit-6f974--foliokit-6f974.us-central1.hosted.app
+    availability:
+      - RUNTIME
+  # Service account key pulled from Secret Manager at runtime
   - variable: GOOGLE_APPLICATION_CREDENTIALS
     secret: google-application-credentials
     availability:
