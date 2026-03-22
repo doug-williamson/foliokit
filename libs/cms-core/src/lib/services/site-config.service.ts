@@ -4,6 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FIRESTORE } from '../firebase/firebase.config';
 import type { SiteConfig } from '../models/site-config.model';
+import { normalizeSiteConfig } from '../utils/normalize-site-config';
 
 @Injectable({ providedIn: 'root' })
 export class SiteConfigService {
@@ -14,7 +15,7 @@ export class SiteConfigService {
     return from(getDoc(ref)).pipe(
       map((snap) => {
         if (!snap.exists()) return null;
-        return { id: snap.id, ...snap.data() } as SiteConfig;
+        return normalizeSiteConfig({ id: snap.id, ...snap.data() });
       }),
       catchError((err) => {
         console.error('[SiteConfigService.getSiteConfig]', err);

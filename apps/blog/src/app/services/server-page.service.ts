@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { IPageService, normalizePage } from '@foliokit/cms-core';
+import { IPageService } from '@foliokit/cms-core';
+import { normalizePage } from '@foliokit/cms-core/utils/normalize-page';
 import type { CmsPageUnion } from '@foliokit/cms-core';
 
 @Injectable()

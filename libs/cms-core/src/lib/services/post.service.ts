@@ -18,9 +18,10 @@ import { catchError, map } from 'rxjs/operators';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
 import { normalizePost } from '../utils/normalize-post';
+import type { IBlogPostService } from '../tokens/post-service.token';
 
 @Injectable({ providedIn: 'root' })
-export class PostService {
+export class PostService implements IBlogPostService {
   private readonly firestore = inject(FIRESTORE);
   private readonly storage = inject(FIREBASE_STORAGE);
 
