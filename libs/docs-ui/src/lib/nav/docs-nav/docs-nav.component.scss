@@ -1,19 +1,137 @@
-.nav-link {
+.nav-root {
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px;
+}
+
+// ── nav-section wrapper ────────────────────────────────────────────────────
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Expansion panel resets ─────────────────────────────────────────────────
+
+::ng-deep docs-nav {
+  .nav-panel {
+    box-shadow: none !important;
+    background: transparent;
+    border-radius: 0 !important;
+
+    // Remove the default 16px side + bottom padding from the body
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+  }
+}
+
+// ── L1 item ────────────────────────────────────────────────────────────────
+
+.nav-l1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  height: 40px;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  font-size: 0.875rem;
   color: var(--mat-sys-on-surface-variant);
+  text-decoration: none;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-left-color 150ms ease;
 
   &:hover {
     background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
     color: var(--mat-sys-on-surface);
   }
 
-  &--active {
-    background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  &.nav-l1--active {
+    border-left-color: var(--mat-sys-primary);
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    font-weight: 500;
+  }
+}
+
+.nav-l1-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nav-l1-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Chevron ────────────────────────────────────────────────────────────────
+
+.nav-chevron {
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+
+  &--open {
+    transform: rotate(90deg);
+  }
+}
+
+// ── L2 group & items ───────────────────────────────────────────────────────
+
+.nav-l2-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0 4px;
+}
+
+.nav-l2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px 5px 24px; // 8px base + 16px indent
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: none;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    color: var(--mat-sys-on-surface);
+  }
+
+  &.nav-l2--active {
     color: var(--mat-sys-primary);
     font-weight: 500;
   }
 }
 
+.nav-l2-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Badge ──────────────────────────────────────────────────────────────────
+
 .nav-badge {
+  flex-shrink: 0;
+  border-radius: 9999px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
   background: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-secondary-container);
 }
