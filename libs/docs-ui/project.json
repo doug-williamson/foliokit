@@ -2,7 +2,7 @@
   "name": "docs-ui",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/docs-ui/src",
-  "prefix": "lib",
+  "prefix": "docs",
   "projectType": "library",
   "tags": [],
   "targets": {

@@ -58,6 +58,17 @@
       }
     }
   ],
+  "release": {
+    "projects": ["cms-core", "cms-ui", "cms-markdown", "cms-admin-ui", "docs-ui"],
+    "projectsRelationship": "independent",
+    "changelog": {
+      "workspaceChangelog": false,
+      "projectChangelogs": true
+    },
+    "version": {
+      "conventionalCommits": true
+    }
+  },
   "generators": {
     "@nx/angular:application": {
       "e2eTestRunner": "playwright",

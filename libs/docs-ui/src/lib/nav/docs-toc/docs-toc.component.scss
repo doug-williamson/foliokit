@@ -1,0 +1,17 @@
+.toc-link {
+  color: var(--mat-sys-on-surface-variant);
+
+  &:hover {
+    color: var(--mat-sys-on-surface);
+  }
+
+  &--level3 {
+    padding-left: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  &--active {
+    color: var(--mat-sys-primary);
+    font-weight: 500;
+  }
+}

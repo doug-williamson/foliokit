@@ -1,10 +1,21 @@
 {
   "name": "@foliokit/docs-ui",
-  "version": "0.4.0",
+  "version": "0.1.0",
+  "description": "Documentation UI components for FolioKit",
+  "keywords": ["angular", "cms", "foliokit", "docs"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dougwilliamson/foliokit.git"
+  },
   "publishConfig": { "access": "public" },
   "peerDependencies": {
-    "@angular/common": "^21.1.0",
-    "@angular/core": "^21.1.0"
+    "@angular/cdk": "^21.2.2",
+    "@angular/common": "^21.2.4",
+    "@angular/core": "^21.2.4",
+    "@angular/material": "^21.2.2",
+    "@angular/router": "^21.2.4",
+    "highlight.js": "^11.0.0"
   },
   "sideEffects": false
 }
