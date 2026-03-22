@@ -27,12 +27,25 @@ export const appRoutes: Route[] = [
     resolve: { post: postResolver },
   },
   {
-    path: ':slug',
+    path: 'not-found',
     loadComponent: () =>
-      import('./features/page-detail/page-detail.component').then(
-        (m) => m.PageDetailComponent,
+      import('./not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
       ),
+  },
+  {
+    path: 'about',
+    data: { pageId: 'about' },
     resolve: { page: pageResolver },
+    loadComponent: () =>
+      import('@foliokit/cms-ui').then((m) => m.AboutPageComponent),
+  },
+  {
+    path: 'links',
+    data: { pageId: 'links' },
+    resolve: { page: pageResolver },
+    loadComponent: () =>
+      import('@foliokit/cms-ui').then((m) => m.LinksPageComponent),
   },
   {
     path: '**',
