@@ -1,0 +1,88 @@
+<div class="docs-live-preview rounded-lg border border-[var(--mat-sys-outline-variant)] overflow-hidden">
+  <!-- Toolbar -->
+  <div class="docs-live-preview__toolbar flex flex-wrap items-center gap-2 px-4 py-2 border-b border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface-container-low)]">
+
+    <!-- Preview label tabs (when multiple previews) -->
+    @if (previews().length > 1) {
+      <div class="flex gap-1">
+        @for (p of previews(); track p.label; let i = $index) {
+          <button
+            mat-button
+            type="button"
+            class="text-sm"
+            [class.docs-live-preview__label-btn--active]="activePreviewIndex() === i"
+            (click)="setPreview(i)"
+          >
+            {{ p.label }}
+          </button>
+        }
+      </div>
+      <div class="w-px h-5 bg-[var(--mat-sys-outline-variant)]"></div>
+    }
+
+    <!-- Preview / Code toggle -->
+    <mat-button-toggle-group
+      [value]="activeTab()"
+      (change)="setTab($event.value)"
+      hideSingleSelectionIndicator
+      class="docs-live-preview__toggle"
+    >
+      <mat-button-toggle value="preview">Preview</mat-button-toggle>
+      <mat-button-toggle value="code">Code</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <!-- Viewport buttons -->
+    @if (activeTab() === 'preview' && activePreview().viewports?.length) {
+      <div class="ml-auto flex items-center gap-1">
+        <button
+          mat-icon-button
+          type="button"
+          title="Full width"
+          [class.docs-live-preview__viewport-btn--active]="activeViewport() === null"
+          (click)="setViewport(null)"
+        >
+          <span class="material-icons text-base">fullscreen</span>
+        </button>
+        @for (vp of activePreview().viewports!; track vp.label) {
+          <button
+            mat-button
+            type="button"
+            class="text-xs"
+            [title]="vp.label + ' (' + vp.width + 'px)'"
+            [class.docs-live-preview__viewport-btn--active]="activeViewport() === vp.width"
+            (click)="setViewport(vp.width)"
+          >
+            {{ vp.label }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Content area -->
+  <div
+    class="docs-live-preview__stage flex justify-center p-6"
+    [style.min-height.px]="300"
+  >
+    <div
+      class="w-full"
+      [style.max-width]="activeViewport() ? activeViewport() + 'px' : null"
+    >
+      @defer (on viewport) {
+        @if (activeTab() === 'preview') {
+          <docs-preview-host [preview]="activePreview()" />
+        } @else {
+          @if (activePreview().code) {
+            <docs-code-block [code]="activePreview().code!" />
+          } @else {
+            <p class="text-sm opacity-50 italic">No code sample provided.</p>
+          }
+        }
+      } @placeholder {
+        <div class="flex items-center justify-center h-full min-h-[200px] opacity-30">
+          <span class="text-sm">Loading preview...</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

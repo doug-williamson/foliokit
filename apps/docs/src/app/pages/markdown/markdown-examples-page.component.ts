@@ -1,9 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  DocsPageHeaderComponent,
-  DocsPreviewComponent,
-  DocsPreviewDefinition,
-} from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 
 const DEMO_MARKDOWN = `# MarkdownComponent Demo
@@ -41,17 +37,6 @@ export class MyPage {
 Use \`input.required<string>()\` for required signal inputs in Angular 17+.
 `;
 
-@Component({
-  selector: 'docs-markdown-example-content',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent],
-  template: `<folio-markdown [content]="content" />`,
-})
-class MarkdownExampleContentComponent {
-  readonly content = DEMO_MARKDOWN;
-}
-
 const previewCode = `import { MarkdownComponent } from '@foliokit/cms-markdown';
 
 @Component({
@@ -76,20 +61,16 @@ const x = 42;
   selector: 'docs-markdown-examples-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsPreviewComponent],
+  imports: [DocsPageHeaderComponent, DocsPreviewComponent, MarkdownComponent],
   template: `
     <docs-page-header />
 
-    <docs-preview [previews]="previews" />
+    <docs-preview [code]="previewCode">
+      <folio-markdown [content]="demoMarkdown" />
+    </docs-preview>
   `,
 })
 export class MarkdownExamplesPageComponent {
-  protected readonly previews: DocsPreviewDefinition[] = [
-    {
-      label: 'Basic Markdown',
-      component: MarkdownExampleContentComponent,
-      providers: [],
-      code: previewCode,
-    },
-  ];
+  protected readonly previewCode = previewCode;
+  protected readonly demoMarkdown = DEMO_MARKDOWN;
 }

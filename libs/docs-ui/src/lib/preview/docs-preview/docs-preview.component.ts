@@ -1,50 +1,75 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  computed,
-  input,
+  Input,
+  PLATFORM_ID,
+  inject,
   signal,
 } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatButtonModule } from '@angular/material/button';
-import { DocsPreviewDefinition } from '../../models/docs-preview-definition.model';
-import { DocsPreviewHostComponent } from '../docs-preview-host/docs-preview-host.component';
-import { DocsCodeBlockComponent } from '../../content/docs-code-block/docs-code-block.component';
-
-type PreviewTab = 'preview' | 'code';
+import { isPlatformBrowser } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'docs-preview',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatButtonToggleModule,
-    MatButtonModule,
-    DocsPreviewHostComponent,
-    DocsCodeBlockComponent,
-  ],
+  imports: [MatTabsModule, MatIconButton, MatIconModule],
   templateUrl: './docs-preview.component.html',
   styleUrl: './docs-preview.component.scss',
 })
-export class DocsPreviewComponent {
-  readonly previews = input.required<DocsPreviewDefinition[]>();
+export class DocsPreviewComponent implements AfterViewInit {
+  @Input() code = '';
 
-  readonly activePreviewIndex = signal(0);
-  readonly activeTab = signal<PreviewTab>('preview');
-  readonly activeViewport = signal<number | null>(null);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  readonly activePreview = computed(() => this.previews()[this.activePreviewIndex()]);
+  readonly copied = signal(false);
+  readonly highlightedHtml = signal<string | null>(null);
 
-  setPreview(index: number): void {
-    this.activePreviewIndex.set(index);
-    this.activeViewport.set(null);
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.initHighlight();
   }
 
-  setTab(tab: PreviewTab): void {
-    this.activeTab.set(tab);
+  private async initHighlight(): Promise<void> {
+    const { default: hljs } = await import('highlight.js/lib/core');
+    const [ts, xml, scss, bash, json] = await Promise.all([
+      import('highlight.js/lib/languages/typescript'),
+      import('highlight.js/lib/languages/xml'),
+      import('highlight.js/lib/languages/scss'),
+      import('highlight.js/lib/languages/bash'),
+      import('highlight.js/lib/languages/json'),
+    ]);
+    hljs.registerLanguage('typescript', ts.default);
+    hljs.registerLanguage('html', xml.default);
+    hljs.registerLanguage('scss', scss.default);
+    hljs.registerLanguage('bash', bash.default);
+    hljs.registerLanguage('json', json.default);
+
+    const result = hljs.highlightAuto(this.code, [
+      'typescript',
+      'html',
+      'scss',
+      'bash',
+      'json',
+    ]);
+    this.highlightedHtml.set(result.value);
   }
 
-  setViewport(width: number | null): void {
-    this.activeViewport.set(width);
+  escapedCode(): string {
+    return this.code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  copy(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    navigator.clipboard.writeText(this.code).then(() => {
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2000);
+    });
   }
 }

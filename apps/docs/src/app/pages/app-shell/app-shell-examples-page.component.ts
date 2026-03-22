@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsPreviewComponent, DocsPreviewDefinition } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
 const basicShellCode = `<folio-app-shell>
@@ -54,34 +54,52 @@ const authConfig: ShellConfig = {
 };
 
 @Component({
+  selector: 'docs-basic-shell-preview',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AppShellComponent],
+  providers: [{ provide: SHELL_CONFIG, useValue: basicConfig }],
+  template: `<folio-app-shell />`,
+})
+class BasicShellPreviewComponent {}
+
+@Component({
+  selector: 'docs-auth-slot-preview',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AppShellComponent],
+  providers: [{ provide: SHELL_CONFIG, useValue: authConfig }],
+  template: `<folio-app-shell />`,
+})
+class AuthSlotPreviewComponent {}
+
+@Component({
   selector: 'docs-app-shell-examples-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsPreviewComponent],
+  imports: [
+    DocsPageHeaderComponent,
+    DocsPreviewComponent,
+    BasicShellPreviewComponent,
+    AuthSlotPreviewComponent,
+  ],
   template: `
     <docs-page-header />
 
     <h2>Live Examples</h2>
-    <docs-preview [previews]="previews" />
+
+    <h3>Basic Shell</h3>
+    <docs-preview [code]="basicShellCode">
+      <docs-basic-shell-preview />
+    </docs-preview>
+
+    <h3>With Auth Slot</h3>
+    <docs-preview [code]="authSlotCode">
+      <docs-auth-slot-preview />
+    </docs-preview>
   `,
 })
 export class AppShellExamplesPageComponent {
-  protected readonly previews: DocsPreviewDefinition[] = [
-    {
-      label: 'Basic Shell',
-      component: AppShellComponent,
-      providers: [{ provide: SHELL_CONFIG, useValue: basicConfig }],
-      code: basicShellCode,
-      viewports: [
-        { label: 'Desktop', width: 1200 },
-        { label: 'Mobile', width: 375 },
-      ],
-    },
-    {
-      label: 'With Auth Slot',
-      component: AppShellComponent,
-      providers: [{ provide: SHELL_CONFIG, useValue: authConfig }],
-      code: authSlotCode,
-    },
-  ];
+  protected readonly basicShellCode = basicShellCode;
+  protected readonly authSlotCode = authSlotCode;
 }

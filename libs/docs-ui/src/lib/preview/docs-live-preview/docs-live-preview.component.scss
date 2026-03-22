@@ -1,0 +1,20 @@
+.docs-live-preview {
+  &__toggle {
+    ::ng-deep .mat-button-toggle {
+      font-size: 0.8125rem;
+    }
+  }
+
+  &__label-btn--active {
+    color: var(--mat-sys-primary) !important;
+    font-weight: 500;
+  }
+
+  &__viewport-btn--active {
+    color: var(--mat-sys-primary) !important;
+  }
+
+  &__stage {
+    background: var(--mat-sys-surface);
+  }
+}

@@ -1,20 +1,46 @@
 .docs-preview {
-  &__toggle {
-    ::ng-deep .mat-button-toggle {
-      font-size: 0.8125rem;
+  &__preview-pane {
+    background: var(--mat-sys-surface-container);
+    padding: 24px;
+    min-height: 200px;
+    border-radius: 8px;
+    margin-top: 16px;
+  }
+
+  &__code-pane {
+    position: relative;
+    background: #1e1e1e;
+    padding: 16px;
+    overflow-x: auto;
+    margin-top: 16px;
+    border-radius: 8px;
+  }
+
+  &__copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: rgba(255, 255, 255, 0.6);
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 
-  &__label-btn--active {
-    color: var(--mat-sys-primary) !important;
-    font-weight: 500;
-  }
+  &__pre {
+    margin: 0;
+    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    tab-size: 2;
+    padding-right: 40px;
 
-  &__viewport-btn--active {
-    color: var(--mat-sys-primary) !important;
-  }
-
-  &__stage {
-    background: var(--mat-sys-surface);
+    code {
+      font-family: inherit;
+      font-size: inherit;
+      background: transparent;
+      padding: 0;
+      color: #d4d4d4;
+    }
   }
 }

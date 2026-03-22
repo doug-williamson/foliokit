@@ -24,4 +24,5 @@ export * from './lib/content/docs-tabs/docs-tabs.component';
 
 // Preview
 export * from './lib/preview/docs-preview/docs-preview.component';
+export * from './lib/preview/docs-live-preview/docs-live-preview.component';
 export * from './lib/preview/docs-preview-host/docs-preview-host.component';
