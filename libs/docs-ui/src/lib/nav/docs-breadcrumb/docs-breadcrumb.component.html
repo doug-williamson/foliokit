@@ -1,0 +1,19 @@
+<nav aria-label="Breadcrumb">
+  <ol class="flex flex-wrap items-center gap-1 text-sm">
+    @for (crumb of crumbs(); track crumb.path; let last = $last) {
+      <li class="flex items-center gap-1">
+        @if (!last) {
+          <a
+            [routerLink]="crumb.path"
+            class="text-[var(--mat-sys-on-surface-variant)] hover:text-[var(--mat-sys-on-surface)] transition-colors"
+          >{{ crumb.label }}</a>
+          <span class="opacity-40" aria-hidden="true">/</span>
+        } @else {
+          <span aria-current="page" class="font-medium text-[var(--mat-sys-on-surface)]">
+            {{ crumb.label }}
+          </span>
+        }
+      </li>
+    }
+  </ol>
+</nav>

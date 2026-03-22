@@ -1,0 +1,19 @@
+@if (entries().length) {
+  <nav aria-label="On this page">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider opacity-50">On this page</p>
+    <ul class="flex flex-col gap-0.5">
+      @for (entry of entries(); track entry.id) {
+        <li>
+          <a
+            [href]="'#' + entry.id"
+            class="toc-link block py-0.5 text-sm transition-colors"
+            [class.toc-link--level3]="entry.level === 3"
+            [class.toc-link--active]="activeId() === entry.id"
+          >
+            {{ entry.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+}

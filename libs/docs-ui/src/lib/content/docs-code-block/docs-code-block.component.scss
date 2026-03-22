@@ -1,0 +1,34 @@
+.docs-code-block {
+  border-radius: 0.5rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  overflow: hidden;
+
+  &__toolbar {
+    background: color-mix(in srgb, var(--mat-sys-surface-container) 80%, transparent);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__copy-btn {
+    width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+  }
+
+  &__pre {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    background: var(--mat-sys-surface-container);
+    overflow-x: auto;
+    tab-size: 2;
+
+    code {
+      font-family: inherit;
+      font-size: inherit;
+      background: transparent;
+      padding: 0;
+    }
+  }
+}

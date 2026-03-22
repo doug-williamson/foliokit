@@ -1,0 +1,15 @@
+<div class="docs-code-block">
+  <div class="docs-code-block__toolbar flex items-center justify-between px-4 py-2">
+    <span class="text-xs font-medium opacity-60 uppercase tracking-wider">{{ language() }}</span>
+    <button
+      mat-icon-button
+      type="button"
+      [title]="copied() ? 'Copied!' : 'Copy code'"
+      (click)="copy()"
+      class="docs-code-block__copy-btn"
+    >
+      <mat-icon class="text-sm">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+    </button>
+  </div>
+  <pre class="docs-code-block__pre"><code #codeEl class="language-{{ language() }}"></code></pre>
+</div>

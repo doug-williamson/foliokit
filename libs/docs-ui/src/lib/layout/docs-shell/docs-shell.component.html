@@ -1,0 +1,27 @@
+<mat-sidenav-container class="h-full w-full">
+  <mat-sidenav
+    [opened]="sidenavOpen()"
+    mode="side"
+    class="border-r border-[var(--mat-sys-outline-variant)]"
+    style="width: 260px"
+  >
+    <div class="flex flex-col h-full overflow-y-auto py-4">
+      <docs-nav [manifest]="manifest" />
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_220px] min-h-full">
+      <main class="min-w-0 px-8 py-6">
+        <docs-page-header />
+        <router-outlet />
+      </main>
+
+      <aside class="hidden xl:block">
+        <div class="sticky top-6 px-4 py-6">
+          <docs-toc />
+        </div>
+      </aside>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

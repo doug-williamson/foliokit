@@ -1,0 +1,53 @@
+<nav class="flex flex-col gap-0.5 px-3">
+  @for (node of manifest(); track node.path) {
+    @if (node.sectionHeader) {
+      <span class="mt-4 mb-1 px-2 text-xs font-semibold uppercase tracking-wider opacity-50 first:mt-0">
+        {{ node.label }}
+      </span>
+    } @else {
+      <a
+        [routerLink]="node.path"
+        routerLinkActive="nav-link--active"
+        class="nav-link flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
+        [attr.aria-expanded]="node.children ? isExpanded(node.path) : null"
+        (click)="node.children ? toggle(node.path) : null"
+      >
+        <span class="truncate">{{ node.label }}</span>
+        @if (node.badge) {
+          <span class="nav-badge shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+            {{ node.badge }}
+          </span>
+        }
+        @if (node.children) {
+          <svg
+            class="ml-auto shrink-0 transition-transform"
+            [class.rotate-90]="isExpanded(node.path)"
+            width="12" height="12" viewBox="0 0 12 12" fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M4.5 2 L8.5 6 L4.5 10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        }
+      </a>
+
+      @if (node.children && isExpanded(node.path)) {
+        <div class="ml-3 flex flex-col gap-0.5 border-l border-[var(--mat-sys-outline-variant)] pl-3">
+          @for (child of node.children; track child.path) {
+            <a
+              [routerLink]="child.path"
+              routerLinkActive="nav-link--active"
+              class="nav-link flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
+            >
+              <span class="truncate">{{ child.label }}</span>
+              @if (child.badge) {
+                <span class="nav-badge shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                  {{ child.badge }}
+                </span>
+              }
+            </a>
+          }
+        </div>
+      }
+    }
+  }
+</nav>
