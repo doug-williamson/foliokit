@@ -13,7 +13,7 @@ export const pageResolver: ResolveFn<CmsPageUnion> = (route) => {
   const service = inject(BLOG_PAGE_SERVICE);
   const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
-  const slug = route.paramMap.get('slug') ?? '';
+  const slug = (route.data['pageId'] as string | undefined) ?? route.paramMap.get('slug') ?? '';
 
   if (transferState.hasKey(PAGE_TRANSFER_KEY)) {
     const page = transferState.get(PAGE_TRANSFER_KEY, null);
