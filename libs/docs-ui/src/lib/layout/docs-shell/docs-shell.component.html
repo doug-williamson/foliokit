@@ -1,9 +1,36 @@
-<mat-sidenav-container class="h-full w-full">
+<mat-toolbar class="docs-topbar">
+  <a routerLink="/" class="docs-logo" aria-label="FolioKit home">FolioKit</a>
+
+  <a mat-button routerLink="/docs" class="docs-nav-link">Docs</a>
+
+  <span class="docs-topbar-spacer"></span>
+
+  <span class="docs-version-badge">v1.0.0</span>
+
+  <a
+    mat-icon-button
+    href="https://github.com/foliokit"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="FolioKit on GitHub"
+  >
+    <mat-icon svgIcon="github" />
+  </a>
+
+  <button
+    mat-icon-button
+    [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+    (click)="theme.toggle()"
+  >
+    <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-sidenav-container class="docs-sidenav-container">
   <mat-sidenav
-    [opened]="sidenavOpen()"
+    [opened]="isDocsRoute()"
     mode="side"
-    class="border-r border-[var(--mat-sys-outline-variant)]"
-    style="width: 260px"
+    class="docs-sidenav border-r border-[var(--mat-sys-outline-variant)]"
   >
     <div class="flex flex-col h-full overflow-y-auto py-4">
       <docs-nav [manifest]="manifest" />
@@ -11,17 +38,21 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_220px] min-h-full">
-      <main class="min-w-0 px-8 py-6">
-        <docs-page-header />
-        <router-outlet />
-      </main>
+    @if (isDocsRoute()) {
+      <div class="grid grid-cols-1 xl:grid-cols-[1fr_220px] min-h-full">
+        <main class="min-w-0 px-8 py-6">
+          <docs-page-header />
+          <router-outlet />
+        </main>
 
-      <aside class="hidden xl:block">
-        <div class="sticky top-6 px-4 py-6">
-          <docs-toc />
-        </div>
-      </aside>
-    </div>
+        <aside class="hidden xl:block">
+          <div class="sticky top-6 px-4 py-6">
+            <docs-toc />
+          </div>
+        </aside>
+      </div>
+    } @else {
+      <router-outlet />
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

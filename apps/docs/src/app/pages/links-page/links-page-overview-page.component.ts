@@ -51,7 +51,7 @@ export interface LinksPage extends CmsPageBase {
       <h2 id="overview">Overview</h2>
       <p>
         <code>LinksPageComponent</code> (<code>folio-links-page</code>) renders a
-        Linktree-style page driven entirely by a <code>LinksPage</code> data object.
+        link-in-bio page driven entirely by a <code>LinksPage</code> data object.
         It displays an avatar, headline, bio, and a vertical stack of styled link buttons
         with optional platform-specific icons and highlighted state.
       </p>
