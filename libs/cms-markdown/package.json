@@ -1,10 +1,19 @@
 {
   "name": "@foliokit/cms-markdown",
   "version": "0.4.0",
+  "description": "Markdown rendering component with embedded media token resolution for FolioKit CMS",
+  "keywords": ["angular", "cms", "foliokit", "markdown", "ngx-markdown"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dougwilliamson/foliokit"
+  },
   "publishConfig": { "access": "public" },
   "peerDependencies": {
-    "@angular/common": "^21.1.0",
-    "@angular/core": "^21.1.0"
+    "@angular/common": "^21.2.4",
+    "@angular/core": "^21.2.4",
+    "@foliokit/cms-core": "^0.4.0",
+    "ngx-markdown": "^21.1.0"
   },
   "sideEffects": false
 }

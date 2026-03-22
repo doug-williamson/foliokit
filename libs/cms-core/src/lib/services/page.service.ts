@@ -18,13 +18,14 @@ import { catchError, map } from 'rxjs/operators';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { CmsPageUnion } from '../models/page.model';
 import { normalizePage } from '../utils/normalize-page';
+import type { IPageService } from '../tokens/page-service.token';
 
 function omitUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
 
 @Injectable({ providedIn: 'root' })
-export class PageService {
+export class PageService implements IPageService {
   private readonly firestore = inject(FIRESTORE);
   private readonly storage = inject(FIREBASE_STORAGE);
 

@@ -1,4 +1,3 @@
-import type { Timestamp } from 'firebase/firestore';
 import type { SocialLink } from './site-config.model';
 
 export interface Author {
@@ -9,6 +8,8 @@ export interface Author {
   avatarUrl?: string;
   email?: string;
   social?: SocialLink[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  /** Unix milliseconds. */
+  createdAt: number;
+  /** Unix milliseconds. */
+  updatedAt: number;
 }

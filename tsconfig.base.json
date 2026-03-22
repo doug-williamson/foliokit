@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@foliokit/cms-core": ["libs/cms-core/src/index.ts"],
+      "@foliokit/cms-core/utils/*": ["libs/cms-core/src/lib/utils/*"],
       "@foliokit/cms-ui": ["libs/cms-ui/src/index.ts"],
       "@foliokit/cms-markdown": ["libs/cms-markdown/src/index.ts"],
       "@foliokit/cms-admin-ui": ["libs/cms-admin-ui/src/index.ts"],

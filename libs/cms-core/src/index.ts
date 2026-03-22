@@ -13,5 +13,3 @@ export * from './lib/services/site-config.service';
 export * from './lib/services/tag.service';
 export * from './lib/tokens/post-service.token';
 export * from './lib/tokens/page-service.token';
-export * from './lib/utils/normalize-post';
-export * from './lib/utils/normalize-page';

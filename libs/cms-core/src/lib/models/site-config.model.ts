@@ -1,5 +1,3 @@
-import type { Timestamp } from 'firebase/firestore';
-
 export interface NavItem {
   label: string;
   url: string;
@@ -14,6 +12,8 @@ export type SocialPlatform =
   | 'github'
   | 'linkedin'
   | 'youtube'
+  | 'twitch'
+  | 'bluesky'
   | 'tiktok'
   | 'facebook'
   | 'email'
@@ -36,5 +36,6 @@ export interface SiteConfig {
   nav: NavItem[];
   social: SocialLink[];
   defaultAuthorId?: string;
-  updatedAt: Timestamp;
+  /** Unix milliseconds. */
+  updatedAt: number;
 }

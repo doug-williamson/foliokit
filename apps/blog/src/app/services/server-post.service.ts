@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { IBlogPostService, normalizePost } from '@foliokit/cms-core';
+import { IBlogPostService } from '@foliokit/cms-core';
+import { normalizePost } from '@foliokit/cms-core/utils/normalize-post';
 import type { BlogPost } from '@foliokit/cms-core';
 
 @Injectable()
