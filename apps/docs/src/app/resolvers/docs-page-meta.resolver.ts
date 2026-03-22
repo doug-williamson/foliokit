@@ -58,7 +58,7 @@ const META: Record<string, DocsPageMeta> = {
   },
   'links-page': {
     title: 'LinksPageComponent',
-    description: 'A Linktree-style page component driven by SocialLink config.',
+    description: 'A link-in-bio page component driven by SocialLink config.',
     badge: 'v1.0.0',
     headings: [
       { id: 'overview',    label: 'Overview',    level: 2 },

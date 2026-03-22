@@ -9,7 +9,6 @@ export * from './lib/tokens/docs-tokens';
 
 // Layout
 export * from './lib/layout/docs-shell/docs-shell.component';
-export * from './lib/layout/marketing-shell/marketing-shell.component';
 
 // Nav
 export * from './lib/nav/docs-nav/docs-nav.component';

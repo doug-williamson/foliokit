@@ -1,4 +1,56 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+}
+
+.docs-topbar {
+  flex-shrink: 0;
+  box-shadow: var(--mat-sys-level2);
+  z-index: 10;
+}
+
+.docs-logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+  margin-right: 0.25rem;
+
+  &:hover {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.docs-nav-link {
+  font-size: 0.875rem;
+}
+
+.docs-topbar-spacer {
+  flex: 1;
+}
+
+.docs-version-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+
+.docs-sidenav-container {
+  flex: 1;
+  min-height: 0;
+}
+
+.docs-sidenav {
+  width: 260px;
+  background: var(--mat-sys-surface-container);
 }

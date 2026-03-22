@@ -162,7 +162,7 @@ import {
 export class PageEditorShellComponent implements OnInit {
   readonly store = inject(PageEditorStore);
   readonly id = input<string | undefined>(undefined);
-  /** Received via query param when navigating to /pages/new?pageType=linktree */
+  /** Received via query param when navigating to /pages/new?pageType=links */
   readonly pageType = input<string | undefined>(undefined);
 
   ngOnInit(): void {
