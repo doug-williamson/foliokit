@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-
 @Component({
   selector: 'docs-landing-page',
   standalone: true,
@@ -26,11 +25,20 @@ import { MatIconModule } from '@angular/material/icon';
         grid-template-columns: 1fr;
       }
     }
-    .banner {
-      padding: 2rem 1.5rem;
+    .social-proof {
+      padding: 48px 1.5rem;
+      background-color: var(--mat-sys-surface-container);
       text-align: center;
-      background-color: var(--mat-sys-secondary-container);
-      color: var(--mat-sys-on-secondary-container);
+    }
+    .social-proof-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .placeholder-image {
+      width: 100%;
+      height: 200px;
+      background-color: var(--mat-sys-primary);
+      border-radius: 12px 12px 0 0;
     }
   `],
   template: `
@@ -92,19 +100,31 @@ import { MatIconModule } from '@angular/material/icon';
       </mat-card>
     </section>
 
-    <section class="banner">
-      <p class="text-base m-0">
-        See it in action —
-        <a
-          href="https://blog.foliokitcms.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="color: var(--mat-sys-on-secondary-container); font-weight: 500;"
-        >
-          blog.foliokitcms.com
-        </a>
-        is built entirely with FolioKit.
-      </p>
+    <section class="social-proof">
+      <h2 class="mat-headline-small m-0 mb-8">Built with FolioKit</h2>
+      <div class="social-proof-inner">
+        <mat-card>
+          <div class="placeholder-image" mat-card-image></div>
+          <mat-card-header>
+            <mat-card-title>blog.foliokitcms.com</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="text-sm leading-relaxed m-0" style="color: var(--mat-sys-on-surface-variant)">
+              A fully SSR Angular blog built with @foliokit/cms-ui, Firebase, and Angular Material 3.
+            </p>
+          </mat-card-content>
+          <mat-card-actions>
+            <a
+              mat-stroked-button
+              href="https://blog.foliokitcms.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Visit Site
+            </a>
+          </mat-card-actions>
+        </mat-card>
+      </div>
     </section>
   `,
 })
