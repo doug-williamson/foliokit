@@ -1,4 +1,4 @@
-import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta } from '../models/site-config.model';
+import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig } from '../models/site-config.model';
 
 function normalizeTimestamp(value: unknown): number {
   if (value == null) return 0;
@@ -58,7 +58,28 @@ function normalizeSeoMeta(raw: unknown): SeoMeta | undefined {
   };
 }
 
+function normalizeAboutPageConfig(raw: unknown): AboutPageConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  const headline = (r['headline'] as string | undefined) ?? '';
+  if (!headline && !r['bio']) return undefined;
+  return {
+    headline,
+    subheadline: r['subheadline'] as string | undefined,
+    bio: (r['bio'] as string) ?? '',
+    photoUrl: r['photoUrl'] as string | undefined,
+    photoAlt: r['photoAlt'] as string | undefined,
+    socialLinks: Array.isArray(r['socialLinks'])
+      ? normalizeSocialLinks(r['socialLinks'])
+      : undefined,
+    seo: normalizeSeoMeta(r['seo']),
+  };
+}
+
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
+  const pages = raw['pages'] as Record<string, unknown> | undefined;
+  const about = normalizeAboutPageConfig(pages?.['about']);
+
   return {
     id: (raw['id'] as string) ?? '',
     siteName: (raw['siteName'] as string) ?? '',
@@ -72,6 +93,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     social: normalizeSocialLinks(raw['social']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
+    pages: about ? { about } : undefined,
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

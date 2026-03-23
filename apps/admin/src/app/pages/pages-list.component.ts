@@ -10,46 +10,24 @@ import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PageService } from '@foliokit/cms-core';
 
 @Component({
   selector: 'admin-pages-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatChipsModule, MatIconModule, MatMenuModule, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [DatePipe, MatButtonModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule],
   host: { class: 'block h-full' },
   template: `
     <div class="flex flex-col h-full">
       <header class="shrink-0 flex items-center justify-between px-6 pt-6 pb-4">
         <h1 class="text-2xl font-bold">Pages</h1>
-        @if (canAddAny()) {
-          <button mat-raised-button [matMenuTriggerFor]="newMenu">
+        @if (!hasLinks()) {
+          <button mat-raised-button (click)="newPage('links')">
             <mat-icon>add</mat-icon>
-            New Page
+            New Links Page
           </button>
-          <mat-menu #newMenu="matMenu">
-            <button
-              mat-menu-item
-              [disabled]="hasAbout()"
-              [matTooltip]="hasAbout() ? 'An about page already exists' : ''"
-              (click)="newPage('about')"
-            >
-              <mat-icon>article</mat-icon>
-              About Page
-            </button>
-            <button
-              mat-menu-item
-              [disabled]="hasLinks()"
-              [matTooltip]="hasLinks() ? 'A links page already exists' : ''"
-              (click)="newPage('links')"
-            >
-              <mat-icon>link</mat-icon>
-              Links Page
-            </button>
-          </mat-menu>
         }
       </header>
 
@@ -77,7 +55,7 @@ import { PageService } from '@foliokit/cms-core';
                   class="cursor-pointer hover:opacity-80 transition-opacity"
                   (click)="openPage(page.id)"
                 >
-                  <td class="py-2 pr-4 font-medium">{{ page.title || (page.type === 'links' ? 'Links Page' : 'About Page') }}</td>
+                  <td class="py-2 pr-4 font-medium">{{ page.title || 'Links Page' }}</td>
                   <td class="py-2 pr-4">
                     <mat-chip-set>
                       <mat-chip [highlighted]="page.status === 'published'">
@@ -103,15 +81,13 @@ export class PagesListComponent {
 
   readonly pages = toSignal(this.pageService.getAllPages());
 
-  readonly hasAbout  = computed(() => this.pages()?.some((p) => p.type === 'about') ?? false);
-  readonly hasLinks  = computed(() => this.pages()?.some((p) => p.type === 'links') ?? false);
-  readonly canAddAny = computed(() => !this.hasAbout() || !this.hasLinks());
+  readonly hasLinks = computed(() => this.pages()?.some((p) => p.type === 'links') ?? false);
 
   protected openPage(id: string): void {
     this.router.navigate(['/pages', id]);
   }
 
-  protected newPage(type: 'about' | 'links'): void {
+  protected newPage(type: 'links'): void {
     this.router.navigate(['/pages/new'], { queryParams: { pageType: type } });
   }
 }

@@ -1,10 +1,12 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, makeStateKey } from '@angular/core';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
 import { FIRESTORE } from '../firebase/firebase.config';
-import type { SiteConfig } from '../models/site-config.model';
+import type { AboutPageConfig, SiteConfig } from '../models/site-config.model';
 import { normalizeSiteConfig } from '../utils/normalize-site-config';
+
+export const ABOUT_CONFIG_TRANSFER_KEY = makeStateKey<AboutPageConfig | null>('about-config');
 
 @Injectable({ providedIn: 'root' })
 export class SiteConfigService {
@@ -28,6 +30,24 @@ export class SiteConfigService {
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
     return this.getSiteConfig('default');
+  }
+
+  /** Returns the default SiteConfig, filtering out null (no-document) results. */
+  getConfig(): Observable<SiteConfig> {
+    return this.getDefaultSiteConfig().pipe(
+      filter((c): c is SiteConfig => c !== null),
+    );
+  }
+
+  /**
+   * Convenience method that maps the default SiteConfig to its pages.about field.
+   * Does not make a separate Firestore read.
+   * TransferState hydration is handled by the aboutPageResolver in the blog app.
+   */
+  getAboutConfig(): Observable<AboutPageConfig | null> {
+    return this.getConfig().pipe(
+      map((c) => c.pages?.about ?? null),
+    );
   }
 
   saveSiteConfig(config: SiteConfig): Observable<SiteConfig> {

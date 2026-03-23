@@ -6,6 +6,11 @@ import { IPageService } from '@foliokit/cms-core';
 import { normalizePage } from '@foliokit/cms-core/utils/normalize-page';
 import type { CmsPageUnion } from '@foliokit/cms-core';
 
+/**
+ * @deprecated ServerPageService is superseded by SiteConfigService.getAboutConfig()
+ * for the About page. Retained for LinksPage SSR support only.
+ * Will be removed in a future release.
+ */
 @Injectable()
 export class ServerPageService implements IPageService {
   getPageBySlug(slug: string): Observable<CmsPageUnion | null> {

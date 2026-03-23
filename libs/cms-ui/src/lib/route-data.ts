@@ -1,32 +1,22 @@
-import type { AboutPage, LinksPage } from '@foliokit/cms-core';
+import type { AboutPageConfig, LinksPage } from '@foliokit/cms-core';
 
 /**
- * The route data key used by AboutPageComponent and LinksPageComponent
- * to read their page from Angular Router resolved data.
- *
- * Use this constant in your route definition's `resolve` map so the key
- * stays in sync with what the components expect:
- *
- * ```ts
- * {
- *   path: 'about',
- *   component: AboutPageComponent,
- *   resolve: { [CMS_ROUTE_DATA_KEY]: aboutPageResolver }
- * }
- * ```
+ * The route data key used by LinksPageComponent to read its page from Angular
+ * Router resolved data.
  */
 export const CMS_ROUTE_DATA_KEY = 'page' as const;
 
 /**
+ * The route data key used by AboutPageComponent to read its config from Angular
+ * Router resolved data.
+ */
+export const ABOUT_ROUTE_DATA_KEY = 'about' as const;
+
+/**
  * Shape of the resolved route data expected by AboutPageComponent.
- * Use as the return type annotation on your resolver:
- *
- * ```ts
- * export const aboutPageResolver: ResolveFn<AboutPageRouteData[typeof CMS_ROUTE_DATA_KEY]> = ...
- * ```
  */
 export interface AboutPageRouteData {
-  [CMS_ROUTE_DATA_KEY]: AboutPage | null;
+  [ABOUT_ROUTE_DATA_KEY]: AboutPageConfig | null;
 }
 
 /**

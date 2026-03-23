@@ -12,7 +12,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
-  AboutEditorFormComponent,
   LinksEditorFormComponent,
   PageEditorStore,
 } from '@foliokit/cms-admin-ui';
@@ -28,7 +27,6 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatTabsModule,
-    AboutEditorFormComponent,
     LinksEditorFormComponent,
   ],
   styles: [
@@ -53,7 +51,7 @@ import {
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
         <span class="flex-1 text-sm font-medium truncate opacity-80">
-          {{ store.page()?.title || (store.page()?.type === 'links' ? 'Links Page' : 'About Page') }}
+          {{ store.page()?.title || 'Links Page' }}
         </span>
 
         @if (store.isSaving()) {
@@ -84,11 +82,9 @@ import {
         class="flex flex-col flex-1 overflow-hidden"
         animationDuration="0"
       >
-        <!-- Content tab: renders the correct form based on resolved page type -->
+        <!-- Content tab -->
         <mat-tab label="Content">
-          @if (store.page()?.type === 'about') {
-            <admin-about-editor-form />
-          } @else if (store.page()?.type === 'links') {
+          @if (store.page()?.type === 'links') {
             <admin-links-editor-form />
           } @else {
             <div class="p-4 opacity-40 text-sm">Loading…</div>
@@ -170,8 +166,7 @@ export class PageEditorShellComponent implements OnInit {
     if (id) {
       this.store.loadPage(id);
     } else {
-      const type = this.pageType() === 'links' ? 'links' : 'about';
-      this.store.initNew(type);
+      this.store.initNew('links');
     }
   }
 }

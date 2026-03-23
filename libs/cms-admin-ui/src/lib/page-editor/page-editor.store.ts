@@ -12,7 +12,7 @@ import { computed } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, switchMap } from 'rxjs/operators';
 import { PageService } from '@foliokit/cms-core';
-import type { AboutPage, CmsPageUnion, LinksPage } from '@foliokit/cms-core';
+import type { CmsPageUnion, LinksPage } from '@foliokit/cms-core';
 
 export interface PageEditorState {
   page: CmsPageUnion | null;
@@ -33,23 +33,6 @@ const initialState: PageEditorState = {
   cursorPosition: 0,
   tempPageId: crypto.randomUUID(),
 };
-
-function blankAboutPage(): AboutPage {
-  const now = Date.now();
-  return {
-    id: '',
-    type: 'about',
-    slug: '',
-    title: '',
-    status: 'draft',
-    body: '',
-    contentVersion: 1,
-    embeddedMedia: {},
-    seo: {},
-    updatedAt: now,
-    createdAt: now,
-  };
-}
 
 function blankLinksPage(): LinksPage {
   const now = Date.now();
@@ -105,8 +88,8 @@ export const PageEditorStore = signalStore(
         });
       },
 
-      initNew(type: CmsPageUnion['type'] = 'about'): void {
-        const page = type === 'links' ? blankLinksPage() : blankAboutPage();
+      initNew(type: CmsPageUnion['type'] = 'links'): void {
+        const page = blankLinksPage();
         patchState(store, {
           page,
           isDirty: false,
@@ -126,32 +109,20 @@ export const PageEditorStore = signalStore(
         patchState(store, { cursorPosition: position });
       },
 
-      insertMediaAtCursor(token: string): void {
-        const page = store.page();
-        const pos = store.cursorPosition();
-        if (!page || page.type !== 'about') return;
-        const before = page.body.slice(0, pos);
-        const after = page.body.slice(pos);
-        const insertion = `![alt](${token})`;
-        patchState(store, {
-          page: { ...page, body: `${before}${insertion}${after}` } as CmsPageUnion,
-          isDirty: true,
-          cursorPosition: pos + insertion.length,
-        });
+      /**
+       * @deprecated AboutPage has been superseded by AboutPageConfig in SiteConfig.
+       * This method is a no-op and will be removed in a future release.
+       */
+      insertMediaAtCursor(_token: string): void {
+        // no-op: AboutPage embedded media is no longer supported
       },
 
-      removeEmbeddedMedia(token: string): void {
-        const page = store.page();
-        if (!page || page.type !== 'about') return;
-        const entry = page.embeddedMedia[token];
-        const { [token]: _, ...remaining } = page.embeddedMedia;
-        patchState(store, {
-          page: { ...page, embeddedMedia: remaining } as CmsPageUnion,
-          isDirty: true,
-        });
-        if (entry) {
-          pageService.deleteStorageFile(entry.storagePath).subscribe();
-        }
+      /**
+       * @deprecated AboutPage has been superseded by AboutPageConfig in SiteConfig.
+       * This method is a no-op and will be removed in a future release.
+       */
+      removeEmbeddedMedia(_token: string): void {
+        // no-op: AboutPage embedded media is no longer supported
       },
 
       save(): void {

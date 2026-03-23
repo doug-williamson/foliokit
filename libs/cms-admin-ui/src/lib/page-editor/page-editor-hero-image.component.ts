@@ -106,18 +106,14 @@ export class PageEditorHeroImageComponent {
   readonly isDragOver = signal(false);
   readonly storagePath = signal<string | null>(null);
 
+  // Hero image was an AboutPage-only feature. AboutPage has been superseded by
+  // AboutPageConfig in SiteConfig. These getters return empty values.
   get heroImageUrl() {
-    return () => {
-      const p = this.store.page();
-      return p?.type === 'about' ? p.heroImageUrl : undefined;
-    };
+    return () => undefined as string | undefined;
   }
 
   get heroImageAlt() {
-    return () => {
-      const p = this.store.page();
-      return p?.type === 'about' ? (p.heroImageAlt ?? '') : '';
-    };
+    return () => '';
   }
 
   onDragOver(event: DragEvent): void {

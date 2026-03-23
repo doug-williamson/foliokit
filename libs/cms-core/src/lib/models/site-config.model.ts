@@ -30,6 +30,18 @@ export interface SocialLink {
   icon?: string;
 }
 
+export interface AboutPageConfig {
+  headline: string;
+  subheadline?: string;
+  /** Markdown — rendered via MarkdownComponent */
+  bio: string;
+  /** Firebase Storage URL */
+  photoUrl?: string;
+  photoAlt?: string;
+  socialLinks?: SocialLink[];
+  seo?: SeoMeta;
+}
+
 export interface SiteConfig {
   id: string;
   siteName: string;
@@ -43,6 +55,9 @@ export interface SiteConfig {
   social: SocialLink[];
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;
+  pages?: {
+    about?: AboutPageConfig;
+  };
   /** Unix milliseconds. */
   updatedAt: number;
 }
