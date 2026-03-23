@@ -8,6 +8,10 @@ import {
 } from '@foliokit/cms-core';
 import type { CmsPageUnion } from '@foliokit/cms-core';
 
+/**
+ * @deprecated pageResolver is superseded by aboutPageResolver for the /about route.
+ * Retained for LinksPage (/links route) only. Will be removed in a future release.
+ */
 export const pageResolver: ResolveFn<CmsPageUnion> = (route) => {
   const transferState = inject(TransferState);
   const service = inject(BLOG_PAGE_SERVICE);

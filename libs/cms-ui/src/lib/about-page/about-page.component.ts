@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   PLATFORM_ID,
@@ -12,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
-import type { AboutPage } from '@foliokit/cms-core';
+import type { AboutPageConfig } from '@foliokit/cms-core';
 
 @Component({
   selector: 'cms-about-page',
@@ -20,16 +19,40 @@ import type { AboutPage } from '@foliokit/cms-core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MarkdownModule],
   template: `
-    @if (page()) {
+    @if (about()) {
       <article class="max-w-3xl mx-auto px-4 py-10">
-        @if (page()!.heroImageUrl) {
+        @if (about()!.photoUrl) {
           <img
-            class="w-full rounded-xl object-cover mb-8 max-h-80"
-            [src]="page()!.heroImageUrl"
-            [alt]="page()!.heroImageAlt || page()!.title"
+            class="w-32 h-32 rounded-full object-cover mb-6"
+            [src]="about()!.photoUrl"
+            [alt]="about()!.photoAlt || about()!.headline"
           />
         }
-        <markdown [data]="page()!.body" class="folio-prose" />
+
+        <h1 class="text-3xl font-bold mb-2">{{ about()!.headline }}</h1>
+
+        @if (about()!.subheadline) {
+          <p class="text-lg opacity-70 mb-6">{{ about()!.subheadline }}</p>
+        }
+
+        <markdown [data]="about()!.bio" class="folio-prose" />
+
+        @if (about()!.socialLinks?.length) {
+          <ul class="flex flex-wrap gap-4 mt-8">
+            @for (link of about()!.socialLinks; track link.url) {
+              <li>
+                <a
+                  [href]="link.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm underline opacity-70 hover:opacity-100"
+                >
+                  {{ link.label || link.platform }}
+                </a>
+              </li>
+            }
+          </ul>
+        }
       </article>
     } @else {
       <p class="p-10 text-center opacity-50">No content available.</p>
@@ -42,24 +65,29 @@ export class AboutPageComponent {
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
 
-  readonly page = toSignal(
-    this.route.data.pipe(map((data) => (data['page'] as AboutPage) ?? null)),
-    { initialValue: (this.route.snapshot.data['page'] as AboutPage) ?? null },
+  readonly about = toSignal(
+    this.route.data.pipe(map((data) => (data['about'] as AboutPageConfig) ?? null)),
+    { initialValue: (this.route.snapshot.data['about'] as AboutPageConfig) ?? null },
   );
 
   constructor() {
     effect(() => {
-      const p = this.page();
-      if (!p) return;
+      const a = this.about();
+      if (!a) return;
       if (!isPlatformBrowser(this.platformId)) return;
-      this.title.setTitle(p.seo?.title ?? p.title);
-      if (p.seo?.description) {
-        this.meta.updateTag({ name: 'description', content: p.seo.description });
+
+      this.title.setTitle(a.seo?.title ?? a.headline);
+
+      if (a.seo?.description) {
+        this.meta.updateTag({ name: 'description', content: a.seo.description });
       }
-      if (p.seo?.ogImage) {
-        this.meta.updateTag({ property: 'og:image', content: p.seo.ogImage });
+      if (a.seo?.ogImage) {
+        this.meta.updateTag({ property: 'og:image', content: a.seo.ogImage });
       }
-      if (p.seo?.noIndex) {
+      if (a.seo?.canonicalUrl) {
+        this.meta.updateTag({ rel: 'canonical', href: a.seo.canonicalUrl });
+      }
+      if (a.seo?.noIndex) {
         this.meta.updateTag({ name: 'robots', content: 'noindex' });
       } else {
         this.meta.removeTag('name="robots"');

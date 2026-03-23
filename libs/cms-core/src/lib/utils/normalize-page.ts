@@ -1,4 +1,4 @@
-import type { AboutPage, CmsPageUnion, LinksPage, LinksLink } from '../models/page.model';
+import type { CmsPageUnion, LinksPage, LinksLink } from '../models/page.model';
 
 function normalizeTimestamp(value: unknown): number {
   if (value == null) return 0;
@@ -38,7 +38,6 @@ function normalizeLinks(raw: unknown): LinksLink[] {
 }
 
 export function normalizePage(raw: Record<string, unknown>): CmsPageUnion {
-  const type = raw['type'] as string;
   const base = {
     id: (raw['id'] as string) ?? '',
     slug: (raw['slug'] as string) ?? '',
@@ -49,27 +48,14 @@ export function normalizePage(raw: Record<string, unknown>): CmsPageUnion {
     createdAt: normalizeTimestamp(raw['createdAt']),
   };
 
-  if (type === 'links') {
-    const page: LinksPage = {
-      ...base,
-      type: 'links',
-      avatarUrl: raw['avatarUrl'] as string | undefined,
-      avatarAlt: raw['avatarAlt'] as string | undefined,
-      headline: raw['headline'] as string | undefined,
-      bio: raw['bio'] as string | undefined,
-      links: normalizeLinks(raw['links']),
-    };
-    return page;
-  }
-
-  const page: AboutPage = {
+  const page: LinksPage = {
     ...base,
-    type: 'about',
-    heroImageUrl: raw['heroImageUrl'] as string | undefined,
-    heroImageAlt: raw['heroImageAlt'] as string | undefined,
-    body: (raw['body'] as string) ?? '',
-    contentVersion: (raw['contentVersion'] as number) ?? 1,
-    embeddedMedia: (raw['embeddedMedia'] as AboutPage['embeddedMedia']) ?? {},
+    type: 'links',
+    avatarUrl: raw['avatarUrl'] as string | undefined,
+    avatarAlt: raw['avatarAlt'] as string | undefined,
+    headline: raw['headline'] as string | undefined,
+    bio: raw['bio'] as string | undefined,
+    links: normalizeLinks(raw['links']),
   };
   return page;
 }

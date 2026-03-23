@@ -15,9 +15,9 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
       useValue: {
         appName: 'FolioKit Admin',
         nav: [
-          { label: 'Posts', url: '/posts' },
-          { label: 'Pages', url: '/pages' },
           { label: 'Site Config', url: '/site-config' },
+          { label: 'Posts', url: '/posts' },
+          { label: 'Authors', url: '/authors' },
         ],
       },
     },
@@ -25,21 +25,23 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
   template: `
     <folio-app-shell>
       <mat-nav-list shellNav>
-        <a mat-list-item routerLink="/posts" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>article</mat-icon>
-          <span matListItemTitle>Posts</span>
+        <a mat-list-item routerLink="/site-config" routerLinkActive="active-link">
+          <span class="flex items-center gap-4">
+            <mat-icon>settings</mat-icon>
+            <span>Site Config</span>
+          </span>
         </a>
-        <a mat-list-item routerLink="/pages" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>pages</mat-icon>
-          <span matListItemTitle>Pages</span>
+        <a mat-list-item routerLink="/posts" routerLinkActive="active-link">
+          <span class="flex items-center gap-4">
+            <mat-icon>article</mat-icon>
+            <span>Posts</span>
+          </span>
         </a>
         <a mat-list-item routerLink="/authors" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Authors</span>
-        </a>
-        <a mat-list-item routerLink="/site-config" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>settings</mat-icon>
-          <span matListItemTitle>Site Config</span>
+          <span class="flex items-center gap-4">
+            <mat-icon>people</mat-icon>
+            <span>Authors</span>
+          </span>
         </a>
       </mat-nav-list>
       <router-outlet />

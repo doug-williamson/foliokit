@@ -74,11 +74,9 @@ export class PageEditorEmbeddedMediaComponent {
   readonly uploading = signal(false);
   readonly uploadError = signal<string | null>(null);
 
-  readonly entries = computed<EmbeddedMediaEntry[]>(() => {
-    const page = this.store.page();
-    if (!page || page.type !== 'about') return [];
-    return Object.values(page.embeddedMedia) as EmbeddedMediaEntry[];
-  });
+  // Embedded media is no longer supported for page types — AboutPage was
+  // superseded by AboutPageConfig in SiteConfig.
+  readonly entries = computed<EmbeddedMediaEntry[]>(() => []);
 
   onFileSelected(files: FileList | null): void {
     if (!files?.length) return;
@@ -106,18 +104,7 @@ export class PageEditorEmbeddedMediaComponent {
         this.uploadError.set(error.message);
       },
       () => {
-        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          const entry: EmbeddedMediaEntry = {
-            token,
-            storagePath,
-            downloadUrl,
-            alt: file.name,
-            mimeType: file.type,
-          };
-          const page = this.store.page();
-          if (page?.type === 'about') {
-            this.store.updateField('embeddedMedia', { ...page.embeddedMedia, [token]: entry });
-          }
+        getDownloadURL(task.snapshot.ref).then(() => {
           this.uploading.set(false);
         });
       },

@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { postsResolver } from './resolvers/posts.resolver';
 import { postResolver } from './resolvers/post.resolver';
 import { pageResolver } from './resolvers/page.resolver';
+import { aboutPageResolver } from './resolvers/about-page.resolver';
 
 export const appRoutes: Route[] = [
   {
@@ -35,8 +36,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'about',
-    data: { pageId: 'about' },
-    resolve: { page: pageResolver },
+    resolve: { about: aboutPageResolver },
     loadComponent: () =>
       import('@foliokit/cms-ui').then((m) => m.AboutPageComponent),
   },

@@ -24,6 +24,11 @@ function omitUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
 
+/**
+ * @deprecated PageService is superseded by SiteConfigService.getAboutConfig() for the
+ * About page. The /pages Firestore collection remains intact for LinksPage. This class
+ * will be removed in a future release once LinksPage is also migrated.
+ */
 @Injectable({ providedIn: 'root' })
 export class PageService implements IPageService {
   // Non-null assertions are safe: PageService is only active in the browser
@@ -88,7 +93,7 @@ export class PageService implements IPageService {
 
     if (page.id === '') {
       const newId =
-        page.type === 'about' || page.type === 'links'
+        page.type === 'links'
           ? page.type
           : doc(collection(this.firestore, 'pages')).id;
       const savedPage: CmsPageUnion = { ...page, id: newId, createdAt: nowMs, updatedAt: nowMs };
