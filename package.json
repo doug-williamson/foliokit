@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx nx build blog",
     "start": "node dist/apps/blog/server/server.mjs",
-    "start:blog": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 nx serve blog --port=4201",
+    "start:blog": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_PROJECT_ID=foliokit-6f974 nx serve blog --port=4201",
     "start:docs": "nx serve docs --port=4202",
     "start:admin": "nx serve admin --port=4203",
     "build:blog": "nx build blog",
@@ -60,6 +60,7 @@
     "@types/node": "20.19.9",
     "@typescript-eslint/utils": "^8.40.0",
     "angular-eslint": "^21.0.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-playwright": "^1.6.2",

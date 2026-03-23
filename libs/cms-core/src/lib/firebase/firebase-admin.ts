@@ -14,10 +14,8 @@
  */
 import admin from 'firebase-admin';
 
-let initialized = false;
-
 export function initAdminApp(): admin.app.App {
-  if (!initialized) {
+  if (!admin.apps.length) {
     const credEnv = process.env['GOOGLE_APPLICATION_CREDENTIALS'];
     const credential = credEnv?.trimStart().startsWith('{')
       ? admin.credential.cert(
@@ -29,7 +27,6 @@ export function initAdminApp(): admin.app.App {
       credential,
       projectId: process.env['FIREBASE_PROJECT_ID'],
     });
-    initialized = true;
   }
   return admin.app();
 }
