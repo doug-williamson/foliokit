@@ -60,14 +60,37 @@ async function seed(): Promise<void> {
         defaultAuthorId: 'author-1',
         nav: [
           { label: 'Home', url: '/' },
+          { label: 'Blog', url: '/posts' },
           { label: 'About', url: '/about' },
         ],
+        social: [
+          { platform: 'github', url: 'https://github.com/your-username', label: 'GitHub' },
+        ],
         defaultSeo: {
-          metaTitle: 'FolioKit Blog',
-          metaDescription: 'A blog built with FolioKit.',
-          ogImageUrl: '',
+          title: 'FolioKit Blog',
+          description: 'A blog built with FolioKit.',
+          ogImage: '',
           canonicalUrl: 'https://foliokit-6f974.web.app',
         },
+        pages: {
+          about: {
+            headline: 'Hi, I\'m Your Name',
+            subheadline: 'Developer & writer',
+            bio: `## About Me\n\nReplace this with your own bio. You can use **Markdown** here.\n\n## What I Do\n\n- Building things for the web\n- Writing about what I learn\n\n## Get in Touch\n\nFeel free to reach out via any of the links below.`,
+            photoUrl: '',
+            photoAlt: 'Profile photo',
+            socialLinks: [
+              { platform: 'github', url: 'https://github.com/your-username', label: 'GitHub' },
+              { platform: 'linkedin', url: 'https://linkedin.com/in/your-username', label: 'LinkedIn' },
+            ],
+            seo: {
+              title: 'About — FolioKit Blog',
+              description: 'Learn more about the person behind FolioKit Blog.',
+              ogImage: '',
+            },
+          },
+        },
+        updatedAt: admin.firestore.Timestamp.now(),
       },
       { merge: false }
     );
@@ -98,10 +121,9 @@ async function seed(): Promise<void> {
         createdAt: admin.firestore.Timestamp.fromDate(new Date('2025-01-01')),
         readingTimeMinutes: 1,
         seo: {
-          metaTitle: 'Hello World — FolioKit',
-          metaDescription:
-            'The first post created to verify the FolioKit read layer.',
-          ogImageUrl: '',
+          title: 'Hello World — FolioKit',
+          description: 'The first post created to verify the FolioKit read layer.',
+          ogImage: '',
           canonicalUrl: 'https://foliokit-6f974.web.app/posts/hello-world',
         },
       },

@@ -5,16 +5,16 @@ import { catchError, filter, map } from 'rxjs/operators';
 import { FIRESTORE } from '../firebase/firebase.config';
 import type { AboutPageConfig, SiteConfig } from '../models/site-config.model';
 import { normalizeSiteConfig } from '../utils/normalize-site-config';
+import type { ISiteConfigService } from '../tokens/site-config-service.token';
 
 export const ABOUT_CONFIG_TRANSFER_KEY = makeStateKey<AboutPageConfig | null>('about-config');
 
 @Injectable({ providedIn: 'root' })
-export class SiteConfigService {
-  // Non-null assertion is safe: SiteConfigService is only used in the browser
-  // where FIRESTORE is always initialized.
-  private readonly firestore = inject(FIRESTORE)!;
+export class SiteConfigService implements ISiteConfigService {
+  private readonly firestore = inject(FIRESTORE);
 
   getSiteConfig(siteId: string): Observable<SiteConfig | null> {
+    if (!this.firestore) return of(null);
     const ref = doc(this.firestore, 'site-config', siteId);
     return from(getDoc(ref)).pipe(
       map((snap) => {
@@ -51,6 +51,7 @@ export class SiteConfigService {
   }
 
   saveSiteConfig(config: SiteConfig): Observable<SiteConfig> {
+    if (!this.firestore) return of(config);
     const siteId = config.id || 'default';
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);

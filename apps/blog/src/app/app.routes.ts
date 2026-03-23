@@ -38,7 +38,9 @@ export const appRoutes: Route[] = [
     path: 'about',
     resolve: { about: aboutPageResolver },
     loadComponent: () =>
-      import('@foliokit/cms-ui').then((m) => m.AboutPageComponent),
+      import('./features/about/blog-about-page.component').then(
+        (m) => m.BlogAboutPageComponent,
+      ),
   },
   {
     path: 'links',

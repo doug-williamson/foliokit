@@ -3,15 +3,18 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
   ViewChild,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import type { BlogPost, Tag } from '@foliokit/cms-core';
-import { TagService } from '@foliokit/cms-core';
+import { SiteConfigService, TagService } from '@foliokit/cms-core';
+import { BlogSeoService } from '../../services/blog-seo.service';
 import { PostCardComponent } from './post-card.component';
 import { TagFilterComponent } from './tag-filter.component';
 
@@ -72,6 +75,14 @@ export class PostListComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly tagService = inject(TagService);
+  private readonly siteConfigService = inject(SiteConfigService);
+  private readonly blogSeoService = inject(BlogSeoService);
+  private readonly document = inject(DOCUMENT);
+
+  private readonly siteConfig = toSignal(
+    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
+    { initialValue: null },
+  );
 
   @ViewChild('tagFilter') private tagFilterRef?: TagFilterComponent;
 
@@ -112,6 +123,15 @@ export class PostListComponent implements AfterViewInit {
     if (!tag) return this.posts();
     return this.posts().filter((p) => p.tags.includes(tag));
   });
+
+  constructor() {
+    effect(() => {
+      const config = this.siteConfig();
+      if (!config) return;
+      const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
+      this.blogSeoService.setDefaultMeta(config, `${baseUrl}/posts`);
+    });
+  }
 
   ngAfterViewInit(): void {
     const initial = this.selectedTag();

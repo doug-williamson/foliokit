@@ -2,17 +2,18 @@ import { inject, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core'
 import { isPlatformServer } from '@angular/common';
 import { ResolveFn, Router } from '@angular/router';
 import { tap, take, map } from 'rxjs/operators';
-import { SiteConfigService } from '@foliokit/cms-core';
+import { SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 
-// NOTE: the Firestore document site-config/main must have a pages.about field
-// populated for this resolver to succeed. If it is missing, the resolver
-// redirects to /not-found.
+// NOTE: the Firestore document site-config/default must have a pages.about
+// field populated for this resolver to succeed. On the server, SITE_CONFIG_SERVICE
+// is bound to ServerSiteConfigService (Admin SDK). In the browser it falls back
+// to the browser-side SiteConfigService (client SDK).
 const ABOUT_PAGE_KEY = makeStateKey<AboutPageConfig | null>('about-page');
 
 export const aboutPageResolver: ResolveFn<AboutPageConfig> = () => {
   const transferState = inject(TransferState);
-  const service = inject(SiteConfigService);
+  const service = inject(SITE_CONFIG_SERVICE);
   const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
 

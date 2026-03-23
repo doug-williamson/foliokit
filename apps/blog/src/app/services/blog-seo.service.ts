@@ -1,0 +1,137 @@
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Meta, Title } from '@angular/platform-browser';
+import { take } from 'rxjs/operators';
+import { SiteConfigService } from '@foliokit/cms-core';
+import type { AboutPageConfig, BlogPost, SiteConfig } from '@foliokit/cms-core';
+
+@Injectable({ providedIn: 'root' })
+export class BlogSeoService {
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly siteConfigService = inject(SiteConfigService);
+
+  private readonly siteConfig = toSignal(
+    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
+    { initialValue: null },
+  );
+
+  setPostMeta(post: BlogPost, baseUrl: string, authorDisplayName?: string): void {
+    const siteName = this.siteConfig()?.siteName ?? 'FolioKit Blog';
+    const pageTitle = `${post.seo?.title ?? post.title} — ${siteName}`;
+    const description = post.seo?.description ?? post.excerpt ?? '';
+    const canonical = post.seo?.canonicalUrl ?? `${baseUrl}/posts/${post.slug}`;
+    const ogImage =
+      post.seo?.ogImage ?? post.thumbnailUrl ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
+
+    this.title.setTitle(pageTitle);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: pageTitle });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'article' });
+    this.meta.updateTag({ property: 'og:url', content: canonical });
+    if (ogImage) {
+      this.meta.updateTag({ property: 'og:image', content: ogImage });
+    }
+
+    this.upsertLinkCanonical(canonical);
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt ?? description,
+      ...(ogImage ? { image: ogImage } : {}),
+      datePublished: new Date(post.publishedAt).toISOString(),
+      dateModified: new Date(post.updatedAt).toISOString(),
+      ...(authorDisplayName
+        ? { author: { '@type': 'Person', name: authorDisplayName } }
+        : {}),
+      url: canonical,
+    };
+    this.upsertJsonLd(schema, 'post');
+  }
+
+  setAboutMeta(config: AboutPageConfig, baseUrl: string): void {
+    const siteName = this.siteConfig()?.siteName ?? 'FolioKit Blog';
+    const pageTitle = `About — ${siteName}`;
+    const description = config.seo?.description ?? config.subheadline ?? '';
+    const canonical = config.seo?.canonicalUrl ?? `${baseUrl}/about`;
+    const ogImage = config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
+
+    this.title.setTitle(pageTitle);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: pageTitle });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: canonical });
+    if (ogImage) {
+      this.meta.updateTag({ property: 'og:image', content: ogImage });
+    }
+
+    this.upsertLinkCanonical(canonical);
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: config.headline,
+      description: config.subheadline ?? '',
+      sameAs: (config.socialLinks ?? []).map((l) => l.url),
+    };
+    this.upsertJsonLd(schema, 'about');
+  }
+
+  setDefaultMeta(siteConfig: SiteConfig, canonicalUrl?: string): void {
+    const description = siteConfig.defaultSeo?.description ?? '';
+    const ogImage = siteConfig.defaultSeo?.ogImage ?? '';
+
+    this.title.setTitle(siteConfig.siteName);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: siteConfig.siteName });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: canonicalUrl ?? siteConfig.siteUrl });
+    if (ogImage) {
+      this.meta.updateTag({ property: 'og:image', content: ogImage });
+    }
+
+    if (canonicalUrl) {
+      this.upsertLinkCanonical(canonicalUrl);
+    }
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteConfig.siteName,
+      url: siteConfig.siteUrl,
+    };
+    this.upsertJsonLd(schema, 'site');
+  }
+
+  private upsertLinkCanonical(href: string): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    let el = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!el) {
+      el = this.document.createElement('link');
+      el.rel = 'canonical';
+      this.document.head.appendChild(el);
+    }
+    el.href = href;
+  }
+
+  private upsertJsonLd(schema: object, id: string): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const selector = `script[type="application/ld+json"][data-id="${id}"]`;
+    let el = this.document.querySelector<HTMLScriptElement>(selector);
+    if (!el) {
+      el = this.document.createElement('script');
+      el.type = 'application/ld+json';
+      el.dataset['id'] = id;
+      this.document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(schema);
+  }
+}
