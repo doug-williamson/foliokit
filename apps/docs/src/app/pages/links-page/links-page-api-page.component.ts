@@ -45,21 +45,21 @@ export type SocialPlatform =
     <docs-page-header />
 
     <section>
-      <h2 id="inputs">Route Data</h2>
-      <p>
+      <h2 id="inputs" class="mat-headline-small">Route Data</h2>
+      <p class="mat-body-medium">
         <code>LinksPageComponent</code> does not use <code>&#64;Input()</code> or signal inputs.
         It reads its configuration exclusively from <code>ActivatedRoute.data['page']</code>.
       </p>
       <docs-api-table [rows]="routeDataRow" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="social-link">LinksLink Fields</h2>
+    <section class="mt-8">
+      <h2 id="social-link" class="mat-headline-small">LinksLink Fields</h2>
       <docs-api-table [rows]="linksLinkRows" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="platforms">SocialPlatform Type</h2>
+    <section class="mt-8">
+      <h2 id="platforms" class="mat-headline-small">SocialPlatform Type</h2>
       <docs-code-block [code]="platformsCode" language="typescript" />
     </section>
   `,

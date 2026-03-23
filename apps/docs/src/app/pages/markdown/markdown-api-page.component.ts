@@ -38,13 +38,13 @@ const embeddedMediaRows: ApiTableRow[] = [
     <docs-page-header />
 
     <section>
-      <h2 id="inputs">Inputs</h2>
+      <h2 id="inputs" class="mat-headline-small">Inputs</h2>
       <docs-api-table [rows]="inputRows" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="embedded-media">EmbeddedMediaEntry</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="embedded-media" class="mat-headline-small">EmbeddedMediaEntry</h2>
+      <p class="mat-body-medium">
         Each entry in the <code>embeddedMedia</code> record maps a token key to the following
         fields:
       </p>

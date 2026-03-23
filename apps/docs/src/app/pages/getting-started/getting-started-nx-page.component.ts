@@ -33,22 +33,22 @@ const firebaseMultiSite = `{
     <docs-page-header />
 
     <section>
-      <h2 id="create-workspace">Create Workspace</h2>
-      <p>Bootstrap a new Nx monorepo with Angular support:</p>
+      <h2 id="create-workspace" class="mat-headline-small">Create Workspace</h2>
+      <p class="mat-body-medium">Bootstrap a new Nx monorepo with Angular support:</p>
       <docs-code-block [code]="createWorkspace" language="bash" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="add-angular">Add Angular</h2>
-      <p>Generate the Angular app inside the workspace:</p>
+    <section class="mt-8">
+      <h2 id="add-angular" class="mat-headline-small">Add Angular</h2>
+      <p class="mat-body-medium">Generate the Angular app inside the workspace:</p>
       <docs-code-block [code]="addAngular" language="bash" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="add-firebase">Add Firebase</h2>
-      <p>Initialize Firebase in the Nx workspace:</p>
+    <section class="mt-8">
+      <h2 id="add-firebase" class="mat-headline-small">Add Firebase</h2>
+      <p class="mat-body-medium">Initialize Firebase in the Nx workspace:</p>
       <docs-code-block [code]="addFirebase" language="bash" />
-      <p class="mt-4">Configure multi-site hosting in <code>firebase.json</code>:</p>
+      <p class="mat-body-medium mt-4">Configure multi-site hosting in <code>firebase.json</code>:</p>
       <docs-code-block [code]="firebaseMultiSite" language="json" />
     </section>
   `,

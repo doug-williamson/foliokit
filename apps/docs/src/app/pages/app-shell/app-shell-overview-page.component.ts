@@ -65,8 +65,8 @@ const slotsRows: ApiTableRow[] = [
     <docs-page-header />
 
     <section>
-      <h2 id="overview">Overview</h2>
-      <p>
+      <h2 id="overview" class="mat-headline-small">Overview</h2>
+      <p class="mat-body-medium">
         <code>AppShellComponent</code> (<code>folio-app-shell</code>) is the top-level layout
         for FolioKit apps. It provides a Material sidenav, a branded header with optional auth
         slot, theme toggle, and responsive mobile drawer. All configuration is driven by the
@@ -74,19 +74,19 @@ const slotsRows: ApiTableRow[] = [
       </p>
     </section>
 
-    <section class="mt-10">
-      <h2 id="installation">Installation</h2>
+    <section class="mt-8">
+      <h2 id="installation" class="mat-headline-small">Installation</h2>
       <docs-tabs [tabs]="installTabs" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="basic-usage">Basic Usage</h2>
+    <section class="mt-8">
+      <h2 id="basic-usage" class="mat-headline-small">Basic Usage</h2>
       <docs-code-block [code]="basicUsage" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="slots">Content Slots</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="slots" class="mat-headline-small">Content Slots</h2>
+      <p class="mat-body-medium">
         <code>AppShellComponent</code> exposes four <code>ng-content</code> projection slots:
       </p>
       <docs-api-table [rows]="slotsRows" />

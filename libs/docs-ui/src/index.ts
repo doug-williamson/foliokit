@@ -14,6 +14,7 @@ export * from './lib/layout/docs-shell/docs-shell.component';
 export * from './lib/nav/docs-nav/docs-nav.component';
 export * from './lib/nav/docs-breadcrumb/docs-breadcrumb.component';
 export * from './lib/nav/docs-toc/docs-toc.component';
+export * from './lib/nav/docs-anchor-nav/docs-anchor-nav.component';
 
 // Content
 export * from './lib/content/docs-page-header/docs-page-header.component';

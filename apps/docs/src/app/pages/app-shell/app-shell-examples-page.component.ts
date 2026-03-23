@@ -86,14 +86,14 @@ class AuthSlotPreviewComponent {}
   template: `
     <docs-page-header />
 
-    <h2>Live Examples</h2>
+    <h2 class="mat-headline-small">Live Examples</h2>
 
-    <h3>Basic Shell</h3>
+    <h3 class="mat-title-medium mt-4">Basic Shell</h3>
     <docs-preview [code]="basicShellCode">
       <docs-basic-shell-preview />
     </docs-preview>
 
-    <h3>With Auth Slot</h3>
+    <h3 class="mat-title-medium mt-4">With Auth Slot</h3>
     <docs-preview [code]="authSlotCode">
       <docs-auth-slot-preview />
     </docs-preview>

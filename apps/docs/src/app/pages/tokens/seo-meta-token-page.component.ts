@@ -40,8 +40,8 @@ const myPage: LinksPage = {
     <docs-page-header />
 
     <section>
-      <h2 id="interface">Interface</h2>
-      <p>
+      <h2 id="interface" class="mat-headline-small">Interface</h2>
+      <p class="mat-body-medium">
         <code>SeoMeta</code> is a flat TypeScript interface from <code>@foliokit/cms-core</code>.
         All fields are optional. It is embedded in every <code>CmsPageBase</code> subtype
         (e.g. <code>LinksPage</code>, <code>AboutPage</code>).
@@ -49,9 +49,9 @@ const myPage: LinksPage = {
       <docs-code-block [code]="seoMetaInterface" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="usage">Usage</h2>
-      <p>Embed a <code>SeoMeta</code> object in the <code>seo</code> field of any page:</p>
+    <section class="mt-8">
+      <h2 id="usage" class="mat-headline-small">Usage</h2>
+      <p class="mat-body-medium">Embed a <code>SeoMeta</code> object in the <code>seo</code> field of any page:</p>
       <docs-code-block [code]="usageCode" language="typescript" />
     </section>
   `,
