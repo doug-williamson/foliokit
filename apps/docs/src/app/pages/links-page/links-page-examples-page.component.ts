@@ -1,11 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import {
-  DocsPageHeaderComponent,
-  DocsPreviewComponent,
-  DocsPreviewDefinition,
-} from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { LinksPageComponent } from '@foliokit/cms-ui';
 import type { LinksPage } from '@foliokit/cms-core';
 
@@ -67,22 +63,16 @@ const previewCode = `<folio-links-page />
   selector: 'docs-links-page-examples-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsPreviewComponent],
+  imports: [DocsPageHeaderComponent, DocsPreviewComponent, LinksPageComponent],
+  providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }],
   template: `
     <docs-page-header />
 
-    <docs-preview [previews]="previews" />
+    <docs-preview [code]="previewCode">
+      <cms-links-page />
+    </docs-preview>
   `,
 })
 export class LinksPageExamplesPageComponent {
-  protected readonly previews: DocsPreviewDefinition[] = [
-    {
-      label: 'Basic LinksPage',
-      component: LinksPageComponent,
-      providers: [
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-      ],
-      code: previewCode,
-    },
-  ];
+  protected readonly previewCode = previewCode;
 }

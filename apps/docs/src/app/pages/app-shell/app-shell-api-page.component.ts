@@ -44,22 +44,22 @@ export class MyComponent {
     <docs-page-header />
 
     <section>
-      <h2 id="shell-config">SHELL_CONFIG</h2>
-      <p>
+      <h2 id="shell-config" class="mat-headline-small">SHELL_CONFIG</h2>
+      <p class="mat-body-medium">
         Provide <code>SHELL_CONFIG</code> with a <code>ShellConfig</code> value anywhere in
         your provider tree. <code>AppShellComponent</code> injects it to configure the layout.
       </p>
       <docs-api-table [rows]="shellConfigRows" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="slots">Content Slots</h2>
+    <section class="mt-8">
+      <h2 id="slots" class="mat-headline-small">Content Slots</h2>
       <docs-api-table [rows]="slotsRows" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="theme-service">ThemeService</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="theme-service" class="mat-headline-small">ThemeService</h2>
+      <p class="mat-body-medium">
         Inject <code>ThemeService</code> to programmatically toggle the theme or read
         the current dark-mode state.
       </p>

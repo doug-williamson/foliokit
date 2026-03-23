@@ -52,18 +52,18 @@ export const appConfig: ApplicationConfig = {
     <docs-page-header />
 
     <section>
-      <h2 id="interface">ShellConfig interface</h2>
+      <h2 id="interface" class="mat-headline-small">ShellConfig interface</h2>
       <docs-code-block [code]="shellConfigInterface" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="nav-item">NavItem</h2>
+    <section class="mt-8">
+      <h2 id="nav-item" class="mat-headline-small">NavItem</h2>
       <docs-code-block [code]="navItemInterface" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="usage">Usage</h2>
-      <p>Provide <code>SHELL_CONFIG</code> in your root <code>appConfig</code> providers:</p>
+    <section class="mt-8">
+      <h2 id="usage" class="mat-headline-small">Usage</h2>
+      <p class="mat-body-medium">Provide <code>SHELL_CONFIG</code> in your root <code>appConfig</code> providers:</p>
       <docs-code-block [code]="usageCode" language="typescript" />
     </section>
   `,

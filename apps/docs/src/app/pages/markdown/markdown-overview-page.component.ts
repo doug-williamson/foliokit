@@ -60,8 +60,8 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
     <docs-page-header />
 
     <section>
-      <h2 id="overview">Overview</h2>
-      <p>
+      <h2 id="overview" class="mat-headline-small">Overview</h2>
+      <p class="mat-body-medium">
         <code>MarkdownComponent</code> (<code>folio-markdown</code>) renders Markdown strings
         to HTML using <code>ngx-markdown</code> under the hood. It applies Tailwind Typography
         <code>prose</code> classes for consistent styling and supports custom embedded media
@@ -73,14 +73,14 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
       </docs-callout>
     </section>
 
-    <section class="mt-10">
-      <h2 id="basic-usage">Basic Usage</h2>
+    <section class="mt-8">
+      <h2 id="basic-usage" class="mat-headline-small">Basic Usage</h2>
       <docs-code-block [code]="basicUsage" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="embedded-media">Embedded Media</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="embedded-media" class="mat-headline-small">Embedded Media</h2>
+      <p class="mat-body-medium">
         Pass an <code>embeddedMedia</code> record to resolve custom image tokens inside
         your Markdown content. The token syntax is <code>Show Image: token-key</code> on
         its own line.

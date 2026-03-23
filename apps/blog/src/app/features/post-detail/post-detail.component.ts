@@ -4,11 +4,13 @@ import {
   computed,
   effect,
   inject,
+  PLATFORM_ID,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import type { BlogPost, Tag } from '@foliokit/cms-core';
@@ -148,9 +150,12 @@ export class PostDetailComponent {
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
   private readonly tagService = inject(TagService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private readonly fetchedTags = toSignal(
-    this.tagService.getAllTags().pipe(take(1)),
+    isPlatformBrowser(this.platformId)
+      ? this.tagService.getAllTags().pipe(take(1))
+      : of([] as Tag[]),
     { initialValue: [] as Tag[] },
   );
 

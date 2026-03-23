@@ -8,7 +8,7 @@
       (click)="copy()"
       class="docs-code-block__copy-btn"
     >
-      <mat-icon class="text-sm">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+      <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
     </button>
   </div>
   <pre class="docs-code-block__pre"><code #codeEl class="language-{{ language() }}"></code></pre>

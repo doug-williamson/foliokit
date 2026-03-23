@@ -1,95 +1,89 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  DocsPageHeaderComponent,
-  DocsPreviewComponent,
-  DocsPreviewDefinition,
-} from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 
-const DEMO_MARKDOWN = `# MarkdownComponent Demo
+const DEMO_MARKDOWN = `# Getting Started with MarkdownComponent
 
-This is a **bold** statement and this is *italic* text.
-
-## Code Block
+Render **rich content** from *Firestore documents* using a single component.
 
 \`\`\`typescript
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 
 @Component({
+  standalone: true,
   imports: [MarkdownComponent],
-  template: \`<folio-markdown [content]="md" />\`,
+  template: '<folio-markdown [content]="md" />',
 })
-export class MyPage {
-  readonly md = '# Hello';
+export class MyComponent {
+  readonly md = '# Hello World';
 }
 \`\`\`
 
-## Blockquote
+> The MarkdownComponent wraps ngx-markdown and applies Tailwind
+> prose classes, so your content looks great out of the box.
 
-> FolioKit is a headless Angular CMS toolkit built on Firebase,
-> Material 3, and Nx. It gives you the building blocks — you bring the content.
+## Key Features
 
-## Unordered List
-
-- Angular 21 with standalone components
-- Firebase Firestore and Storage
-- Material 3 design tokens
-- Tailwind CSS utilities
-
-## Inline Code
-
-Use \`input.required<string>()\` for required signal inputs in Angular 17+.
+- Signal-based content input
+- Automatic image URL resolution via embeddedMedia
+- Tailwind typography styling
+- Dark mode support with prose-invert
 `;
 
+const previewCode = `import { Component } from '@angular/core';
+import { MarkdownComponent } from '@foliokit/cms-markdown';
+
+const content = \`# Getting Started with MarkdownComponent
+
+Render **rich content** from *Firestore documents* using a single component.
+
+\\\`\\\`\\\`typescript
+import { MarkdownComponent } from '@foliokit/cms-markdown';
+
 @Component({
-  selector: 'docs-markdown-example-content',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MarkdownComponent],
-  template: `<folio-markdown [content]="content" />`,
+  template: '<folio-markdown [content]="md" />',
 })
-class MarkdownExampleContentComponent {
-  readonly content = DEMO_MARKDOWN;
+export class MyComponent {
+  readonly md = '# Hello World';
 }
+\\\`\\\`\\\`
 
-const previewCode = `import { MarkdownComponent } from '@foliokit/cms-markdown';
+> The MarkdownComponent wraps ngx-markdown and applies Tailwind
+> prose classes, so your content looks great out of the box.
+
+## Key Features
+
+- Signal-based content input
+- Automatic image URL resolution via embeddedMedia
+- Tailwind typography styling
+- Dark mode support with prose-invert
+\`;
 
 @Component({
+  standalone: true,
   imports: [MarkdownComponent],
   template: \`<folio-markdown [content]="content" />\`,
 })
-export class MyPageComponent {
-  readonly content = \`
-# Heading
-
-Paragraph with **bold** and *italic* text.
-
-\\\`\\\`\\\`typescript
-const x = 42;
-\\\`\\\`\\\`
-
-> A blockquote for emphasis.
-  \`;
+export class ExampleComponent {
+  readonly content = content;
 }`;
 
 @Component({
   selector: 'docs-markdown-examples-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsPreviewComponent],
+  imports: [DocsPageHeaderComponent, DocsPreviewComponent, MarkdownComponent],
   template: `
     <docs-page-header />
 
-    <docs-preview [previews]="previews" />
+    <docs-preview [code]="previewCode">
+      <folio-markdown [content]="demoMarkdown" />
+    </docs-preview>
   `,
 })
 export class MarkdownExamplesPageComponent {
-  protected readonly previews: DocsPreviewDefinition[] = [
-    {
-      label: 'Basic Markdown',
-      component: MarkdownExampleContentComponent,
-      providers: [],
-      code: previewCode,
-    },
-  ];
+  protected readonly previewCode = previewCode;
+  protected readonly demoMarkdown = DEMO_MARKDOWN;
 }

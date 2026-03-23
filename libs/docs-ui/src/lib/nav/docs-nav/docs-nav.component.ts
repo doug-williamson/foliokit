@@ -5,13 +5,15 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { DocsRouteNode } from '../../models/docs-route-node.model';
 
 @Component({
   selector: 'docs-nav',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, MatExpansionModule, MatIconModule],
   templateUrl: './docs-nav.component.html',
   styleUrl: './docs-nav.component.scss',
 })

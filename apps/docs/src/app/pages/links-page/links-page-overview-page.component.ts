@@ -48,8 +48,8 @@ export interface LinksPage extends CmsPageBase {
     <docs-page-header />
 
     <section>
-      <h2 id="overview">Overview</h2>
-      <p>
+      <h2 id="overview" class="mat-headline-small">Overview</h2>
+      <p class="mat-body-medium">
         <code>LinksPageComponent</code> (<code>folio-links-page</code>) renders a
         link-in-bio page driven entirely by a <code>LinksPage</code> data object.
         It displays an avatar, headline, bio, and a vertical stack of styled link buttons
@@ -57,17 +57,17 @@ export interface LinksPage extends CmsPageBase {
       </p>
     </section>
 
-    <section class="mt-10">
-      <h2 id="basic-usage">Basic Usage</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="basic-usage" class="mat-headline-small">Basic Usage</h2>
+      <p class="mat-body-medium">
         The component reads its page data from <code>ActivatedRoute.data['page']</code>.
         Provide it via a route resolver:
       </p>
       <docs-code-block [code]="basicUsage" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="social-link">LinksLink Interface</h2>
+    <section class="mt-8">
+      <h2 id="social-link" class="mat-headline-small">LinksLink Interface</h2>
       <docs-code-block [code]="socialLinkInterface" language="typescript" />
     </section>
   `,

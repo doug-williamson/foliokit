@@ -29,6 +29,7 @@ $docs-theme-dark: mat.define-theme((
 :root {
   @include mat.all-component-themes($docs-theme);
   @include mat.all-component-typographies($docs-theme);
+  @include mat.typography-hierarchy($docs-theme);
 }
 
 [data-theme='dark'] {

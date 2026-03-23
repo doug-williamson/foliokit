@@ -62,8 +62,8 @@ This text appears below the image.
     <docs-page-header />
 
     <section>
-      <h2 id="interface">Interface</h2>
-      <p>
+      <h2 id="interface" class="mat-headline-small">Interface</h2>
+      <p class="mat-body-medium">
         <code>EmbeddedMediaEntry</code> (from <code>@foliokit/cms-core</code>) describes a
         single Firebase Storage media file that can be embedded inside Markdown content via
         a token reference.
@@ -71,9 +71,9 @@ This text appears below the image.
       <docs-code-block [code]="embeddedMediaInterface" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="token-syntax">Token Syntax</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="token-syntax" class="mat-headline-small">Token Syntax</h2>
+      <p class="mat-body-medium">
         Inside your Markdown string, place <code>Show Image: token-key</code> on its own line.
         <code>MarkdownComponent</code> resolves the token against the <code>embeddedMedia</code>
         record and renders the image inline.
@@ -81,8 +81,8 @@ This text appears below the image.
       <docs-code-block [code]="tokenSyntax" language="typescript" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="usage">Usage</h2>
+    <section class="mt-8">
+      <h2 id="usage" class="mat-headline-small">Usage</h2>
       <docs-code-block [code]="usageCode" language="typescript" />
     </section>
   `,

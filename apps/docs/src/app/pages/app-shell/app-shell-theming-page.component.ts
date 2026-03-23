@@ -35,8 +35,8 @@ module.exports = {
     <docs-page-header />
 
     <section>
-      <h2 id="theme-service">ThemeService</h2>
-      <p>
+      <h2 id="theme-service" class="mat-headline-small">ThemeService</h2>
+      <p class="mat-body-medium">
         <code>ThemeService</code> (from <code>@foliokit/cms-ui</code>) manages the
         <code>data-theme</code> attribute on the <code>&lt;html&gt;</code> element.
         Inject it anywhere to read or toggle the current theme.
@@ -45,9 +45,9 @@ module.exports = {
       <docs-code-block [code]="themeServiceTemplate" language="html" />
     </section>
 
-    <section class="mt-10">
-      <h2 id="css-vars">CSS Variables</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="css-vars" class="mat-headline-small">CSS Variables</h2>
+      <p class="mat-body-medium">
         FolioKit components use Angular Material's <code>--mat-sys-*</code> custom properties
         for all colors. Key tokens used internally:
       </p>
@@ -61,9 +61,9 @@ module.exports = {
       </ul>
     </section>
 
-    <section class="mt-10">
-      <h2 id="dark-mode">Dark Mode</h2>
-      <p>
+    <section class="mt-8">
+      <h2 id="dark-mode" class="mat-headline-small">Dark Mode</h2>
+      <p class="mat-body-medium">
         Dark mode is activated by adding <code>data-theme="dark"</code> to the
         <code>&lt;html&gt;</code> element. Angular Material then applies the dark color
         scheme and Tailwind's dark-mode selector activates dark utilities.

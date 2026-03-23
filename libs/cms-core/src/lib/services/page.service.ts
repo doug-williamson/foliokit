@@ -26,8 +26,11 @@ function omitUndefined(obj: Record<string, unknown>): Record<string, unknown> {
 
 @Injectable({ providedIn: 'root' })
 export class PageService implements IPageService {
-  private readonly firestore = inject(FIRESTORE);
-  private readonly storage = inject(FIREBASE_STORAGE);
+  // Non-null assertions are safe: PageService is only active in the browser
+  // where FIRESTORE and FIREBASE_STORAGE are always initialized.
+  // On the server, BLOG_PAGE_SERVICE resolves to ServerPageService instead.
+  private readonly firestore = inject(FIRESTORE)!;
+  private readonly storage = inject(FIREBASE_STORAGE)!;
 
   getPageBySlug(slug: string): Observable<CmsPageUnion | null> {
     const q = query(

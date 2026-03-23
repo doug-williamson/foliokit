@@ -4,6 +4,7 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
   {
     label: 'Getting Started',
     path: '/docs/getting-started',
+    icon: 'rocket_launch',
     children: [
       { label: 'Nx Setup', path: '/docs/getting-started/nx' },
     ],
@@ -11,6 +12,7 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
   {
     label: 'AppShell',
     path: '/docs/app-shell',
+    icon: 'web',
     children: [
       { label: 'API Reference', path: '/docs/app-shell/api' },
       { label: 'Theming',       path: '/docs/app-shell/theming' },
@@ -20,6 +22,7 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
   {
     label: 'LinksPage',
     path: '/docs/links-page',
+    icon: 'link',
     children: [
       { label: 'API Reference', path: '/docs/links-page/api' },
       { label: 'Examples',      path: '/docs/links-page/examples' },
@@ -28,6 +31,7 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
   {
     label: 'MarkdownComponent',
     path: '/docs/markdown',
+    icon: 'description',
     children: [
       { label: 'API Reference', path: '/docs/markdown/api' },
       { label: 'Examples',      path: '/docs/markdown/examples' },
@@ -36,7 +40,7 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
   {
     label: 'Token Contracts',
     path: '/docs/tokens',
-    sectionHeader: false,
+    icon: 'token',
     children: [
       { label: 'SHELL_CONFIG',       path: '/docs/tokens/shell-config' },
       { label: 'SeoMeta',            path: '/docs/tokens/seo-meta' },
