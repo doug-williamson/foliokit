@@ -69,6 +69,24 @@ async function seed(): Promise<void> {
         social: [
           { platform: 'github', url: 'https://github.com', label: 'GitHub' },
         ],
+        pages: {
+          about: {
+            headline: 'Hi, I\'m Dev Author',
+            subheadline: 'Full-stack developer & open-source enthusiast',
+            bio: `## About Me\n\nI build things for the web — mostly with **Angular**, **Node.js**, and **Firebase**.\n\nFolioKit is my open-source CMS built to make running a personal blog or portfolio fast and pleasant.\n\n## What I\'m Working On\n\n- FolioKit CMS\n- Angular component libraries\n- Writing about web performance and DX\n\n## Outside of Code\n\nHiking, coffee, and the occasional sourdough loaf.`,
+            photoUrl: 'https://i.pravatar.cc/400?u=dev-author',
+            photoAlt: 'Dev Author profile photo',
+            socialLinks: [
+              { platform: 'github', url: 'https://github.com', label: 'GitHub' },
+              { platform: 'linkedin', url: 'https://linkedin.com', label: 'LinkedIn' },
+              { platform: 'bluesky', url: 'https://bsky.app', label: 'Bluesky' },
+            ],
+            seo: {
+              title: 'About — FolioKit Blog',
+              description: 'Learn more about Dev Author, the person behind FolioKit Blog.',
+            },
+          },
+        },
         updatedAt: now,
       },
       { merge: false }
@@ -178,7 +196,7 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config, 4 posts written (2 published, 1 scheduled, 1 draft).');
+    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config (with about page), 4 posts written (2 published, 1 scheduled, 1 draft).');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

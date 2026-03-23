@@ -8,13 +8,14 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, isPlatformBrowser } from '@angular/common';
-import { Meta, Title } from '@angular/platform-browser';
+import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import type { BlogPost, Tag } from '@foliokit/cms-core';
 import { TagService } from '@foliokit/cms-core';
+import { BlogSeoService } from '../../services/blog-seo.service';
+import type { PostRouteData } from '../../resolvers/post.resolver';
 
 @Component({
   selector: 'app-post-detail',
@@ -147,10 +148,10 @@ import { TagService } from '@foliokit/cms-core';
 })
 export class PostDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly titleService = inject(Title);
-  private readonly meta = inject(Meta);
   private readonly tagService = inject(TagService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly blogSeoService = inject(BlogSeoService);
+  private readonly document = inject(DOCUMENT);
 
   private readonly fetchedTags = toSignal(
     isPlatformBrowser(this.platformId)
@@ -163,9 +164,13 @@ export class PostDetailComponent {
     () => new Map(this.fetchedTags().map((t) => [t.id, t])),
   );
 
-  protected readonly post = computed(
-    () => this.route.snapshot.data['post'] as BlogPost | null,
+  private readonly routeData = computed(
+    () => this.route.snapshot.data['post'] as PostRouteData,
   );
+
+  protected readonly post = computed(() => this.routeData()?.post ?? null);
+
+  private readonly author = computed(() => this.routeData()?.author ?? null);
 
   protected readonly publishedDate = computed(() => {
     const p = this.post();
@@ -176,18 +181,8 @@ export class PostDetailComponent {
     effect(() => {
       const p = this.post();
       if (!p) return;
-
-      const pageTitle = p.seo?.title ?? p.title;
-      const description = p.seo?.description ?? p.excerpt ?? '';
-      const ogImage = p.seo?.ogImage ?? p.thumbnailUrl ?? '';
-
-      this.titleService.setTitle(pageTitle);
-      this.meta.updateTag({ name: 'description', content: description });
-      this.meta.updateTag({ property: 'og:title', content: pageTitle });
-      this.meta.updateTag({ property: 'og:description', content: description });
-      if (ogImage) {
-        this.meta.updateTag({ property: 'og:image', content: ogImage });
-      }
+      const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
+      this.blogSeoService.setPostMeta(p, baseUrl, this.author()?.displayName);
     });
   }
 }

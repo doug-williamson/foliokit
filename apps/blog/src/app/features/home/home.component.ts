@@ -1,7 +1,11 @@
 // TODO: Phase 6 — wire HomePage CmsPage from Firestore.
 // Replace static content with dynamic data from pages/home document.
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { take } from 'rxjs/operators';
+import { SiteConfigService } from '@foliokit/cms-core';
+import { BlogSeoService } from '../../services/blog-seo.service';
 
 @Component({
   selector: 'folio-home',
@@ -41,4 +45,20 @@ import { RouterLink } from '@angular/router';
     a:hover { background: var(--folio-blog-accent-hover) !important; }
   `],
 })
-export class HomeComponent {}
+export class HomeComponent {
+  private readonly siteConfigService = inject(SiteConfigService);
+  private readonly blogSeoService = inject(BlogSeoService);
+
+  private readonly siteConfig = toSignal(
+    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
+    { initialValue: null },
+  );
+
+  constructor() {
+    effect(() => {
+      const config = this.siteConfig();
+      if (!config) return;
+      this.blogSeoService.setDefaultMeta(config);
+    });
+  }
+}

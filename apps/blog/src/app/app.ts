@@ -10,7 +10,7 @@ import type { NavItem } from '@foliokit/cms-core';
 
 const DEFAULT_NAV: NavItem[] = [
   { label: 'Home', url: '/' },
-  { label: 'Posts', url: '/posts' },
+  { label: 'Blog', url: '/posts' },
   { label: 'About', url: '/about' },
   { label: 'Links', url: '/links' },
 ];
