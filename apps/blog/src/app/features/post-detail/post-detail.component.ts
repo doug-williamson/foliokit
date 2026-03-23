@@ -82,9 +82,9 @@ import type { PostRouteData } from '../../resolvers/post.resolver';
             class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm mb-8"
             style="color: var(--folio-blog-text-muted)"
           >
-            @if (post()!.authorId) {
+            @if (author()?.displayName) {
               <span style="color: var(--folio-blog-text-secondary); font-weight: 500">
-                {{ post()!.authorId }}
+                {{ author()!.displayName }}
               </span>
               <span aria-hidden="true">·</span>
             }
@@ -170,7 +170,7 @@ export class PostDetailComponent {
 
   protected readonly post = computed(() => this.routeData()?.post ?? null);
 
-  private readonly author = computed(() => this.routeData()?.author ?? null);
+  protected readonly author = computed(() => this.routeData()?.author ?? null);
 
   protected readonly publishedDate = computed(() => {
     const p = this.post();

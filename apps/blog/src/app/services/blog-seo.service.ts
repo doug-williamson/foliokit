@@ -1,5 +1,5 @@
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { take } from 'rxjs/operators';
@@ -11,7 +11,6 @@ export class BlogSeoService {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly siteConfigService = inject(SiteConfigService);
 
   private readonly siteConfig = toSignal(
@@ -112,7 +111,6 @@ export class BlogSeoService {
   }
 
   private upsertLinkCanonical(href: string): void {
-    if (!isPlatformBrowser(this.platformId)) return;
     let el = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!el) {
       el = this.document.createElement('link');
@@ -123,7 +121,6 @@ export class BlogSeoService {
   }
 
   private upsertJsonLd(schema: object, id: string): void {
-    if (!isPlatformBrowser(this.platformId)) return;
     const selector = `script[type="application/ld+json"][data-id="${id}"]`;
     let el = this.document.querySelector<HTMLScriptElement>(selector);
     if (!el) {
