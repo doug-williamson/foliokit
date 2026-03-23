@@ -40,6 +40,123 @@ import { MatIconModule } from '@angular/material/icon';
       background-color: var(--mat-sys-primary);
       border-radius: 12px 12px 0 0;
     }
+    .browser-mockup {
+      max-width: 720px;
+      width: 100%;
+      margin: 4rem auto 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--mat-sys-level2);
+      border: 1px solid var(--mat-sys-outline-variant);
+      text-align: left;
+    }
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1rem;
+      background: var(--mat-sys-surface-container-high);
+    }
+    .traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .tl {
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .tl.red    { background: #FF5F56; }
+    .tl.yellow { background: #FFBD2E; }
+    .tl.green  { background: #27C93F; }
+    .url-bar {
+      flex: 1;
+      background: var(--mat-sys-surface-container-highest);
+      border-radius: 999px;
+      padding: 0.2rem 0.85rem;
+      font-size: 0.72rem;
+      color: var(--mat-sys-on-surface-variant);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: monospace;
+    }
+    .editor-layout {
+      display: flex;
+      height: 260px;
+    }
+    .editor-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .markdown-panel {
+      background: var(--mat-sys-inverse-surface);
+      color: var(--mat-sys-inverse-on-surface);
+      border-right: 1px solid var(--mat-sys-outline-variant);
+    }
+    .preview-panel {
+      background: var(--mat-sys-surface);
+      color: var(--mat-sys-on-surface);
+    }
+    .panel-label {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+    .markdown-panel .panel-label {
+      background: color-mix(in srgb, var(--mat-sys-inverse-surface) 90%, transparent);
+    }
+    .preview-panel .panel-label {
+      background: var(--mat-sys-surface-container-low);
+    }
+    .panel-content {
+      flex: 1;
+      padding: 1rem 0.875rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .code-line {
+      height: 9px;
+      border-radius: 3px;
+      background: var(--mat-sys-inverse-on-surface);
+      opacity: 0.25;
+    }
+    .code-line.short { width: 0; height: 16px; opacity: 0; }
+    .preview-heading {
+      height: 14px;
+      width: 50%;
+      border-radius: 3px;
+      background: var(--mat-sys-on-surface);
+      opacity: 0.55;
+      margin-bottom: 4px;
+    }
+    .preview-subheading {
+      height: 11px;
+      width: 38%;
+      border-radius: 3px;
+      background: var(--mat-sys-on-surface);
+      opacity: 0.4;
+      margin-top: 4px;
+      margin-bottom: 2px;
+    }
+    .preview-line {
+      height: 9px;
+      border-radius: 3px;
+      background: var(--mat-sys-on-surface);
+      opacity: 0.18;
+    }
+    .preview-line.short { width: 0; height: 10px; opacity: 0; }
   `],
   template: `
     <section
@@ -65,6 +182,52 @@ import { MatIconModule } from '@angular/material/icon';
         >
           View Live Demo
         </a>
+      </div>
+
+      <div class="browser-mockup hidden md:block">
+        <div class="browser-bar">
+          <div class="traffic-lights">
+            <span class="tl red"></span>
+            <span class="tl yellow"></span>
+            <span class="tl green"></span>
+          </div>
+          <div class="url-bar">admin.foliokitcms.com/editor</div>
+        </div>
+        <div class="editor-layout">
+          <div class="editor-panel markdown-panel">
+            <div class="panel-label">Markdown</div>
+            <div class="panel-content">
+              <div class="code-line" style="width: 55%"></div>
+              <div class="code-line" style="width: 80%"></div>
+              <div class="code-line" style="width: 40%"></div>
+              <div class="code-line short"></div>
+              <div class="code-line" style="width: 70%"></div>
+              <div class="code-line" style="width: 50%"></div>
+              <div class="code-line short"></div>
+              <div class="code-line" style="width: 65%"></div>
+              <div class="code-line" style="width: 85%"></div>
+              <div class="code-line" style="width: 45%"></div>
+              <div class="code-line short"></div>
+              <div class="code-line" style="width: 60%"></div>
+            </div>
+          </div>
+          <div class="editor-panel preview-panel">
+            <div class="panel-label">Preview</div>
+            <div class="panel-content">
+              <div class="preview-heading"></div>
+              <div class="preview-line" style="width: 90%"></div>
+              <div class="preview-line" style="width: 75%"></div>
+              <div class="preview-line" style="width: 82%"></div>
+              <div class="preview-line short"></div>
+              <div class="preview-subheading"></div>
+              <div class="preview-line" style="width: 88%"></div>
+              <div class="preview-line" style="width: 70%"></div>
+              <div class="preview-line short"></div>
+              <div class="preview-line" style="width: 78%"></div>
+              <div class="preview-line" style="width: 55%"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
