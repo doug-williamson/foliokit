@@ -2,12 +2,11 @@ import type { SocialLink } from './site-config.model';
 
 export interface Author {
   id: string;
-  name: string;
-  slug: string;
+  displayName: string;
   bio?: string;
-  avatarUrl?: string;
+  photoUrl?: string;
+  socialLinks?: SocialLink[];
   email?: string;
-  social?: SocialLink[];
   /** Unix milliseconds. */
   createdAt: number;
   /** Unix milliseconds. */

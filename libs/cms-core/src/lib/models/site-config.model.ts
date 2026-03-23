@@ -1,3 +1,7 @@
+import type { SeoMeta } from './post.model';
+
+export type { SeoMeta };
+
 export interface NavItem {
   label: string;
   url: string;
@@ -33,9 +37,12 @@ export interface SiteConfig {
   description?: string;
   logo?: string;
   favicon?: string;
+  primaryColor?: string;
+  accentColor?: string;
   nav: NavItem[];
   social: SocialLink[];
   defaultAuthorId?: string;
+  defaultSeo?: SeoMeta;
   /** Unix milliseconds. */
   updatedAt: number;
 }

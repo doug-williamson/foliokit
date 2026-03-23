@@ -125,7 +125,7 @@ export class PostEditorCoverImageComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   readonly store = inject(PostEditorStore);
-  private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly storage = inject(FIREBASE_STORAGE)!;
   private readonly postService = inject(PostService);
   private readonly platformId = inject(PLATFORM_ID);
 

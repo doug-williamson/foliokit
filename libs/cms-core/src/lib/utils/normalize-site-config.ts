@@ -1,5 +1,4 @@
-import type { SiteConfig } from '../models/site-config.model';
-import type { NavItem, SocialLink, SocialPlatform } from '../models/site-config.model';
+import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta } from '../models/site-config.model';
 
 function normalizeTimestamp(value: unknown): number {
   if (value == null) return 0;
@@ -46,6 +45,19 @@ function normalizeSocialLinks(raw: unknown): SocialLink[] {
   }));
 }
 
+function normalizeSeoMeta(raw: unknown): SeoMeta | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    title: r['title'] as string | undefined,
+    description: r['description'] as string | undefined,
+    keywords: Array.isArray(r['keywords']) ? (r['keywords'] as string[]) : undefined,
+    ogImage: r['ogImage'] as string | undefined,
+    canonicalUrl: r['canonicalUrl'] as string | undefined,
+    noIndex: r['noIndex'] as boolean | undefined,
+  };
+}
+
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
   return {
     id: (raw['id'] as string) ?? '',
@@ -54,9 +66,12 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     description: raw['description'] as string | undefined,
     logo: raw['logo'] as string | undefined,
     favicon: raw['favicon'] as string | undefined,
+    primaryColor: raw['primaryColor'] as string | undefined,
+    accentColor: raw['accentColor'] as string | undefined,
     nav: normalizeNavItems(raw['nav']),
     social: normalizeSocialLinks(raw['social']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
+    defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

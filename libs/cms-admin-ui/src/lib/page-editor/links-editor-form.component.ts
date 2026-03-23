@@ -253,7 +253,7 @@ export class LinksEditorFormComponent {
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
 
   readonly store = inject(PageEditorStore);
-  private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly storage = inject(FIREBASE_STORAGE)!;
   private readonly pageService = inject(PageService);
   private readonly platformId = inject(PLATFORM_ID);
 

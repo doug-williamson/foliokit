@@ -1,0 +1,18 @@
+feat(admin): add Authors CRUD feature and SiteConfig tabbed admin UI
+
+- Add Author interface (displayName, photoUrl, socialLinks, bio, email)
+- Add AuthorService with full CRUD against /authors Firestore collection
+- Add normalize-author.ts utility for Firestore timestamp normalization
+- Extend SiteConfig model with defaultSeo, primaryColor, accentColor
+- Update normalize-site-config.ts to handle new fields
+- Add saveSiteConfig() write method to SiteConfigService
+- Add AuthorEditorStore (@ngrx/signals) with isDirty guard support
+- Add SiteConfigEditorStore (@ngrx/signals) with load/save/discard
+- Implement authors-list component with mat-table, avatar, delete confirm
+- Implement author-form component with photo upload, socialLinks FormArray
+- Implement full 5-tab SiteConfigComponent (General, Navigation, SEO, Theme, Social)
+  with CDK drag-drop nav reordering and sticky save/discard footer
+- Wire authors routes with AuthorEditorStore provider and unsaved-changes guard
+- Add unsaved-changes guard to site-config route with SiteConfigEditorStore
+- Add Authors (people icon) sidenav entry between Pages and Site Config
+- Fix pre-existing FIREBASE_STORAGE null assertion in cms-admin-ui upload components
