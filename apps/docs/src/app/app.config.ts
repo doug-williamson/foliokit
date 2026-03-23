@@ -8,6 +8,7 @@ import {
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideMarkdown } from 'ngx-markdown';
 import { DOCS_ROUTE_MANIFEST } from '@foliokit/docs-ui';
 import { appRoutes } from './app.routes';
 import { DOCS_MANIFEST } from './docs-route-manifest';
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
+    provideMarkdown(),
     { provide: DOCS_ROUTE_MANIFEST, useValue: DOCS_MANIFEST },
   ],
 };
