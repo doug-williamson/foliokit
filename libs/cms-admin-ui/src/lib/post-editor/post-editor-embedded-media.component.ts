@@ -85,7 +85,7 @@ export class PostEditorEmbeddedMediaComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   readonly store = inject(PostEditorStore);
-  private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly storage = inject(FIREBASE_STORAGE)!;
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);

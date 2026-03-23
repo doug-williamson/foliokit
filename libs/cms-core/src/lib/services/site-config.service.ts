@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FIRESTORE } from '../firebase/firebase.config';
@@ -28,5 +28,22 @@ export class SiteConfigService {
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
     return this.getSiteConfig('default');
+  }
+
+  saveSiteConfig(config: SiteConfig): Observable<SiteConfig> {
+    const siteId = config.id || 'default';
+    const nowMs = Date.now();
+    const nowTs = Timestamp.fromMillis(nowMs);
+    const saved: SiteConfig = { ...config, id: siteId, updatedAt: nowMs };
+    const firestorePayload = { ...saved, updatedAt: nowTs };
+    return from(
+      setDoc(doc(this.firestore, 'site-config', siteId), firestorePayload),
+    ).pipe(
+      map(() => saved),
+      catchError((err) => {
+        console.error('[SiteConfigService.saveSiteConfig]', err);
+        throw err;
+      }),
+    );
   }
 }
