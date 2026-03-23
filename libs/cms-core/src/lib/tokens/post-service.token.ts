@@ -11,5 +11,4 @@ export const BLOG_POST_SERVICE = new InjectionToken<IBlogPostService>(
   'BLOG_POST_SERVICE',
 );
 
-export const POST_TRANSFER_KEY = makeStateKey<BlogPost | null>('blog-post');
 export const POSTS_TRANSFER_KEY = makeStateKey<BlogPost[]>('blog-posts');
