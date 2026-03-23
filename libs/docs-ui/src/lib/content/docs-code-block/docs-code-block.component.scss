@@ -11,7 +11,16 @@
   &__copy-btn {
     width: 28px !important;
     height: 28px !important;
-    line-height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    .mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
   }
 
   &__pre {
