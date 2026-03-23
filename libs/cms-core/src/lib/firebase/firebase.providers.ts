@@ -43,8 +43,11 @@ export function provideFirebase(
       // Same singleton constraint applies to the Firestore instance.
       // initializeFirestore throws if called a second time for the same app, so
       // fall back to getFirestore() which returns the already-configured instance.
+      // Client SDK must not run on the server — Admin SDK handles SSR reads.
       provide: FIRESTORE,
       useFactory: () => {
+        const platformId = inject(PLATFORM_ID);
+        if (!isPlatformBrowser(platformId)) return null;
         const app = inject(FIREBASE_APP);
         try {
           const db = initializeFirestore(app, { localCache: memoryLocalCache() });
@@ -59,7 +62,11 @@ export function provideFirebase(
     },
     {
       provide: FIREBASE_STORAGE,
-      useFactory: () => getStorage(inject(FIREBASE_APP)),
+      useFactory: () => {
+        const platformId = inject(PLATFORM_ID);
+        if (!isPlatformBrowser(platformId)) return null;
+        return getStorage(inject(FIREBASE_APP));
+      },
     },
     {
       // Auth relies on browser APIs (IndexedDB, localStorage) — null on server

@@ -22,8 +22,11 @@ import type { IBlogPostService } from '../tokens/post-service.token';
 
 @Injectable({ providedIn: 'root' })
 export class PostService implements IBlogPostService {
-  private readonly firestore = inject(FIRESTORE);
-  private readonly storage = inject(FIREBASE_STORAGE);
+  // Non-null assertions are safe: PostService is only active in the browser
+  // where FIRESTORE and FIREBASE_STORAGE are always initialized.
+  // On the server, BLOG_POST_SERVICE resolves to ServerBlogPostService instead.
+  private readonly firestore = inject(FIRESTORE)!;
+  private readonly storage = inject(FIREBASE_STORAGE)!;
 
   getPublishedPosts(): Observable<BlogPost[]> {
     const q = query(

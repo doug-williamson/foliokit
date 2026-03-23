@@ -10,6 +10,7 @@ export class TagService {
   private readonly firestore = inject(FIRESTORE);
 
   getAllTags(): Observable<Tag[]> {
+    if (!this.firestore) return of([]);
     return from(getDocs(collection(this.firestore, 'tags'))).pipe(
       map((snapshot) =>
         snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Tag),

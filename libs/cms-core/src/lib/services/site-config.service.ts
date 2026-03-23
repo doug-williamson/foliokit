@@ -8,7 +8,9 @@ import { normalizeSiteConfig } from '../utils/normalize-site-config';
 
 @Injectable({ providedIn: 'root' })
 export class SiteConfigService {
-  private readonly firestore = inject(FIRESTORE);
+  // Non-null assertion is safe: SiteConfigService is only used in the browser
+  // where FIRESTORE is always initialized.
+  private readonly firestore = inject(FIRESTORE)!;
 
   getSiteConfig(siteId: string): Observable<SiteConfig | null> {
     const ref = doc(this.firestore, 'site-config', siteId);
