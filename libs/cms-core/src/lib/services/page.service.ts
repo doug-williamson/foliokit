@@ -73,11 +73,15 @@ export class PageService implements IPageService {
     );
   }
 
-  getPageById(id: string): Observable<CmsPageUnion> {
+  getPageById(id: string): Observable<CmsPageUnion | null> {
     return from(getDoc(doc(this.firestore, 'pages', id))).pipe(
       map((snapshot) => {
-        if (!snapshot.exists()) throw new Error(`Page not found: ${id}`);
+        if (!snapshot.exists()) return null;
         return normalizePage({ id: snapshot.id, ...snapshot.data() });
+      }),
+      catchError((err) => {
+        console.error('[PageService.getPageById]', err);
+        return of(null);
       }),
     );
   }

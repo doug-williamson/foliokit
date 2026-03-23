@@ -18,6 +18,7 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
           { label: 'Site Config', url: '/site-config' },
           { label: 'Posts', url: '/posts' },
           { label: 'Authors', url: '/authors' },
+          { label: 'Links Page', url: '/links-page' },
         ],
       },
     },
@@ -41,6 +42,12 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
           <span class="flex items-center gap-4">
             <mat-icon>people</mat-icon>
             <span>Authors</span>
+          </span>
+        </a>
+        <a mat-list-item routerLink="/links-page" routerLinkActive="active-link">
+          <span class="flex items-center gap-4">
+            <mat-icon>link</mat-icon>
+            <span>Links Page</span>
           </span>
         </a>
       </mat-nav-list>

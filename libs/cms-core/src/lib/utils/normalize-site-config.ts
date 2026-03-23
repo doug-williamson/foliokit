@@ -90,7 +90,6 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     primaryColor: raw['primaryColor'] as string | undefined,
     accentColor: raw['accentColor'] as string | undefined,
     nav: normalizeNavItems(raw['nav']),
-    social: normalizeSocialLinks(raw['social']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
     pages: about ? { about } : undefined,

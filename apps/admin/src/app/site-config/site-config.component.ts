@@ -298,65 +298,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             </div>
           </mat-tab>
 
-          <!-- ── Social ── -->
-          <mat-tab label="Social">
-            <div class="flex flex-col gap-4 max-w-3xl mx-auto px-6 py-8">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold">Social Links</span>
-                <button mat-stroked-button type="button" (click)="addSocialLink()">
-                  <mat-icon>add</mat-icon>
-                  Add Link
-                </button>
-              </div>
-
-              <div [formGroup]="socialForm" class="flex flex-col gap-3">
-                <div formArrayName="socialLinks" class="flex flex-col gap-3">
-                  @for (ctrl of socialLinksArray.controls; track $index) {
-                    <div
-                      [formGroupName]="$index"
-                      class="flex items-start gap-2 p-3 rounded-lg border"
-                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-                    >
-                      <mat-form-field appearance="outline" class="w-40 shrink-0">
-                        <mat-label>Platform</mat-label>
-                        <mat-select formControlName="platform">
-                          @for (p of platforms; track p.value) {
-                            <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>Label</mat-label>
-                        <input matInput formControlName="label" placeholder="Optional label" />
-                      </mat-form-field>
-
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>URL</mat-label>
-                        <input matInput formControlName="url" placeholder="https://…" />
-                      </mat-form-field>
-
-                      <button
-                        mat-icon-button
-                        type="button"
-                        class="shrink-0 mt-1"
-                        matTooltip="Remove"
-                        (click)="removeSocialLink($index)"
-                      >
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </div>
-                  }
-                  @if (!socialLinksArray.length) {
-                    <p class="text-sm opacity-50 text-center py-8">
-                      No social links yet. Add one to get started.
-                    </p>
-                  }
-                </div>
-              </div>
-            </div>
-          </mat-tab>
-
           <!-- ── About ── -->
           <mat-tab label="About">
             <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
@@ -607,10 +548,6 @@ export class SiteConfigComponent implements OnInit {
     accentColor: [''],
   });
 
-  protected readonly socialForm: FormGroup = this.fb.group({
-    socialLinks: this.fb.array([]),
-  });
-
   protected readonly aboutForm: FormGroup = this.fb.group({
     headline: ['', Validators.required],
     subheadline: [''],
@@ -631,10 +568,6 @@ export class SiteConfigComponent implements OnInit {
 
   get navItemsArray(): FormArray {
     return this.navForm.get('navItems') as FormArray;
-  }
-
-  get socialLinksArray(): FormArray {
-    return this.socialForm.get('socialLinks') as FormArray;
   }
 
   get aboutSocialLinksArray(): FormArray {
@@ -679,19 +612,6 @@ export class SiteConfigComponent implements OnInit {
   protected removeNavItem(index: number): void {
     this.navItemsArray.removeAt(index);
     this.flushNavToStore();
-  }
-
-  // ── Social links (site-wide) ───────────────────────────────────────────────
-
-  protected addSocialLink(): void {
-    this.socialLinksArray.push(
-      this.fb.group({ platform: ['website'], label: [''], url: [''] }),
-    );
-  }
-
-  protected removeSocialLink(index: number): void {
-    this.socialLinksArray.removeAt(index);
-    this.flushSocialToStore();
   }
 
   // ── About social links ─────────────────────────────────────────────────────
@@ -808,18 +728,6 @@ export class SiteConfigComponent implements OnInit {
       accentColor: config.accentColor ?? '',
     }, { emitEvent: false });
 
-    this.socialLinksArray.clear({ emitEvent: false });
-    for (const link of config.social ?? []) {
-      this.socialLinksArray.push(
-        this.fb.group({
-          platform: [link.platform],
-          label: [link.label ?? ''],
-          url: [link.url ?? ''],
-        }),
-        { emitEvent: false },
-      );
-    }
-
     // About page
     const about = config.pages?.about;
     this.aboutForm.patchValue({
@@ -874,8 +782,6 @@ export class SiteConfigComponent implements OnInit {
       this.store.updateField('accentColor', val.accentColor || undefined);
     });
 
-    this.socialLinksArray.valueChanges.subscribe(() => this.flushSocialToStore());
-
     this.aboutForm.valueChanges.subscribe(() => this.flushAboutToStore());
     this.aboutSocialForm.valueChanges.subscribe(() => this.flushAboutToStore());
     this.aboutSeoForm.valueChanges.subscribe(() => this.flushAboutToStore());
@@ -891,17 +797,6 @@ export class SiteConfigComponent implements OnInit {
       }),
     );
     this.store.updateNav(items);
-  }
-
-  private flushSocialToStore(): void {
-    const links: SocialLink[] = this.socialLinksArray.value.map(
-      (v: { platform: SocialPlatform; label: string; url: string }) => ({
-        platform: v.platform,
-        label: v.label || undefined,
-        url: v.url,
-      }),
-    );
-    this.store.updateSocial(links);
   }
 
   private flushAboutToStore(): void {
@@ -945,7 +840,6 @@ export class SiteConfigComponent implements OnInit {
 
   private flushFormsToStore(): void {
     this.flushNavToStore();
-    this.flushSocialToStore();
     this.flushAboutToStore();
   }
 }

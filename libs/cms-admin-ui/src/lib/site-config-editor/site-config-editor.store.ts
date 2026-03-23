@@ -5,7 +5,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, NavItem, SiteConfig, SiteConfigService, SocialLink } from '@foliokit/cms-core';
+import { AboutPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -20,7 +20,6 @@ const emptyConfig: SiteConfig = {
   siteName: '',
   siteUrl: '',
   nav: [],
-  social: [],
   pages: undefined,
   updatedAt: 0,
 };
@@ -60,12 +59,6 @@ export const SiteConfigEditorStore = signalStore(
       const current = store.config();
       if (!current) return;
       patchState(store, { config: { ...current, nav: items }, isDirty: true });
-    },
-
-    updateSocial(links: SocialLink[]): void {
-      const current = store.config();
-      if (!current) return;
-      patchState(store, { config: { ...current, social: links }, isDirty: true });
     },
 
     updateAbout(about: AboutPageConfig): void {

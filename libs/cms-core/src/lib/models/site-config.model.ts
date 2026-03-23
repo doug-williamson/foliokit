@@ -52,7 +52,6 @@ export interface SiteConfig {
   primaryColor?: string;
   accentColor?: string;
   nav: NavItem[];
-  social: SocialLink[];
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;
   pages?: {

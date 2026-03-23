@@ -78,6 +78,16 @@ export const PageEditorStore = signalStore(
 
       loadPage(id: string): void {
         pageService.getPageById(id).subscribe((page) => {
+          if (!page) {
+            patchState(store, {
+              page: blankLinksPage(),
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+              mode: 'new',
+            });
+            return;
+          }
           patchState(store, {
             page,
             isDirty: false,
