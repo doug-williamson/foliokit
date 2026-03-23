@@ -63,9 +63,6 @@ async function seed(): Promise<void> {
           { label: 'Blog', url: '/posts' },
           { label: 'About', url: '/about' },
         ],
-        social: [
-          { platform: 'github', url: 'https://github.com/your-username', label: 'GitHub' },
-        ],
         defaultSeo: {
           title: 'FolioKit Blog',
           description: 'A blog built with FolioKit.',

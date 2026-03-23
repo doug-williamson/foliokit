@@ -65,9 +65,7 @@ async function seed(): Promise<void> {
           { label: 'Home', url: '/', order: 0 },
           { label: 'Blog', url: '/posts', order: 1 },
           { label: 'About', url: '/about', order: 2 },
-        ],
-        social: [
-          { platform: 'github', url: 'https://github.com', label: 'GitHub' },
+          { label: 'Links', url: '/links', order: 3 },
         ],
         pages: {
           about: {
@@ -196,7 +194,47 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config (with about page), 4 posts written (2 published, 1 scheduled, 1 draft).');
+    console.log('[seed:emulator] Writing /pages/links...');
+    await db.collection('pages').doc('links').set(
+      {
+        id: 'links',
+        type: 'links',
+        slug: 'links',
+        title: 'Links',
+        status: 'published',
+        headline: 'Dev Author',
+        bio: 'Full-stack developer & open-source enthusiast.',
+        avatarUrl: 'https://i.pravatar.cc/200?u=dev-author',
+        avatarAlt: 'Dev Author avatar',
+        links: [
+          {
+            id: 'link-github',
+            label: 'GitHub',
+            url: 'https://github.com',
+            platform: 'github',
+            order: 0,
+            highlighted: true,
+          },
+          {
+            id: 'link-linkedin',
+            label: 'LinkedIn',
+            url: 'https://linkedin.com',
+            platform: 'linkedin',
+            order: 1,
+            highlighted: false,
+          },
+        ],
+        seo: {
+          title: 'Links — FolioKit Blog',
+          description: 'All the links for Dev Author.',
+        },
+        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
+        updatedAt: now,
+      },
+      { merge: false }
+    );
+
+    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config (with about page), 4 posts (2 published, 1 scheduled, 1 draft), 1 links page written.');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

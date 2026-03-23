@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { ShellLayoutComponent } from './shell-layout/shell-layout.component';
-import { AuthorEditorStore, PostEditorStore, SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
+import { AuthorEditorStore, PageEditorStore, PostEditorStore, SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
 export const appRoutes: Route[] = [
   {
@@ -59,6 +59,15 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./site-config/site-config.component').then((m) => m.SiteConfigComponent),
         providers: [SiteConfigEditorStore],
+        canDeactivate: [unsavedChangesGuard],
+      },
+      {
+        path: 'links-page',
+        loadComponent: () =>
+          import('./links-page-editor/links-page-editor.component').then(
+            (m) => m.LinksPageEditorComponent,
+          ),
+        providers: [PageEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
       { path: '**', redirectTo: 'posts' },
