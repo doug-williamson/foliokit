@@ -3,6 +3,7 @@ import { postsResolver } from './resolvers/posts.resolver';
 import { postResolver } from './resolvers/post.resolver';
 import { pageResolver } from './resolvers/page.resolver';
 import { aboutPageResolver } from './resolvers/about-page.resolver';
+import { featureGuard } from './guards/feature.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -36,6 +37,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'about',
+    canActivate: [featureGuard('aboutEnabled')],
     resolve: { about: aboutPageResolver },
     loadComponent: () =>
       import('./features/about/blog-about-page.component').then(
@@ -44,6 +46,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'links',
+    canActivate: [featureGuard('linksEnabled')],
     data: { pageId: 'links' },
     resolve: { page: pageResolver },
     loadComponent: () =>

@@ -58,11 +58,18 @@ function normalizeSeoMeta(raw: unknown): SeoMeta | undefined {
   };
 }
 
+function normalizeFeatures(raw: unknown): NonNullable<SiteConfig['features']> {
+  const r = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {};
+  return {
+    aboutEnabled: (r['aboutEnabled'] as boolean) ?? false,
+    linksEnabled: (r['linksEnabled'] as boolean) ?? false,
+  };
+}
+
 function normalizeAboutPageConfig(raw: unknown): AboutPageConfig | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const r = raw as Record<string, unknown>;
   const headline = (r['headline'] as string | undefined) ?? '';
-  if (!headline && !r['bio']) return undefined;
   return {
     headline,
     subheadline: r['subheadline'] as string | undefined,
@@ -78,7 +85,6 @@ function normalizeAboutPageConfig(raw: unknown): AboutPageConfig | undefined {
 
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
   const pages = raw['pages'] as Record<string, unknown> | undefined;
-  const about = normalizeAboutPageConfig(pages?.['about']);
 
   return {
     id: (raw['id'] as string) ?? '',
@@ -92,7 +98,8 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     nav: normalizeNavItems(raw['nav']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
-    pages: about ? { about } : undefined,
+    pages: pages ? { about: normalizeAboutPageConfig(pages['about']) } : undefined,
+    features: normalizeFeatures(pages),
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

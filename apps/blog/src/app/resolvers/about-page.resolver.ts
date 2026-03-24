@@ -20,8 +20,10 @@ export const aboutPageResolver: ResolveFn<AboutPageConfig> = () => {
   if (transferState.hasKey(ABOUT_PAGE_KEY)) {
     const about = transferState.get(ABOUT_PAGE_KEY, null);
     transferState.remove(ABOUT_PAGE_KEY);
-    if (about) return about;
-    return router.createUrlTree(['/not-found']) as never;
+    if (!about || (!about.headline && !about.bio)) {
+      return router.createUrlTree(['/not-found']) as never;
+    }
+    return about;
   }
 
   return service.getAboutConfig().pipe(
@@ -32,7 +34,9 @@ export const aboutPageResolver: ResolveFn<AboutPageConfig> = () => {
       }
     }),
     map((about) => {
-      if (!about) return router.createUrlTree(['/not-found']) as never;
+      if (!about || (!about.headline && !about.bio)) {
+        return router.createUrlTree(['/not-found']) as never;
+      }
       return about;
     }),
   );

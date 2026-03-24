@@ -57,6 +57,10 @@ export interface SiteConfig {
   pages?: {
     about?: AboutPageConfig;
   };
+  features?: {
+    aboutEnabled: boolean;
+    linksEnabled: boolean;
+  };
   /** Unix milliseconds. */
   updatedAt: number;
 }
