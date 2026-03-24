@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -6,16 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LinksPage, PageService, SiteConfig } from '@foliokit/cms-core';
+import { SiteConfig } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
 interface FeatureCardConfig {
-  flag: keyof NonNullable<SiteConfig['features']>;
+  flag: 'about' | 'links';
   label: string;
   description: string;
   editRoute: string;
   liveUrl: (siteUrl: string) => string;
-  hasContent: (config: SiteConfig, linksPage?: LinksPage | null) => boolean;
+  hasContent: (config: SiteConfig) => boolean;
 }
 
 type CardState = 'disabled' | 'empty' | 'published';
@@ -42,7 +42,7 @@ type CardState = 'disabled' | 'empty' | 'published';
           @for (card of cards; track card.flag) {
             @let cfg = store.config()!;
             @let state = cardState(card, cfg);
-            @let enabled = cfg.features?.[card.flag] ?? false;
+            @let enabled = cfg.pages?.[card.flag]?.enabled ?? false;
             @let liveUrl = cfg.siteUrl ? card.liveUrl(cfg.siteUrl) : null;
 
             <mat-card class="flex flex-col" [class.opacity-60]="state === 'disabled'">
@@ -99,10 +99,6 @@ type CardState = 'disabled' | 'empty' | 'published';
                     Edit page
                     <mat-icon iconPositionEnd>arrow_forward</mat-icon>
                   </button>
-                } @else {
-                  <button mat-button color="primary" (click)="toggle(card.flag, true)" [disabled]="store.isSaving()">
-                    Enable
-                  </button>
                 }
               </mat-card-actions>
             </mat-card>
@@ -123,44 +119,38 @@ type CardState = 'disabled' | 'empty' | 'published';
 export class PagesComponent {
   protected readonly store = inject(SiteConfigEditorStore);
   private readonly router = inject(Router);
-  private readonly pageService = inject(PageService);
-  protected readonly linksPage = signal<LinksPage | null>(null);
 
   readonly cards: FeatureCardConfig[] = [
     {
-      flag: 'aboutEnabled',
+      flag: 'about',
       label: 'About',
       description: 'A page introducing you or your brand to readers.',
       editRoute: '/about-page',
       liveUrl: (siteUrl) => `${siteUrl}/about`,
-      hasContent: (cfg) => !!(cfg.pages?.about?.headline || cfg.pages?.about?.bio),
+      hasContent: (cfg) => !!(cfg.pages?.about?.bio?.trim().length),
     },
     {
-      flag: 'linksEnabled',
+      flag: 'links',
       label: 'Links',
       description: 'A curated links page for your social profiles and resources.',
       editRoute: '/links-page',
       liveUrl: (siteUrl) => `${siteUrl}/links`,
-      hasContent: (_cfg, linksPage) => !!(linksPage?.links?.length),
+      hasContent: (cfg) => (cfg.pages?.links?.links?.length ?? 0) > 0,
     },
   ];
 
   constructor() {
     this.store.load();
-    this.pageService.getPageById('links').subscribe((page) => {
-      this.linksPage.set(page as LinksPage | null);
-    });
   }
 
   protected cardState(card: FeatureCardConfig, config: SiteConfig): CardState {
-    const enabled = config.features?.[card.flag] ?? false;
+    const enabled = config.pages?.[card.flag]?.enabled ?? false;
     if (!enabled) return 'disabled';
-    const linksPage = card.flag === 'linksEnabled' ? this.linksPage() : null;
-    return card.hasContent(config, linksPage) ? 'published' : 'empty';
+    return card.hasContent(config) ? 'published' : 'empty';
   }
 
-  protected toggle(flag: keyof NonNullable<SiteConfig['features']>, value: boolean): void {
-    this.store.toggleFeature(flag, value);
+  protected toggle(flag: 'about' | 'links', value: boolean): void {
+    this.store.togglePageEnabled(flag, value);
   }
 
   protected navigate(route: string): void {

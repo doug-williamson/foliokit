@@ -37,7 +37,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'about',
-    canActivate: [featureGuard('aboutEnabled')],
+    canActivate: [featureGuard('about')],
     resolve: { about: aboutPageResolver },
     loadComponent: () =>
       import('./features/about/blog-about-page.component').then(
@@ -46,7 +46,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'links',
-    canActivate: [featureGuard('linksEnabled')],
+    canActivate: [featureGuard('links')],
     data: { pageId: 'links' },
     resolve: { page: pageResolver },
     loadComponent: () =>

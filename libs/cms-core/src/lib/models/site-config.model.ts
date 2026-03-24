@@ -1,4 +1,5 @@
 import type { SeoMeta } from './post.model';
+import type { LinksLink } from './page.model';
 
 export type { SeoMeta };
 
@@ -31,6 +32,7 @@ export interface SocialLink {
 }
 
 export interface AboutPageConfig {
+  enabled: boolean;
   headline: string;
   subheadline?: string;
   /** Markdown — rendered via MarkdownComponent */
@@ -40,6 +42,15 @@ export interface AboutPageConfig {
   photoAlt?: string;
   socialLinks?: SocialLink[];
   seo?: SeoMeta;
+}
+
+export interface LinksPageConfig {
+  enabled: boolean;
+  links?: LinksLink[];
+  title?: string;
+  avatarUrl?: string;
+  headline?: string;
+  bio?: string;
 }
 
 export interface SiteConfig {
@@ -56,10 +67,7 @@ export interface SiteConfig {
   defaultSeo?: SeoMeta;
   pages?: {
     about?: AboutPageConfig;
-  };
-  features?: {
-    aboutEnabled: boolean;
-    linksEnabled: boolean;
+    links?: LinksPageConfig;
   };
   /** Unix milliseconds. */
   updatedAt: number;

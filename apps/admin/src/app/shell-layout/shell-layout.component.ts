@@ -45,7 +45,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
             <span>Pages</span>
           </span>
         </a>
-        @if (features().aboutEnabled) {
+        @if (pages()?.about?.enabled) {
           <a mat-list-item routerLink="/about-page" routerLinkActive="active-link">
             <span class="flex items-center gap-4 pl-8">
               <mat-icon>person</mat-icon>
@@ -53,7 +53,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
             </span>
           </a>
         }
-        @if (features().linksEnabled) {
+        @if (pages()?.links?.enabled) {
           <a mat-list-item routerLink="/links-page" routerLinkActive="active-link">
             <span class="flex items-center gap-4 pl-8">
               <mat-icon>link</mat-icon>
@@ -68,7 +68,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 })
 export class ShellLayoutComponent {
   protected readonly store = inject(SiteConfigEditorStore);
-  protected readonly features = computed(() => this.store.config()?.features ?? { aboutEnabled: false, linksEnabled: false });
+  protected readonly pages = computed(() => this.store.config()?.pages);
 
   constructor() {
     this.store.load();

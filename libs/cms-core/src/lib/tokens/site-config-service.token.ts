@@ -4,7 +4,7 @@ import type { AboutPageConfig, SiteConfig } from '../models/site-config.model';
 
 export interface ISiteConfigService {
   getAboutConfig(): Observable<AboutPageConfig | null>;
-  getFeatures(): Observable<NonNullable<SiteConfig['features']>>;
+  getConfig(): Observable<SiteConfig>;
 }
 
 export const SITE_CONFIG_SERVICE = new InjectionToken<ISiteConfigService>(
