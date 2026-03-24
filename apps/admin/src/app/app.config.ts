@@ -5,6 +5,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { provideMarkdown } from 'ngx-markdown';
 import { ADMIN_EMAIL, provideFirebase } from '@foliokit/cms-core';
+import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 
@@ -17,5 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideMarkdown(),
     provideNativeDateAdapter(),
+    SiteConfigEditorStore,
   ],
 };

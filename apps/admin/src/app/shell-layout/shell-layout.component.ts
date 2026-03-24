@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatNavList, MatListItem } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
+import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
 @Component({
   selector: 'admin-shell-layout',
@@ -14,12 +15,6 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
       provide: SHELL_CONFIG,
       useValue: {
         appName: 'FolioKit Admin',
-        nav: [
-          { label: 'Site Config', url: '/site-config' },
-          { label: 'Posts', url: '/posts' },
-          { label: 'Authors', url: '/authors' },
-          { label: 'Links Page', url: '/links-page' },
-        ],
       },
     },
   ],
@@ -44,15 +39,38 @@ import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
             <span>Authors</span>
           </span>
         </a>
-        <a mat-list-item routerLink="/links-page" routerLinkActive="active-link">
+        <a mat-list-item routerLink="/pages" routerLinkActive="active-link">
           <span class="flex items-center gap-4">
-            <mat-icon>link</mat-icon>
-            <span>Links Page</span>
+            <mat-icon>auto_stories</mat-icon>
+            <span>Pages</span>
           </span>
         </a>
+        @if (features().aboutEnabled) {
+          <a mat-list-item routerLink="/about-page" routerLinkActive="active-link">
+            <span class="flex items-center gap-4 pl-8">
+              <mat-icon>person</mat-icon>
+              <span>About</span>
+            </span>
+          </a>
+        }
+        @if (features().linksEnabled) {
+          <a mat-list-item routerLink="/links-page" routerLinkActive="active-link">
+            <span class="flex items-center gap-4 pl-8">
+              <mat-icon>link</mat-icon>
+              <span>Links</span>
+            </span>
+          </a>
+        }
       </mat-nav-list>
       <router-outlet />
     </folio-app-shell>
   `,
 })
-export class ShellLayoutComponent {}
+export class ShellLayoutComponent {
+  protected readonly store = inject(SiteConfigEditorStore);
+  protected readonly features = computed(() => this.store.config()?.features ?? { aboutEnabled: false, linksEnabled: false });
+
+  constructor() {
+    this.store.load();
+  }
+}

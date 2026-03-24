@@ -61,31 +61,12 @@ async function seed(): Promise<void> {
         nav: [
           { label: 'Home', url: '/' },
           { label: 'Blog', url: '/posts' },
-          { label: 'About', url: '/about' },
         ],
         defaultSeo: {
           title: 'FolioKit Blog',
           description: 'A blog built with FolioKit.',
           ogImage: '',
           canonicalUrl: 'https://foliokit-6f974.web.app',
-        },
-        pages: {
-          about: {
-            headline: 'Hi, I\'m Your Name',
-            subheadline: 'Developer & writer',
-            bio: `## About Me\n\nReplace this with your own bio. You can use **Markdown** here.\n\n## What I Do\n\n- Building things for the web\n- Writing about what I learn\n\n## Get in Touch\n\nFeel free to reach out via any of the links below.`,
-            photoUrl: '',
-            photoAlt: 'Profile photo',
-            socialLinks: [
-              { platform: 'github', url: 'https://github.com/your-username', label: 'GitHub' },
-              { platform: 'linkedin', url: 'https://linkedin.com/in/your-username', label: 'LinkedIn' },
-            ],
-            seo: {
-              title: 'About — FolioKit Blog',
-              description: 'Learn more about the person behind FolioKit Blog.',
-              ogImage: '',
-            },
-          },
         },
         updatedAt: admin.firestore.Timestamp.now(),
       },

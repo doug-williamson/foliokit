@@ -6,7 +6,7 @@ import {
   BLOG_PAGE_SERVICE,
   PAGE_TRANSFER_KEY,
 } from '@foliokit/cms-core';
-import type { CmsPageUnion } from '@foliokit/cms-core';
+import type { CmsPageUnion, LinksPage } from '@foliokit/cms-core';
 
 /**
  * @deprecated pageResolver is superseded by aboutPageResolver for the /about route.
@@ -35,6 +35,13 @@ export const pageResolver: ResolveFn<CmsPageUnion> = (route) => {
     }),
     map((page) => {
       if (!page) return router.createUrlTree(['/not-found']) as never;
+      const pageId = route.data['pageId'];
+      if (pageId === 'links') {
+        const linksPage = page as LinksPage;
+        if (linksPage.status !== 'published' || !linksPage.links?.length) {
+          return router.createUrlTree(['/not-found']) as never;
+        }
+      }
       return page;
     }),
   );

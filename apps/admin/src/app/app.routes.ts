@@ -55,6 +55,11 @@ export const appRoutes: Route[] = [
         canDeactivate: [unsavedChangesGuard],
       },
       {
+        path: 'pages',
+        loadComponent: () =>
+          import('./pages/pages.component').then((m) => m.PagesComponent),
+      },
+      {
         path: 'site-config',
         loadComponent: () =>
           import('./site-config/site-config.component').then((m) => m.SiteConfigComponent),
@@ -68,6 +73,13 @@ export const appRoutes: Route[] = [
             (m) => m.LinksPageEditorComponent,
           ),
         providers: [PageEditorStore],
+        canDeactivate: [unsavedChangesGuard],
+      },
+      {
+        path: 'about-page',
+        loadComponent: () =>
+          import('./about-page/about-page.component').then((m) => m.AboutPageComponent),
+        providers: [SiteConfigEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
       { path: '**', redirectTo: 'posts' },

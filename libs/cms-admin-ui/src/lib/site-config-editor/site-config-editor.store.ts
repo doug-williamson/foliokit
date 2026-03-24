@@ -20,7 +20,7 @@ const emptyConfig: SiteConfig = {
   siteName: '',
   siteUrl: '',
   nav: [],
-  pages: undefined,
+  features: { aboutEnabled: false, linksEnabled: false },
   updatedAt: 0,
 };
 
@@ -35,65 +35,99 @@ const initialState: SiteConfigEditorState = {
 export const SiteConfigEditorStore = signalStore(
   withState<SiteConfigEditorState>(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService)) => ({
-    load(): void {
-      siteConfigService.getDefaultSiteConfig().subscribe((config) => {
-        const loaded = config ?? { ...emptyConfig };
-        patchState(store, {
-          config: loaded,
-          savedConfig: loaded,
-          isDirty: false,
-          isSaving: false,
-          saveError: null,
+  withMethods((store, siteConfigService = inject(SiteConfigService)) => {
+    let loadInProgress = false;
+    return {
+      load(): void {
+        if (store.config() !== null || loadInProgress) return;
+        loadInProgress = true;
+        siteConfigService.getDefaultSiteConfig().subscribe({
+          next: (config) => {
+            const loaded = config ?? { ...emptyConfig };
+            patchState(store, {
+              config: loaded,
+              savedConfig: loaded,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            });
+            loadInProgress = false;
+          },
+          error: () => {
+            loadInProgress = false;
+          },
         });
-      });
-    },
+      },
 
-    updateField<K extends keyof SiteConfig>(field: K, value: SiteConfig[K]): void {
-      const current = store.config();
-      if (!current) return;
-      patchState(store, { config: { ...current, [field]: value }, isDirty: true });
-    },
+      updateField<K extends keyof SiteConfig>(field: K, value: SiteConfig[K]): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, { config: { ...current, [field]: value }, isDirty: true });
+      },
 
-    updateNav(items: NavItem[]): void {
-      const current = store.config();
-      if (!current) return;
-      patchState(store, { config: { ...current, nav: items }, isDirty: true });
-    },
+      updateNav(items: NavItem[]): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, { config: { ...current, nav: items }, isDirty: true });
+      },
 
-    updateAbout(about: AboutPageConfig): void {
-      const current = store.config();
-      if (!current) return;
-      patchState(store, {
-        config: { ...current, pages: { ...current.pages, about } },
-        isDirty: true,
-      });
-    },
+      updateAbout(about: AboutPageConfig): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: { ...current, pages: { ...current.pages, about } },
+          isDirty: true,
+        });
+      },
 
-    save(): void {
-      const config = store.config();
-      if (!config) return;
-      patchState(store, { isSaving: true, saveError: null });
-      siteConfigService.saveSiteConfig(config).subscribe({
-        next: (saved) => {
-          patchState(store, {
-            config: saved,
-            savedConfig: saved,
-            isDirty: false,
-            isSaving: false,
-          });
-        },
-        error: (err: unknown) => {
-          const message = err instanceof Error ? err.message : 'Save failed';
-          patchState(store, { isSaving: false, saveError: message });
-        },
-      });
-    },
+      save(): void {
+        const config = store.config();
+        if (!config) return;
+        patchState(store, { isSaving: true, saveError: null });
+        siteConfigService.saveSiteConfig(config).subscribe({
+          next: (saved) => {
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+            });
+          },
+          error: (err: unknown) => {
+            const message = err instanceof Error ? err.message : 'Save failed';
+            patchState(store, { isSaving: false, saveError: message });
+          },
+        });
+      },
 
-    discard(): void {
-      const saved = store.savedConfig();
-      if (!saved) return;
-      patchState(store, { config: { ...saved }, isDirty: false, saveError: null });
-    },
-  })),
+      toggleFeature(flag: keyof NonNullable<SiteConfig['features']>, value: boolean): void {
+        const current = store.config();
+        if (!current) return;
+        const features: NonNullable<SiteConfig['features']> = {
+          aboutEnabled: false,
+          linksEnabled: false,
+          ...current.features,
+          [flag]: value,
+        };
+        const updated: SiteConfig = { ...current, features };
+        patchState(store, { config: updated, isSaving: true, saveError: null });
+        siteConfigService.saveSiteConfig(updated).subscribe({
+          next: (saved) =>
+            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+          error: (err: unknown) =>
+            patchState(store, {
+              config: current,
+              isSaving: false,
+              saveError: err instanceof Error ? err.message : 'Save failed',
+            }),
+        });
+      },
+
+      discard(): void {
+        const saved = store.savedConfig();
+        if (!saved) return;
+        patchState(store, { config: { ...saved }, isDirty: false, saveError: null });
+      },
+    };
+  }),
 );

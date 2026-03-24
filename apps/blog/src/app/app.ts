@@ -11,8 +11,6 @@ import type { NavItem } from '@foliokit/cms-core';
 const DEFAULT_NAV: NavItem[] = [
   { label: 'Home', url: '/' },
   { label: 'Blog', url: '/posts' },
-  { label: 'About', url: '/about' },
-  { label: 'Links', url: '/links' },
 ];
 
 @Component({
@@ -47,7 +45,13 @@ export class App {
     { initialValue: null },
   );
 
-  protected readonly navItems = computed(
-    () => this.siteConfig()?.nav ?? DEFAULT_NAV,
-  );
+  protected readonly navItems = computed(() => {
+    const config = this.siteConfig();
+    const base = config?.nav ?? DEFAULT_NAV;
+    const features = config?.features;
+    const extras: NavItem[] = [];
+    if (features?.aboutEnabled) extras.push({ label: 'About', url: '/about' });
+    if (features?.linksEnabled) extras.push({ label: 'Links', url: '/links' });
+    return [...base, ...extras];
+  });
 }

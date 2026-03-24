@@ -50,7 +50,7 @@ export function provideFirebase(
         if (!isPlatformBrowser(platformId)) return null;
         const app = inject(FIREBASE_APP);
         try {
-          const db = initializeFirestore(app, { localCache: memoryLocalCache() });
+          const db = initializeFirestore(app, { localCache: memoryLocalCache(), ignoreUndefinedProperties: true });
           if (useEmulator) {
             connectFirestoreEmulator(db, '127.0.0.1', 8080);
           }
