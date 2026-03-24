@@ -63,23 +63,15 @@ export class SiteConfigService implements ISiteConfigService {
     );
   }
 
-  getFeatures(): Observable<NonNullable<SiteConfig['features']>> {
-    return this.getConfig().pipe(
-      map((c) => c.features ?? { aboutEnabled: false, linksEnabled: false }),
-    );
-  }
-
   saveSiteConfig(config: SiteConfig): Observable<SiteConfig> {
     if (!this.firestore) return of(config);
     const siteId = config.id || 'default';
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
     const saved: SiteConfig = { ...config, id: siteId, updatedAt: nowMs };
-    const { features, pages, ...rest } = saved;
     const firestorePayload = stripUndefined({
-      ...rest,
+      ...saved,
       updatedAt: nowTs,
-      pages: { ...pages, ...features },
     } as unknown as Record<string, unknown>);
     return defer(() =>
       setDoc(doc(this.firestore!, 'site-config', siteId), firestorePayload),

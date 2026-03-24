@@ -65,6 +65,10 @@ async function seed(): Promise<void> {
           { label: 'Home', url: '/', order: 0 },
           { label: 'Blog', url: '/posts', order: 1 },
         ],
+        pages: {
+          about: { enabled: false, headline: '', bio: '' },
+          links: { enabled: false, links: [] },
+        },
         updatedAt: now,
       },
       { merge: false }

@@ -27,7 +27,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
-  AboutPageConfig,
   FIREBASE_STORAGE,
   SocialLink,
   SocialPlatform,
@@ -196,6 +195,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   Add Link
                 </button>
               </div>
+              <p class="text-xs text-gray-500 mt-1 mb-3">These links appear on your About page only. To manage your full links directory, go to the Links Page editor.</p>
 
               <div [formGroup]="aboutSocialForm" class="flex flex-col gap-3">
                 <div formArrayName="socialLinks" class="flex flex-col gap-3">
@@ -473,7 +473,7 @@ export class AboutPageComponent implements OnInit {
       }),
     );
 
-    const about: AboutPageConfig = {
+    this.store.updateAbout({
       headline: formVal.headline ?? '',
       subheadline: formVal.subheadline || undefined,
       bio: formVal.bio ?? '',
@@ -486,8 +486,6 @@ export class AboutPageComponent implements OnInit {
         ogImage: seoVal.ogImage || undefined,
         canonicalUrl: seoVal.canonicalUrl || undefined,
       },
-    };
-
-    this.store.updateAbout(about);
+    });
   }
 }

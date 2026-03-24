@@ -1,4 +1,5 @@
-import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig } from '../models/site-config.model';
+import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig, LinksPageConfig } from '../models/site-config.model';
+import type { LinksLink } from '../models/page.model';
 
 function normalizeTimestamp(value: unknown): number {
   if (value == null) return 0;
@@ -58,20 +59,24 @@ function normalizeSeoMeta(raw: unknown): SeoMeta | undefined {
   };
 }
 
-function normalizeFeatures(raw: unknown): NonNullable<SiteConfig['features']> {
-  const r = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {};
-  return {
-    aboutEnabled: (r['aboutEnabled'] as boolean) ?? false,
-    linksEnabled: (r['linksEnabled'] as boolean) ?? false,
-  };
+function normalizeLinksLinks(raw: unknown): LinksLink[] {
+  if (!Array.isArray(raw)) return [];
+  return (raw as Record<string, unknown>[]).map((item) => ({
+    id: (item['id'] as string) ?? '',
+    label: (item['label'] as string) ?? '',
+    url: (item['url'] as string) ?? '',
+    icon: item['icon'] as string | undefined,
+    platform: item['platform'] as LinksLink['platform'] | undefined,
+    highlighted: item['highlighted'] as boolean | undefined,
+    order: (item['order'] as number) ?? 0,
+  }));
 }
 
-function normalizeAboutPageConfig(raw: unknown): AboutPageConfig | undefined {
-  if (!raw || typeof raw !== 'object') return undefined;
-  const r = raw as Record<string, unknown>;
-  const headline = (r['headline'] as string | undefined) ?? '';
+function normalizeAboutPageConfig(raw: unknown): AboutPageConfig {
+  const r = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {};
   return {
-    headline,
+    enabled: (r['enabled'] as boolean) ?? false,
+    headline: (r['headline'] as string) ?? '',
     subheadline: r['subheadline'] as string | undefined,
     bio: (r['bio'] as string) ?? '',
     photoUrl: r['photoUrl'] as string | undefined,
@@ -80,6 +85,18 @@ function normalizeAboutPageConfig(raw: unknown): AboutPageConfig | undefined {
       ? normalizeSocialLinks(r['socialLinks'])
       : undefined,
     seo: normalizeSeoMeta(r['seo']),
+  };
+}
+
+function normalizeLinksPageConfig(raw: unknown): LinksPageConfig {
+  const r = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {};
+  return {
+    enabled: (r['enabled'] as boolean) ?? false,
+    links: normalizeLinksLinks(r['links']),
+    title: r['title'] as string | undefined,
+    avatarUrl: r['avatarUrl'] as string | undefined,
+    headline: r['headline'] as string | undefined,
+    bio: r['bio'] as string | undefined,
   };
 }
 
@@ -98,8 +115,10 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     nav: normalizeNavItems(raw['nav']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
-    pages: pages ? { about: normalizeAboutPageConfig(pages['about']) } : undefined,
-    features: normalizeFeatures(pages),
+    pages: {
+      about: normalizeAboutPageConfig(pages?.['about']),
+      links: normalizeLinksPageConfig(pages?.['links']),
+    },
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

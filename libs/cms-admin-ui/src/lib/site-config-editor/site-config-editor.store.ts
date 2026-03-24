@@ -20,7 +20,10 @@ const emptyConfig: SiteConfig = {
   siteName: '',
   siteUrl: '',
   nav: [],
-  features: { aboutEnabled: false, linksEnabled: false },
+  pages: {
+    about: { enabled: false, headline: '', bio: '' },
+    links: { enabled: false, links: [] },
+  },
   updatedAt: 0,
 };
 
@@ -71,11 +74,15 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: { ...current, nav: items }, isDirty: true });
       },
 
-      updateAbout(about: AboutPageConfig): void {
+      updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
+        const enabled = current.pages?.about?.enabled ?? false;
         patchState(store, {
-          config: { ...current, pages: { ...current.pages, about } },
+          config: {
+            ...current,
+            pages: { ...current.pages, about: { ...about, enabled } },
+          },
           isDirty: true,
         });
       },
@@ -100,16 +107,16 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      toggleFeature(flag: keyof NonNullable<SiteConfig['features']>, value: boolean): void {
+      togglePageEnabled(page: 'about' | 'links', value: boolean): void {
         const current = store.config();
         if (!current) return;
-        const features: NonNullable<SiteConfig['features']> = {
-          aboutEnabled: false,
-          linksEnabled: false,
-          ...current.features,
-          [flag]: value,
+        const updated: SiteConfig = {
+          ...current,
+          pages: {
+            ...current.pages,
+            [page]: { ...current.pages?.[page], enabled: value },
+          },
         };
-        const updated: SiteConfig = { ...current, features };
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>
