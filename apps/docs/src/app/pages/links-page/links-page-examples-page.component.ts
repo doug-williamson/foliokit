@@ -3,19 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { LinksPageComponent } from '@foliokit/cms-ui';
-import type { LinksPage } from '@foliokit/cms-core';
+import type { LinksPageConfig } from '@foliokit/cms-core';
 
-const mockLinksPage: LinksPage = {
-  id: 'demo-links',
-  type: 'links',
-  slug: 'jane-doe',
+const mockLinksPage: LinksPageConfig = {
+  enabled: true,
   title: 'Jane Doe',
   bio: 'Frontend engineer. Building with Angular, Firebase, and Material Design.',
   headline: 'Frontend Engineer',
-  status: 'published',
-  seo: {},
-  updatedAt: Date.now(),
-  createdAt: Date.now(),
   links: [
     {
       id: 'link-1',

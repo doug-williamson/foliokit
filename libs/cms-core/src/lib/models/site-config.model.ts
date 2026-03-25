@@ -51,8 +51,11 @@ export interface LinksPageConfig {
   links?: LinksLink[];
   title?: string;
   avatarUrl?: string;
+  avatarUrlDark?: string;
+  avatarAlt?: string;
   headline?: string;
   bio?: string;
+  seo?: SeoMeta;
 }
 
 export interface SiteConfig {

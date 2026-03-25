@@ -22,10 +22,10 @@ import {
   DragDropModule,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { FIREBASE_STORAGE, PageService } from '@foliokit/cms-core';
-import type { LinksLink } from '@foliokit/cms-core';
-import { PageEditorStore } from './page-editor.store';
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { FIREBASE_STORAGE } from '@foliokit/cms-core';
+import type { LinksLink, LinksPageConfig } from '@foliokit/cms-core';
+import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   'twitter',
@@ -84,210 +84,208 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
     `,
   ],
   template: `
-    @if (store.page(); as page) {
-      @if (page.type === 'links') {
-        <div class="flex flex-col gap-6 p-4">
-          <!-- Title -->
-          <mat-form-field class="w-full">
-            <mat-label>Title</mat-label>
-            <input
-              matInput
-              [value]="page.title"
-              (input)="store.updateField('title', $any($event.target).value)"
-              placeholder="Links"
-            />
-          </mat-form-field>
+    @if (linksConfig(); as cfg) {
+      <div class="flex flex-col gap-6 p-4">
+        <!-- Title -->
+        <mat-form-field class="w-full">
+          <mat-label>Title</mat-label>
+          <input
+            matInput
+            [value]="cfg.title ?? ''"
+            (input)="updateField('title', $any($event.target).value)"
+            placeholder="Links"
+          />
+        </mat-form-field>
 
-          <!-- Avatar upload -->
-          <div class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Avatar (Light Mode)</span>
-            @if (avatarUploading()) {
-              <mat-progress-bar mode="determinate" [value]="avatarProgress()" />
+        <!-- Avatar upload -->
+        <div class="flex flex-col gap-2">
+          <span class="text-sm font-semibold">Avatar (Light Mode)</span>
+          @if (avatarUploading()) {
+            <mat-progress-bar mode="determinate" [value]="avatarProgress()" />
+          }
+          @if (avatarError()) {
+            <p class="text-sm text-red-500">{{ avatarError() }}</p>
+          }
+          <div class="flex items-center gap-4">
+            @if (cfg.avatarUrl) {
+              <img
+                [src]="cfg.avatarUrl"
+                [alt]="cfg.avatarAlt || 'Avatar'"
+                class="w-16 h-16 rounded-full object-cover shrink-0"
+              />
+            } @else {
+              <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
+                style="background: color-mix(in srgb, currentColor 10%, transparent)">
+                <mat-icon class="opacity-40">person</mat-icon>
+              </div>
             }
-            @if (avatarError()) {
-              <p class="text-sm text-red-500">{{ avatarError() }}</p>
-            }
-            <div class="flex items-center gap-4">
-              @if (page.avatarUrl) {
-                <img
-                  [src]="page.avatarUrl"
-                  [alt]="page.avatarAlt || 'Avatar'"
-                  class="w-16 h-16 rounded-full object-cover shrink-0"
-                />
-              } @else {
-                <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
-                  style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                  <mat-icon class="opacity-40">person</mat-icon>
-                </div>
-              }
-              <button mat-stroked-button [disabled]="avatarUploading()" (click)="isBrowser && avatarInput.click()">
-                {{ page.avatarUrl ? 'Replace' : 'Upload' }}
+            <button mat-stroked-button [disabled]="avatarUploading()" (click)="isBrowser && avatarInput.click()">
+              {{ cfg.avatarUrl ? 'Replace' : 'Upload' }}
+            </button>
+            @if (cfg.avatarUrl) {
+              <button mat-icon-button (click)="onDeleteAvatar(cfg)" title="Remove avatar">
+                <mat-icon>delete</mat-icon>
               </button>
-              @if (page.avatarUrl) {
-                <button mat-icon-button (click)="onDeleteAvatar()" title="Remove avatar">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              }
-            </div>
-            <input
-              #avatarInput
-              type="file"
-              accept="image/*"
-              class="hidden"
-              (change)="onAvatarSelected($any($event.target).files)"
-            />
+            }
+          </div>
+          <input
+            #avatarInput
+            type="file"
+            accept="image/*"
+            class="hidden"
+            (change)="onAvatarSelected($any($event.target).files)"
+          />
+        </div>
+
+        <!-- Dark mode avatar upload -->
+        <div class="flex flex-col gap-2">
+          <span class="text-sm font-semibold">Avatar (Dark Mode)</span>
+          <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode avatar when dark mode is active.</p>
+          @if (avatarDarkUploading()) {
+            <mat-progress-bar mode="determinate" [value]="avatarDarkProgress()" />
+          }
+          @if (avatarDarkError()) {
+            <p class="text-sm text-red-500">{{ avatarDarkError() }}</p>
+          }
+          <div class="flex items-center gap-4">
+            @if (cfg.avatarUrlDark) {
+              <img
+                [src]="cfg.avatarUrlDark"
+                [alt]="cfg.avatarAlt || 'Dark mode avatar'"
+                class="w-16 h-16 rounded-full object-cover shrink-0"
+              />
+            } @else {
+              <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
+                style="background: color-mix(in srgb, currentColor 10%, transparent)">
+                <mat-icon class="opacity-40">dark_mode</mat-icon>
+              </div>
+            }
+            <button mat-stroked-button [disabled]="avatarDarkUploading()" (click)="isBrowser && avatarDarkInput.click()">
+              {{ cfg.avatarUrlDark ? 'Replace' : 'Upload' }}
+            </button>
+            @if (cfg.avatarUrlDark) {
+              <button mat-icon-button (click)="onDeleteAvatarDark(cfg)" title="Remove dark avatar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </div>
+          <input
+            #avatarDarkInput
+            type="file"
+            accept="image/*"
+            class="hidden"
+            (change)="onAvatarDarkSelected($any($event.target).files)"
+          />
+        </div>
+
+        <!-- Headline -->
+        <mat-form-field class="w-full">
+          <mat-label>Headline</mat-label>
+          <input
+            matInput
+            [value]="cfg.headline ?? ''"
+            (input)="updateField('headline', $any($event.target).value)"
+            placeholder="Your name or tagline"
+          />
+        </mat-form-field>
+
+        <!-- Bio -->
+        <mat-form-field class="w-full">
+          <mat-label>Bio</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            [value]="cfg.bio ?? ''"
+            (input)="updateField('bio', $any($event.target).value)"
+            placeholder="Short bio shown below your headline"
+          ></textarea>
+        </mat-form-field>
+
+        <!-- Link list -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">Links</span>
+            <button mat-stroked-button (click)="addLink(cfg.links ?? [])">
+              <mat-icon>add</mat-icon>
+              Add Link
+            </button>
           </div>
 
-          <!-- Dark mode avatar upload -->
-          <div class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Avatar (Dark Mode)</span>
-            <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode avatar when dark mode is active.</p>
-            @if (avatarDarkUploading()) {
-              <mat-progress-bar mode="determinate" [value]="avatarDarkProgress()" />
-            }
-            @if (avatarDarkError()) {
-              <p class="text-sm text-red-500">{{ avatarDarkError() }}</p>
-            }
-            <div class="flex items-center gap-4">
-              @if (page.avatarUrlDark) {
-                <img
-                  [src]="page.avatarUrlDark"
-                  [alt]="page.avatarAlt || 'Dark mode avatar'"
-                  class="w-16 h-16 rounded-full object-cover shrink-0"
-                />
-              } @else {
-                <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
-                  style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                  <mat-icon class="opacity-40">dark_mode</mat-icon>
+          <div
+            cdkDropList
+            (cdkDropListDropped)="onDrop($event, cfg.links ?? [])"
+            class="flex flex-col gap-2"
+          >
+            @for (link of cfg.links ?? []; track link.id) {
+              <div
+                cdkDrag
+                class="flex flex-col gap-3 p-3 rounded-lg"
+                style="background: color-mix(in srgb, currentColor 5%, transparent); border: 1px solid color-mix(in srgb, currentColor 10%, transparent)"
+              >
+                <!-- Drag handle row -->
+                <div class="flex items-center gap-2">
+                  <mat-icon cdkDragHandle class="drag-handle opacity-40 shrink-0" style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem">
+                    drag_indicator
+                  </mat-icon>
+                  <span class="flex-1 text-sm font-medium truncate">{{ link.label || '(untitled)' }}</span>
+                  <mat-slide-toggle
+                    [checked]="!!link.highlighted"
+                    (change)="updateLink(cfg.links ?? [], link.id, 'highlighted', $event.checked)"
+                    class="shrink-0"
+                    matTooltip="Highlighted"
+                  />
+                  <button mat-icon-button (click)="deleteLink(cfg.links ?? [], link.id)" title="Delete link">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
-              }
-              <button mat-stroked-button [disabled]="avatarDarkUploading()" (click)="isBrowser && avatarDarkInput.click()">
-                {{ page.avatarUrlDark ? 'Replace' : 'Upload' }}
-              </button>
-              @if (page.avatarUrlDark) {
-                <button mat-icon-button (click)="onDeleteAvatarDark()" title="Remove dark avatar">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              }
-            </div>
-            <input
-              #avatarDarkInput
-              type="file"
-              accept="image/*"
-              class="hidden"
-              (change)="onAvatarDarkSelected($any($event.target).files)"
-            />
-          </div>
 
-          <!-- Headline -->
-          <mat-form-field class="w-full">
-            <mat-label>Headline</mat-label>
-            <input
-              matInput
-              [value]="page.headline ?? ''"
-              (input)="store.updateField('headline', $any($event.target).value)"
-              placeholder="Your name or tagline"
-            />
-          </mat-form-field>
-
-          <!-- Bio -->
-          <mat-form-field class="w-full">
-            <mat-label>Bio</mat-label>
-            <textarea
-              matInput
-              rows="3"
-              [value]="page.bio ?? ''"
-              (input)="store.updateField('bio', $any($event.target).value)"
-              placeholder="Short bio shown below your headline"
-            ></textarea>
-          </mat-form-field>
-
-          <!-- Link list -->
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-semibold">Links</span>
-              <button mat-stroked-button (click)="addLink(page.links)">
-                <mat-icon>add</mat-icon>
-                Add Link
-              </button>
-            </div>
-
-            <div
-              cdkDropList
-              (cdkDropListDropped)="onDrop($event, page.links)"
-              class="flex flex-col gap-2"
-            >
-              @for (link of page.links; track link.id) {
-                <div
-                  cdkDrag
-                  class="flex flex-col gap-3 p-3 rounded-lg"
-                  style="background: color-mix(in srgb, currentColor 5%, transparent); border: 1px solid color-mix(in srgb, currentColor 10%, transparent)"
-                >
-                  <!-- Drag handle row -->
-                  <div class="flex items-center gap-2">
-                    <mat-icon cdkDragHandle class="drag-handle opacity-40 shrink-0" style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem">
-                      drag_indicator
-                    </mat-icon>
-                    <span class="flex-1 text-sm font-medium truncate">{{ link.label || '(untitled)' }}</span>
-                    <mat-slide-toggle
-                      [checked]="!!link.highlighted"
-                      (change)="updateLink(page.links, link.id, 'highlighted', $event.checked)"
-                      class="shrink-0"
-                      matTooltip="Highlighted"
+                <!-- Label + URL -->
+                <div class="flex gap-3">
+                  <mat-form-field class="flex-1">
+                    <mat-label>Label</mat-label>
+                    <input
+                      matInput
+                      [value]="link.label"
+                      (input)="updateLink(cfg.links ?? [], link.id, 'label', $any($event.target).value)"
+                      placeholder="My Website"
                     />
-                    <button mat-icon-button (click)="deleteLink(page.links, link.id)" title="Delete link">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-
-                  <!-- Label + URL -->
-                  <div class="flex gap-3">
-                    <mat-form-field class="flex-1">
-                      <mat-label>Label</mat-label>
-                      <input
-                        matInput
-                        [value]="link.label"
-                        (input)="updateLink(page.links, link.id, 'label', $any($event.target).value)"
-                        placeholder="My Website"
-                      />
-                    </mat-form-field>
-                    <mat-form-field class="flex-1">
-                      <mat-label>URL</mat-label>
-                      <input
-                        matInput
-                        type="url"
-                        [value]="link.url"
-                        (input)="updateLink(page.links, link.id, 'url', $any($event.target).value)"
-                        placeholder="https://example.com"
-                      />
-                    </mat-form-field>
-                  </div>
-
-                  <!-- Platform -->
-                  <mat-form-field class="w-full">
-                    <mat-label>Platform</mat-label>
-                    <mat-select
-                      [value]="link.platform ?? null"
-                      (selectionChange)="updateLink(page.links, link.id, 'platform', $event.value)"
-                    >
-                      <mat-option [value]="null">— none —</mat-option>
-                      @for (p of platformOptions; track p) {
-                        <mat-option [value]="p">{{ p }}</mat-option>
-                      }
-                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field class="flex-1">
+                    <mat-label>URL</mat-label>
+                    <input
+                      matInput
+                      type="url"
+                      [value]="link.url"
+                      (input)="updateLink(cfg.links ?? [], link.id, 'url', $any($event.target).value)"
+                      placeholder="https://example.com"
+                    />
                   </mat-form-field>
                 </div>
-              }
 
-              @if (!page.links.length) {
-                <div class="flex items-center justify-center py-8 opacity-40 text-sm">
-                  No links yet. Add one above.
-                </div>
-              }
-            </div>
+                <!-- Platform -->
+                <mat-form-field class="w-full">
+                  <mat-label>Platform</mat-label>
+                  <mat-select
+                    [value]="link.platform ?? null"
+                    (selectionChange)="updateLink(cfg.links ?? [], link.id, 'platform', $event.value)"
+                  >
+                    <mat-option [value]="null">— none —</mat-option>
+                    @for (p of platformOptions; track p) {
+                      <mat-option [value]="p">{{ p }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            }
+
+            @if (!(cfg.links ?? []).length) {
+              <div class="flex items-center justify-center py-8 opacity-40 text-sm">
+                No links yet. Add one above.
+              </div>
+            }
           </div>
         </div>
-      }
+      </div>
     }
   `,
 })
@@ -295,13 +293,14 @@ export class LinksEditorFormComponent {
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
   @ViewChild('avatarDarkInput') avatarDarkInput!: ElementRef<HTMLInputElement>;
 
-  readonly store = inject(PageEditorStore);
+  readonly store = inject(SiteConfigEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE)!;
-  private readonly pageService = inject(PageService);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
   readonly platformOptions = PLATFORM_OPTIONS;
+
+  readonly linksConfig = () => this.store.config()?.pages?.links;
 
   readonly avatarUploading = signal(false);
   readonly avatarProgress = signal(0);
@@ -313,6 +312,16 @@ export class LinksEditorFormComponent {
   readonly avatarDarkError = signal<string | null>(null);
   private avatarDarkStoragePath = signal<string | null>(null);
 
+  private flush(partial: Partial<Omit<LinksPageConfig, 'enabled'>>): void {
+    const current = this.store.config()?.pages?.links;
+    if (!current) return;
+    this.store.updateLinks({ ...current, ...partial });
+  }
+
+  updateField(field: keyof Omit<LinksPageConfig, 'enabled' | 'links'>, value: string | undefined): void {
+    this.flush({ [field]: value || undefined });
+  }
+
   onAvatarSelected(files: FileList | null): void {
     if (!files?.length) return;
     this.uploadAvatar(files[0]);
@@ -321,16 +330,15 @@ export class LinksEditorFormComponent {
     }
   }
 
-  onDeleteAvatar(): void {
+  onDeleteAvatar(cfg: LinksPageConfig): void {
     if (!window.confirm('Remove avatar?')) return;
     const path = this.avatarStoragePath();
     const clear = () => {
-      this.store.updateField('avatarUrl', undefined);
-      this.store.updateField('avatarAlt', undefined);
+      this.flush({ avatarUrl: undefined, avatarAlt: undefined });
       this.avatarStoragePath.set(null);
     };
     if (path) {
-      this.pageService.deleteStorageFile(path).subscribe({ next: clear, error: clear });
+      deleteObject(ref(this.storage, path)).then(clear, clear);
     } else {
       clear();
     }
@@ -344,15 +352,15 @@ export class LinksEditorFormComponent {
     }
   }
 
-  onDeleteAvatarDark(): void {
+  onDeleteAvatarDark(cfg: LinksPageConfig): void {
     if (!window.confirm('Remove dark mode avatar?')) return;
     const path = this.avatarDarkStoragePath();
     const clear = () => {
-      this.store.updateField('avatarUrlDark', undefined);
+      this.flush({ avatarUrlDark: undefined });
       this.avatarDarkStoragePath.set(null);
     };
     if (path) {
-      this.pageService.deleteStorageFile(path).subscribe({ next: clear, error: clear });
+      deleteObject(ref(this.storage, path)).then(clear, clear);
     } else {
       clear();
     }
@@ -365,14 +373,14 @@ export class LinksEditorFormComponent {
       url: '',
       order: links.length,
     };
-    this.store.updateField('links', [...links, newLink]);
+    this.flush({ links: [...links, newLink] });
   }
 
   deleteLink(links: LinksLink[], id: string): void {
     const updated = links
       .filter((l) => l.id !== id)
       .map((l, i) => ({ ...l, order: i }));
-    this.store.updateField('links', updated);
+    this.flush({ links: updated });
   }
 
   updateLink<K extends keyof LinksLink>(
@@ -384,23 +392,22 @@ export class LinksEditorFormComponent {
     const updated = links.map((l) =>
       l.id === id ? { ...l, [field]: value } : l,
     );
-    this.store.updateField('links', updated);
+    this.flush({ links: updated });
   }
 
   onDrop(event: CdkDragDrop<LinksLink[]>, links: LinksLink[]): void {
     const reordered = [...links];
     moveItemInArray(reordered, event.previousIndex, event.currentIndex);
     const withOrder = reordered.map((l, i) => ({ ...l, order: i }));
-    this.store.updateField('links', withOrder);
+    this.flush({ links: withOrder });
   }
 
   private uploadAvatar(file: File): void {
     const previous = this.avatarStoragePath();
-    const pageId = this.store.page()?.id || this.store.tempPageId();
-    const storagePath = `pages/${pageId}/avatar/${file.name}`;
+    const storagePath = `site-config/links/avatar/${file.name}`;
 
     if (previous) {
-      this.pageService.deleteStorageFile(previous).subscribe();
+      deleteObject(ref(this.storage, previous)).catch(() => undefined);
     }
 
     const fileRef = ref(this.storage, storagePath);
@@ -422,8 +429,7 @@ export class LinksEditorFormComponent {
       },
       () => {
         getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          this.store.updateField('avatarUrl', downloadUrl);
-          this.store.updateField('avatarAlt', file.name);
+          this.flush({ avatarUrl: downloadUrl, avatarAlt: file.name });
           this.avatarStoragePath.set(storagePath);
           this.avatarUploading.set(false);
         });
@@ -433,11 +439,10 @@ export class LinksEditorFormComponent {
 
   private uploadAvatarDark(file: File): void {
     const previous = this.avatarDarkStoragePath();
-    const pageId = this.store.page()?.id || this.store.tempPageId();
-    const storagePath = `pages/${pageId}/avatar-dark/${file.name}`;
+    const storagePath = `site-config/links/avatar-dark/${file.name}`;
 
     if (previous) {
-      this.pageService.deleteStorageFile(previous).subscribe();
+      deleteObject(ref(this.storage, previous)).catch(() => undefined);
     }
 
     const fileRef = ref(this.storage, storagePath);
@@ -459,7 +464,7 @@ export class LinksEditorFormComponent {
       },
       () => {
         getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          this.store.updateField('avatarUrlDark', downloadUrl);
+          this.flush({ avatarUrlDark: downloadUrl });
           this.avatarDarkStoragePath.set(storagePath);
           this.avatarDarkUploading.set(false);
         });
