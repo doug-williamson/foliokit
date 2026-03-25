@@ -47,7 +47,7 @@ env:
       - RUNTIME
   # Angular SSR SSRF protection — allow the App Hosting hostname(s)
   - variable: NG_ALLOWED_HOSTS
-    value: foliokit-6f974--foliokit-blog.us-central1.hosted.app
+    value: foliokit-blog--foliokit-6f974.us-central1.hosted.app
     availability:
       - RUNTIME
   # Service account key pulled from Secret Manager at runtime
