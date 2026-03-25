@@ -11,15 +11,15 @@ import type { BlogPost } from '@foliokit/cms-core';
   template: `
     @if (variant() === 'hero') {
       <div
-        class="hero-card block relative w-full overflow-hidden rounded-[var(--folio-blog-radius-card)] group"
-        [style.box-shadow]="'var(--folio-blog-shadow-card)'"
+        class="hero-card block relative w-full overflow-hidden rounded-[var(--r-lg)] group"
+        [style.box-shadow]="'var(--shadow-md)'"
       >
         <a
           [routerLink]="['/posts', post().slug]"
           class="absolute inset-0 z-10"
           [attr.aria-label]="post().title"
         ></a>
-        <div class="relative w-full" [style.padding-bottom]="'var(--folio-blog-hero-aspect)'">
+        <div class="relative w-full" [style.padding-bottom]="'52%'">
           @if (post().thumbnailUrl) {
             <img
               [src]="post().thumbnailUrl"
@@ -29,7 +29,7 @@ import type { BlogPost } from '@foliokit/cms-core';
           } @else {
             <div
               class="absolute inset-0 w-full h-full"
-              style="background-color: color-mix(in srgb, var(--folio-blog-accent) 18%, var(--folio-blog-surface-raised))"
+              style="background-color: color-mix(in srgb, var(--text-accent) 18%, var(--surface-0))"
             ></div>
           }
           <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
@@ -49,7 +49,7 @@ import type { BlogPost } from '@foliokit/cms-core';
             }
             <h2
               class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-3"
-              style="font-family: var(--folio-blog-font-serif)"
+              style="font-family: var(--font-display)"
             >
               {{ post().title }}
             </h2>
@@ -67,10 +67,10 @@ import type { BlogPost } from '@foliokit/cms-core';
       </div>
     } @else {
       <div
-        class="card-link group relative flex flex-col md:flex-row lg:flex-col h-full overflow-hidden rounded-[var(--folio-blog-radius-card)] transition-all duration-200"
-        [style.background]="'var(--folio-blog-surface-raised)'"
-        [style.box-shadow]="'var(--folio-blog-shadow-card)'"
-        [style.border]="'1px solid var(--folio-blog-border)'"
+        class="card-link group relative flex flex-col md:flex-row lg:flex-col h-full overflow-hidden rounded-[var(--r-lg)] transition-all duration-200"
+        [style.background]="'var(--surface-0)'"
+        [style.box-shadow]="'var(--shadow-md)'"
+        [style.border]="'1px solid var(--border)'"
       >
         <a
           [routerLink]="['/posts', post().slug]"
@@ -84,7 +84,7 @@ import type { BlogPost } from '@foliokit/cms-core';
         >
           <div
             class="relative w-full"
-            style="padding-bottom: var(--folio-blog-card-aspect)"
+            style="padding-bottom: 56.25%"
           >
             @if (post().thumbnailUrl) {
               <img
@@ -95,11 +95,11 @@ import type { BlogPost } from '@foliokit/cms-core';
             } @else {
               <div
                 class="absolute inset-0 w-full h-full flex items-center justify-center"
-                style="background-color: color-mix(in srgb, var(--folio-blog-accent) 12%, var(--folio-blog-surface-raised))"
+                style="background-color: color-mix(in srgb, var(--text-accent) 12%, var(--surface-0))"
               >
                 <svg
                   class="w-10 h-10 opacity-30"
-                  style="color: var(--folio-blog-accent)"
+                  style="color: var(--text-accent)"
                   fill="none"
                   stroke="currentColor"
                   stroke-width="1.5"
@@ -120,7 +120,7 @@ import type { BlogPost } from '@foliokit/cms-core';
                   [routerLink]="['/posts']"
                   [queryParams]="{ tag: tag }"
                   class="relative z-20 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
-                  style="background-color: color-mix(in srgb, var(--folio-blog-accent) 12%, transparent); color: var(--folio-blog-accent)"
+                  style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
                 >
                   {{ tag }}
                 </a>
@@ -129,21 +129,21 @@ import type { BlogPost } from '@foliokit/cms-core';
           }
           <h2
             class="text-base font-semibold leading-snug mb-2 group-hover:underline decoration-1 underline-offset-2 flex-grow-0"
-            style="font-family: var(--folio-blog-font-serif); color: var(--folio-blog-text-primary)"
+            style="font-family: var(--font-display); color: var(--text-primary)"
           >
             {{ post().title }}
           </h2>
           @if (post().excerpt) {
             <p
               class="text-sm line-clamp-3 mb-3 flex-1"
-              style="color: var(--folio-blog-text-secondary)"
+              style="color: var(--text-secondary)"
             >
               {{ post().excerpt }}
             </p>
           }
           <div
             class="flex items-center gap-1.5 text-xs mt-auto"
-            style="color: var(--folio-blog-text-muted)"
+            style="color: var(--text-muted)"
           >
             <time [dateTime]="publishedDate().toISOString()">
               {{ publishedDate() | date: 'MMM d, yyyy' }}
