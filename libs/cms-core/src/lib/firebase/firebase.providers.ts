@@ -13,12 +13,7 @@ import {
   memoryLocalCache,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import {
-  browserSessionPersistence,
-  connectAuthEmulator,
-  getAuth,
-  initializeAuth,
-} from 'firebase/auth';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import {
   FIREBASE_APP,
   FIREBASE_AUTH,
@@ -79,13 +74,7 @@ export function provideFirebase(
       useFactory: () => {
         const platformId = inject(PLATFORM_ID);
         if (!isPlatformBrowser(platformId)) return null;
-        const app = inject(FIREBASE_APP);
-        let auth;
-        try {
-          auth = initializeAuth(app, { persistence: browserSessionPersistence });
-        } catch {
-          auth = getAuth(app);
-        }
+        const auth = getAuth(inject(FIREBASE_APP));
         if (useEmulator) {
           connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
         }
