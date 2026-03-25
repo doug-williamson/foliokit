@@ -1,12 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -68,7 +71,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
             <p>No authors yet. Create one to get started.</p>
           </div>
         } @else {
-          <mat-table [dataSource]="authors()!" class="w-full">
+          <mat-table [dataSource]="authors()!" class="w-full" style="min-width: 0">
             <!-- Avatar column -->
             <ng-container matColumnDef="avatar">
               <mat-header-cell *matHeaderCellDef class="avatar-cell"></mat-header-cell>
@@ -127,8 +130,8 @@ import { Author, AuthorService } from '@foliokit/cms-core';
               </mat-cell>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns" />
-            <mat-row *matRowDef="let row; columns: displayedColumns;" />
+            <mat-header-row *matHeaderRowDef="displayedColumns()" />
+            <mat-row *matRowDef="let row; columns: displayedColumns();" />
           </mat-table>
         }
       </div>
@@ -142,7 +145,19 @@ export class AuthorsListComponent implements OnInit {
 
   protected readonly loading = signal(true);
   protected readonly authors = signal<Author[] | null>(null);
-  protected readonly displayedColumns = ['avatar', 'displayName', 'email', 'actions'];
+
+  private readonly isMobile = toSignal(
+    inject(BreakpointObserver)
+      .observe('(max-width: 599px)')
+      .pipe(map((r) => r.matches)),
+    { initialValue: false }
+  );
+
+  protected readonly displayedColumns = computed(() =>
+    this.isMobile()
+      ? ['avatar', 'displayName', 'actions']
+      : ['avatar', 'displayName', 'email', 'actions']
+  );
 
   ngOnInit(): void {
     this.authorService.getAll().subscribe((list) => {

@@ -34,11 +34,11 @@ type CardState = 'disabled' | 'empty' | 'published';
   ],
   template: `
     @if (store.config()) {
-      <div class="p-6">
+      <div class="p-4 sm:p-6">
         <h1 class="text-2xl font-semibold mb-2">Pages</h1>
         <p class="text-sm text-gray-500 mb-6">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (card of cards; track card.flag) {
             @let cfg = store.config()!;
             @let state = cardState(card, cfg);
@@ -46,18 +46,18 @@ type CardState = 'disabled' | 'empty' | 'published';
             @let liveUrl = cfg.siteUrl ? card.liveUrl(cfg.siteUrl) : null;
 
             <mat-card class="flex flex-col" [class.opacity-60]="state === 'disabled'">
-              <mat-card-header class="flex items-start justify-between">
-                <div>
-                  <mat-card-title class="text-base font-semibold">{{ card.label }}</mat-card-title>
-                  <mat-card-subtitle class="text-xs mt-1">{{ card.description }}</mat-card-subtitle>
+              <div class="flex items-start justify-between px-4 pt-4 pb-0 gap-3">
+                <div class="flex flex-col min-w-0">
+                  <span class="text-base font-semibold leading-snug">{{ card.label }}</span>
+                  <span class="text-xs text-gray-500 mt-1 leading-snug">{{ card.description }}</span>
                 </div>
                 <mat-slide-toggle
                   [checked]="enabled"
                   [disabled]="store.isSaving()"
                   (change)="toggle(card.flag, $event.checked)"
-                  class="ml-4 mt-1"
+                  class="shrink-0 mt-0.5"
                 />
-              </mat-card-header>
+              </div>
 
               <mat-card-content class="flex-1 mt-4">
                 @switch (state) {

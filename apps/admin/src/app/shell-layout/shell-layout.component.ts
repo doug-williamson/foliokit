@@ -47,7 +47,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         </a>
         @if (pages()?.about?.enabled) {
           <a mat-list-item routerLink="/about-page" routerLinkActive="active-link">
-            <span class="flex items-center gap-4 pl-8">
+            <span class="flex items-center gap-4 pl-6">
               <mat-icon>person</mat-icon>
               <span>About</span>
             </span>
@@ -55,7 +55,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         }
         @if (pages()?.links?.enabled) {
           <a mat-list-item routerLink="/links-page" routerLinkActive="active-link">
-            <span class="flex items-center gap-4 pl-8">
+            <span class="flex items-center gap-4 pl-6">
               <mat-icon>link</mat-icon>
               <span>Links</span>
             </span>
