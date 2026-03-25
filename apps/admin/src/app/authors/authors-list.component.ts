@@ -63,9 +63,9 @@ import { Author, AuthorService } from '@foliokit/cms-core';
             <mat-spinner diameter="40" />
           </div>
         } @else if (!authors()?.length) {
-          <div class="flex flex-col items-center justify-center gap-3 p-12 opacity-50">
-            <mat-icon style="font-size: 3rem; width: 3rem; height: 3rem">person_off</mat-icon>
-            <p class="text-sm">No authors yet. Create one to get started.</p>
+          <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
+            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
+            <p>No authors yet. Create one to get started.</p>
           </div>
         } @else {
           <mat-table [dataSource]="authors()!" class="w-full">

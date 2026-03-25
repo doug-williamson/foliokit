@@ -60,8 +60,6 @@ export interface SiteConfig {
   description?: string;
   logo?: string;
   favicon?: string;
-  primaryColor?: string;
-  accentColor?: string;
   nav: NavItem[];
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;

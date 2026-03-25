@@ -240,37 +240,6 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
             </div>
           </mat-tab>
 
-          <!-- ── Theme ── -->
-          <mat-tab label="Theme">
-            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
-              <form [formGroup]="themeForm" class="flex flex-col gap-5">
-                <div class="flex items-center gap-4">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Primary Color</mat-label>
-                    <input matInput formControlName="primaryColor" placeholder="#6200ea" />
-                  </mat-form-field>
-                  <span
-                    class="w-8 h-8 rounded border shrink-0"
-                    style="border-color: color-mix(in srgb, currentColor 20%, transparent)"
-                    [style.background]="themeForm.get('primaryColor')?.value || 'transparent'"
-                  ></span>
-                </div>
-
-                <div class="flex items-center gap-4">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Accent Color</mat-label>
-                    <input matInput formControlName="accentColor" placeholder="#03dac6" />
-                  </mat-form-field>
-                  <span
-                    class="w-8 h-8 rounded border shrink-0"
-                    style="border-color: color-mix(in srgb, currentColor 20%, transparent)"
-                    [style.background]="themeForm.get('accentColor')?.value || 'transparent'"
-                  ></span>
-                </div>
-              </form>
-            </div>
-          </mat-tab>
-
         </mat-tab-group>
 
         <!-- Sticky footer: save / discard -->
@@ -314,11 +283,6 @@ export class SiteConfigComponent implements OnInit {
     description: [''],
     ogImage: [''],
     canonicalUrl: [''],
-  });
-
-  protected readonly themeForm: FormGroup = this.fb.group({
-    primaryColor: [''],
-    accentColor: [''],
   });
 
   get navItemsArray(): FormArray {
@@ -417,10 +381,6 @@ export class SiteConfigComponent implements OnInit {
       canonicalUrl: config.defaultSeo?.canonicalUrl ?? '',
     }, { emitEvent: false });
 
-    this.themeForm.patchValue({
-      primaryColor: config.primaryColor ?? '',
-      accentColor: config.accentColor ?? '',
-    }, { emitEvent: false });
   }
 
   private watchForms(): void {
@@ -441,10 +401,6 @@ export class SiteConfigComponent implements OnInit {
       });
     });
 
-    this.themeForm.valueChanges.subscribe((val) => {
-      this.store.updateField('primaryColor', val.primaryColor || undefined);
-      this.store.updateField('accentColor', val.accentColor || undefined);
-    });
   }
 
   private flushNavToStore(): void {

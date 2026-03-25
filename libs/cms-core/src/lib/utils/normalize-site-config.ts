@@ -110,8 +110,6 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     description: raw['description'] as string | undefined,
     logo: raw['logo'] as string | undefined,
     favicon: raw['favicon'] as string | undefined,
-    primaryColor: raw['primaryColor'] as string | undefined,
-    accentColor: raw['accentColor'] as string | undefined,
     nav: normalizeNavItems(raw['nav']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
