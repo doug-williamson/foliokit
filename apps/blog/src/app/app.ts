@@ -47,10 +47,6 @@ export class App {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    const base = config?.nav ?? DEFAULT_NAV;
-    const extras: NavItem[] = [];
-    if (config?.pages?.about?.enabled) extras.push({ label: 'About', url: '/about' });
-    if (config?.pages?.links?.enabled) extras.push({ label: 'Links', url: '/links' });
-    return [...base, ...extras];
+    return config?.nav ?? DEFAULT_NAV;
   });
 }

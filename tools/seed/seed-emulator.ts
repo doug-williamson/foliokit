@@ -64,11 +64,127 @@ async function seed(): Promise<void> {
         nav: [
           { label: 'Home', url: '/', order: 0 },
           { label: 'Blog', url: '/posts', order: 1 },
+          { label: 'About', url: '/about', order: 2 },
+          { label: 'Links', url: '/links', order: 3 },
         ],
         pages: {
-          about: { enabled: false, headline: '', bio: '' },
-          links: { enabled: false, links: [] },
+          about: {
+            enabled: true,
+            headline: 'Hey, I\'m Dev Author',
+            subheadline: 'Engineer, writer, and open-source tinkerer',
+            bio: 'I build things for the web — mostly with Angular and Firebase.\n\nCurrently exploring signals-based architecture and design systems. When I\'m not coding I\'m writing about what I\'ve learned here on the blog.',
+            photoUrl: 'https://i.pravatar.cc/150?u=dev-author',
+            photoAlt: 'Dev Author profile photo',
+            socialLinks: [
+              { platform: 'github', url: 'https://github.com/dev-author', label: 'GitHub' },
+              { platform: 'bluesky', url: 'https://bsky.app/profile/dev-author.bsky.social', label: 'Bluesky' },
+              { platform: 'twitter', url: 'https://twitter.com/dev_author', label: 'Twitter / X' },
+            ],
+            seo: {
+              title: 'About — FolioKit Blog',
+              description: 'Learn more about Dev Author, an engineer and writer focused on Angular and Firebase.',
+            },
+          },
+          links: {
+            enabled: true,
+            title: 'Dev Author — Links',
+            headline: 'Dev Author',
+            bio: 'Engineer · Writer · Open-source tinkerer',
+            avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
+            links: [
+              {
+                id: 'link-blog',
+                label: 'My Blog',
+                url: 'http://localhost:4201/posts',
+                platform: 'website',
+                highlighted: true,
+                order: 0,
+              },
+              {
+                id: 'link-github',
+                label: 'GitHub',
+                url: 'https://github.com/dev-author',
+                platform: 'github',
+                highlighted: false,
+                order: 1,
+              },
+              {
+                id: 'link-bluesky',
+                label: 'Bluesky',
+                url: 'https://bsky.app/profile/dev-author.bsky.social',
+                platform: 'bluesky',
+                highlighted: false,
+                order: 2,
+              },
+              {
+                id: 'link-twitter',
+                label: 'Twitter / X',
+                url: 'https://twitter.com/dev_author',
+                platform: 'twitter',
+                highlighted: false,
+                order: 3,
+              },
+            ],
+          },
         },
+        updatedAt: now,
+      },
+      { merge: false }
+    );
+
+    // ── pages ──────────────────────────────────────────────────────────────────
+
+    console.log('[seed:emulator] Writing /pages/links...');
+    await db.collection('pages').doc('links').set(
+      {
+        id: 'links',
+        type: 'links',
+        slug: 'links',
+        title: 'Dev Author — Links',
+        status: 'published',
+        avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
+        avatarAlt: 'Dev Author profile photo',
+        headline: 'Dev Author',
+        bio: 'Engineer · Writer · Open-source tinkerer',
+        links: [
+          {
+            id: 'link-blog',
+            label: 'My Blog',
+            url: 'http://localhost:4201/posts',
+            platform: 'website',
+            highlighted: true,
+            order: 0,
+          },
+          {
+            id: 'link-github',
+            label: 'GitHub',
+            url: 'https://github.com/dev-author',
+            platform: 'github',
+            highlighted: false,
+            order: 1,
+          },
+          {
+            id: 'link-bluesky',
+            label: 'Bluesky',
+            url: 'https://bsky.app/profile/dev-author.bsky.social',
+            platform: 'bluesky',
+            highlighted: false,
+            order: 2,
+          },
+          {
+            id: 'link-twitter',
+            label: 'Twitter / X',
+            url: 'https://twitter.com/dev_author',
+            platform: 'twitter',
+            highlighted: false,
+            order: 3,
+          },
+        ],
+        seo: {
+          title: 'Links — FolioKit Blog',
+          description: 'Find Dev Author across the web.',
+        },
+        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
         updatedAt: now,
       },
       { merge: false }
@@ -178,7 +294,7 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config, 4 posts (2 published, 1 scheduled, 1 draft) written.');
+    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config (about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

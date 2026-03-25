@@ -10,7 +10,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     match /pages/{pageId} {
-      allow read: if resource.data.status == 'published' || isAdmin();
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
       allow write: if isAdmin();
     }
     match /tags/{tagId} { allow read; allow write: if isAdmin(); }
