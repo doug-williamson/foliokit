@@ -1,6 +1,6 @@
 {
   "name": "foliokit",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "license": "MIT",
   "scripts": {
     "build": "npx nx build blog",
@@ -21,7 +21,9 @@
     "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
     "emulator": "firebase emulators:start --only auth,firestore,storage",
     "emulator:data": "firebase emulators:start --only auth,firestore,storage --import .firebase/emulator-data --export-on-exit",
-    "seed": "nx run seed:emulator"
+    "seed": "nx run seed:emulator",
+    "deploy:admin": "nx build admin --configuration=production && firebase deploy --only hosting:foliokit-admin --project foliokit-6f974",
+    "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974"
   },
   "private": false,
   "devDependencies": {
