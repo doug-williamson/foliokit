@@ -22,29 +22,31 @@ import { BlogSeoService } from '../../services/blog-seo.service';
       <article class="max-w-3xl mx-auto px-4 py-10">
         @if (about()!.photoUrl) {
           <img
-            class="w-32 h-32 rounded-full object-cover mb-6"
+            class="w-32 h-32 rounded-full object-cover mb-6 block mx-auto sm:mx-0"
             [src]="about()!.photoUrl"
             [alt]="about()!.photoAlt || about()!.headline"
           />
         }
 
-        <h1 class="text-3xl font-bold mb-2">{{ about()!.headline }}</h1>
+        <h1 class="text-3xl font-bold mb-2 text-center sm:text-left">{{ about()!.headline }}</h1>
 
         @if (about()!.subheadline) {
-          <p class="text-lg opacity-70 mb-6">{{ about()!.subheadline }}</p>
+          <p class="text-lg opacity-70 mb-8 text-center sm:text-left">{{ about()!.subheadline }}</p>
         }
+
+        <hr class="border-t border-black/10 dark:border-white/10 mb-8" />
 
         <markdown [data]="about()!.bio" class="folio-prose" />
 
         @if (about()!.socialLinks?.length) {
-          <ul class="flex flex-wrap gap-4 mt-8">
+          <ul class="flex flex-wrap gap-6 mt-8">
             @for (link of about()!.socialLinks; track link.url) {
               <li>
                 <a
                   [href]="link.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-sm underline opacity-70 hover:opacity-100"
+                  class="text-sm font-medium underline opacity-70 hover:opacity-100"
                 >
                   {{ link.label || link.platform }}
                 </a>

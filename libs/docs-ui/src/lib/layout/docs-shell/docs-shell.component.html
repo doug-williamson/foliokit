@@ -1,4 +1,10 @@
 <mat-toolbar class="docs-topbar">
+  @if (isMobile() && isDocsRoute()) {
+    <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+
   <a routerLink="/" class="docs-logo" aria-label="FolioKit home">FolioKit</a>
 
   <a mat-button routerLink="/docs" class="docs-nav-link">Docs</a>
@@ -28,8 +34,8 @@
 
 <mat-sidenav-container class="docs-sidenav-container">
   <mat-sidenav
-    [opened]="isDocsRoute()"
-    mode="side"
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="isMobile() ? sidenavOpen() : isDocsRoute()"
     class="docs-sidenav border-r border-[var(--mat-sys-outline-variant)]"
   >
     <div class="flex flex-col h-full overflow-y-auto py-4">

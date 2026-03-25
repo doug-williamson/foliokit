@@ -83,14 +83,9 @@ mat-sidenav {
   overflow-y: auto;
 }
 
-.folio-nav-item {
-  &.active {
-    color: var(--text-accent);
-    background: var(--amber-50);
-    border-left: 2px solid var(--text-accent);
-  }
-}
-
-[data-theme='dark'] .folio-nav-item.active {
-  background: rgba(194, 120, 32, 0.1);
+::ng-deep mat-sidenav [mat-list-item].active-link {
+  border-left: 3px solid var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-weight: 500;
 }

@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { NavigationEnd, Router } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,7 +38,9 @@ export class AppShellComponent implements OnInit, OnDestroy {
   protected readonly sidenavOpen = signal(false);
 
   private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly router = inject(Router);
   private bpSub?: Subscription;
+  private navSub?: Subscription;
 
   ngOnInit(): void {
     this.bpSub = this.breakpointObserver
@@ -46,11 +50,21 @@ export class AppShellComponent implements OnInit, OnDestroy {
         this.isMobile.set(mobile);
         this.sidenavOpen.set(!mobile);
       });
+
+    this.navSub = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.isMobile()) {
+          this.sidenavOpen.set(false);
+        }
+      });
+
     this.theme.apply();
   }
 
   ngOnDestroy(): void {
     this.bpSub?.unsubscribe();
+    this.navSub?.unsubscribe();
   }
 
   protected toggleSidenav(): void {
