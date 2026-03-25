@@ -3,10 +3,15 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
+  OnInit,
+  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
@@ -42,13 +47,20 @@ const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
   templateUrl: './docs-shell.component.html',
   styleUrl: './docs-shell.component.scss',
 })
-export class DocsShellComponent {
+export class DocsShellComponent implements OnInit, OnDestroy {
   readonly manifest = inject(DOCS_ROUTE_MANIFEST);
   readonly theme = inject(ThemeService);
 
   readonly #router = inject(Router);
   readonly #iconRegistry = inject(MatIconRegistry);
   readonly #sanitizer = inject(DomSanitizer);
+  readonly #breakpointObserver = inject(BreakpointObserver);
+
+  readonly isMobile = signal(false);
+  readonly sidenavOpen = signal(false);
+
+  #bpSub?: Subscription;
+  #navSub?: Subscription;
 
   readonly #url = toSignal(
     this.#router.events.pipe(
@@ -65,5 +77,32 @@ export class DocsShellComponent {
       'github',
       this.#sanitizer.bypassSecurityTrustHtml(GITHUB_ICON_SVG),
     );
+  }
+
+  ngOnInit(): void {
+    this.#bpSub = this.#breakpointObserver
+      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .subscribe((state) => {
+        const mobile = state.matches;
+        this.isMobile.set(mobile);
+        this.sidenavOpen.set(!mobile && this.isDocsRoute());
+      });
+
+    this.#navSub = this.#router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.isMobile()) {
+          this.sidenavOpen.set(false);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.#bpSub?.unsubscribe();
+    this.#navSub?.unsubscribe();
+  }
+
+  protected toggleSidenav(): void {
+    this.sidenavOpen.update((open) => !open);
   }
 }
