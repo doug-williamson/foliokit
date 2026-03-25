@@ -4,15 +4,20 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { LinksEditorFormComponent, PageEditorStore } from '@foliokit/cms-admin-ui';
 
 @Component({
   selector: 'admin-links-page-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatProgressSpinnerModule, LinksEditorFormComponent],
+  imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, LinksEditorFormComponent],
   styles: [
     `
       :host {
@@ -42,16 +47,30 @@ import { LinksEditorFormComponent, PageEditorStore } from '@foliokit/cms-admin-u
           <span class="text-xs opacity-40">Saved</span>
         }
 
-        <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
-          Save
-        </button>
-        <button
-          mat-flat-button
-          (click)="store.toggleStatus()"
-          [disabled]="!store.canPublish() || store.isSaving()"
-        >
-          {{ store.page()?.status === 'published' ? 'Unpublish' : 'Publish' }}
-        </button>
+        @if (!isDesktop()) {
+          <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
+            <mat-icon>save</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="store.toggleStatus()"
+            [disabled]="!store.canPublish() || store.isSaving()"
+            [matTooltip]="store.page()?.status === 'published' ? 'Unpublish' : 'Publish'"
+          >
+            <mat-icon>{{ store.page()?.status === 'published' ? 'unpublished' : 'publish' }}</mat-icon>
+          </button>
+        } @else {
+          <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
+            Save
+          </button>
+          <button
+            mat-flat-button
+            (click)="store.toggleStatus()"
+            [disabled]="!store.canPublish() || store.isSaving()"
+          >
+            {{ store.page()?.status === 'published' ? 'Unpublish' : 'Publish' }}
+          </button>
+        }
       </div>
 
       <!-- Body -->
@@ -67,6 +86,13 @@ import { LinksEditorFormComponent, PageEditorStore } from '@foliokit/cms-admin-u
 })
 export class LinksPageEditorComponent implements OnInit {
   readonly store = inject(PageEditorStore);
+
+  readonly isDesktop = toSignal(
+    inject(BreakpointObserver)
+      .observe('(min-width: 1024px)')
+      .pipe(map((r) => r.matches)),
+    { initialValue: false }
+  );
 
   ngOnInit(): void {
     this.store.loadPage('links');

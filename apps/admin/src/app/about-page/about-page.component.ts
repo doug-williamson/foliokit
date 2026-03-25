@@ -202,37 +202,38 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   @for (ctrl of aboutSocialLinksArray.controls; track $index) {
                     <div
                       [formGroupName]="$index"
-                      class="flex items-start gap-2 p-3 rounded-lg border"
+                      class="flex flex-col gap-2 p-3 rounded-lg border"
                       style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
                     >
-                      <mat-form-field appearance="outline" class="w-40 shrink-0">
-                        <mat-label>Platform</mat-label>
-                        <mat-select formControlName="platform">
-                          @for (p of platforms; track p.value) {
-                            <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>Label</mat-label>
-                        <input matInput formControlName="label" placeholder="Optional label" />
-                      </mat-form-field>
-
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>URL</mat-label>
-                        <input matInput formControlName="url" placeholder="https://…" />
-                      </mat-form-field>
-
-                      <button
-                        mat-icon-button
-                        type="button"
-                        class="shrink-0 mt-1"
-                        matTooltip="Remove"
-                        (click)="removeAboutSocialLink($index)"
-                      >
-                        <mat-icon>delete</mat-icon>
-                      </button>
+                      <div class="flex items-start gap-2">
+                        <mat-form-field appearance="outline" class="flex-1">
+                          <mat-label>Platform</mat-label>
+                          <mat-select formControlName="platform">
+                            @for (p of platforms; track p.value) {
+                              <mat-option [value]="p.value">{{ p.label }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                        <button
+                          mat-icon-button
+                          type="button"
+                          class="shrink-0 mt-1"
+                          matTooltip="Remove"
+                          (click)="removeAboutSocialLink($index)"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                      <div class="flex gap-2">
+                        <mat-form-field appearance="outline" class="flex-1">
+                          <mat-label>Label</mat-label>
+                          <input matInput formControlName="label" placeholder="Optional label" />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="flex-1">
+                          <mat-label>URL</mat-label>
+                          <input matInput formControlName="url" placeholder="https://…" />
+                        </mat-form-field>
+                      </div>
                     </div>
                   }
                   @if (!aboutSocialLinksArray.length) {
@@ -275,19 +276,21 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         </div>
 
         <!-- Sticky footer: save / discard -->
-        <div class="flex items-center justify-end gap-3 px-6 py-3 border-t shrink-0"
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
              style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
           @if (store.isDirty()) {
-            <span class="text-sm opacity-60 flex-1">You have unsaved changes.</span>
+            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
           } @else {
-            <span class="flex-1"></span>
+            <span class="hidden sm:block sm:flex-1"></span>
           }
-          <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="onDiscard()">
-            Cancel
-          </button>
-          <button mat-flat-button [disabled]="!store.isDirty() || hasInvalidForms() || store.isSaving()" (click)="onSave()">
-            {{ isAboutNew() ? 'Create About page' : 'Save Changes' }}
-          </button>
+          <div class="flex justify-end gap-2">
+            <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="onDiscard()">
+              Cancel
+            </button>
+            <button mat-flat-button [disabled]="!store.isDirty() || hasInvalidForms() || store.isSaving()" (click)="onSave()">
+              {{ isAboutNew() ? 'Create About page' : 'Save Changes' }}
+            </button>
+          </div>
         </div>
       }
     </div>

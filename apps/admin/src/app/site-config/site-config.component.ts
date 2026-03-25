@@ -109,7 +109,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         >
           <!-- ── General ── -->
           <mat-tab label="General">
-            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <form [formGroup]="generalForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">
                   <mat-label>Site Name</mat-label>
@@ -148,7 +148,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
           <!-- ── Navigation ── -->
           <mat-tab label="Navigation">
-            <div class="flex flex-col gap-4 max-w-3xl mx-auto px-6 py-8">
+            <div class="flex flex-col gap-4 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-semibold">Nav Items</span>
                 <button mat-stroked-button type="button" (click)="addNavItem()">
@@ -166,40 +166,47 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
                   <div
                     cdkDrag
                     [formGroup]="asFormGroup(ctrl)"
-                    class="flex items-start gap-2 p-3 rounded-lg border"
+                    class="flex flex-col gap-2 p-3 rounded-lg border"
                     style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)"
                   >
-                    <mat-icon cdkDragHandle class="drag-handle opacity-40 mt-3 shrink-0">drag_indicator</mat-icon>
+                    <!-- Row 1: drag handle + label + url -->
+                    <div class="flex items-start gap-2">
+                      <mat-icon cdkDragHandle class="drag-handle opacity-40 mt-3 shrink-0">drag_indicator</mat-icon>
 
-                    <mat-form-field appearance="outline" class="flex-1 min-w-0">
-                      <mat-label>Label</mat-label>
-                      <input matInput formControlName="label" placeholder="Home" />
-                    </mat-form-field>
+                      <mat-form-field appearance="outline" class="flex-1 min-w-0">
+                        <mat-label>Label</mat-label>
+                        <input matInput formControlName="label" placeholder="Home" />
+                      </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="flex-1 min-w-0">
-                      <mat-label>URL / Route</mat-label>
-                      <input matInput formControlName="url" placeholder="/home" />
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-32 shrink-0">
-                      <mat-label>Icon</mat-label>
-                      <input matInput formControlName="icon" placeholder="home" />
-                    </mat-form-field>
-
-                    <div class="flex flex-col items-center shrink-0 pt-1">
-                      <span class="text-xs opacity-50 mb-1">External</span>
-                      <mat-slide-toggle formControlName="external" />
+                      <mat-form-field appearance="outline" class="flex-1 min-w-0">
+                        <mat-label>URL / Route</mat-label>
+                        <input matInput formControlName="url" placeholder="/home" />
+                      </mat-form-field>
                     </div>
 
-                    <button
-                      mat-icon-button
-                      type="button"
-                      class="shrink-0 mt-1"
-                      matTooltip="Remove"
-                      (click)="removeNavItem($index)"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                    <!-- Row 2: icon + external toggle + delete -->
+                    <div class="flex items-start gap-2 pl-8">
+                      <mat-form-field appearance="outline" class="flex-1 min-w-0" style="max-width: 140px">
+                        <mat-label>Icon</mat-label>
+                        <input matInput formControlName="icon" placeholder="home" />
+                      </mat-form-field>
+
+                      <mat-slide-toggle
+                        formControlName="external"
+                        class="shrink-0 mt-3"
+                        matTooltip="External link"
+                      />
+
+                      <button
+                        mat-icon-button
+                        type="button"
+                        class="shrink-0 mt-1"
+                        matTooltip="Remove"
+                        (click)="removeNavItem($index)"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
                   </div>
                 }
 
@@ -214,7 +221,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
           <!-- ── SEO ── -->
           <mat-tab label="SEO">
-            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <form [formGroup]="seoForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">
                   <mat-label>Meta Title</mat-label>
@@ -244,15 +251,17 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
         <!-- Sticky footer: save / discard -->
         @if (store.isDirty()) {
-          <div class="flex items-center justify-end gap-3 px-6 py-3 border-t shrink-0"
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
                style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-            <span class="text-sm opacity-60 flex-1">You have unsaved changes.</span>
-            <button mat-stroked-button [disabled]="store.isSaving()" (click)="onDiscard()">
-              Discard
-            </button>
-            <button mat-flat-button [disabled]="hasInvalidForms() || store.isSaving()" (click)="onSave()">
-              Save Changes
-            </button>
+            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
+            <div class="flex justify-end gap-2">
+              <button mat-stroked-button [disabled]="store.isSaving()" (click)="onDiscard()">
+                Discard
+              </button>
+              <button mat-flat-button [disabled]="hasInvalidForms() || store.isSaving()" (click)="onSave()">
+                Save Changes
+              </button>
+            </div>
           </div>
         }
       }

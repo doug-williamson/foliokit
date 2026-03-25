@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
 import { ContentTabComponent } from './tabs/content-tab.component';
 import { MediaTabComponent } from './tabs/media-tab.component';
@@ -31,6 +32,7 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
     MatIconModule,
     MatSidenavModule,
     MatTabsModule,
+    MatTooltipModule,
     ContentTabComponent,
     MediaTabComponent,
     MetadataTabComponent,
@@ -98,18 +100,29 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
           <button mat-icon-button (click)="togglePreview()" matTooltip="Toggle preview">
             <mat-icon>preview</mat-icon>
           </button>
+          <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
+            <mat-icon>save</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="store.publish()"
+            [disabled]="!store.canPublish() || store.isSaving()"
+            matTooltip="Publish"
+          >
+            <mat-icon>publish</mat-icon>
+          </button>
+        } @else {
+          <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
+            Save
+          </button>
+          <button
+            mat-flat-button
+            (click)="store.publish()"
+            [disabled]="!store.canPublish() || store.isSaving()"
+          >
+            Publish
+          </button>
         }
-
-        <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
-          Save
-        </button>
-        <button
-          mat-flat-button
-          (click)="store.publish()"
-          [disabled]="!store.canPublish() || store.isSaving()"
-        >
-          Publish
-        </button>
       </div>
 
       <!-- Editor + Preview sidenav -->

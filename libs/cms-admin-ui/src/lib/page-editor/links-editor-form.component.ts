@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -51,6 +52,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
     MatProgressBarModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatTooltipModule,
     DragDropModule,
   ],
   styles: [
@@ -190,9 +192,8 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                       [checked]="!!link.highlighted"
                       (change)="updateLink(page.links, link.id, 'highlighted', $event.checked)"
                       class="shrink-0"
-                    >
-                      Highlighted
-                    </mat-slide-toggle>
+                      matTooltip="Highlighted"
+                    />
                     <button mat-icon-button (click)="deleteLink(page.links, link.id)" title="Delete link">
                       <mat-icon>delete</mat-icon>
                     </button>

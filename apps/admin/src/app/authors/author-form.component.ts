@@ -174,36 +174,37 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <div formArrayName="socialLinks" class="flex flex-col gap-3">
               @for (ctrl of socialLinksArray.controls; track $index) {
                 <div [formGroupName]="$index"
-                     class="flex items-start gap-2 p-3 rounded-lg border"
+                     class="flex flex-col gap-2 p-3 rounded-lg border"
                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-                  <mat-form-field appearance="outline" class="w-36 shrink-0">
-                    <mat-label>Platform</mat-label>
-                    <mat-select formControlName="platform">
-                      @for (p of platforms; track p.value) {
-                        <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Label</mat-label>
-                    <input matInput formControlName="label" placeholder="Optional label" />
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>URL</mat-label>
-                    <input matInput formControlName="url" placeholder="https://…" />
-                  </mat-form-field>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="shrink-0 mt-1"
-                    matTooltip="Remove"
-                    (click)="removeSocialLink($index)"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  <div class="flex items-start gap-2">
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>Platform</mat-label>
+                      <mat-select formControlName="platform">
+                        @for (p of platforms; track p.value) {
+                          <mat-option [value]="p.value">{{ p.label }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      class="shrink-0 mt-1"
+                      matTooltip="Remove"
+                      (click)="removeSocialLink($index)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="flex gap-2">
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>Label</mat-label>
+                      <input matInput formControlName="label" placeholder="Optional label" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>URL</mat-label>
+                      <input matInput formControlName="url" placeholder="https://…" />
+                    </mat-form-field>
+                  </div>
                 </div>
               }
             </div>
