@@ -3,7 +3,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { MatNavList, MatListItem } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
+import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
 import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 import { AuthService } from '@foliokit/cms-core';
 
@@ -11,7 +11,7 @@ import { AuthService } from '@foliokit/cms-core';
   selector: 'admin-shell-layout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShellComponent, RouterOutlet, RouterLink, RouterLinkActive, MatNavList, MatListItem, MatIconModule, MatButtonModule],
+  imports: [AppShellComponent, RouterOutlet, RouterLink, RouterLinkActive, MatNavList, MatListItem, MatIconModule, MatButtonModule, ShellNavFooterDirective],
   providers: [
     {
       provide: SHELL_CONFIG,
