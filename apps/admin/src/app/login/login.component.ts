@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -27,26 +27,28 @@ import { AuthService } from '@foliokit/cms-core';
     </div>
   `,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly error = signal<string | null>(null);
 
-  ngOnInit(): void {
-    if (this.authService.isAuthenticated()) {
+  constructor() {
+    effect(() => {
+      const user = this.authService.user();
+      if (user === undefined) return;
+      if (user === null) return;
+      if (!this.authService.isAdmin()) {
+        this.authService.signOut();
+        this.error.set('Access denied. This account is not authorized.');
+        return;
+      }
       this.router.navigate(['/posts']);
-    }
+    });
   }
 
   protected async signIn(): Promise<void> {
     try {
       await this.authService.signInWithGoogle();
-      if (!this.authService.isAdmin()) {
-        await this.authService.signOut();
-        this.error.set('Access denied. This account is not authorized.');
-        return;
-      }
-      await this.router.navigate(['/posts']);
     } catch (err) {
       console.error('[Auth] signInWithGoogle failed:', err);
       this.error.set('Sign-in failed. Please try again.');

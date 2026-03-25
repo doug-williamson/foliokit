@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   User,
 } from 'firebase/auth';
@@ -39,7 +39,7 @@ export class AuthService {
     if (!this.auth) return;
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'login' });
-    await signInWithPopup(this.auth, provider);
+    await signInWithRedirect(this.auth, provider);
   }
 
   async signOut(): Promise<void> {
