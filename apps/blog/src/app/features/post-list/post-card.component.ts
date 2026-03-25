@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import type { BlogPost } from '@foliokit/cms-core';
+import { TagLabelPipe } from '@foliokit/cms-core';
 
 @Component({
   selector: 'app-post-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, TagLabelPipe],
   template: `
     @if (variant() === 'hero') {
       <div
@@ -42,7 +43,7 @@ import type { BlogPost } from '@foliokit/cms-core';
                     [queryParams]="{ tag: tag }"
                     class="relative z-20 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
                   >
-                    {{ tag }}
+                    {{ tag | tagLabel }}
                   </a>
                 }
               </div>
@@ -122,7 +123,7 @@ import type { BlogPost } from '@foliokit/cms-core';
                   class="relative z-20 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
                   style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
                 >
-                  {{ tag }}
+                  {{ tag | tagLabel }}
                 </a>
               }
             </div>

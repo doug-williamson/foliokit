@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
+import { Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-card-preview',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatChipsModule],
+  imports: [DatePipe, MatCardModule, MatChipsModule, TagLabelPipe],
   styles: [
     `
       :host {
@@ -62,7 +64,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
             @if (post.tags.length) {
               <div class="flex flex-wrap gap-1 mt-3">
                 @for (tag of post.tags; track tag) {
-                  <mat-chip class="!text-xs">{{ tag }}</mat-chip>
+                  <mat-chip class="!text-xs">{{ tag | tagLabel: tagLookup() }}</mat-chip>
                 }
               </div>
             }
@@ -84,4 +86,12 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 })
 export class CardPreviewComponent {
   readonly store = inject(PostEditorStore);
+
+  private readonly allTags = toSignal(inject(TagService).getAllTags(), {
+    initialValue: [] as Tag[],
+  });
+
+  protected readonly tagLookup = computed(
+    () => new Map(this.allTags().map((t) => [t.id, t])),
+  );
 }

@@ -16,6 +16,8 @@ mat-sidenav {
   width: 260px;
   background: var(--surface-1);
   border-right: 1px solid var(--border);
+  --mat-sidenav-container-shape: 0px;
+  border-radius: 0;
 }
 
 .folio-nav-header {
