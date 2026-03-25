@@ -3,46 +3,92 @@
   height: 100%;
 }
 
-.shell-container {
+.folio-shell-container {
   height: 100%;
-  background-color: var(--mat-sys-surface);
 }
 
-.shell-sidenav {
+mat-sidenav-container {
+  height: 100%;
+  background: var(--bg);
+}
+
+mat-sidenav {
   width: 260px;
-  border-right: 1px solid var(--mat-sys-outline-variant);
-  background-color: var(--mat-sys-surface-container-low);
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
 }
 
-.shell-toolbar {
+.folio-nav-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 12px;
+}
+
+.folio-logo-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--logo-bg);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+
+  span {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--logo-text);
+    line-height: 1;
+    transition: color 0.3s;
+  }
+}
+
+.folio-app-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+
+  em {
+    font-style: italic;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+}
+
+.folio-toolbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--mat-sys-surface-container);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  height: 56px;
+  background: color-mix(in srgb, var(--surface-1) 85%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
   gap: 4px;
 }
 
-.shell-logo {
-  height: 32px;
-  width: auto;
-  margin-right: 8px;
-}
-
-.shell-app-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-  white-space: nowrap;
-}
-
-.shell-content {
+.folio-content {
   display: flex;
   flex-direction: column;
-  background-color: var(--mat-sys-surface);
+  background: var(--bg);
 }
 
 .shell-main {
   flex: 1;
   overflow-y: auto;
+}
+
+.folio-nav-item {
+  &.active {
+    color: var(--text-accent);
+    background: var(--amber-50);
+    border-left: 2px solid var(--text-accent);
+  }
+}
+
+[data-theme='dark'] .folio-nav-item.active {
+  background: rgba(194, 120, 32, 0.1);
 }

@@ -1,45 +1,44 @@
-<mat-sidenav-container class="shell-container">
-  <mat-sidenav
-    class="shell-sidenav"
-    [mode]="isMobile() ? 'over' : 'side'"
-    [opened]="sidenavOpen()"
-    (openedChange)="sidenavOpen.set($event)"
-  >
-    <ng-content select="[shellNav]" />
-  </mat-sidenav>
+<div class="folio-shell-container">
+  <mat-sidenav-container>
+    <mat-sidenav
+      [mode]="isMobile() ? 'over' : 'side'"
+      [opened]="sidenavOpen()"
+      (openedChange)="sidenavOpen.set($event)"
+    >
+      <ng-content select="[shellNav]" />
+    </mat-sidenav>
 
-  <mat-sidenav-content class="shell-content">
-    <mat-toolbar class="shell-toolbar">
-      @if (isMobile()) {
-        <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
-          <mat-icon>menu</mat-icon>
+    <mat-sidenav-content class="folio-content">
+      <mat-toolbar class="folio-toolbar">
+        @if (isMobile()) {
+          <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+
+        <div class="folio-logo-mark"><span>F</span></div>
+        <span class="folio-app-name">{{ config.appName }}</span>
+
+        <span class="flex-1"></span>
+
+        <ng-content select="[shellHeaderActions]" />
+
+        @if (config.showAuth) {
+          <ng-content select="[shellAuthSlot]" />
+        }
+
+        <button
+          mat-icon-button
+          [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+          (click)="toggleTheme()"
+        >
+          <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
-      }
+      </mat-toolbar>
 
-      @if (config.logoUrl) {
-        <img [src]="config.logoUrl" [alt]="config.appName" class="shell-logo" />
-      }
-      <span class="shell-app-name">{{ config.appName }}</span>
-
-      <span class="flex-1"></span>
-
-      <button
-        mat-icon-button
-        [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-        (click)="toggleTheme()"
-      >
-        <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
-
-      <ng-content select="[shellHeaderActions]" />
-
-      @if (config.showAuth) {
-        <ng-content select="[shellAuthSlot]" />
-      }
-    </mat-toolbar>
-
-    <main class="shell-main">
-      <ng-content />
-    </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+      <main class="shell-main">
+        <ng-content />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -38,30 +38,30 @@ import type { Tag } from '@foliokit/cms-core';
       display: inline-flex;
       align-items: center;
       padding: 0.3125rem 0.875rem;
-      border-radius: var(--folio-blog-radius-chip);
-      border: 1px solid var(--folio-blog-border);
+      border-radius: 9999px;
+      border: 1px solid var(--border);
       background: transparent;
-      color: var(--folio-blog-text-secondary);
+      color: var(--text-secondary);
       font-size: 0.8125rem;
-      font-family: var(--folio-blog-font-sans);
+      font-family: var(--font-body);
       font-weight: 500;
       cursor: pointer;
       transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
       line-height: 1;
 
       &:hover {
-        border-color: var(--folio-blog-accent);
-        color: var(--folio-blog-accent);
+        border-color: var(--text-accent);
+        color: var(--text-accent);
       }
 
       &--active {
-        background-color: var(--folio-blog-accent);
-        border-color: var(--folio-blog-accent);
+        background-color: var(--text-accent);
+        border-color: var(--text-accent);
         color: #fff;
 
         &:hover {
-          background-color: var(--folio-blog-accent-hover);
-          border-color: var(--folio-blog-accent-hover);
+          background-color: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950));
+          border-color: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950));
           color: #fff;
         }
       }

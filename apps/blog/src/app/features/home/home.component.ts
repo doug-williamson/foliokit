@@ -15,25 +15,25 @@ import { BlogSeoService } from '../../services/blog-seo.service';
   template: `
     <div
       class="flex items-center justify-center px-4 py-20"
-      style="background: var(--folio-blog-surface); min-height: 100%"
+      style="background: var(--bg); min-height: 100%"
     >
       <div style="max-width: 720px; width: 100%; text-align: center">
         <h1
           class="text-4xl md:text-5xl font-bold mb-4 leading-tight"
-          style="font-family: var(--folio-blog-font-serif); color: var(--folio-blog-text-primary)"
+          style="font-family: var(--font-display); color: var(--text-primary)"
         >
           FolioKit Blog
         </h1>
         <p
           class="text-lg md:text-xl mb-10"
-          style="color: var(--folio-blog-text-secondary)"
+          style="color: var(--text-secondary)"
         >
           Thoughts on building products, writing software, and designing systems.
         </p>
         <a
           routerLink="/posts"
           class="inline-block px-8 py-3 rounded-full text-base font-semibold"
-          style="background: var(--folio-blog-accent); color: #ffffff"
+          style="background: var(--text-accent); color: #ffffff"
         >
           Read Posts
         </a>
@@ -42,7 +42,7 @@ import { BlogSeoService } from '../../services/blog-seo.service';
   `,
   styles: [`
     :host { display: block; }
-    a:hover { background: var(--folio-blog-accent-hover) !important; }
+    a:hover { background: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950)) !important; }
   `],
 })
 export class HomeComponent {

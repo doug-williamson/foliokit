@@ -43,7 +43,7 @@ import { TagFilterComponent } from './tag-filter.component';
       @if (filteredPosts().length === 0) {
         <div
           class="text-center py-20"
-          style="color: var(--folio-blog-text-muted)"
+          style="color: var(--text-muted)"
         >
           <p class="text-xl">No posts found{{ selectedTag() ? ' for tag "' + selectedTag() + '"' : '' }}.</p>
         </div>
@@ -69,7 +69,7 @@ import { TagFilterComponent } from './tag-filter.component';
       }
     </div>
   `,
-  styles: [':host { display: block; background: var(--folio-blog-surface); min-height: 100%; }'],
+  styles: [':host { display: block; background: var(--bg); min-height: 100%; }'],
 })
 export class PostListComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
