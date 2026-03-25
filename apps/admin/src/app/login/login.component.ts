@@ -47,7 +47,8 @@ export class LoginComponent implements OnInit {
         return;
       }
       await this.router.navigate(['/posts']);
-    } catch {
+    } catch (err) {
+      console.error('[Auth] signInWithGoogle failed:', err);
       this.error.set('Sign-in failed. Please try again.');
     }
   }

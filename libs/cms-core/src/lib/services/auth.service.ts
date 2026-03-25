@@ -37,7 +37,9 @@ export class AuthService {
 
   async signInWithGoogle(): Promise<void> {
     if (!this.auth) return;
-    await signInWithPopup(this.auth, new GoogleAuthProvider());
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'login' });
+    await signInWithPopup(this.auth, provider);
   }
 
   async signOut(): Promise<void> {
