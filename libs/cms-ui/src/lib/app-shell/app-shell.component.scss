@@ -83,8 +83,12 @@ mat-sidenav {
   overflow-y: auto;
 }
 
+::ng-deep mat-sidenav [mat-list-item] {
+  border-left: 3px solid transparent;
+}
+
 ::ng-deep mat-sidenav [mat-list-item].active-link {
-  border-left: 3px solid var(--mat-sys-primary);
+  border-left-color: var(--mat-sys-primary);
   background: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
   font-weight: 500;
