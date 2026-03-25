@@ -27,6 +27,8 @@ export interface LinksLink {
 export interface LinksPage extends CmsPageBase {
   type: 'links';
   avatarUrl?: string;
+  /** Firebase Storage URL — shown in dark mode when set */
+  avatarUrlDark?: string;
   avatarAlt?: string;
   headline?: string;
   bio?: string;

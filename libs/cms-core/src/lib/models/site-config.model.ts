@@ -39,6 +39,8 @@ export interface AboutPageConfig {
   bio: string;
   /** Firebase Storage URL */
   photoUrl?: string;
+  /** Firebase Storage URL — shown in dark mode when set */
+  photoUrlDark?: string;
   photoAlt?: string;
   socialLinks?: SocialLink[];
   seo?: SeoMeta;

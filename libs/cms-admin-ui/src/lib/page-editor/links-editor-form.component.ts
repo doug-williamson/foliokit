@@ -100,7 +100,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
 
           <!-- Avatar upload -->
           <div class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Avatar</span>
+            <span class="text-sm font-semibold">Avatar (Light Mode)</span>
             @if (avatarUploading()) {
               <mat-progress-bar mode="determinate" [value]="avatarProgress()" />
             }
@@ -135,6 +135,47 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
               accept="image/*"
               class="hidden"
               (change)="onAvatarSelected($any($event.target).files)"
+            />
+          </div>
+
+          <!-- Dark mode avatar upload -->
+          <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Avatar (Dark Mode)</span>
+            <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode avatar when dark mode is active.</p>
+            @if (avatarDarkUploading()) {
+              <mat-progress-bar mode="determinate" [value]="avatarDarkProgress()" />
+            }
+            @if (avatarDarkError()) {
+              <p class="text-sm text-red-500">{{ avatarDarkError() }}</p>
+            }
+            <div class="flex items-center gap-4">
+              @if (page.avatarUrlDark) {
+                <img
+                  [src]="page.avatarUrlDark"
+                  [alt]="page.avatarAlt || 'Dark mode avatar'"
+                  class="w-16 h-16 rounded-full object-cover shrink-0"
+                />
+              } @else {
+                <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
+                  style="background: color-mix(in srgb, currentColor 10%, transparent)">
+                  <mat-icon class="opacity-40">dark_mode</mat-icon>
+                </div>
+              }
+              <button mat-stroked-button [disabled]="avatarDarkUploading()" (click)="isBrowser && avatarDarkInput.click()">
+                {{ page.avatarUrlDark ? 'Replace' : 'Upload' }}
+              </button>
+              @if (page.avatarUrlDark) {
+                <button mat-icon-button (click)="onDeleteAvatarDark()" title="Remove dark avatar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </div>
+            <input
+              #avatarDarkInput
+              type="file"
+              accept="image/*"
+              class="hidden"
+              (change)="onAvatarDarkSelected($any($event.target).files)"
             />
           </div>
 
@@ -252,6 +293,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
 })
 export class LinksEditorFormComponent {
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('avatarDarkInput') avatarDarkInput!: ElementRef<HTMLInputElement>;
 
   readonly store = inject(PageEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE)!;
@@ -265,6 +307,11 @@ export class LinksEditorFormComponent {
   readonly avatarProgress = signal(0);
   readonly avatarError = signal<string | null>(null);
   private avatarStoragePath = signal<string | null>(null);
+
+  readonly avatarDarkUploading = signal(false);
+  readonly avatarDarkProgress = signal(0);
+  readonly avatarDarkError = signal<string | null>(null);
+  private avatarDarkStoragePath = signal<string | null>(null);
 
   onAvatarSelected(files: FileList | null): void {
     if (!files?.length) return;
@@ -281,6 +328,28 @@ export class LinksEditorFormComponent {
       this.store.updateField('avatarUrl', undefined);
       this.store.updateField('avatarAlt', undefined);
       this.avatarStoragePath.set(null);
+    };
+    if (path) {
+      this.pageService.deleteStorageFile(path).subscribe({ next: clear, error: clear });
+    } else {
+      clear();
+    }
+  }
+
+  onAvatarDarkSelected(files: FileList | null): void {
+    if (!files?.length) return;
+    this.uploadAvatarDark(files[0]);
+    if (this.avatarDarkInput?.nativeElement) {
+      this.avatarDarkInput.nativeElement.value = '';
+    }
+  }
+
+  onDeleteAvatarDark(): void {
+    if (!window.confirm('Remove dark mode avatar?')) return;
+    const path = this.avatarDarkStoragePath();
+    const clear = () => {
+      this.store.updateField('avatarUrlDark', undefined);
+      this.avatarDarkStoragePath.set(null);
     };
     if (path) {
       this.pageService.deleteStorageFile(path).subscribe({ next: clear, error: clear });
@@ -357,6 +426,42 @@ export class LinksEditorFormComponent {
           this.store.updateField('avatarAlt', file.name);
           this.avatarStoragePath.set(storagePath);
           this.avatarUploading.set(false);
+        });
+      },
+    );
+  }
+
+  private uploadAvatarDark(file: File): void {
+    const previous = this.avatarDarkStoragePath();
+    const pageId = this.store.page()?.id || this.store.tempPageId();
+    const storagePath = `pages/${pageId}/avatar-dark/${file.name}`;
+
+    if (previous) {
+      this.pageService.deleteStorageFile(previous).subscribe();
+    }
+
+    const fileRef = ref(this.storage, storagePath);
+    this.avatarDarkUploading.set(true);
+    this.avatarDarkProgress.set(0);
+    this.avatarDarkError.set(null);
+
+    const task = uploadBytesResumable(fileRef, file);
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        this.avatarDarkProgress.set(
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+        );
+      },
+      (error) => {
+        this.avatarDarkUploading.set(false);
+        this.avatarDarkError.set(error.message);
+      },
+      () => {
+        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
+          this.store.updateField('avatarUrlDark', downloadUrl);
+          this.avatarDarkStoragePath.set(storagePath);
+          this.avatarDarkUploading.set(false);
         });
       },
     );

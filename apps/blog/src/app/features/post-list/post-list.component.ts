@@ -42,7 +42,7 @@ import { TagFilterComponent } from './tag-filter.component';
 
       @if (filteredPosts().length === 0) {
         <div
-          class="text-center py-20"
+          class="flex items-center justify-center min-h-[50vh]"
           style="color: var(--text-muted)"
         >
           <p class="text-xl">No posts found{{ selectedTag() ? ' for tag "' + selectedTag() + '"' : '' }}.</p>

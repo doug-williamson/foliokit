@@ -12,6 +12,7 @@ import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import type { AboutPageConfig } from '@foliokit/cms-core';
+import { ThemeService } from '../theme.service';
 
 @Component({
   selector: 'cms-about-page',
@@ -24,7 +25,7 @@ import type { AboutPageConfig } from '@foliokit/cms-core';
         @if (about()!.photoUrl) {
           <img
             class="w-32 h-32 rounded-full object-cover mb-6 block mx-auto sm:mx-0"
-            [src]="about()!.photoUrl"
+            [src]="theme.scheme() === 'dark' && about()!.photoUrlDark ? about()!.photoUrlDark : about()!.photoUrl"
             [alt]="about()!.photoAlt || about()!.headline"
           />
         }
@@ -66,6 +67,7 @@ export class AboutPageComponent {
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
+  readonly theme = inject(ThemeService);
 
   readonly about = toSignal(
     this.route.data.pipe(map((data) => (data['about'] as AboutPageConfig) ?? null)),

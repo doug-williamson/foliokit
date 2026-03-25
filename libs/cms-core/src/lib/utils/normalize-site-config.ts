@@ -80,6 +80,7 @@ function normalizeAboutPageConfig(raw: unknown): AboutPageConfig {
     subheadline: r['subheadline'] as string | undefined,
     bio: (r['bio'] as string) ?? '',
     photoUrl: r['photoUrl'] as string | undefined,
+    photoUrlDark: r['photoUrlDark'] as string | undefined,
     photoAlt: r['photoAlt'] as string | undefined,
     socialLinks: Array.isArray(r['socialLinks'])
       ? normalizeSocialLinks(r['socialLinks'])
