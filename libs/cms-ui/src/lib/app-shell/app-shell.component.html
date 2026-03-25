@@ -9,9 +9,11 @@
         <div class="folio-nav-body">
           <ng-content select="[shellNav]" />
         </div>
-        <div class="folio-nav-footer">
-          <ng-content select="[shellNavFooter]" />
-        </div>
+        @if (navFooter) {
+          <div class="folio-nav-footer">
+            <ng-content select="[shellNavFooter]" />
+          </div>
+        }
       </div>
     </mat-sidenav>
 

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ContentChild,
   inject,
   OnDestroy,
   OnInit,
@@ -16,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SHELL_CONFIG } from '../shell-config.token';
 import { ThemeService } from '../theme.service';
+import { ShellNavFooterDirective } from './shell-nav-footer.directive';
 
 @Component({
   selector: 'folio-app-shell',
@@ -28,11 +30,14 @@ import { ThemeService } from '../theme.service';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    ShellNavFooterDirective,
   ],
 })
 export class AppShellComponent implements OnInit, OnDestroy {
   protected readonly config = inject(SHELL_CONFIG);
   protected readonly theme = inject(ThemeService);
+
+  @ContentChild(ShellNavFooterDirective) protected navFooter?: ShellNavFooterDirective;
 
   protected readonly isMobile = signal(false);
   protected readonly sidenavOpen = signal(false);
