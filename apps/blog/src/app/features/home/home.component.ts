@@ -41,7 +41,7 @@ import { BlogSeoService } from '../../services/blog-seo.service';
     </div>
   `,
   styles: [`
-    :host { display: block; }
+    :host { display: block; height: 100%; }
     a:hover { background: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950)) !important; }
   `],
 })
