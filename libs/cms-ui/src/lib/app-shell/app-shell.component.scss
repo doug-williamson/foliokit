@@ -92,10 +92,12 @@ mat-sidenav {
   display: flex;
   flex-direction: column;
   background: var(--bg);
+  overflow: hidden !important;
 }
 
 .shell-main {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
