@@ -5,9 +5,8 @@
   "targets": {
     "foliokit-6f974": {
       "hosting": {
-        "foliokit-6f974": [
-          "foliokit-6f974"
-        ]
+        "foliokit-admin": ["foliokit-admin"],
+        "foliokit-docs":  ["foliokit-docs"]
       }
     }
   },

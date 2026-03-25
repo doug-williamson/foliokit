@@ -1,8 +1,22 @@
 {
   "apphosting": [
     {
-      "backendId": "foliokit-6f974",
+      "backendId": "foliokit-blog",
       "rootDir": "."
+    }
+  ],
+  "hosting": [
+    {
+      "target": "foliokit-admin",
+      "public": "dist/apps/admin/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    },
+    {
+      "target": "foliokit-docs",
+      "public": "dist/apps/docs/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
     }
   ],
   "firestore": {
@@ -18,40 +32,5 @@
     "storage": { "port": 9199 },
     "ui": { "enabled": true, "port": 4000 },
     "singleProjectMode": true
-  },
-  "hosting": [
-    {
-      "target": "foliokit-6f974",
-      "public": "dist/apps/blog/browser",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "appHosting": "foliokit-6f974"
-        }
-      ]
-    },
-    {
-      "target": "foliokit-admin",
-      "public": "dist/apps/admin/browser",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
-      "target": "foliokit-docs",
-      "public": "dist/apps/docs/browser",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "appHosting": "foliokit-docs"
-        }
-      ]
-    }
-  ]
+  }
 }
