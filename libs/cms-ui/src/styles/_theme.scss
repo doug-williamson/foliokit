@@ -1,0 +1,52 @@
+// FolioKit Angular Material M3 Theme
+// Single shared theme config for all FolioKit apps.
+// Standardized on mat.theme() — replaces per-app M3 configs.
+
+@use '@angular/material' as mat;
+
+// ─── Light Theme ─────────────────────────────────────────────────────────────
+
+html,
+html[data-theme='light'] {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$orange-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: 'DM Sans',
+    density: 0,
+  ));
+
+  // FolioKit → M3 system token bridge
+  --mat-sys-primary: var(--amber-600);
+  --mat-sys-on-primary: var(--ink-950);
+  --mat-sys-surface: var(--surface-1);
+  --mat-sys-on-surface: var(--text-primary);
+  --mat-sys-surface-variant: var(--surface-2);
+  --mat-sys-outline: var(--border-strong);
+  --mat-sys-background: var(--bg);
+}
+
+// ─── Dark Theme ──────────────────────────────────────────────────────────────
+
+html[data-theme='dark'] {
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$orange-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: 'DM Sans',
+    density: 0,
+  ));
+
+  // FolioKit → M3 system token bridge
+  --mat-sys-primary: var(--amber-400);
+  --mat-sys-on-primary: var(--ink-950);
+  --mat-sys-surface: var(--surface-1);
+  --mat-sys-on-surface: var(--text-primary);
+  --mat-sys-surface-variant: var(--surface-2);
+  --mat-sys-outline: var(--border-strong);
+  --mat-sys-background: var(--bg);
+}
