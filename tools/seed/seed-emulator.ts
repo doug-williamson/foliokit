@@ -25,6 +25,12 @@ const db = getFirestore();
 
 const now = Timestamp.now();
 
+// SVG avatar data URIs using the FolioKit design tokens:
+//   Light → ink-900 (#1A1A16) background, paper-100 (#FAF9F6) letter
+//   Dark  → amber-600 (#C27820) background, ink-950 (#0D0D0B) letter
+const AVATAR_LIGHT = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#1A1A16"/><text x="100" y="142" font-family="Georgia,serif" font-size="126" font-weight="900" text-anchor="middle" fill="#FAF9F6">F</text></svg>')}`;
+const AVATAR_DARK  = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#C27820"/><text x="100" y="142" font-family="Georgia,serif" font-size="126" font-weight="900" text-anchor="middle" fill="#0D0D0B">F</text></svg>')}`;
+
 async function seed(): Promise<void> {
   try {
     console.log('[seed:emulator] Creating admin user dev.foliokit@gmail.com...');
@@ -55,7 +61,7 @@ async function seed(): Promise<void> {
         name: 'Dev Author',
         slug: 'dev-author',
         bio: 'Test bio for local development.',
-        avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
+        avatarUrl: AVATAR_LIGHT,
         email: '',
         social: [],
         createdAt: Timestamp.fromDate(new Date('2025-01-01')),
@@ -96,7 +102,8 @@ async function seed(): Promise<void> {
             headline: 'Hey, I\'m Dev Author',
             subheadline: 'Engineer, writer, and open-source tinkerer',
             bio: 'I build things for the web — mostly with Angular and Firebase.\n\nCurrently exploring signals-based architecture and design systems. When I\'m not coding I\'m writing about what I\'ve learned here on the blog.',
-            photoUrl: 'https://i.pravatar.cc/150?u=dev-author',
+            photoUrl: AVATAR_LIGHT,
+            photoUrlDark: AVATAR_DARK,
             photoAlt: 'Dev Author profile photo',
             socialLinks: [
               { platform: 'github', url: 'https://github.com/dev-author', label: 'GitHub' },
@@ -113,7 +120,7 @@ async function seed(): Promise<void> {
             title: 'Dev Author — Links',
             headline: 'Dev Author',
             bio: 'Engineer · Writer · Open-source tinkerer',
-            avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
+            avatarUrl: AVATAR_LIGHT,
             links: [
               {
                 id: 'link-blog',
@@ -165,8 +172,9 @@ async function seed(): Promise<void> {
         slug: 'links',
         title: 'Dev Author — Links',
         status: 'published',
-        avatarUrl: 'https://i.pravatar.cc/150?u=dev-author',
-        avatarAlt: 'Dev Author profile photo',
+        avatarUrl: AVATAR_LIGHT,
+        avatarUrlDark: AVATAR_DARK,
+        avatarAlt: 'Dev Author',
         headline: 'Dev Author',
         bio: 'Engineer · Writer · Open-source tinkerer',
         links: [

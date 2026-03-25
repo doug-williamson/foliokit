@@ -122,7 +122,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
               <!-- Photo upload -->
               <div class="flex flex-col gap-3">
-                <span class="text-sm font-medium opacity-70">Profile Photo</span>
+                <span class="text-sm font-medium opacity-70">Profile Photo (Light Mode)</span>
 
                 @if (aboutPhotoUrl()) {
                   <div class="flex items-center gap-4">
@@ -162,6 +162,53 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   >
                     <mat-icon>upload</mat-icon>
                     {{ aboutPhotoUrl() ? 'Replace Photo' : 'Upload Photo' }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Dark mode photo upload -->
+              <div class="flex flex-col gap-3">
+                <span class="text-sm font-medium opacity-70">Profile Photo (Dark Mode)</span>
+                <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode photo when dark mode is active.</p>
+
+                @if (aboutPhotoDarkUrl()) {
+                  <div class="flex items-center gap-4">
+                    <img
+                      [src]="aboutPhotoDarkUrl()"
+                      alt="Dark mode profile photo preview"
+                      class="w-24 h-24 rounded-full object-cover border"
+                      style="border-color: color-mix(in srgb, currentColor 15%, transparent)"
+                    />
+                    <button mat-stroked-button type="button" (click)="removeAboutPhotoDark()">
+                      <mat-icon>delete</mat-icon>
+                      Remove
+                    </button>
+                  </div>
+                }
+
+                @if (aboutPhotoDarkUploading()) {
+                  <mat-progress-bar mode="determinate" [value]="aboutPhotoDarkProgress()" />
+                }
+                @if (aboutPhotoDarkError()) {
+                  <p class="text-sm text-red-500">{{ aboutPhotoDarkError() }}</p>
+                }
+
+                <div class="flex items-center gap-3">
+                  <input
+                    #photoDarkInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onPhotoDarkSelected($any($event.target).files)"
+                  />
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="aboutPhotoDarkUploading() || !isBrowser"
+                    (click)="photoDarkInput.click()"
+                  >
+                    <mat-icon>upload</mat-icon>
+                    {{ aboutPhotoDarkUrl() ? 'Replace Dark Photo' : 'Upload Dark Photo' }}
                   </button>
                 </div>
               </div>
@@ -310,9 +357,15 @@ export class AboutPageComponent implements OnInit {
   protected readonly aboutPhotoProgress = signal(0);
   protected readonly aboutPhotoError = signal<string | null>(null);
 
+  protected readonly aboutPhotoDarkUrl = signal<string | undefined>(undefined);
+  protected readonly aboutPhotoDarkUploading = signal(false);
+  protected readonly aboutPhotoDarkProgress = signal(0);
+  protected readonly aboutPhotoDarkError = signal<string | null>(null);
+
   protected readonly isAboutNew = computed(() => !this.store.config()?.pages?.about);
 
   @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('photoDarkInput') photoDarkInput!: ElementRef<HTMLInputElement>;
 
   protected readonly aboutForm: FormGroup = this.fb.group({
     headline: ['', Validators.required],
@@ -369,6 +422,16 @@ export class AboutPageComponent implements OnInit {
     this.flushAboutToStore();
   }
 
+  protected onPhotoDarkSelected(files: FileList | null): void {
+    if (!files?.length) return;
+    this.uploadAboutPhotoDark(files[0]);
+  }
+
+  protected removeAboutPhotoDark(): void {
+    this.aboutPhotoDarkUrl.set(undefined);
+    this.flushAboutToStore();
+  }
+
   protected hasInvalidForms(): boolean {
     return this.aboutForm.invalid;
   }
@@ -416,6 +479,38 @@ export class AboutPageComponent implements OnInit {
     );
   }
 
+  private uploadAboutPhotoDark(file: File): void {
+    if (!this.storage) return;
+    const path = `site-config/about/photo-dark/${file.name}`;
+
+    this.aboutPhotoDarkUploading.set(true);
+    this.aboutPhotoDarkProgress.set(0);
+    this.aboutPhotoDarkError.set(null);
+
+    const fileRef = ref(this.storage, path);
+    const task = uploadBytesResumable(fileRef, file);
+
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        this.aboutPhotoDarkProgress.set(
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+        );
+      },
+      (error) => {
+        this.aboutPhotoDarkUploading.set(false);
+        this.aboutPhotoDarkError.set(error.message);
+      },
+      () => {
+        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
+          this.aboutPhotoDarkUrl.set(downloadUrl);
+          this.aboutPhotoDarkUploading.set(false);
+          this.flushAboutToStore();
+        });
+      },
+    );
+  }
+
   private populateForms(config: ReturnType<typeof this.store.config>): void {
     if (!config) return;
 
@@ -428,6 +523,7 @@ export class AboutPageComponent implements OnInit {
     }, { emitEvent: false });
 
     this.aboutPhotoUrl.set(about?.photoUrl);
+    this.aboutPhotoDarkUrl.set(about?.photoUrlDark);
 
     this.aboutSocialLinksArray.clear({ emitEvent: false });
     for (const link of about?.socialLinks ?? []) {
@@ -481,6 +577,7 @@ export class AboutPageComponent implements OnInit {
       subheadline: formVal.subheadline || undefined,
       bio: formVal.bio ?? '',
       photoUrl: this.aboutPhotoUrl() || undefined,
+      photoUrlDark: this.aboutPhotoDarkUrl() || undefined,
       photoAlt: formVal.photoAlt || undefined,
       socialLinks: socialLinks.length ? socialLinks : undefined,
       seo: {

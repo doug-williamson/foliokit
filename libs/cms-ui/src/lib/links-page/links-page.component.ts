@@ -14,6 +14,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import type { LinksPage, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
+import { ThemeService } from '../theme.service';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'fa-brands fa-youtube',
@@ -53,7 +54,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
         @if (page()!.avatarUrl) {
           <img
             class="w-24 h-24 rounded-full object-cover shadow-md"
-            [src]="page()!.avatarUrl"
+            [src]="theme.scheme() === 'dark' && page()!.avatarUrlDark ? page()!.avatarUrlDark : page()!.avatarUrl"
             [alt]="page()!.avatarAlt || page()!.title"
           />
         }
@@ -93,6 +94,7 @@ export class LinksPageComponent {
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
+  readonly theme = inject(ThemeService);
 
   readonly page = toSignal(
     this.route.data.pipe(map((data) => (data['page'] as LinksPage) ?? null)),

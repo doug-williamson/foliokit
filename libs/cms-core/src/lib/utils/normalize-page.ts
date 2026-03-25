@@ -52,6 +52,7 @@ export function normalizePage(raw: Record<string, unknown>): CmsPageUnion {
     ...base,
     type: 'links',
     avatarUrl: raw['avatarUrl'] as string | undefined,
+    avatarUrlDark: raw['avatarUrlDark'] as string | undefined,
     avatarAlt: raw['avatarAlt'] as string | undefined,
     headline: raw['headline'] as string | undefined,
     bio: raw['bio'] as string | undefined,
