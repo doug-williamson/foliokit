@@ -10,10 +10,12 @@
  * Re-running this script will overwrite all seed documents.
  */
 
-// Must be set before any firebase-admin import to redirect traffic to the emulator.
+// Must be set before any firebase-admin import to redirect traffic to the emulators.
 process.env['FIRESTORE_EMULATOR_HOST'] = '127.0.0.1:8080';
+process.env['FIREBASE_AUTH_EMULATOR_HOST'] = '127.0.0.1:9099';
 
 import { initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { FIREBASE_EMULATOR_PROJECT_ID } from './emulator-config';
 
@@ -25,6 +27,27 @@ const now = Timestamp.now();
 
 async function seed(): Promise<void> {
   try {
+    console.log('[seed:emulator] Creating admin user dev.foliokit@gmail.com...');
+    const { errors } = await getAuth().importUsers([
+      {
+        uid: 'admin-dev',
+        email: 'dev.foliokit@gmail.com',
+        emailVerified: true,
+        displayName: 'Dev FolioKit',
+        providerData: [
+          {
+            uid: 'dev.foliokit@gmail.com',
+            email: 'dev.foliokit@gmail.com',
+            displayName: 'Dev FolioKit',
+            providerId: 'google.com',
+          },
+        ],
+      },
+    ]);
+    if (errors.length) {
+      console.warn('[seed:emulator] Admin user import warnings:', errors.map((e) => e.error.message));
+    }
+
     console.log('[seed:emulator] Writing /authors/author-1...');
     await db.collection('authors').doc('author-1').set(
       {
@@ -294,7 +317,7 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 author, 2 tags, 1 site-config (about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
+    console.log('[seed:emulator] Done. 1 auth user, 1 author, 2 tags, 1 site-config (about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

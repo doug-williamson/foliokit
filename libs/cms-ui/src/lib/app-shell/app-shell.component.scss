@@ -20,6 +20,22 @@ mat-sidenav {
   border-radius: 0;
 }
 
+.folio-nav-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.folio-nav-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.folio-nav-footer {
+  border-top: 1px solid var(--border);
+  padding: 8px;
+}
+
 .folio-nav-header {
   display: flex;
   align-items: center;
