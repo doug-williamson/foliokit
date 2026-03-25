@@ -30,7 +30,6 @@ import { ShellNavFooterDirective } from './shell-nav-footer.directive';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    ShellNavFooterDirective,
   ],
 })
 export class AppShellComponent implements OnInit, OnDestroy {
