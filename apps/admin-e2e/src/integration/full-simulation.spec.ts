@@ -25,7 +25,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { reseedFirestore } from '../../../e2e-shared/firestore-helpers';
+import { reseedFirestore, readDoc } from '../../../e2e-shared/firestore-helpers';
 
 const ADMIN_EMAIL = 'dev.foliokit@gmail.com';
 const BLOG_BASE = 'http://localhost:4201';
@@ -133,13 +133,31 @@ test.describe('full simulation', () => {
     // whose label contains "Headline" as a substring (strict mode violation).
     const headlineInput = page.getByRole('textbox', { name: 'Headline', exact: true });
     await expect(headlineInput).toBeVisible({ timeout: 12_000 });
+    // AboutPageComponent.ngOnInit() starts a 50 ms poll that waits for
+    // store.config() to become non-null, then calls populateForms() (which
+    // patches the form with seed data including the required bio field) and
+    // wires up watchForms().  The headline input is rendered as soon as
+    // store.config() is truthy — *before* the poll fires.  Without this wait
+    // populateForms() would overwrite whatever we just typed with the stale
+    // seed headline, leaving the store non-dirty and the Save button disabled.
+    // Identical pattern to the Authors step above.
+    await page.waitForTimeout(100);
     await headlineInput.fill(SIM_ABOUT_HEADLINE);
+    // Guard: confirm the Save button is actually enabled before clicking so
+    // that a disabled-button silent no-op can never mask this class of bug.
+    await expect(page.getByRole('button', { name: /save changes/i })).toBeEnabled({
+      timeout: 5_000,
+    });
     // The enable/disable toggle was moved to /pages — it no longer lives on the
     // about-page editor.  The seed data has about: enabled: true, so no toggle
     // interaction is needed here.
     await page.getByRole('button', { name: /save changes/i }).click();
     await expect(page.getByText('Saving…')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator('.text-red-500')).not.toBeVisible();
+    // Confirm the headline was actually persisted to Firestore before the blog
+    // navigates — rules out save timing as a source of flakiness.
+    const configSnap = await readDoc('site-config', 'default');
+    expect(configSnap?.['pages']?.about?.headline).toBe(SIM_ABOUT_HEADLINE);
 
     // ── 5. Links Page — add a new link, ensure enabled ─────────────────────
     await page.goto('/links-page');
