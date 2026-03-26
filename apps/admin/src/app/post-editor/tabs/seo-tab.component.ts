@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
@@ -8,7 +9,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
   selector: 'folio-seo-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, MatExpansionModule, MatFormFieldModule, MatInputModule],
   styles: [
     `
       :host {
@@ -57,9 +58,9 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
           <mat-hint>Recommended: 150–160 characters</mat-hint>
         </mat-form-field>
 
-        <!-- OG Image URL -->
+        <!-- OG Image Override -->
         <mat-form-field class="w-full">
-          <mat-label>OG Image URL</mat-label>
+          <mat-label>OG Image Override</mat-label>
           <input
             matInput
             type="url"
@@ -72,25 +73,36 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
             "
             placeholder="https://example.com/og-image.png"
           />
+          <mat-hint>Leave blank to use the post thumbnail.</mat-hint>
         </mat-form-field>
 
-        <!-- Canonical URL -->
-        <mat-form-field class="w-full">
-          <mat-label>Canonical URL</mat-label>
-          <input
-            matInput
-            type="url"
-            [value]="post.seo.canonicalUrl ?? ''"
-            (input)="
-              store.updateField('seo', {
-                ...post.seo,
-                canonicalUrl: $any($event.target).value,
-              })
-            "
-            placeholder="https://example.com/blog/my-post"
-          />
-          <mat-hint>Leave blank to use the default post URL</mat-hint>
-        </mat-form-field>
+        <!-- Advanced SEO -->
+        <mat-expansion-panel class="!shadow-none !rounded-lg border border-black/10 dark:border-white/10">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="text-sm font-medium">Advanced SEO</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-form-field class="w-full mt-2">
+            <mat-label>Canonical URL</mat-label>
+            <input
+              matInput
+              type="url"
+              [value]="post.seo.canonicalUrl ?? ''"
+              (input)="
+                store.updateField('seo', {
+                  ...post.seo,
+                  canonicalUrl: $any($event.target).value,
+                })
+              "
+              placeholder="https://example.com/blog/my-post"
+            />
+            <mat-hint>
+              Leave blank — canonical is set automatically to
+              https://blog.foliokitcms.com/posts/&#123;slug&#125;. Only set this if republishing
+              content from another URL.
+            </mat-hint>
+          </mat-form-field>
+        </mat-expansion-panel>
       </div>
     }
   `,

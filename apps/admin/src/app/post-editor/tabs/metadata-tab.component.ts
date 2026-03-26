@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,8 +15,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { take } from 'rxjs/operators';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
-import { BlogPost } from '@foliokit/cms-core';
+import { Author, AuthorService, BlogPost, SiteConfigService } from '@foliokit/cms-core';
+
+function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
 
 @Component({
   selector: 'folio-metadata-tab',
@@ -64,6 +75,19 @@ import { BlogPost } from '@foliokit/cms-core';
           />
         </mat-form-field>
 
+        <!-- Author -->
+        <mat-form-field class="w-full">
+          <mat-label>Author</mat-label>
+          <mat-select
+            [value]="post.authorId ?? ''"
+            (valueChange)="store.updateField('authorId', $event)"
+          >
+            @for (author of authors(); track author.id) {
+              <mat-option [value]="author.id">{{ author.displayName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
         <!-- Status -->
         <mat-form-field class="w-full">
           <mat-label>Status</mat-label>
@@ -108,6 +132,21 @@ import { BlogPost } from '@foliokit/cms-core';
           </mat-form-field>
         }
 
+        <!-- Slug -->
+        <mat-form-field class="w-full">
+          <mat-label>Slug</mat-label>
+          <input
+            matInput
+            [value]="post.slug"
+            (input)="store.updateField('slug', $any($event.target).value)"
+            placeholder="auto-generated-from-title"
+          />
+          @if (post.slug && !isValidSlug(post.slug)) {
+            <mat-error>Slug may only contain lowercase letters, numbers, and hyphens.</mat-error>
+          }
+          <mat-hint>Auto-generated from title; edit to override.</mat-hint>
+        </mat-form-field>
+
         <!-- Internal Notes — local state only, not persisted -->
         <mat-form-field class="w-full">
           <mat-label>Internal Notes</mat-label>
@@ -128,6 +167,36 @@ export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
   readonly separatorKeys = [ENTER, COMMA];
   readonly internalNotes = signal('');
+
+  readonly authors = toSignal(inject(AuthorService).getAll(), {
+    initialValue: [] as Author[],
+  });
+
+  private readonly siteConfig = toSignal(
+    inject(SiteConfigService).getDefaultSiteConfig().pipe(take(1)),
+    { initialValue: null },
+  );
+
+  constructor() {
+    // Auto-set authorId from site default on new posts
+    effect(() => {
+      const post = this.store.post();
+      const config = this.siteConfig();
+      if (this.store.mode() !== 'new' || !post || post.authorId || !config?.defaultAuthorId) return;
+      this.store.updateField('authorId', config.defaultAuthorId);
+    });
+
+    // Auto-generate slug from title on new posts (only when slug is empty)
+    effect(() => {
+      const post = this.store.post();
+      if (!post || post.slug !== '' || this.store.mode() !== 'new' || !post.title) return;
+      this.store.updateField('slug', slugify(post.title));
+    });
+  }
+
+  isValidSlug(slug: string): boolean {
+    return /^[a-z0-9-]+$/.test(slug);
+  }
 
   addTag(event: MatChipInputEvent, currentTags: string[]): void {
     const value = (event.value ?? '').trim();

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   PLATFORM_ID,
@@ -25,7 +26,7 @@ import { ThemeService } from '../theme.service';
         @if (about()!.photoUrl) {
           <img
             class="w-32 h-32 rounded-full object-cover mb-6 block mx-auto sm:mx-0"
-            [src]="theme.scheme() === 'dark' && about()!.photoUrlDark ? about()!.photoUrlDark : about()!.photoUrl"
+            [src]="avatarSrc()"
             [alt]="about()!.photoAlt || about()!.headline"
           />
         }
@@ -72,6 +73,12 @@ export class AboutPageComponent {
   readonly about = toSignal(
     this.route.data.pipe(map((data) => (data['about'] as AboutPageConfig) ?? null)),
     { initialValue: (this.route.snapshot.data['about'] as AboutPageConfig) ?? null },
+  );
+
+  protected readonly avatarSrc = computed(() =>
+    this.theme.isDark() && this.about()?.photoUrlDark
+      ? this.about()!.photoUrlDark!
+      : this.about()!.photoUrl,
   );
 
   constructor() {

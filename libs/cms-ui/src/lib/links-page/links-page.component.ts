@@ -54,7 +54,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
         @if (page()!.avatarUrl) {
           <img
             class="w-24 h-24 rounded-full object-cover shadow-md"
-            [src]="theme.scheme() === 'dark' && page()!.avatarUrlDark ? page()!.avatarUrlDark : page()!.avatarUrl"
+            [src]="avatarSrc()"
             [alt]="page()!.avatarAlt || page()!.title"
           />
         }
@@ -103,6 +103,12 @@ export class LinksPageComponent {
 
   readonly sortedLinks = computed<LinksLink[]>(() =>
     [...(this.page()?.links ?? [])].sort((a, b) => a.order - b.order),
+  );
+
+  protected readonly avatarSrc = computed(() =>
+    this.theme.isDark() && this.page()?.avatarUrlDark
+      ? this.page()!.avatarUrlDark!
+      : this.page()!.avatarUrl,
   );
 
   getIcon(link: LinksLink): string {

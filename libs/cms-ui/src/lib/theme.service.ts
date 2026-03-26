@@ -1,4 +1,4 @@
-import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 export type ColorScheme = 'light' | 'dark';
@@ -10,6 +10,7 @@ export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly scheme = signal<ColorScheme>(this.resolveInitialScheme());
+  readonly isDark = computed(() => this.scheme() === 'dark');
 
   toggle(): void {
     this.scheme.update((s) => (s === 'light' ? 'dark' : 'light'));
