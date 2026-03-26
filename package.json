@@ -1,6 +1,6 @@
 {
   "name": "foliokit",
-  "version": "0.4.21",
+  "version": "0.4.23",
   "license": "MIT",
   "scripts": {
     "build": "npx nx build blog",
@@ -23,7 +23,8 @@
     "emulator:data": "firebase emulators:start --only auth,firestore,storage --import .firebase/emulator-data --export-on-exit",
     "seed": "nx run seed:emulator",
     "deploy:admin": "nx build admin --configuration=production && firebase deploy --only hosting:foliokit-admin --project foliokit-6f974",
-    "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974"
+    "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974",
+    "deploy:cors": "gsutil cors set cors.json gs://foliokit-6f974.firebasestorage.app"
   },
   "private": false,
   "devDependencies": {
