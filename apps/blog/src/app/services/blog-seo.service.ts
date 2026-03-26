@@ -126,7 +126,7 @@ export class BlogSeoService {
     if (!el) {
       el = this.document.createElement('script');
       el.type = 'application/ld+json';
-      el.dataset['id'] = id;
+      el.setAttribute('data-id', id);
       this.document.head.appendChild(el);
     }
     el.textContent = JSON.stringify(schema);

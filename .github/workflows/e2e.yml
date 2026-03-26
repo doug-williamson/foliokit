@@ -1,0 +1,109 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Cancel in-progress runs for the same PR / branch so we don't waste runners.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch enough history for `nx affected` base/head comparison.
+          fetch-depth: 0
+
+      # ── Node.js ─────────────────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # ── Dependencies ────────────────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Playwright browsers ─────────────────────────────────────────────────
+      # Install Chromium only in CI to keep the runner lean.
+      # Extend to firefox/webkit when the suite is stable.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # ── Firebase CLI ─────────────────────────────────────────────────────────
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      # ── NX affected base ────────────────────────────────────────────────────
+      # For push to main compare against HEAD~1.
+      # For pull requests use the PR base SHA provided by GitHub.
+      - name: Set NX base/head for affected detection
+        id: nx-base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "NX_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+            echo "NX_HEAD=${{ github.sha }}" >> $GITHUB_ENV
+          else
+            echo "NX_BASE=HEAD~1" >> $GITHUB_ENV
+            echo "NX_HEAD=HEAD" >> $GITHUB_ENV
+          fi
+
+      # ── Build affected apps ─────────────────────────────────────────────────
+      # Build only the apps whose dependency graph was touched.
+      - name: Build affected apps
+        run: npx nx affected --target=build --base=$NX_BASE --head=$NX_HEAD --parallel=3
+        env:
+          # Provide placeholder Firebase config for build; emulator accepts any key.
+          NG_APP_FIREBASE_API_KEY: ci-test-key
+          NG_APP_FIREBASE_AUTH_DOMAIN: foliokit-6f974.firebaseapp.com
+          NG_APP_FIREBASE_PROJECT_ID: foliokit-6f974
+          NG_APP_FIREBASE_STORAGE_BUCKET: foliokit-6f974.appspot.com
+          NG_APP_FIREBASE_MESSAGING_SENDER_ID: '000000000000'
+          NG_APP_FIREBASE_APP_ID: '1:000000000000:web:000000000000'
+          NG_ALLOWED_HOSTS: localhost
+
+      # ── E2E tests ────────────────────────────────────────────────────────────
+      # `nx affected -t e2e` runs only the e2e projects whose dependencies changed.
+      # Each e2e project's globalSetup starts the Firebase emulators automatically.
+      - name: Run affected e2e tests
+        run: npx nx affected --target=e2e --base=$NX_BASE --head=$NX_HEAD --parallel=1
+        env:
+          # CI flag for Playwright — disables interactive features
+          CI: true
+          # Same Firebase placeholder config used by the apps at serve time
+          NG_APP_FIREBASE_API_KEY: ci-test-key
+          NG_APP_FIREBASE_AUTH_DOMAIN: foliokit-6f974.firebaseapp.com
+          NG_APP_FIREBASE_PROJECT_ID: foliokit-6f974
+          NG_APP_FIREBASE_STORAGE_BUCKET: foliokit-6f974.appspot.com
+          NG_APP_FIREBASE_MESSAGING_SENDER_ID: '000000000000'
+          NG_APP_FIREBASE_APP_ID: '1:000000000000:web:000000000000'
+          NG_ALLOWED_HOSTS: localhost
+          FIRESTORE_EMULATOR_HOST: 127.0.0.1:8080
+          FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099
+
+      # ── Upload Playwright report on failure ──────────────────────────────────
+      - name: Upload Playwright HTML report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: |
+            apps/admin-e2e/playwright-report/
+            apps/blog-e2e/playwright-report/
+            apps/docs-e2e/playwright-report/
+            dist/e2e-debug-auth-popup.png
+          retention-days: 7
