@@ -19,6 +19,7 @@
     "src/**/*.spec.js",
     "src/**/*.test.ts",
     "src/**/*.test.js",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "../e2e-shared/**/*.ts"
   ]
 }
