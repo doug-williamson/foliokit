@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   PLATFORM_ID,
   ViewChild,
@@ -249,7 +250,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     </div>
   `,
 })
-export class AuthorFormComponent implements OnInit {
+export class AuthorFormComponent implements OnInit, OnDestroy {
   readonly store = inject(AuthorEditorStore);
   protected readonly router = inject(Router);
   private readonly storage = inject(FIREBASE_STORAGE);
@@ -263,6 +264,7 @@ export class AuthorFormComponent implements OnInit {
   protected readonly uploadProgress = signal(0);
   protected readonly uploadError = signal<string | null>(null);
   protected readonly storagePath = signal<string | null>(null);
+  private activeUploadTask: ReturnType<typeof uploadBytesResumable> | null = null;
 
   protected readonly platforms = SOCIAL_PLATFORMS;
 
@@ -328,6 +330,10 @@ export class AuthorFormComponent implements OnInit {
     }, 50);
   }
 
+  ngOnDestroy(): void {
+    this.activeUploadTask?.cancel();
+  }
+
   protected addSocialLink(): void {
     this.socialLinksArray.push(
       this.fb.group({ platform: ['website'], label: [''], url: [''] }),
@@ -363,6 +369,9 @@ export class AuthorFormComponent implements OnInit {
 
   private uploadPhoto(file: File, target: 'light' | 'dark' = 'light'): void {
     if (!this.storage) return;
+    this.activeUploadTask?.cancel();
+    this.activeUploadTask = null;
+
     const authorId = this.store.author()?.id || crypto.randomUUID();
     const folder = target === 'dark' ? 'photo-dark' : 'photo';
     const path = `authors/${authorId}/${folder}/${file.name}`;
@@ -373,6 +382,7 @@ export class AuthorFormComponent implements OnInit {
 
     const fileRef = ref(this.storage, path);
     const task = uploadBytesResumable(fileRef, file);
+    this.activeUploadTask = task;
 
     task.on(
       'state_changed',
@@ -382,10 +392,13 @@ export class AuthorFormComponent implements OnInit {
         );
       },
       (error) => {
+        task.cancel();
+        this.activeUploadTask = null;
         this.uploading.set(false);
         this.uploadError.set(error.message);
       },
       () => {
+        this.activeUploadTask = null;
         getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
           const field = target === 'dark' ? 'photoUrlDark' : 'photoUrl';
           this.store.updateField(field, downloadUrl);
