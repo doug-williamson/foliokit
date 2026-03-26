@@ -58,6 +58,16 @@ export interface LinksPageConfig {
   seo?: SeoMeta;
 }
 
+export interface HomePageConfig {
+  enabled: boolean;
+  heroHeadline: string;
+  heroSubheadline?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  showRecentPosts?: boolean;
+  seo?: SeoMeta;
+}
+
 export interface SiteConfig {
   id: string;
   siteName: string;
@@ -69,9 +79,14 @@ export interface SiteConfig {
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;
   pages?: {
+    home?: HomePageConfig;
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
+  /** Set to true once the admin has completed the setup wizard. Never reset. */
+  setupComplete?: boolean;
+  /** Step IDs the admin has explicitly saved in the setup wizard (tracks optional step acknowledgment). */
+  setupAcknowledgedSteps?: string[];
   /** Unix milliseconds. */
   updatedAt: number;
 }

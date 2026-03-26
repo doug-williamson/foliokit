@@ -5,7 +5,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
+import { AboutPageConfig, HomePageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -21,8 +21,8 @@ const emptyConfig: SiteConfig = {
   siteUrl: '',
   nav: [],
   pages: {
-    about: { enabled: false, headline: '', bio: '' },
-    links: { enabled: false, links: [] },
+    home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
+    // about and links intentionally omitted — absence signals "not yet acknowledged"
   },
   updatedAt: 0,
 };
@@ -74,6 +74,19 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: { ...current, nav: items }, isDirty: true });
       },
 
+      updateHome(home: Omit<HomePageConfig, 'enabled'>): void {
+        const current = store.config();
+        if (!current) return;
+        const enabled = current.pages?.home?.enabled ?? true;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, home: { ...home, enabled } },
+          },
+          isDirty: true,
+        });
+      },
+
       updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
@@ -120,7 +133,7 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      togglePageEnabled(page: 'about' | 'links', value: boolean): void {
+      togglePageEnabled(page: 'home' | 'about' | 'links', value: boolean): void {
         const current = store.config();
         if (!current) return;
         const updated: SiteConfig = {
@@ -137,6 +150,36 @@ export const SiteConfigEditorStore = signalStore(
           error: (err: unknown) =>
             patchState(store, {
               config: current,
+              isSaving: false,
+              saveError: err instanceof Error ? err.message : 'Save failed',
+            }),
+        });
+      },
+
+      acknowledgeStep(stepId: string): void {
+        const current = store.config();
+        if (!current) return;
+        const acked = current.setupAcknowledgedSteps ?? [];
+        if (acked.includes(stepId)) return;
+        patchState(store, {
+          config: { ...current, setupAcknowledgedSteps: [...acked, stepId] },
+          isDirty: true,
+        });
+      },
+
+      completeSetup(): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: { ...current, setupComplete: true },
+          isSaving: true,
+          saveError: null,
+        });
+        siteConfigService.saveSiteConfig({ ...current, setupComplete: true }).subscribe({
+          next: (saved) =>
+            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+          error: (err: unknown) =>
+            patchState(store, {
               isSaving: false,
               saveError: err instanceof Error ? err.message : 'Save failed',
             }),

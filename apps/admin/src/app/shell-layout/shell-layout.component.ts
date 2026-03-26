@@ -13,6 +13,7 @@ import { AuthService } from '@foliokit/cms-core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AppShellComponent, RouterOutlet, RouterLink, RouterLinkActive, MatNavList, MatListItem, MatIconModule, MatButtonModule, ShellNavFooterDirective],
   providers: [
+    SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
       useValue: {
@@ -20,6 +21,7 @@ import { AuthService } from '@foliokit/cms-core';
       },
     },
   ],
+  styles: [],
   template: `
     <folio-app-shell>
       <mat-nav-list shellNav>

@@ -41,6 +41,7 @@ export function normalizeAuthor(raw: Record<string, unknown>): Author {
     displayName: (raw['displayName'] as string) ?? '',
     bio: raw['bio'] as string | undefined,
     photoUrl: raw['photoUrl'] as string | undefined,
+    photoUrlDark: raw['photoUrlDark'] as string | undefined,
     socialLinks: normalizeSocialLinks(raw['socialLinks']),
     email: raw['email'] as string | undefined,
     createdAt: normalizeTimestamp(raw['createdAt']),

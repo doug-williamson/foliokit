@@ -47,6 +47,15 @@ export class App {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    return config?.nav ?? DEFAULT_NAV;
+    const base = config?.nav ?? DEFAULT_NAV;
+    const extra: NavItem[] = [];
+    if (config?.pages?.about?.enabled) {
+      extra.push({ label: 'About', url: '/about' });
+    }
+    if (config?.pages?.links?.enabled) {
+      extra.push({ label: 'Links', url: '/links' });
+    }
+    const existingUrls = new Set(base.map((i) => i.url));
+    return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });
 }

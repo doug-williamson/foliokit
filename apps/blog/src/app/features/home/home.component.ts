@@ -1,6 +1,4 @@
-// TODO: Phase 6 — wire HomePage CmsPage from Firestore.
-// Replace static content with dynamic data from pages/home document.
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { take } from 'rxjs/operators';
@@ -22,20 +20,22 @@ import { BlogSeoService } from '../../services/blog-seo.service';
           class="text-4xl md:text-5xl font-bold mb-4 leading-tight"
           style="font-family: var(--font-display); color: var(--text-primary)"
         >
-          FolioKit Blog
+          {{ heroHeadline() }}
         </h1>
-        <p
-          class="text-lg md:text-xl mb-10"
-          style="color: var(--text-secondary)"
-        >
-          Thoughts on building products, writing software, and designing systems.
-        </p>
+        @if (heroSubheadline()) {
+          <p
+            class="text-lg md:text-xl mb-10"
+            style="color: var(--text-secondary)"
+          >
+            {{ heroSubheadline() }}
+          </p>
+        }
         <a
-          routerLink="/posts"
+          [routerLink]="ctaUrl()"
           class="inline-block px-8 py-3 rounded-full text-base font-semibold"
           style="background: var(--text-accent); color: #ffffff"
         >
-          Read Posts
+          {{ ctaLabel() }}
         </a>
       </div>
     </div>
@@ -52,6 +52,22 @@ export class HomeComponent {
   private readonly siteConfig = toSignal(
     this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
     { initialValue: null },
+  );
+
+  protected readonly heroHeadline = computed(() =>
+    this.siteConfig()?.pages?.home?.heroHeadline || this.siteConfig()?.siteName || 'Welcome',
+  );
+
+  protected readonly heroSubheadline = computed(() =>
+    this.siteConfig()?.pages?.home?.heroSubheadline,
+  );
+
+  protected readonly ctaLabel = computed(() =>
+    this.siteConfig()?.pages?.home?.ctaLabel || 'Read Posts',
+  );
+
+  protected readonly ctaUrl = computed(() =>
+    this.siteConfig()?.pages?.home?.ctaUrl || '/posts',
   );
 
   constructor() {
