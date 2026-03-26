@@ -1,4 +1,4 @@
-import type { AboutPageConfig, LinksPage } from '@foliokit/cms-core';
+import type { AboutPageConfig, LinksPageConfig } from '@foliokit/cms-core';
 
 /**
  * The route data key used by LinksPageComponent to read its page from Angular
@@ -23,5 +23,5 @@ export interface AboutPageRouteData {
  * Shape of the resolved route data expected by LinksPageComponent.
  */
 export interface LinksPageRouteData {
-  [CMS_ROUTE_DATA_KEY]: LinksPage | null;
+  [CMS_ROUTE_DATA_KEY]: LinksPageConfig | null;
 }

@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { postsResolver } from './resolvers/posts.resolver';
 import { postResolver } from './resolvers/post.resolver';
-import { pageResolver } from './resolvers/page.resolver';
+import { linksPageResolver } from './resolvers/links-page.resolver';
 import { aboutPageResolver } from './resolvers/about-page.resolver';
 import { featureGuard } from './guards/feature.guard';
 
@@ -47,8 +47,7 @@ export const appRoutes: Route[] = [
   {
     path: 'links',
     canActivate: [featureGuard('links')],
-    data: { pageId: 'links' },
-    resolve: { page: pageResolver },
+    resolve: { page: linksPageResolver },
     loadComponent: () =>
       import('@foliokit/cms-ui').then((m) => m.LinksPageComponent),
   },

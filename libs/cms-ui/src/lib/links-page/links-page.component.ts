@@ -12,7 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
-import type { LinksPage, LinksLink } from '@foliokit/cms-core';
+import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { ThemeService } from '../theme.service';
 
@@ -97,8 +97,8 @@ export class LinksPageComponent {
   readonly theme = inject(ThemeService);
 
   readonly page = toSignal(
-    this.route.data.pipe(map((data) => (data['page'] as LinksPage) ?? null)),
-    { initialValue: (this.route.snapshot.data['page'] as LinksPage) ?? null },
+    this.route.data.pipe(map((data) => (data['page'] as LinksPageConfig) ?? null)),
+    { initialValue: (this.route.snapshot.data['page'] as LinksPageConfig) ?? null },
   );
 
   readonly sortedLinks = computed<LinksLink[]>(() =>
@@ -116,7 +116,7 @@ export class LinksPageComponent {
       const p = this.page();
       if (!p) return;
       if (!isPlatformBrowser(this.platformId)) return;
-      this.title.setTitle(p.seo?.title ?? p.title);
+      this.title.setTitle(p.seo?.title ?? p.title ?? 'Links');
       if (p.seo?.description) {
         this.meta.updateTag({ name: 'description', content: p.seo.description });
       }

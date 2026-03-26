@@ -2,8 +2,6 @@ export * from './lib/cms-admin-ui/cms-admin-ui';
 export * from './lib/author-editor/author-editor.store';
 export * from './lib/site-config-editor/site-config-editor.store';
 export * from './lib/post-editor/post-editor.store';
-export * from './lib/page-editor/page-editor.store';
-export * from './lib/page-editor/about-editor-form.component';
 export * from './lib/page-editor/links-editor-form.component';
 export * from './lib/post-editor/post-editor-media-tab.component';
 export * from './lib/post-editor/post-editor-cover-image.component';

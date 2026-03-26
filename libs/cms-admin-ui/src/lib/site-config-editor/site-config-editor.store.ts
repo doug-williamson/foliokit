@@ -5,7 +5,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
+import { AboutPageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -82,6 +82,19 @@ export const SiteConfigEditorStore = signalStore(
           config: {
             ...current,
             pages: { ...current.pages, about: { ...about, enabled } },
+          },
+          isDirty: true,
+        });
+      },
+
+      updateLinks(links: Omit<LinksPageConfig, 'enabled'>): void {
+        const current = store.config();
+        if (!current) return;
+        const enabled = current.pages?.links?.enabled ?? false;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, links: { ...links, enabled } },
           },
           isDirty: true,
         });

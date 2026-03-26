@@ -96,8 +96,11 @@ function normalizeLinksPageConfig(raw: unknown): LinksPageConfig {
     links: normalizeLinksLinks(r['links']),
     title: r['title'] as string | undefined,
     avatarUrl: r['avatarUrl'] as string | undefined,
+    avatarUrlDark: r['avatarUrlDark'] as string | undefined,
+    avatarAlt: r['avatarAlt'] as string | undefined,
     headline: r['headline'] as string | undefined,
     bio: r['bio'] as string | undefined,
+    seo: normalizeSeoMeta(r['seo']),
   };
 }
 
