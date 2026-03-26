@@ -11,16 +11,16 @@ html[data-theme='light'] {
   @include mat.theme((
     color: (
       theme-type: light,
-      primary: mat.$orange-palette,
-      tertiary: mat.$orange-palette,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
     ),
-    typography: 'DM Sans',
+    typography: 'Plus Jakarta Sans',
     density: 0,
   ));
 
   // FolioKit → M3 system token bridge
-  --mat-sys-primary: var(--amber-600);
-  --mat-sys-on-primary: var(--ink-950);
+  --mat-sys-primary: var(--teal-500);
+  --mat-sys-on-primary: #FFFFFF;
   --mat-sys-surface: var(--surface-1);
   --mat-sys-on-surface: var(--text-primary);
   --mat-sys-surface-variant: var(--surface-2);
@@ -34,16 +34,16 @@ html[data-theme='dark'] {
   @include mat.theme((
     color: (
       theme-type: dark,
-      primary: mat.$orange-palette,
-      tertiary: mat.$orange-palette,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
     ),
-    typography: 'DM Sans',
+    typography: 'Plus Jakarta Sans',
     density: 0,
   ));
 
   // FolioKit → M3 system token bridge
-  --mat-sys-primary: var(--amber-400);
-  --mat-sys-on-primary: var(--ink-950);
+  --mat-sys-primary: var(--teal-400);
+  --mat-sys-on-primary: var(--slate-950);
   --mat-sys-surface: var(--surface-1);
   --mat-sys-on-surface: var(--text-primary);
   --mat-sys-surface-variant: var(--surface-2);
