@@ -83,6 +83,10 @@ export interface SiteConfig {
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
+  /** Set to true once the admin has completed the setup wizard. Never reset. */
+  setupComplete?: boolean;
+  /** Step IDs the admin has explicitly saved in the setup wizard (tracks optional step acknowledgment). */
+  setupAcknowledgedSteps?: string[];
   /** Unix milliseconds. */
   updatedAt: number;
 }

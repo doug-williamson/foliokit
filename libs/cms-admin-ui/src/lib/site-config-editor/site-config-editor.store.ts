@@ -22,8 +22,7 @@ const emptyConfig: SiteConfig = {
   nav: [],
   pages: {
     home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
-    about: { enabled: false, headline: '', bio: '' },
-    links: { enabled: false, links: [] },
+    // about and links intentionally omitted — absence signals "not yet acknowledged"
   },
   updatedAt: 0,
 };
@@ -151,6 +150,36 @@ export const SiteConfigEditorStore = signalStore(
           error: (err: unknown) =>
             patchState(store, {
               config: current,
+              isSaving: false,
+              saveError: err instanceof Error ? err.message : 'Save failed',
+            }),
+        });
+      },
+
+      acknowledgeStep(stepId: string): void {
+        const current = store.config();
+        if (!current) return;
+        const acked = current.setupAcknowledgedSteps ?? [];
+        if (acked.includes(stepId)) return;
+        patchState(store, {
+          config: { ...current, setupAcknowledgedSteps: [...acked, stepId] },
+          isDirty: true,
+        });
+      },
+
+      completeSetup(): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: { ...current, setupComplete: true },
+          isSaving: true,
+          saveError: null,
+        });
+        siteConfigService.saveSiteConfig({ ...current, setupComplete: true }).subscribe({
+          next: (saved) =>
+            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+          error: (err: unknown) =>
+            patchState(store, {
               isSaving: false,
               saveError: err instanceof Error ? err.message : 'Save failed',
             }),

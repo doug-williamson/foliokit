@@ -1,13 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnInit,
+  PLATFORM_ID,
+  ViewChild,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,8 +23,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AuthorService, NavItem, SocialPlatform } from '@foliokit/cms-core';
+import { AuthorService, FIREBASE_STORAGE, NavItem, SocialPlatform } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
+import { ThemeService } from '@foliokit/cms-ui';
 import type { Author } from '@foliokit/cms-core';
 
 type StepId = 'site' | 'author' | 'nav' | 'home' | 'about' | 'links';
@@ -57,7 +63,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     DragDropModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -78,10 +83,20 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     .incomplete-icon { opacity: 0.3; }
   `],
   template: `
-    <div class="flex h-full overflow-hidden">
+    <!-- Top header -->
+    <div class="flex items-center px-4 py-2 border-b shrink-0"
+         style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
+      <span class="flex-1 text-sm font-semibold">Site Setup</span>
+      <button mat-icon-button (click)="theme.toggle()"
+              [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </div>
 
-      <!-- ── Left rail ── -->
-      <aside class="w-56 shrink-0 flex flex-col border-r overflow-y-auto"
+    <div class="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
+
+      <!-- ── Left rail (desktop only) ── -->
+      <aside class="hidden md:flex w-56 shrink-0 flex-col border-r overflow-y-auto"
              style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
 
         <div class="px-4 pt-6 pb-4 shrink-0">
@@ -110,12 +125,27 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           }
         </nav>
 
-        <div class="mt-auto px-4 pb-4 shrink-0">
-          <a mat-stroked-button routerLink="/posts" class="w-full text-xs">
-            Go to Posts
-          </a>
-        </div>
       </aside>
+
+      <!-- ── Mobile header (below md) ── -->
+      <div class="flex md:hidden items-center gap-2 px-4 py-3 border-b shrink-0"
+           style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-semibold uppercase tracking-wider opacity-50">
+            Step {{ activeStepIndex() + 1 }} of {{ steps.length }}
+          </p>
+          <p class="text-sm font-medium truncate">{{ activeStepDef()?.label }}</p>
+        </div>
+        <div class="flex gap-1.5">
+          @for (step of steps; track step.id) {
+            <button type="button"
+                    class="w-2.5 h-2.5 rounded-full transition-colors"
+                    [style.background]="isComplete(step.id) ? '#22c55e' : activeStep() === step.id ? 'var(--mat-sys-primary)' : 'color-mix(in srgb, currentColor 20%, transparent)'"
+                    (click)="goTo(step.id)"
+                    [attr.aria-label]="step.label"></button>
+          }
+        </div>
+      </div>
 
       <!-- ── Main content ── -->
       <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -126,8 +156,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           </div>
         } @else {
 
-          <!-- Step header -->
-          <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
+          <!-- Step header (desktop only — mobile uses the compact header above) -->
+          <div class="hidden md:flex items-center gap-3 px-6 py-4 border-b shrink-0"
                style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
             <mat-icon class="opacity-60">{{ activeStepDef()?.icon }}</mat-icon>
             <div class="flex-1">
@@ -144,12 +174,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           </div>
 
           <!-- Step body -->
-          <div class="flex-1 overflow-y-auto">
-            <div class="max-w-xl mx-auto px-6 py-8">
+          <div class="flex-1 overflow-y-auto min-w-0">
+            <div class="max-w-xl mx-auto px-4 py-5 sm:px-6 sm:py-8 min-w-0">
 
               <!-- ══ Step 1: Site Basics ══ -->
               @if (activeStep() === 'site') {
-                <form [formGroup]="siteForm" class="flex flex-col gap-5">
+                <form [formGroup]="siteForm" class="flex flex-col gap-5 min-w-0">
                   <mat-form-field appearance="outline">
                     <mat-label>Site Name</mat-label>
                     <input matInput formControlName="siteName" placeholder="Doug's Blog" />
@@ -202,6 +232,71 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       Create your author profile. It will be linked to your posts and displayed in the blog.
                     </p>
 
+                    <!-- Photo upload (light + dark) -->
+                    <div class="flex flex-col gap-2">
+                      <span class="text-sm font-semibold">Profile Photo</span>
+                      <div class="flex gap-5">
+                        <!-- Light -->
+                        <div class="flex flex-col items-center gap-1">
+                          @if (authorPhotoUrl(); as url) {
+                            <div class="relative w-20 h-20 rounded-full overflow-hidden group">
+                              <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
+                              <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                   style="background: rgba(0,0,0,0.5)">
+                                <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoInput.click()">
+                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                </button>
+                                <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoUrl.set(null)">
+                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                          } @else {
+                            <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                                 style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                                 (click)="isBrowser && setupPhotoInput.click()">
+                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                            </div>
+                          }
+                          <span class="text-xs opacity-50">Light</span>
+                        </div>
+                        <!-- Dark -->
+                        <div class="flex flex-col items-center gap-1">
+                          @if (authorPhotoDarkUrl(); as url) {
+                            <div class="relative w-20 h-20 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                              <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
+                              <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                   style="background: rgba(0,0,0,0.5)">
+                                <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoDarkInput.click()">
+                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                </button>
+                                <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoDarkUrl.set(null)">
+                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                          } @else {
+                            <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                                 style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                                 (click)="isBrowser && setupPhotoDarkInput.click()">
+                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                            </div>
+                          }
+                          <span class="text-xs opacity-50">Dark</span>
+                        </div>
+                      </div>
+                      <input #setupPhotoInput type="file" accept="image/*" class="hidden"
+                             (change)="onAuthorPhotoSelected($any($event.target).files, 'light')" />
+                      <input #setupPhotoDarkInput type="file" accept="image/*" class="hidden"
+                             (change)="onAuthorPhotoSelected($any($event.target).files, 'dark')" />
+                      @if (authorPhotoUploading()) {
+                        <mat-progress-bar mode="determinate" [value]="authorPhotoProgress()" class="max-w-[11rem]" />
+                      }
+                      @if (authorPhotoError()) {
+                        <p class="text-xs text-red-500">{{ authorPhotoError() }}</p>
+                      }
+                    </div>
+
                     <form [formGroup]="authorForm" class="flex flex-col gap-5">
                       <mat-form-field appearance="outline">
                         <mat-label>Display Name</mat-label>
@@ -241,20 +336,22 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div cdkDropList (cdkDropListDropped)="onNavDrop($event)" class="flex flex-col gap-2">
                     @for (ctrl of navItemsArray.controls; track $index) {
                       <div cdkDrag [formGroup]="$any(ctrl)"
-                           class="flex items-center gap-2 p-3 rounded-lg border"
+                           class="flex flex-col gap-2 p-3 rounded-lg border"
                            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-                        <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]">drag_indicator</mat-icon>
-                        <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
-                          <mat-label>Label</mat-label>
-                          <input matInput formControlName="label" placeholder="Home" />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
+                        <div class="flex items-center gap-2">
+                          <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]">drag_indicator</mat-icon>
+                          <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
+                            <mat-label>Label</mat-label>
+                            <input matInput formControlName="label" placeholder="Home" />
+                          </mat-form-field>
+                          <button mat-icon-button type="button" matTooltip="Remove" (click)="removeNavItem($index)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
                           <mat-label>URL</mat-label>
                           <input matInput formControlName="url" placeholder="/" />
                         </mat-form-field>
-                        <button mat-icon-button type="button" matTooltip="Remove" (click)="removeNavItem($index)">
-                          <mat-icon>delete</mat-icon>
-                        </button>
                       </div>
                     }
                   </div>
@@ -294,7 +391,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                              placeholder="Thoughts on building products and writing software." />
                     </mat-form-field>
 
-                    <div class="flex gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
                       <mat-form-field appearance="outline" class="flex-1">
                         <mat-label>CTA Button Label</mat-label>
                         <input matInput formControlName="ctaLabel" placeholder="Read Posts" />
@@ -409,7 +506,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
-                          <div class="flex gap-2">
+                          <div class="flex flex-col sm:flex-row gap-2">
                             <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
                               <mat-label>Label</mat-label>
                               <input matInput formControlName="label" placeholder="My Blog" />
@@ -438,24 +535,26 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           </div>
 
           <!-- ── Sticky footer ── -->
-          <div class="flex items-center gap-3 px-6 py-3 border-t shrink-0"
+          <div class="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 border-t shrink-0"
                style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-            <span class="flex-1 text-sm opacity-50">
-              @if (isLastStep()) { All steps complete — your site is ready. }
+            <span class="hidden sm:inline flex-1 text-sm opacity-50">
+              @if (isLastStep() && allStepsComplete()) { All steps complete — click Finish Setup to continue. }
               @else { Step {{ activeStepIndex() + 1 }} of {{ steps.length }} }
             </span>
-            <button mat-stroked-button [disabled]="store.isSaving()" (click)="onSaveStep()">
-              Save
-            </button>
-            @if (!isLastStep()) {
-              <button mat-flat-button [disabled]="store.isSaving() || isStepFormInvalid()" (click)="onSaveAndContinue()">
-                Save &amp; Continue
+            <div class="flex flex-col sm:flex-row flex-1 sm:flex-none gap-2 sm:gap-3">
+              <button mat-stroked-button class="flex-1 sm:flex-initial" [disabled]="store.isSaving()" (click)="onSaveStep()">
+                Save
               </button>
-            } @else {
-              <button mat-flat-button routerLink="/posts" color="primary">
-                Go to Posts
-              </button>
-            }
+              @if (!isLastStep()) {
+                <button mat-flat-button class="flex-1 sm:flex-initial" [disabled]="store.isSaving() || isStepFormInvalid()" (click)="onSaveAndContinue()">
+                  Save &amp; Continue
+                </button>
+              } @else {
+                <button mat-flat-button class="flex-1 sm:flex-initial" [disabled]="!allStepsComplete() || store.isSaving()" (click)="onFinishSetup()">
+                  Finish Setup
+                </button>
+              }
+            </div>
           </div>
 
         }
@@ -465,8 +564,14 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 })
 export class SetupComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  protected readonly theme = inject(ThemeService);
+  private readonly router = inject(Router);
   private readonly authorService = inject(AuthorService);
   private readonly fb = inject(FormBuilder);
+  private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  readonly isBrowser = isPlatformBrowser(this.platformId);
 
   readonly steps = STEPS;
   readonly platforms = SOCIAL_PLATFORMS;
@@ -475,6 +580,17 @@ export class SetupComponent implements OnInit {
   readonly authors = signal<Author[]>([]);
   readonly authorSaveError = signal<string | null>(null);
   readonly stepSaveSuccess = signal(false);
+
+  // ── Author photo upload ─────────────────────────────────────────────────
+  readonly authorPhotoUrl = signal<string | null>(null);
+  readonly authorPhotoDarkUrl = signal<string | null>(null);
+  readonly authorPhotoUploading = signal(false);
+  readonly authorPhotoProgress = signal(0);
+  readonly authorPhotoError = signal<string | null>(null);
+  private authorTempId = crypto.randomUUID();
+
+  @ViewChild('setupPhotoInput') setupPhotoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('setupPhotoDarkInput') setupPhotoDarkInput!: ElementRef<HTMLInputElement>;
 
   // ── Site form ──────────────────────────────────────────────────────────────
   readonly siteForm: FormGroup = this.fb.group({
@@ -524,6 +640,7 @@ export class SetupComponent implements OnInit {
   readonly completedCount = computed(() =>
     STEPS.filter((s) => this.isComplete(s.id)).length,
   );
+  readonly allStepsComplete = computed(() => this.completedCount() === STEPS.length);
   readonly progressPct = computed(() => (this.completedCount() / STEPS.length) * 100);
 
   readonly activeStepDef = computed(() => STEPS.find((s) => s.id === this.activeStep()));
@@ -546,13 +663,14 @@ export class SetupComponent implements OnInit {
   isComplete(stepId: StepId): boolean {
     const config = this.store.config();
     if (!config) return false;
+    const acked = config.setupAcknowledgedSteps ?? [];
     switch (stepId) {
       case 'site':   return !!config.siteName?.trim();
       case 'author': return this.authors().length > 0;
       case 'nav':    return (config.nav?.length ?? 0) > 0;
       case 'home':   return !!config.pages?.home?.heroHeadline?.trim();
-      case 'about':  return !this.aboutEnabled() || !!config.pages?.about?.headline?.trim();
-      case 'links':  return !this.linksEnabled() || (config.pages?.links?.links?.length ?? 0) > 0;
+      case 'about':  return acked.includes('about');
+      case 'links':  return acked.includes('links');
     }
   }
 
@@ -586,6 +704,11 @@ export class SetupComponent implements OnInit {
     this.saveCurrentStep();
   }
 
+  onFinishSetup(): void {
+    this.store.completeSetup();
+    this.router.navigate(['/posts']);
+  }
+
   // ── Nav drag-drop ──────────────────────────────────────────────────────────
   onNavDrop(event: CdkDragDrop<FormGroup[]>): void {
     const arr = this.navItemsArray;
@@ -611,6 +734,15 @@ export class SetupComponent implements OnInit {
 
   removeLink(i: number): void { this.linksArray.removeAt(i); }
 
+  onAuthorPhotoSelected(files: FileList | null, target: 'light' | 'dark'): void {
+    if (!files?.length) return;
+    this.uploadAuthorPhoto(files[0], target);
+    const inputRef = target === 'light' ? this.setupPhotoInput : this.setupPhotoDarkInput;
+    if (inputRef?.nativeElement) {
+      inputRef.nativeElement.value = '';
+    }
+  }
+
   onAboutEnabledChange(value: boolean): void {
     this.store.togglePageEnabled('about', value);
   }
@@ -620,6 +752,42 @@ export class SetupComponent implements OnInit {
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────
+  private uploadAuthorPhoto(file: File, target: 'light' | 'dark'): void {
+    if (!this.storage) return;
+    const folder = target === 'dark' ? 'photo-dark' : 'photo';
+    const path = `authors/${this.authorTempId}/${folder}/${file.name}`;
+
+    this.authorPhotoUploading.set(true);
+    this.authorPhotoProgress.set(0);
+    this.authorPhotoError.set(null);
+
+    const fileRef = ref(this.storage, path);
+    const task = uploadBytesResumable(fileRef, file);
+
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        this.authorPhotoProgress.set(
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+        );
+      },
+      (error) => {
+        this.authorPhotoUploading.set(false);
+        this.authorPhotoError.set(error.message);
+      },
+      () => {
+        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
+          if (target === 'light') {
+            this.authorPhotoUrl.set(downloadUrl);
+          } else {
+            this.authorPhotoDarkUrl.set(downloadUrl);
+          }
+          this.authorPhotoUploading.set(false);
+        });
+      },
+    );
+  }
+
   private populateForms(): void {
     const config = this.store.config();
     if (!config) return;
@@ -703,7 +871,13 @@ export class SetupComponent implements OnInit {
     const v = this.authorForm.value as { displayName: string; bio: string; email: string };
     this.authorSaveError.set(null);
     this.authorService
-      .create({ displayName: v.displayName, bio: v.bio || undefined, email: v.email || undefined })
+      .create({
+        displayName: v.displayName,
+        bio: v.bio || undefined,
+        email: v.email || undefined,
+        photoUrl: this.authorPhotoUrl() || undefined,
+        photoUrlDark: this.authorPhotoDarkUrl() || undefined,
+      })
       .subscribe({
         next: (author) => {
           this.authors.set([author]);
@@ -758,6 +932,7 @@ export class SetupComponent implements OnInit {
         bio:         v.bio,
       });
     }
+    this.store.acknowledgeStep('about');
     this.store.save();
     this.stepSaveSuccess.set(true);
     onSuccess?.();
@@ -777,6 +952,7 @@ export class SetupComponent implements OnInit {
       );
       this.store.updateLinks({ headline: meta.headline || undefined, bio: meta.bio || undefined, links });
     }
+    this.store.acknowledgeStep('links');
     this.store.save();
     this.stepSaveSuccess.set(true);
     onSuccess?.();

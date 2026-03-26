@@ -99,36 +99,71 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <!-- Scrollable form -->
       <div class="flex-1 overflow-y-auto">
         <form [formGroup]="form" class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
-          <!-- Photo upload -->
+          <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
             <span class="text-sm font-semibold">Profile Photo</span>
-            @if (store.author()?.photoUrl; as url) {
-              <div class="relative w-24 h-24 rounded-full overflow-hidden group">
-                <img [src]="url" alt="Author photo" class="w-full h-full object-cover" />
-                <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                     style="background: rgba(0,0,0,0.5)">
-                  <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
-                    <mat-icon>swap_horiz</mat-icon>
-                  </button>
-                  <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto()">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
+            <div class="flex gap-6">
+              <!-- Light mode -->
+              <div class="flex flex-col items-center gap-1">
+                @if (store.author()?.photoUrl; as url) {
+                  <div class="relative w-24 h-24 rounded-full overflow-hidden group">
+                    <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
+                    <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                         style="background: rgba(0,0,0,0.5)">
+                      <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
+                        <mat-icon>swap_horiz</mat-icon>
+                      </button>
+                      <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('light')">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <div
+                    class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                    style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    (click)="isBrowser && photoInput.click()"
+                  >
+                    <mat-icon class="opacity-40">upload</mat-icon>
+                    <span class="text-xs opacity-40">Upload</span>
+                  </div>
+                }
+                <span class="text-xs opacity-50">Light</span>
               </div>
-            } @else {
-              <div
-                class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
-                style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                (click)="isBrowser && photoInput.click()"
-              >
-                <mat-icon class="opacity-40">upload</mat-icon>
-                <span class="text-xs opacity-40">Upload</span>
+              <!-- Dark mode -->
+              <div class="flex flex-col items-center gap-1">
+                @if (store.author()?.photoUrlDark; as url) {
+                  <div class="relative w-24 h-24 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                    <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
+                    <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                         style="background: rgba(0,0,0,0.5)">
+                      <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoDarkInput.click()">
+                        <mat-icon>swap_horiz</mat-icon>
+                      </button>
+                      <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('dark')">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <div
+                    class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                    style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    (click)="isBrowser && photoDarkInput.click()"
+                  >
+                    <mat-icon class="opacity-40">upload</mat-icon>
+                    <span class="text-xs opacity-40">Upload</span>
+                  </div>
+                }
+                <span class="text-xs opacity-50">Dark</span>
               </div>
-            }
+            </div>
             <input #photoInput type="file" accept="image/*" class="hidden"
-                   (change)="onPhotoSelected($any($event.target).files)" />
+                   (change)="onPhotoSelected($any($event.target).files, 'light')" />
+            <input #photoDarkInput type="file" accept="image/*" class="hidden"
+                   (change)="onPhotoSelected($any($event.target).files, 'dark')" />
             @if (uploading()) {
-              <mat-progress-bar mode="determinate" [value]="uploadProgress()" class="w-24" />
+              <mat-progress-bar mode="determinate" [value]="uploadProgress()" class="max-w-[13rem]" />
             }
             @if (uploadError()) {
               <p class="text-xs text-red-500">{{ uploadError() }}</p>
@@ -232,6 +267,7 @@ export class AuthorFormComponent implements OnInit {
   protected readonly platforms = SOCIAL_PLATFORMS;
 
   @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('photoDarkInput') photoDarkInput!: ElementRef<HTMLInputElement>;
 
   protected readonly form: FormGroup = this.fb.group({
     displayName: ['', Validators.required],
@@ -302,16 +338,21 @@ export class AuthorFormComponent implements OnInit {
     this.socialLinksArray.removeAt(index);
   }
 
-  protected onPhotoSelected(files: FileList | null): void {
+  protected onPhotoSelected(files: FileList | null, target: 'light' | 'dark' = 'light'): void {
     if (!files?.length) return;
-    this.uploadPhoto(files[0]);
-    if (this.photoInput?.nativeElement) {
-      this.photoInput.nativeElement.value = '';
+    this.uploadPhoto(files[0], target);
+    const inputRef = target === 'light' ? this.photoInput : this.photoDarkInput;
+    if (inputRef?.nativeElement) {
+      inputRef.nativeElement.value = '';
     }
   }
 
-  protected removePhoto(): void {
-    this.store.updateField('photoUrl', undefined);
+  protected removePhoto(target: 'light' | 'dark'): void {
+    if (target === 'light') {
+      this.store.updateField('photoUrl', undefined);
+    } else {
+      this.store.updateField('photoUrlDark', undefined);
+    }
     this.storagePath.set(null);
   }
 
@@ -320,10 +361,11 @@ export class AuthorFormComponent implements OnInit {
     this.store.save(() => this.router.navigate(['/authors']));
   }
 
-  private uploadPhoto(file: File): void {
+  private uploadPhoto(file: File, target: 'light' | 'dark' = 'light'): void {
     if (!this.storage) return;
     const authorId = this.store.author()?.id || crypto.randomUUID();
-    const path = `authors/${authorId}/photo/${file.name}`;
+    const folder = target === 'dark' ? 'photo-dark' : 'photo';
+    const path = `authors/${authorId}/${folder}/${file.name}`;
 
     this.uploading.set(true);
     this.uploadProgress.set(0);
@@ -345,7 +387,8 @@ export class AuthorFormComponent implements OnInit {
       },
       () => {
         getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          this.store.updateField('photoUrl', downloadUrl);
+          const field = target === 'dark' ? 'photoUrlDark' : 'photoUrl';
+          this.store.updateField(field, downloadUrl);
           this.storagePath.set(path);
           this.uploading.set(false);
         });

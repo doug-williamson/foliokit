@@ -5,6 +5,8 @@ export interface Author {
   displayName: string;
   bio?: string;
   photoUrl?: string;
+  /** Firebase Storage URL — shown in dark mode when set */
+  photoUrlDark?: string;
   socialLinks?: SocialLink[];
   email?: string;
   /** Unix milliseconds. */

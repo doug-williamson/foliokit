@@ -25,7 +25,7 @@ import { TagFilterComponent } from './tag-filter.component';
   imports: [PostCardComponent, TagFilterComponent],
   template: `
     <div
-      class="px-4 md:px-6 lg:px-8 py-8 lg:py-12"
+      class="px-4 md:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col"
       [style.max-width]="'1280px'"
       style="margin-inline: auto"
     >
@@ -42,7 +42,7 @@ import { TagFilterComponent } from './tag-filter.component';
 
       @if (filteredPosts().length === 0) {
         <div
-          class="flex items-center justify-center min-h-[50vh]"
+          class="flex-1 flex items-center justify-center"
           style="color: var(--text-muted)"
         >
           <p class="text-xl">No posts found{{ selectedTag() ? ' for tag "' + selectedTag() + '"' : '' }}.</p>
@@ -69,7 +69,7 @@ import { TagFilterComponent } from './tag-filter.component';
       }
     </div>
   `,
-  styles: [':host { display: block; background: var(--bg); min-height: 100%; }'],
+  styles: [':host { display: flex; flex-direction: column; background: var(--bg); min-height: 100%; }'],
 })
 export class PostListComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);

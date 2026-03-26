@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { setupGuard } from './guards/setup.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { ShellLayoutComponent } from './shell-layout/shell-layout.component';
 import { AuthorEditorStore, PostEditorStore, SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
@@ -11,17 +12,18 @@ export const appRoutes: Route[] = [
       import('./login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'setup',
+    loadComponent: () =>
+      import('./setup/setup.component').then((m) => m.SetupComponent),
+    providers: [SiteConfigEditorStore],
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     component: ShellLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, setupGuard],
     children: [
-      { path: '', redirectTo: 'setup', pathMatch: 'full' },
-      {
-        path: 'setup',
-        loadComponent: () =>
-          import('./setup/setup.component').then((m) => m.SetupComponent),
-        providers: [SiteConfigEditorStore],
-      },
+      { path: '', redirectTo: 'posts', pathMatch: 'full' },
       {
         path: 'posts',
         loadComponent: () =>
