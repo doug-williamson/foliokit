@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatNavList, MatListItem } from '@angular/material/list';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
@@ -11,7 +12,7 @@ import { AuthService } from '@foliokit/cms-core';
   selector: 'admin-shell-layout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShellComponent, RouterOutlet, RouterLink, RouterLinkActive, MatNavList, MatListItem, MatIconModule, MatButtonModule, ShellNavFooterDirective],
+  imports: [AppShellComponent, RouterOutlet, RouterLink, RouterLinkActive, MatNavList, MatListItem, MatBadgeModule, MatIconModule, MatButtonModule, ShellNavFooterDirective],
   providers: [
     {
       provide: SHELL_CONFIG,
@@ -23,6 +24,16 @@ import { AuthService } from '@foliokit/cms-core';
   template: `
     <folio-app-shell>
       <mat-nav-list shellNav>
+        <a mat-list-item routerLink="/setup" routerLinkActive="active-link">
+          <span class="flex items-center gap-4">
+            <mat-icon
+              [matBadge]="setupIncomplete() || null"
+              matBadgeColor="warn"
+              matBadgeSize="small"
+            >checklist</mat-icon>
+            <span>Setup</span>
+          </span>
+        </a>
         <a mat-list-item routerLink="/site-config" routerLinkActive="active-link">
           <span class="flex items-center gap-4">
             <mat-icon>settings</mat-icon>
@@ -81,6 +92,21 @@ export class ShellLayoutComponent {
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly pages = computed(() => this.store.config()?.pages);
+
+  /** Number of incomplete setup steps (null when all done, so the badge hides). */
+  protected readonly setupIncomplete = computed(() => {
+    const config = this.store.config();
+    if (!config) return null;
+    let incomplete = 0;
+    if (!config.siteName?.trim()) incomplete++;
+    if (!config.pages?.home?.heroHeadline?.trim()) incomplete++;
+    if ((config.nav?.length ?? 0) === 0) incomplete++;
+    const aboutEnabled = config.pages?.about?.enabled ?? false;
+    if (aboutEnabled && !config.pages?.about?.headline?.trim()) incomplete++;
+    const linksEnabled = config.pages?.links?.enabled ?? false;
+    if (linksEnabled && (config.pages?.links?.links?.length ?? 0) === 0) incomplete++;
+    return incomplete > 0 ? incomplete : null;
+  });
 
   constructor() {
     this.store.load();

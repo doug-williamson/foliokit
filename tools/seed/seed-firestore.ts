@@ -63,6 +63,14 @@ async function seed(): Promise<void> {
           { label: 'Blog', url: '/posts' },
         ],
         pages: {
+          home: {
+            enabled: true,
+            heroHeadline: 'Your Blog Name',
+            heroSubheadline: 'Your tagline here.',
+            ctaLabel: 'Read Posts',
+            ctaUrl: '/posts',
+            showRecentPosts: true,
+          },
           about: { enabled: false, headline: '', bio: '' },
           links: { enabled: false, links: [] },
         },

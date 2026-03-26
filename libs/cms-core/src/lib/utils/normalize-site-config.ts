@@ -1,4 +1,4 @@
-import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig, LinksPageConfig } from '../models/site-config.model';
+import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig, LinksPageConfig, HomePageConfig } from '../models/site-config.model';
 import type { LinksLink } from '../models/page.model';
 
 function normalizeTimestamp(value: unknown): number {
@@ -72,6 +72,20 @@ function normalizeLinksLinks(raw: unknown): LinksLink[] {
   }));
 }
 
+function normalizeHomePageConfig(raw: unknown): HomePageConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    enabled: (r['enabled'] as boolean) ?? false,
+    heroHeadline: (r['heroHeadline'] as string) ?? '',
+    heroSubheadline: r['heroSubheadline'] as string | undefined,
+    ctaLabel: r['ctaLabel'] as string | undefined,
+    ctaUrl: r['ctaUrl'] as string | undefined,
+    showRecentPosts: r['showRecentPosts'] as boolean | undefined,
+    seo: normalizeSeoMeta(r['seo']),
+  };
+}
+
 function normalizeAboutPageConfig(raw: unknown): AboutPageConfig {
   const r = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {};
   return {
@@ -118,6 +132,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
     pages: {
+      home: normalizeHomePageConfig(pages?.['home']),
       about: normalizeAboutPageConfig(pages?.['about']),
       links: normalizeLinksPageConfig(pages?.['links']),
     },

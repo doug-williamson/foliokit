@@ -5,7 +5,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
+import { AboutPageConfig, HomePageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -21,6 +21,7 @@ const emptyConfig: SiteConfig = {
   siteUrl: '',
   nav: [],
   pages: {
+    home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
     about: { enabled: false, headline: '', bio: '' },
     links: { enabled: false, links: [] },
   },
@@ -74,6 +75,19 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: { ...current, nav: items }, isDirty: true });
       },
 
+      updateHome(home: Omit<HomePageConfig, 'enabled'>): void {
+        const current = store.config();
+        if (!current) return;
+        const enabled = current.pages?.home?.enabled ?? true;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, home: { ...home, enabled } },
+          },
+          isDirty: true,
+        });
+      },
+
       updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
@@ -120,7 +134,7 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      togglePageEnabled(page: 'about' | 'links', value: boolean): void {
+      togglePageEnabled(page: 'home' | 'about' | 'links', value: boolean): void {
         const current = store.config();
         if (!current) return;
         const updated: SiteConfig = {

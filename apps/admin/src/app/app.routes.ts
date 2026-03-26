@@ -15,7 +15,13 @@ export const appRoutes: Route[] = [
     component: ShellLayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'posts', pathMatch: 'full' },
+      { path: '', redirectTo: 'setup', pathMatch: 'full' },
+      {
+        path: 'setup',
+        loadComponent: () =>
+          import('./setup/setup.component').then((m) => m.SetupComponent),
+        providers: [SiteConfigEditorStore],
+      },
       {
         path: 'posts',
         loadComponent: () =>

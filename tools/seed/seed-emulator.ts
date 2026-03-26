@@ -97,6 +97,18 @@ async function seed(): Promise<void> {
           { label: 'Links', url: '/links', order: 3 },
         ],
         pages: {
+          home: {
+            enabled: true,
+            heroHeadline: 'Hey, I\'m Dev Author',
+            heroSubheadline: 'Engineer, writer, and open-source tinkerer.',
+            ctaLabel: 'Read Posts',
+            ctaUrl: '/posts',
+            showRecentPosts: true,
+            seo: {
+              title: 'FolioKit Blog',
+              description: 'A developer portfolio and blog.',
+            },
+          },
           about: {
             enabled: true,
             headline: 'Hey, I\'m Dev Author',
@@ -325,7 +337,7 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 auth user, 1 author, 2 tags, 1 site-config (about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
+    console.log('[seed:emulator] Done. 1 auth user, 1 author, 2 tags, 1 site-config (home + about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

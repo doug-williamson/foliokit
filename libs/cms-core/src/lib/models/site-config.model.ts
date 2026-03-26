@@ -58,6 +58,16 @@ export interface LinksPageConfig {
   seo?: SeoMeta;
 }
 
+export interface HomePageConfig {
+  enabled: boolean;
+  heroHeadline: string;
+  heroSubheadline?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  showRecentPosts?: boolean;
+  seo?: SeoMeta;
+}
+
 export interface SiteConfig {
   id: string;
   siteName: string;
@@ -69,6 +79,7 @@ export interface SiteConfig {
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;
   pages?: {
+    home?: HomePageConfig;
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
