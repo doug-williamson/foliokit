@@ -12,7 +12,7 @@ import {
   initializeFirestore,
   memoryLocalCache,
 } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import {
   FIREBASE_APP,
@@ -65,7 +65,11 @@ export function provideFirebase(
       useFactory: () => {
         const platformId = inject(PLATFORM_ID);
         if (!isPlatformBrowser(platformId)) return null;
-        return getStorage(inject(FIREBASE_APP));
+        const storage = getStorage(inject(FIREBASE_APP));
+        if (useEmulator) {
+          connectStorageEmulator(storage, '127.0.0.1', 9199);
+        }
+        return storage;
       },
     },
     {
