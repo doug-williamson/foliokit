@@ -1,12 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import {
   DocsPageHeaderComponent,
-  DocsCalloutComponent,
   DocsCodeBlockComponent,
   DocsApiTableComponent,
+  DocsPreviewComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { AboutPageComponent } from '@foliokit/cms-ui';
+import type { AboutPageConfig } from '@foliokit/cms-core';
 
 const configRows: ApiTableRow[] = [
   { name: 'enabled', type: 'boolean', description: 'Whether the about page is active', required: true },
@@ -56,21 +59,64 @@ export const aboutResolver: ResolveFn<AboutPageConfig> = () => of({
   ],
 });`;
 
+const mockAbout: AboutPageConfig = {
+  enabled: true,
+  headline: 'Tony Stark',
+  subheadline: 'Genius, billionaire, playboy, philanthropist.',
+  bio: '## Background\n\nMIT graduate at 17. Former CEO of Stark Industries.\n\n> "I am Iron Man."\n\nCurrently building clean energy solutions and next-gen AI.',
+  socialLinks: [
+    { platform: 'github', url: 'https://github.com', label: 'GitHub' },
+    { platform: 'twitter', url: 'https://x.com', label: 'Twitter' },
+  ],
+};
+
+const mockAboutRoute = {
+  data: of({ about: mockAbout }),
+  snapshot: { data: { about: mockAbout } },
+};
+
+const previewCode = `<cms-about-page />
+
+// Provide via route resolver:
+{
+  path: 'about',
+  resolve: { about: aboutResolver },
+  loadComponent: () =>
+    import('@foliokit/cms-ui').then(m => m.AboutPageComponent),
+}`;
+
+@Component({
+  selector: 'docs-about-preview',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AboutPageComponent],
+  providers: [{ provide: ActivatedRoute, useValue: mockAboutRoute }],
+  template: `<cms-about-page />`,
+})
+class AboutPreviewComponent {}
+
 @Component({
   selector: 'docs-about-page-docs',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     DocsPageHeaderComponent,
-    DocsCalloutComponent,
     DocsCodeBlockComponent,
     DocsApiTableComponent,
+    DocsPreviewComponent,
+    AboutPreviewComponent,
   ],
   template: `
     <docs-page-header />
 
     <section>
+      <h2 id="live-preview" class="mat-headline-small">Live Preview</h2>
+      <docs-preview [code]="previewCode">
+        <docs-about-preview />
+      </docs-preview>
+    </section>
+
+    <section class="mt-8">
       <h2 id="overview" class="mat-headline-small">Overview</h2>
       <p class="mat-body-medium">
         <code>AboutPageComponent</code> renders an author profile page with avatar,
@@ -134,4 +180,5 @@ export class AboutPageDocsComponent {
   protected readonly routeExample = routeExample;
   protected readonly resolverExample = resolverExample;
   protected readonly staticExample = staticExample;
+  protected readonly previewCode = previewCode;
 }

@@ -1,5 +1,26 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
+
+const previewConfig: ShellConfig = {
+  appName: 'FolioKit Blog',
+  showAuth: true,
+  nav: [
+    { label: 'Home', url: '/' },
+    { label: 'Blog', url: '/blog' },
+    { label: 'About', url: '/about' },
+  ],
+};
+
+@Component({
+  selector: 'docs-shell-config-preview',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AppShellComponent],
+  providers: [{ provide: SHELL_CONFIG, useValue: previewConfig }],
+  template: `<folio-app-shell />`,
+})
+class ShellConfigPreviewComponent {}
 
 const shellConfigInterface = `// From @foliokit/cms-ui
 import type { NavItem } from '@foliokit/cms-core';
@@ -47,11 +68,19 @@ export const appConfig: ApplicationConfig = {
   selector: 'docs-shell-config-token-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent, ShellConfigPreviewComponent],
   template: `
     <docs-page-header />
 
     <section>
+      <h2 id="live-preview" class="mat-headline-small">Live Preview</h2>
+      <p class="mat-body-medium mb-4">A shell configured via <code>SHELL_CONFIG</code> with app name, nav items, and auth slot:</p>
+      <docs-preview [code]="usageCode">
+        <docs-shell-config-preview />
+      </docs-preview>
+    </section>
+
+    <section class="mt-8">
       <h2 id="interface" class="mat-headline-small">ShellConfig interface</h2>
       <docs-code-block [code]="shellConfigInterface" language="typescript" />
     </section>
