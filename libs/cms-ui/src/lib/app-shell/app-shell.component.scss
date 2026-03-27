@@ -13,12 +13,35 @@ mat-sidenav-container {
 }
 
 mat-sidenav {
-  width: 260px;
+  width: 220px;
   background: var(--surface-1);
   border-right: 1px solid var(--border);
   --mat-sidenav-container-shape: 0px;
   border-radius: 0;
+  transition: width 0.18s ease;
 }
+
+// ─── Icon-rail (768–1023px) ───────────────────────────────────────────────────
+
+mat-sidenav.icon-rail {
+  width: 52px;
+  overflow-x: hidden;
+}
+
+mat-sidenav.icon-rail .nav-label {
+  display: none;
+}
+
+mat-sidenav.icon-rail .nav-group-label {
+  display: none;
+}
+
+::ng-deep mat-sidenav.icon-rail .nav-item {
+  padding: 0 !important;
+  justify-content: center;
+}
+
+// ─── Nav wrapper layout ───────────────────────────────────────────────────────
 
 .folio-nav-wrapper {
   display: flex;
@@ -29,6 +52,8 @@ mat-sidenav {
 .folio-nav-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 8px;
 }
 
 .folio-nav-footer {
@@ -43,6 +68,66 @@ mat-sidenav {
   padding: 16px 16px 12px;
 }
 
+// ─── Nav group labels ─────────────────────────────────────────────────────────
+
+::ng-deep mat-sidenav .nav-group-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 16px;
+  margin-bottom: 3px;
+  margin-top: 18px;
+  display: block;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// ─── Nav items ────────────────────────────────────────────────────────────────
+
+::ng-deep mat-sidenav .nav-item {
+  height: 40px;
+  padding: 0 16px;
+  gap: 10px;
+  display: flex !important;
+  align-items: center;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+  }
+
+  .nav-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
+  }
+
+  &.active-link {
+    border-left-color: var(--text-accent);
+    background: var(--surface-2);
+    color: var(--text-accent);
+    font-weight: 500;
+    padding-left: 14px;
+  }
+}
+
+[data-theme="dark"] ::ng-deep mat-sidenav .nav-item.active-link {
+  background: var(--nav-active-bg);
+}
+
+// ─── Logo mark ────────────────────────────────────────────────────────────────
+
 .folio-logo-mark {
   position: relative;
   width: 30px;
@@ -52,7 +137,8 @@ mat-sidenav {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s;
+  transition: background 0.25s;
+  flex-shrink: 0;
 
   span {
     font-family: var(--font-display);
@@ -60,7 +146,7 @@ mat-sidenav {
     font-weight: 900;
     color: var(--logo-text);
     line-height: 1;
-    transition: color 0.3s;
+    transition: color 0.25s;
   }
 }
 
@@ -89,16 +175,20 @@ mat-sidenav {
   }
 }
 
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
 .folio-toolbar {
   position: sticky;
   top: 0;
   z-index: 100;
   height: 56px;
-  background: color-mix(in srgb, var(--surface-1) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 85%, transparent);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   gap: 4px;
 }
+
+// ─── Content area ─────────────────────────────────────────────────────────────
 
 .folio-content {
   display: flex;
@@ -111,15 +201,4 @@ mat-sidenav {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-}
-
-::ng-deep mat-sidenav [mat-list-item] {
-  border-left: 3px solid transparent;
-}
-
-::ng-deep mat-sidenav [mat-list-item].active-link {
-  border-left-color: var(--text-accent);
-  background: var(--nav-active-bg);
-  color: var(--nav-active-color);
-  font-weight: 500;
 }

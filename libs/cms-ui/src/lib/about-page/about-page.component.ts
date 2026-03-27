@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
+import { MatIconModule } from '@angular/material/icon';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 import { ThemeService } from '../theme.service';
 
@@ -19,47 +20,147 @@ import { ThemeService } from '../theme.service';
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownModule],
+  imports: [MarkdownModule, MatIconModule],
+  styles: [`
+    :host { display: block; }
+
+    .about-container {
+      max-width: 600px;
+      margin: 48px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .avatar--xl {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--logo-bg);
+      color: var(--logo-text);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .about-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .about-tagline {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 480px;
+      margin: 8px auto 0;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-md);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface-0);
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        background: var(--surface-2);
+        color: var(--text-primary);
+      }
+    }
+
+    .about-prose {
+      width: 100%;
+      margin-top: 32px;
+    }
+
+    .about-divider {
+      width: 100%;
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0 0;
+    }
+  `],
   template: `
     @if (about()) {
-      <article class="max-w-3xl mx-auto px-4 py-10">
-        @if (about()!.photoUrl) {
-          <img
-            class="w-32 h-32 rounded-full object-cover mb-6 block mx-auto sm:mx-0"
-            [src]="avatarSrc()"
-            [alt]="about()!.photoAlt || about()!.headline"
-          />
-        }
+      <div class="about-container">
+        <div class="avatar--xl">
+          @if (avatarSrc()) {
+            <img [src]="avatarSrc()" [alt]="about()!.photoAlt || about()!.headline" />
+          } @else {
+            {{ initials() }}
+          }
+        </div>
 
-        <h1 class="text-3xl font-bold mb-2 text-center sm:text-left">{{ about()!.headline }}</h1>
+        <h1 class="about-name">{{ about()!.headline }}</h1>
 
         @if (about()!.subheadline) {
-          <p class="text-lg opacity-70 mb-8 text-center sm:text-left">{{ about()!.subheadline }}</p>
+          <p class="about-tagline">{{ about()!.subheadline }}</p>
         }
-
-        <hr class="border-t border-black/10 dark:border-white/10 mb-8" />
-
-        <markdown [data]="about()!.bio" class="folio-prose" />
 
         @if (about()!.socialLinks?.length) {
-          <ul class="flex flex-wrap gap-6 mt-8">
+          <div class="social-links">
             @for (link of about()!.socialLinks; track link.url) {
-              <li>
-                <a
-                  [href]="link.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-sm font-medium underline opacity-70 hover:opacity-100"
-                >
-                  {{ link.label || link.platform }}
-                </a>
-              </li>
+              <a
+                class="social-link"
+                [href]="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <mat-icon>link</mat-icon>
+                {{ link.label || link.platform }}
+              </a>
             }
-          </ul>
+          </div>
         }
-      </article>
+
+        <hr class="about-divider" />
+
+        <div class="about-prose folio-prose">
+          <markdown [data]="about()!.bio" />
+        </div>
+      </div>
     } @else {
-      <p class="p-10 text-center opacity-50">No content available.</p>
+      <p style="padding: 40px; text-align: center; color: var(--text-muted)">No content available.</p>
     }
   `,
 })
@@ -80,6 +181,16 @@ export class AboutPageComponent {
       ? this.about()!.photoUrlDark!
       : this.about()!.photoUrl,
   );
+
+  protected readonly initials = computed(() => {
+    const headline = this.about()?.headline ?? '';
+    return headline
+      .split(' ')
+      .slice(0, 2)
+      .map((w: string) => w[0])
+      .join('')
+      .toUpperCase();
+  });
 
   constructor() {
     effect(() => {

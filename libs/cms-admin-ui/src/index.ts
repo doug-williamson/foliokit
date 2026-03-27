@@ -13,3 +13,4 @@ export * from './lib/posts-list/posts-draft-column.component';
 export * from './lib/posts-list/posts-queue-column.component';
 export * from './lib/posts-list/posts-published-column.component';
 export * from './lib/posts-list/posts-list.component';
+export * from './lib/posts-list/posts-table.component';

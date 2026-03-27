@@ -1,0 +1,17 @@
+// FolioKit Global Focus Styles
+// Replaces browser default outlines and Material's mat-focus-indicator
+// with a single, brand-token-driven focus ring across all apps.
+
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring), 0 0 0 1px var(--focus-border);
+}
+
+// Disable Material's built-in focus indicator — it double-renders with ours.
+.mat-focus-indicator::before {
+  display: none !important;
+}
+
+.mat-mdc-focus-indicator::before {
+  display: none !important;
+}

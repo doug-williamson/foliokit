@@ -13,7 +13,6 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
 import { ContentTabComponent } from './tabs/content-tab.component';
@@ -24,6 +23,9 @@ import { ArticlePreviewComponent } from './preview/article-preview.component';
 import { CardPreviewComponent } from './preview/card-preview.component';
 import { SeoPreviewComponent } from './preview/seo-preview.component';
 
+type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
+type RightTab = 'Article' | 'Card' | 'SEO';
+
 @Component({
   selector: 'admin-post-editor',
   standalone: true,
@@ -32,7 +34,6 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
-    MatTabsModule,
     MatTooltipModule,
     ContentTabComponent,
     MediaTabComponent,
@@ -45,23 +46,11 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
   styles: [
     `
       /*
-       * Force mat-tab-group to participate in flex height layout.
-       * The tab body wrapper must stretch to fill remaining space; the tab
-       * body content area provides the scroll context for each tab independently.
+       * Force sidenav content to participate in flex height layout.
        */
-      ::ng-deep .mat-mdc-tab-body-wrapper {
-        flex: 1;
-        overflow: hidden;
-      }
-      ::ng-deep .mat-mdc-tab-body-content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-      }
       mat-sidenav {
         width: min(420px, 100vw);
-        border-left: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+        border-left: 1px solid var(--border);
       }
       mat-sidenav-container {
         flex: 1;
@@ -76,25 +65,105 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
         --mat-sidenav-container-shape: 0px;
         border-radius: 0;
       }
+
+      /* Tab strip */
+      .tab-strip {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-2);
+        padding: 0 16px;
+        gap: 2px;
+        flex-shrink: 0;
+      }
+
+      .tab-btn {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 10px 12px;
+        border-radius: var(--r-sm) var(--r-sm) 0 0;
+        cursor: pointer;
+        border: none;
+        background: none;
+        transition: background 0.12s, color 0.12s;
+
+        &:hover {
+          background: var(--surface-3);
+          color: var(--text-primary);
+        }
+
+        &.active {
+          background: var(--surface-0);
+          color: var(--text-accent);
+          font-weight: 500;
+          border-bottom: 2px solid var(--text-accent);
+        }
+      }
+
+      /* Tab content area */
+      .tab-content {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+      }
+
+      /* Autosave pulse dot */
+      @keyframes folio-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+      }
+
+      .save-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .save-dot--saving {
+        background: var(--teal-400);
+        animation: folio-pulse 0.8s infinite;
+      }
+      .save-dot--saved {
+        background: var(--green-600);
+      }
     `,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
       <div
-        class="flex items-center gap-3 px-4 py-2 border-b shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+        class="flex items-center gap-3 shrink-0"
+        style="height: 48px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
       >
-        <span class="flex-1 text-sm font-medium truncate opacity-80">
+        <!-- Post title (left) -->
+        <span
+          class="flex-1 truncate"
+          style="font-family: var(--font-display); font-size: 14px; color: var(--text-primary);"
+        >
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
+        <!-- Autosave indicator -->
         @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
+            <span class="save-dot save-dot--saving"></span>
+            Saving…
+          </span>
         } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
+          <span style="font-size: 11px; color: var(--red-600);">{{ store.saveError() }}</span>
         } @else if (!store.isDirty() && store.post()) {
-          <span class="text-xs opacity-40">Saved</span>
+          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
+            <span class="save-dot save-dot--saved"></span>
+            Saved
+          </span>
+        }
+
+        <!-- Status badge -->
+        @if (store.post()?.status) {
+          <span [class]="'badge ' + statusBadgeClass()">{{ statusBadgeLabel() }}</span>
         }
 
         @if (!isDesktop()) {
@@ -136,41 +205,51 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
           [opened]="isDesktop() || previewOpen()"
           (closedStart)="previewOpen.set(false)"
         >
-          <mat-tab-group
-            class="flex flex-col h-full overflow-hidden"
-            animationDuration="0"
-          >
-            <mat-tab label="Article">
-              <folio-article-preview />
-            </mat-tab>
-            <mat-tab label="Card">
-              <folio-card-preview />
-            </mat-tab>
-            <mat-tab label="SEO">
-              <folio-seo-preview />
-            </mat-tab>
-          </mat-tab-group>
+          <div class="flex flex-col h-full overflow-hidden">
+            <!-- Right tab strip -->
+            <div class="tab-strip">
+              @for (tab of rightTabs; track tab) {
+                <button
+                  class="tab-btn"
+                  [class.active]="rightTab() === tab"
+                  (click)="rightTab.set(tab)"
+                >{{ tab }}</button>
+              }
+            </div>
+            <!-- Right tab content -->
+            <div class="tab-content">
+              @switch (rightTab()) {
+                @case ('Article') { <folio-article-preview /> }
+                @case ('Card') { <folio-card-preview /> }
+                @case ('SEO') { <folio-seo-preview /> }
+              }
+            </div>
+          </div>
         </mat-sidenav>
 
         <!-- Main editor pane -->
         <mat-sidenav-content>
-          <mat-tab-group
-            class="flex flex-col h-full overflow-hidden"
-            animationDuration="0"
-          >
-            <mat-tab label="Content">
-              <folio-content-tab />
-            </mat-tab>
-            <mat-tab label="Metadata">
-              <folio-metadata-tab />
-            </mat-tab>
-            <mat-tab label="SEO">
-              <folio-seo-tab />
-            </mat-tab>
-            <mat-tab label="Media">
-              <folio-media-tab />
-            </mat-tab>
-          </mat-tab-group>
+          <div class="flex flex-col h-full overflow-hidden">
+            <!-- Left tab strip -->
+            <div class="tab-strip">
+              @for (tab of leftTabs; track tab) {
+                <button
+                  class="tab-btn"
+                  [class.active]="leftTab() === tab"
+                  (click)="leftTab.set(tab)"
+                >{{ tab }}</button>
+              }
+            </div>
+            <!-- Left tab content -->
+            <div class="tab-content">
+              @switch (leftTab()) {
+                @case ('Content') { <folio-content-tab /> }
+                @case ('Metadata') { <folio-metadata-tab /> }
+                @case ('SEO') { <folio-seo-tab /> }
+                @case ('Media') { <folio-media-tab /> }
+              }
+            </div>
+          </div>
         </mat-sidenav-content>
       </mat-sidenav-container>
     </div>
@@ -189,6 +268,12 @@ export class PostEditorComponent implements OnInit {
 
   protected previewOpen = signal(false);
 
+  readonly leftTabs: LeftTab[] = ['Content', 'Metadata', 'SEO', 'Media'];
+  readonly rightTabs: RightTab[] = ['Article', 'Card', 'SEO'];
+
+  readonly leftTab = signal<LeftTab>('Content');
+  readonly rightTab = signal<RightTab>('Article');
+
   readonly primaryLabel = computed(() => {
     const status = this.store.post()?.status;
     if (status === 'scheduled') return 'Schedule';
@@ -203,6 +288,20 @@ export class PostEditorComponent implements OnInit {
       return !!post.scheduledPublishAt && post.scheduledPublishAt > Date.now();
     }
     return true;
+  });
+
+  readonly statusBadgeClass = computed(() => {
+    const status = this.store.post()?.status;
+    if (status === 'published') return 'badge-pub';
+    if (status === 'scheduled') return 'badge-sched';
+    return 'badge-draft';
+  });
+
+  readonly statusBadgeLabel = computed(() => {
+    const status = this.store.post()?.status;
+    if (status === 'published') return '● PUBLISHED';
+    if (status === 'scheduled') return '● SCHEDULED';
+    return '● DRAFT';
   });
 
   togglePreview(): void {

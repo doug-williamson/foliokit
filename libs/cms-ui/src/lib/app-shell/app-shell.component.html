@@ -3,6 +3,7 @@
     <mat-sidenav
       [mode]="isMobile() ? 'over' : 'side'"
       [opened]="sidenavOpen()"
+      [class.icon-rail]="isIconRail()"
       (openedChange)="sidenavOpen.set($event)"
     >
       <div class="folio-nav-wrapper">
