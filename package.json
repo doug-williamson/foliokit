@@ -1,6 +1,6 @@
 {
   "name": "foliokit",
-  "version": "0.4.27",
+  "version": "0.4.28",
   "license": "MIT",
   "scripts": {
     "build": "npx nx build blog",
@@ -24,6 +24,7 @@
     "seed": "nx run seed:emulator",
     "deploy:admin": "nx build admin --configuration=production && firebase deploy --only hosting:foliokit-admin --project foliokit-6f974",
     "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974",
+    "deploy:functions": "cd functions && npm run build && firebase deploy --only functions --project foliokit-6f974",
     "deploy:storage": "firebase deploy --only storage --project foliokit-6f974",
     "deploy:cors": "gcloud storage buckets update gs://foliokit-6f974.firebasestorage.app --cors-file=cors.json"
   },
