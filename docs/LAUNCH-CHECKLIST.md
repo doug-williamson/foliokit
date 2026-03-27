@@ -129,6 +129,7 @@ npm install
 - [ ] `ng build --configuration=production` produces zero errors
 - [ ] No `file:` path quirks (the InputSignal brand mismatch from FINDING-01 should be gone)
 - [ ] `tokens.css` loads correctly from `node_modules/@foliokit/cms-ui/styles/tokens.css`
+- [ ] SCSS partial resolution: add `@use '@foliokit/cms-ui/styles/tokens';` to the smoke-test `src/styles.scss` and verify it resolves to `_tokens.scss` in the installed package without errors. This confirms the underscore-prefixed partial ships correctly and SCSS resolution works from the registry (not just `file:` paths).
 
 ---
 
