@@ -461,6 +461,12 @@ describe('PostEditorStore autosave pipeline', () => {
 
     store.updateField('title', 'v3');
     TestBed.flushEffects();
+
+    // Override the mock so autosave returns the current post title
+    postServiceStub.savePost.mockReturnValue(
+      of(makePost({ id: 'saved-auto', title: 'v3' })),
+    );
+
     vi.advanceTimersByTime(2000);
 
     expect(postServiceStub.savePost).toHaveBeenCalledTimes(1);

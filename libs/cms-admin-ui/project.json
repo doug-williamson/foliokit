@@ -6,9 +6,17 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "build-schematics": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p libs/cms-admin-ui/tsconfig.schematics.json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "dependsOn": ["build-schematics"],
       "options": {
         "project": "libs/cms-admin-ui/ng-package.json",
         "tsConfig": "libs/cms-admin-ui/tsconfig.lib.json"

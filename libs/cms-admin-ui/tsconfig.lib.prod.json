@@ -1,7 +1,15 @@
 {
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
-    "declarationMap": false
+    "declarationMap": false,
+    "skipLibCheck": true,
+    "paths": {
+      "@foliokit/cms-core": ["dist/libs/cms-core/index.d.ts"],
+      "@foliokit/cms-core/utils/*": ["dist/libs/cms-core/utils/*.d.ts"],
+      "@foliokit/cms-ui": ["dist/libs/cms-ui/index.d.ts"],
+      "@foliokit/cms-markdown": ["dist/libs/cms-markdown/index.d.ts"],
+      "@foliokit/cms-admin-ui": ["libs/cms-admin-ui/src/index.ts"]
+    }
   },
   "angularCompilerOptions": {
     "compilationMode": "partial"

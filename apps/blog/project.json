@@ -20,7 +20,10 @@
             "input": "apps/blog/public"
           }
         ],
-        "styles": ["apps/blog/src/styles.scss"],
+        "styles": [
+          "node_modules/material-icons/iconfont/material-icons.css",
+          "apps/blog/src/styles.scss"
+        ],
         "server": "apps/blog/src/main.server.ts",
         "ssr": {
           "entry": "apps/blog/src/server.ts"

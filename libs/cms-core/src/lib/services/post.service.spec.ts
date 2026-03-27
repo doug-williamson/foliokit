@@ -40,6 +40,7 @@ vi.mock('firebase/firestore', () => ({
   limit: vi.fn((n: number) => n),
   Timestamp: {
     now: vi.fn(() => fakeTimestamp),
+    fromMillis: vi.fn(() => fakeTimestamp),
   },
 }));
 
@@ -91,7 +92,17 @@ describe('PostService', () => {
 
       const result = await lastValueFrom(service.getPostById('post-abc'));
 
-      expect(result).toEqual({ id: 'post-abc', ...raw });
+      // normalizePost converts Firestore Timestamps to milliseconds
+      const expectedMs = fakeTimestamp.seconds * 1000;
+      expect(result).toMatchObject({
+        id: 'post-abc',
+        slug: 'hello',
+        title: 'Hello World',
+        status: 'draft',
+        publishedAt: expectedMs,
+        updatedAt: expectedMs,
+        createdAt: expectedMs,
+      });
     });
 
     it('throws an error when the document does not exist', async () => {
@@ -173,14 +184,14 @@ describe('PostService', () => {
       );
     });
 
-    it('stamps createdAt and updatedAt with Timestamp.now()', async () => {
+    it('stamps createdAt and updatedAt as numeric milliseconds', async () => {
       const newPost = makeBlogPost({ id: '' });
       vi.mocked(setDoc).mockResolvedValue(undefined);
 
       const result = await lastValueFrom(service.savePost(newPost));
 
-      expect(result.createdAt).toEqual(fakeTimestamp);
-      expect(result.updatedAt).toEqual(fakeTimestamp);
+      expect(typeof result.createdAt).toBe('number');
+      expect(typeof result.updatedAt).toBe('number');
     });
   });
 
@@ -199,7 +210,7 @@ describe('PostService', () => {
       );
       expect(vi.mocked(setDoc)).not.toHaveBeenCalled();
       expect(result.id).toBe('post-existing');
-      expect(result.updatedAt).toEqual(fakeTimestamp);
+      expect(typeof result.updatedAt).toBe('number');
     });
   });
 

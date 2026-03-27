@@ -90,6 +90,6 @@ describe('PostEditorEmbeddedMediaItemComponent — onDelete()', () => {
 
     component.onDelete();
 
-    expect(spy).toHaveBeenCalledWith(expect.stringContaining('my-image.jpg'));
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('Remove this image?'));
   });
 });
