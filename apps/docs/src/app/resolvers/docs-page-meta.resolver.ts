@@ -1,4 +1,3 @@
-import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { DocsPageMeta } from '@foliokit/docs-ui';
 
@@ -70,6 +69,7 @@ const META: Record<string, DocsPageMeta> = {
   },
   'links-page/api': {
     title: 'LinksPage — API Reference',
+    description: 'Inputs, config interfaces, and supported social platforms for LinksPageComponent.',
     headings: [
       { id: 'inputs',      label: 'Inputs',     level: 2 },
       { id: 'social-link', label: 'SocialLink', level: 2 },
@@ -78,6 +78,7 @@ const META: Record<string, DocsPageMeta> = {
   },
   'links-page/examples': {
     title: 'LinksPage — Live Examples',
+    description: 'Interactive previews of the LinksPageComponent with mock data.',
   },
   'markdown': {
     title: 'MarkdownComponent',
@@ -91,6 +92,7 @@ const META: Record<string, DocsPageMeta> = {
   },
   'markdown/api': {
     title: 'MarkdownComponent — API Reference',
+    description: 'Inputs and embedded media configuration for MarkdownComponent.',
     headings: [
       { id: 'inputs',         label: 'Inputs',             level: 2 },
       { id: 'embedded-media', label: 'EmbeddedMediaEntry', level: 2 },
@@ -98,6 +100,7 @@ const META: Record<string, DocsPageMeta> = {
   },
   'markdown/examples': {
     title: 'MarkdownComponent — Live Examples',
+    description: 'Interactive previews of the MarkdownComponent with rich content.',
   },
   'theming': {
     title: 'Theming',
@@ -126,12 +129,13 @@ const META: Record<string, DocsPageMeta> = {
     description: 'Author profile page with avatar, markdown bio, and social links.',
     badge: 'v1.0.0',
     headings: [
-      { id: 'overview',    label: 'Overview',          level: 2 },
-      { id: 'api',         label: 'AboutPageConfig',   level: 2 },
-      { id: 'route-setup', label: 'Route Setup',       level: 2 },
-      { id: 'resolver',    label: 'Resolver Example',  level: 2 },
-      { id: 'dark-mode',   label: 'Dark Mode Avatar',  level: 2 },
-      { id: 'seo',         label: 'SEO',               level: 2 },
+      { id: 'live-preview', label: 'Live Preview',      level: 2 },
+      { id: 'overview',     label: 'Overview',           level: 2 },
+      { id: 'api',          label: 'AboutPageConfig',    level: 2 },
+      { id: 'route-setup',  label: 'Route Setup',        level: 2 },
+      { id: 'resolver',     label: 'Resolver Example',   level: 2 },
+      { id: 'dark-mode',    label: 'Dark Mode Avatar',   level: 2 },
+      { id: 'seo',          label: 'SEO',                level: 2 },
     ],
   },
   'components/links-page': {
@@ -165,22 +169,28 @@ const META: Record<string, DocsPageMeta> = {
   },
   'tokens/shell-config': {
     title: 'SHELL_CONFIG Token',
+    description: 'Configure AppShellComponent — app name, logo, navigation, and auth visibility.',
     headings: [
-      { id: 'interface', label: 'ShellConfig interface', level: 2 },
-      { id: 'nav-item',  label: 'NavItem',               level: 2 },
-      { id: 'usage',     label: 'Usage',                 level: 2 },
+      { id: 'live-preview', label: 'Live Preview',         level: 2 },
+      { id: 'interface',    label: 'ShellConfig interface', level: 2 },
+      { id: 'nav-item',     label: 'NavItem',              level: 2 },
+      { id: 'usage',        label: 'Usage',                level: 2 },
     ],
   },
   'tokens/seo-meta': {
     title: 'SeoMeta Interface',
+    description: 'TypeScript interface for page-level SEO metadata — title, description, og:image, canonical URL.',
     headings: [
-      { id: 'interface', label: 'Interface', level: 2 },
-      { id: 'usage',     label: 'Usage',     level: 2 },
+      { id: 'live-preview', label: 'Live Preview', level: 2 },
+      { id: 'interface',    label: 'Interface',    level: 2 },
+      { id: 'usage',        label: 'Usage',        level: 2 },
     ],
   },
   'tokens/embedded-media': {
     title: 'EmbeddedMediaEntry Interface',
+    description: 'Describes a Firebase Storage media file for inline rendering inside Markdown content.',
     headings: [
+      { id: 'live-preview', label: 'Live Preview', level: 2 },
       { id: 'interface',    label: 'Interface',    level: 2 },
       { id: 'token-syntax', label: 'Token Syntax', level: 2 },
       { id: 'usage',        label: 'Usage',        level: 2 },

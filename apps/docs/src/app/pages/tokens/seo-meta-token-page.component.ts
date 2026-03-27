@@ -1,5 +1,71 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+
+const seoPreviewCode = `import type { SeoMeta } from '@foliokit/cms-core';
+
+const seo: SeoMeta = {
+  title: 'Jane Doe — Links',
+  description: 'Find me on GitHub, Twitter, and LinkedIn.',
+  ogImage: 'https://example.com/og.jpg',
+  canonicalUrl: 'https://example.com/links/jane-doe',
+};`;
+
+@Component({
+  selector: 'docs-seo-meta-preview',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [`
+    .og-card {
+      border: 1px solid var(--mat-sys-outline-variant, #ccc);
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 500px;
+      font-family: system-ui, sans-serif;
+    }
+    .og-image {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .og-body {
+      padding: 12px 16px;
+    }
+    .og-url {
+      font-size: 12px;
+      color: var(--mat-sys-on-surface-variant, #666);
+      text-transform: uppercase;
+    }
+    .og-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface, #111);
+      margin: 4px 0;
+    }
+    .og-desc {
+      font-size: 13px;
+      color: var(--mat-sys-on-surface-variant, #666);
+    }
+  `],
+  template: `
+    <p class="mat-body-small mb-2" style="color: var(--mat-sys-on-surface-variant)">
+      How this SeoMeta renders as an Open Graph card:
+    </p>
+    <div class="og-card">
+      <div class="og-image">og:image — https://example.com/og.jpg</div>
+      <div class="og-body">
+        <div class="og-url">example.com</div>
+        <div class="og-title">Jane Doe — Links</div>
+        <div class="og-desc">Find me on GitHub, Twitter, and LinkedIn.</div>
+      </div>
+    </div>
+  `,
+})
+class SeoMetaPreviewComponent {}
 
 const seoMetaInterface = `// From @foliokit/cms-core
 export interface SeoMeta {
@@ -35,11 +101,18 @@ const myPage: LinksPage = {
   selector: 'docs-seo-meta-token-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent, SeoMetaPreviewComponent],
   template: `
     <docs-page-header />
 
     <section>
+      <h2 id="live-preview" class="mat-headline-small">Live Preview</h2>
+      <docs-preview [code]="seoPreviewCode">
+        <docs-seo-meta-preview />
+      </docs-preview>
+    </section>
+
+    <section class="mt-8">
       <h2 id="interface" class="mat-headline-small">Interface</h2>
       <p class="mat-body-medium">
         <code>SeoMeta</code> is a flat TypeScript interface from <code>@foliokit/cms-core</code>.
@@ -59,4 +132,5 @@ const myPage: LinksPage = {
 export class SeoMetaTokenPageComponent {
   protected readonly seoMetaInterface = seoMetaInterface;
   protected readonly usageCode = usageCode;
+  protected readonly seoPreviewCode = seoPreviewCode;
 }
