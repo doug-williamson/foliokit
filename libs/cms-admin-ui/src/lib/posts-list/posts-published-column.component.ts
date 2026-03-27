@@ -53,7 +53,11 @@ import { BlogPost } from '@foliokit/cms-core';
             <span class="shrink-0 text-xs opacity-50">{{ post.publishedAt | date: 'mediumDate' }}</span>
           </button>
         } @empty {
-          <div class="py-10 text-center text-sm opacity-40">No published posts</div>
+          <div class="empty-state">
+            <mat-icon class="empty-state-icon">check_circle_outline</mat-icon>
+            <p class="empty-state-heading">Nothing published yet</p>
+            <p class="empty-state-body">Your live posts will appear here.</p>
+          </div>
         }
 
         @if (showArchived()) {

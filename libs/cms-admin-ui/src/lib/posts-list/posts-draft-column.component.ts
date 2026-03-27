@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { BlogPost } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-posts-draft-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule],
+  imports: [DatePipe, MatCardModule, MatIconModule],
   host: { class: 'contents' },
   styles: [`
     .column-header {
@@ -42,7 +43,11 @@ import { BlogPost } from '@foliokit/cms-core';
             <span class="shrink-0 text-xs opacity-50">{{ post.updatedAt | date: 'mediumDate' }}</span>
           </button>
         } @empty {
-          <div class="py-10 text-center text-sm opacity-40">No drafts</div>
+          <div class="empty-state">
+            <mat-icon class="empty-state-icon">edit_note</mat-icon>
+            <p class="empty-state-heading">No drafts</p>
+            <p class="empty-state-body">Posts you're working on will appear here.</p>
+          </div>
         }
       </div>
     </mat-card>

@@ -21,6 +21,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
 
 @Component({
   selector: 'admin-authors-list',
@@ -33,6 +34,7 @@ import {
     MatTableModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    EmptyStateComponent,
   ],
   styles: [
     `
@@ -73,10 +75,13 @@ import {
             <mat-spinner diameter="40" />
           </div>
         } @else if (!authors()?.length) {
-          <div class="flex flex-col items-center justify-center gap-6 p-12 h-full">
-            <mat-icon class="opacity-50" style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
-            <p style="color: var(--text-muted)">No authors yet. Create one to get started.</p>
-          </div>
+          <app-empty-state
+            icon="person_outline"
+            heading="No authors yet"
+            body="Add an author to get started."
+            ctaLabel="Add author"
+            (ctaClick)="router.navigate(['/authors/new'])"
+          />
         } @else {
           <mat-table [dataSource]="authors()!" class="w-full" style="min-width: 0">
             <!-- Avatar column -->

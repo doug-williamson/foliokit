@@ -82,7 +82,11 @@ import { BlogPost } from '@foliokit/cms-core';
             <div *cdkDragPlaceholder class="h-12 rounded bg-[var(--mat-sys-surface-container)]"></div>
           </div>
         } @empty {
-          <div class="py-10 text-center text-sm opacity-40">No queued posts</div>
+          <div class="empty-state">
+            <mat-icon class="empty-state-icon">schedule</mat-icon>
+            <p class="empty-state-heading">Nothing scheduled</p>
+            <p class="empty-state-body">Posts queued for future publishing will appear here.</p>
+          </div>
         }
       </div>
     </mat-card>
