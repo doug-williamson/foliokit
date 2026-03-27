@@ -161,7 +161,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                style="border-color: var(--border)">
             <mat-icon class="opacity-60">{{ activeStepDef()?.icon }}</mat-icon>
             <div class="flex-1">
-              <h1 class="text-lg font-semibold">{{ activeStepDef()?.label }}</h1>
+              <h1 class="page-heading">{{ activeStepDef()?.label }}</h1>
               <p class="text-xs" style="color: var(--text-muted)">{{ activeStepDef()?.description }}</p>
             </div>
             @if (store.isSaving()) {
@@ -234,7 +234,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <!-- Photo upload (light + dark) -->
                     <div class="flex flex-col gap-2">
-                      <span class="text-sm font-semibold">Profile Photo</span>
+                      <span class="section-label">Profile Photo</span>
                       <div class="flex gap-5">
                         <!-- Light -->
                         <div class="flex flex-col items-center gap-1">
@@ -480,7 +480,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <!-- Links list -->
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-medium">Links</span>
+                      <span class="section-label">Links</span>
                       <button mat-stroked-button type="button" (click)="addLink()">
                         <mat-icon>add</mat-icon>
                         Add link

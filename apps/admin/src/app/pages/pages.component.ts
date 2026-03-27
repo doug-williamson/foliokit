@@ -35,7 +35,7 @@ type CardState = 'disabled' | 'empty' | 'published';
   template: `
     @if (store.config()) {
       <div class="p-4 sm:p-6">
-        <h1 class="text-2xl font-semibold mb-2">Pages</h1>
+        <h1 class="page-heading mb-2">Pages</h1>
         <p class="text-sm mb-6" style="color: var(--text-muted)">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">

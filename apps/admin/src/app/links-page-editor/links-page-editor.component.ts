@@ -35,7 +35,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
         style="border-color: var(--border)"
       >
-        <h1 class="flex-1 text-xl font-semibold">Links Page</h1>
+        <h1 class="flex-1 page-heading">Links Page</h1>
 
         @if (store.isSaving()) {
           <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>

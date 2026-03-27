@@ -88,7 +88,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
       <!-- Header -->
       <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
            style="border-color: var(--border)">
-        <h1 class="flex-1 text-xl font-semibold">Site Configuration</h1>
+        <h1 class="flex-1 page-heading">Site Configuration</h1>
         @if (store.isSaving()) {
           <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
         } @else if (store.saveError()) {
@@ -150,7 +150,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
           <mat-tab label="Navigation">
             <div class="flex flex-col gap-4 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold">Nav Items</span>
+                <span class="section-label">Nav Items</span>
                 <button mat-stroked-button type="button" (click)="addNavItem()">
                   <mat-icon>add</mat-icon>
                   Add Nav Item

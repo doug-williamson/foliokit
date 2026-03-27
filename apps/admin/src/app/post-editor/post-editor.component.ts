@@ -143,7 +143,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <!-- Post title (left) -->
         <span
           class="flex-1 truncate"
-          style="font-family: var(--font-display); font-size: 14px; color: var(--text-primary);"
+          style="font-family: var(--font-display); font-size: 16px; color: var(--text-primary);"
         >
           {{ store.post()?.title || 'Untitled post' }}
         </span>

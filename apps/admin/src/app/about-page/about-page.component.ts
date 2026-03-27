@@ -77,7 +77,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <!-- Header -->
       <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
            style="border-color: var(--border)">
-        <h1 class="flex-1 text-xl font-semibold">About Page</h1>
+        <h1 class="flex-1 page-heading">About Page</h1>
         @if (store.isSaving()) {
           <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
         } @else if (store.saveError()) {
@@ -236,7 +236,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <!-- Social links -->
             <div class="flex flex-col gap-4">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold">Social Links</span>
+                <span class="section-label">Social Links</span>
                 <button mat-stroked-button type="button" (click)="addAboutSocialLink()">
                   <mat-icon>add</mat-icon>
                   Add Link
@@ -294,7 +294,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
             <!-- SEO -->
             <div class="flex flex-col gap-4">
-              <span class="text-sm font-semibold">SEO</span>
+              <span class="section-label">SEO</span>
               <form [formGroup]="aboutSeoForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">
                   <mat-label>Meta Title</mat-label>

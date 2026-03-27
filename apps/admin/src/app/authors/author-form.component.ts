@@ -102,7 +102,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         <form [formGroup]="form" class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
           <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Profile Photo</span>
+            <span class="section-label">Profile Photo</span>
             <div class="flex gap-6">
               <!-- Light mode -->
               <div class="flex flex-col items-center gap-1">
@@ -200,7 +200,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <!-- Social links -->
           <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
-              <span class="text-sm font-semibold">Social Links</span>
+              <span class="section-label">Social Links</span>
               <button mat-stroked-button type="button" (click)="addSocialLink()">
                 <mat-icon>add</mat-icon>
                 Add Link

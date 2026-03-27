@@ -52,7 +52,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b shrink-0"
            style="border-color: var(--border)">
-        <h1 class="text-xl font-semibold">Authors</h1>
+        <h1 class="page-heading">Authors</h1>
         <button mat-flat-button (click)="router.navigate(['/authors/new'])">
           <mat-icon>add</mat-icon>
           New Author
