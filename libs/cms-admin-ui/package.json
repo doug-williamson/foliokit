@@ -1,7 +1,7 @@
 {
   "name": "@foliokit/cms-admin-ui",
   "version": "0.1.0",
-  "description": "Admin UI editor components for FolioKit CMS",
+  "description": "Pre-release — API subject to breaking changes without notice. Admin UI editor components for FolioKit CMS.",
   "keywords": ["angular", "cms", "foliokit", "admin", "editor"],
   "license": "MIT",
   "repository": {

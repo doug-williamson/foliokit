@@ -168,4 +168,4 @@ Source: `libs/cms-admin-ui/src/index.ts`
 |--------|------|--------|-------|
 | `provideFolioKit()` | `(config: FolioKitConfig) => EnvironmentProviders` | **(A)** | Single-call bootstrapper; supersedes manual `provideFirebase()` + service aliases |
 | `FolioKitConfig` | Interface | **(A)** | Config shape for `provideFolioKit` |
-| `SITE_ID` | `InjectionToken<string>` | **(C) — candidate for removal** | Forward-looking token for multi-site deployments. No current consumer in any library. If still unconsumed at next minor release, remove from the public API to avoid dead-export accumulation. |
+| `SITE_ID` | `InjectionToken<string>` | **(A)** | Provided by `provideFolioKit()` when `siteId` is set. Inject to read the active site ID in any service or component. Bridges `FolioKitConfig.siteId` to DI context for multi-site deployments. |

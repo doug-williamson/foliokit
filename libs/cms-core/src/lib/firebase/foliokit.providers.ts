@@ -18,14 +18,23 @@ import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
 /**
  * Injection token for the current site identifier.
  *
- * Populated only when `siteId` is provided to {@link provideFolioKit}.
+ * **Provided by {@link provideFolioKit}** when `siteId` is set in the config.
+ * Consumers should inject this token to read the active site ID — do not
+ * provide it yourself unless you are bypassing `provideFolioKit()`.
+ *
  * Useful for multi-site deployments where a single Firebase project
- * serves several distinct sites.
+ * serves several distinct sites. Services like `SiteConfigService` can
+ * use this to scope Firestore reads to a specific site document.
  *
  * @example
  * ```ts
- * // In any component or service:
+ * // In any component or service — reads the value set by provideFolioKit():
  * readonly siteId = inject(SITE_ID, { optional: true });
+ *
+ * loadConfig() {
+ *   const id = this.siteId ?? 'default';
+ *   return this.siteConfigService.getSiteConfig(id);
+ * }
  * ```
  */
 export const SITE_ID = new InjectionToken<string>('SITE_ID');

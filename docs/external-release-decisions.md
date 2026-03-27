@@ -209,22 +209,27 @@ nav: [
 
 ### Sample blog posts (for seeding)
 
-Three posts to populate the "Lab Notes" section:
+Three posts to populate the "Lab Notes" section. The spread covers tag variety,
+status differentiation (published vs. draft), and enough content range to
+exercise both the post list and detail routes meaningfully:
 
-1. **"Arc Reactor Mark III — Design Notes"**
-   - slug: `arc-reactor-mark-iii`
-   - tags: `['engineering', 'clean-energy']`
+1. **"Miniaturizing the Arc Reactor: An Engineering Retrospective"**
+   - slug: `miniaturizing-arc-reactor`
+   - tags: `['engineering', 'hardware']`
    - status: `'published'`
-   - excerpt: "Documenting the third-generation miniaturised arc reactor. 3 GJ output, palladium-free core."
+   - excerpt: "A technical deep-dive into three generations of arc reactor miniaturisation — from the cave prototype to the vibranium-core unit."
+   - tone: Technical deep-dive. First-person engineering retrospective.
 
-2. **"Why I Open-Sourced the Iron Man HUD"**
-   - slug: `open-source-hud`
-   - tags: `['open-source', 'hud']`
+2. **"Why I Deprecated JARVIS and Rewrote in TypeScript"**
+   - slug: `deprecated-jarvis-typescript`
+   - tags: `['software', 'ai']`
    - status: `'published'`
-   - excerpt: "The heads-up display is the most replicated piece of Stark tech. Here's why I decided to release the source."
+   - excerpt: "JARVIS was a marvel of spaghetti Python. F.R.I.D.A.Y. is a clean-room rewrite in TypeScript with full type safety. Here's why the migration was worth it."
+   - tone: Dev humor. Relatable engineering decision-making wrapped in Stark bravado.
 
-3. **"Vibranium Alloy Testing — Week 12"**
-   - slug: `vibranium-alloy-week-12`
-   - tags: `['materials', 'vibranium']`
+3. **"Stark Industries' Approach to Zero-Downtime Deployments"**
+   - slug: `zero-downtime-deployments`
+   - tags: `['devops', 'infrastructure']`
    - status: `'draft'`
-   - excerpt: "Stress test results for the new vibranium-titanium composite. Classified until peer review."
+   - excerpt: "When your deployment target is a flying suit of armour, you cannot afford downtime. Our blue-green strategy for mission-critical firmware updates."
+   - tone: Ops/infra angle. Serious engineering with a Stark lens.
