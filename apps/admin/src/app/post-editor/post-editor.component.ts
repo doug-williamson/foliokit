@@ -66,40 +66,9 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         border-radius: 0;
       }
 
-      /* Tab strip */
-      .tab-strip {
-        display: flex;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-2);
-        gap: 1px;
-        flex-shrink: 0;
-      }
-
-      .tab-btn {
-        font-family: var(--font-display);
-        font-size: 13px;
-        letter-spacing: 0.02em;
-        color: var(--text-muted);
-        padding: 12px 16px;
-        border-radius: var(--r-sm) var(--r-sm) 0 0;
-        cursor: pointer;
-        border: none;
-        background: none;
-        transition: background 0.12s, color 0.12s;
-        flex: 1;
-        text-align: center;
-
-        &:hover {
-          background: var(--surface-3);
-          color: var(--text-primary);
-        }
-
-        &.active {
-          background: var(--surface-0);
-          color: var(--text-accent);
-          font-weight: 500;
-          border-bottom: 2px solid var(--text-accent);
-        }
+      /* Preview panel background */
+      .editor-preview-panel {
+        background: var(--surface-1);
       }
 
       /* Tab content area */
@@ -207,7 +176,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           [opened]="isDesktop() || previewOpen()"
           (closedStart)="previewOpen.set(false)"
         >
-          <div class="flex flex-col h-full overflow-hidden">
+          <div class="editor-preview-panel flex flex-col h-full overflow-hidden">
             <!-- Right tab strip -->
             <div class="tab-strip" role="tablist" aria-label="Post preview tabs">
               @for (tab of rightTabs; track tab; let i = $index) {

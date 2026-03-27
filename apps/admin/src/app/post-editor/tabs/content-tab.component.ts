@@ -85,7 +85,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 
         <!-- Markdown editor — fills remaining height -->
         <div class="flex flex-col flex-1 min-h-0 gap-1">
-          <label class="text-xs font-medium" style="color: var(--text-secondary)">
+          <label class="section-label" style="display: block; margin-bottom: 6px;">
             Content (Markdown)
           </label>
           <textarea

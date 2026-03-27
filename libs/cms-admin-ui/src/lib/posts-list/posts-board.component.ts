@@ -20,7 +20,7 @@ import { PostsPublishedColumnComponent } from './posts-published-column.componen
   ],
   host: { class: 'block h-full' },
   template: `
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <folio-posts-draft-column
         [posts]="store.draftPosts()"
         (postSelected)="postSelected.emit($event)"
