@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   OnInit,
@@ -105,11 +106,11 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
           </button>
           <button
             mat-icon-button
-            (click)="store.publish()"
-            [disabled]="!store.canPublish() || store.isSaving()"
-            matTooltip="Publish"
+            (click)="onPrimaryAction()"
+            [disabled]="!canPrimaryAction() || store.isSaving()"
+            [matTooltip]="primaryLabel()"
           >
-            <mat-icon>publish</mat-icon>
+            <mat-icon>{{ store.post()?.status === 'scheduled' ? 'schedule' : 'publish' }}</mat-icon>
           </button>
         } @else {
           <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
@@ -117,10 +118,10 @@ import { SeoPreviewComponent } from './preview/seo-preview.component';
           </button>
           <button
             mat-flat-button
-            (click)="store.publish()"
-            [disabled]="!store.canPublish() || store.isSaving()"
+            (click)="onPrimaryAction()"
+            [disabled]="!canPrimaryAction() || store.isSaving()"
           >
-            Publish
+            {{ primaryLabel() }}
           </button>
         }
       </div>
@@ -188,8 +189,34 @@ export class PostEditorComponent implements OnInit {
 
   protected previewOpen = signal(false);
 
+  readonly primaryLabel = computed(() => {
+    const status = this.store.post()?.status;
+    if (status === 'scheduled') return 'Schedule';
+    if (status === 'published') return 'Publish';
+    return 'Save Draft';
+  });
+
+  readonly canPrimaryAction = computed(() => {
+    const post = this.store.post();
+    if (!post) return false;
+    if (post.status === 'scheduled') {
+      return !!post.scheduledPublishAt && post.scheduledPublishAt > Date.now();
+    }
+    return true;
+  });
+
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
+  }
+
+  onPrimaryAction(): void {
+    const post = this.store.post();
+    if (!post) return;
+    if (post.status === 'published') {
+      this.store.publish();
+    } else {
+      this.store.save();
+    }
   }
 
   ngOnInit(): void {

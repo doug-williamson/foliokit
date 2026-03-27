@@ -93,7 +93,7 @@ function slugify(title: string): string {
           <mat-label>Status</mat-label>
           <mat-select
             [value]="post.status"
-            (valueChange)="store.updateField('status', $event)"
+            (valueChange)="onStatusChange($event)"
           >
             <mat-option value="draft">Draft</mat-option>
             <mat-option value="scheduled">Scheduled</mat-option>
@@ -123,12 +123,14 @@ function slugify(title: string): string {
             <mat-label>Scheduled Publish At</mat-label>
             <input
               matInput
-              [matDatepicker]="scheduledPicker"
-              [value]="toDate(post.scheduledPublishAt)"
-              (dateChange)="onScheduledAtChange($event.value, post)"
+              type="datetime-local"
+              [value]="toDatetimeLocal(post.scheduledPublishAt)"
+              (change)="onScheduledAtChange($any($event.target).value)"
             />
-            <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker" />
-            <mat-datepicker #scheduledPicker />
+            @if (scheduleDateError()) {
+              <mat-error>{{ scheduleDateError() }}</mat-error>
+            }
+            <mat-hint>Posts publish within 5 minutes of the scheduled time.</mat-hint>
           </mat-form-field>
         }
 
@@ -167,6 +169,7 @@ export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
   readonly separatorKeys = [ENTER, COMMA];
   readonly internalNotes = signal('');
+  readonly scheduleDateError = signal<string | null>(null);
 
   readonly authors = toSignal(inject(AuthorService).getAll(), {
     initialValue: [] as Author[],
@@ -217,13 +220,33 @@ export class MetadataTabComponent {
     return ms ? new Date(ms) : null;
   }
 
+  toDatetimeLocal(ms: number | null | undefined): string {
+    if (!ms) return '';
+    const d = new Date(ms);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  onStatusChange(status: BlogPost['status']): void {
+    this.store.updateField('status', status);
+    if (status !== 'scheduled') {
+      this.store.updateField('scheduledPublishAt', undefined);
+      this.scheduleDateError.set(null);
+    }
+  }
+
   onPublishedAtChange(date: Date | null, post: BlogPost): void {
     if (!date) return;
     this.store.updateField('publishedAt', date.getTime());
   }
 
-  onScheduledAtChange(date: Date | null, post: BlogPost): void {
-    if (!date) return;
-    this.store.updateField('scheduledPublishAt', date.getTime());
+  onScheduledAtChange(value: string): void {
+    const ms = value ? new Date(value).getTime() : undefined;
+    if (ms !== undefined && ms <= Date.now()) {
+      this.scheduleDateError.set('Scheduled time must be in the future.');
+      return;
+    }
+    this.scheduleDateError.set(null);
+    this.store.updateField('scheduledPublishAt', ms);
   }
 }
