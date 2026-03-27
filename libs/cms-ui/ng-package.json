@@ -5,7 +5,15 @@
     "entryFile": "src/index.ts"
   },
   "assets": [
-    "src/styles/tokens.css",
-    "src/styles/tokens.scss"
+    {
+      "input": "src/styles",
+      "glob": "tokens.css",
+      "output": "styles"
+    },
+    {
+      "input": "src/styles",
+      "glob": "tokens.scss",
+      "output": "styles"
+    }
   ]
 }

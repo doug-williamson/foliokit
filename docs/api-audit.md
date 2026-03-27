@@ -159,3 +159,13 @@ Source: `libs/cms-admin-ui/src/index.ts`
 | SSR support | `POSTS_TRANSFER_KEY` and `ABOUT_CONFIG_TRANSFER_KEY` enable `TransferState` hydration. |
 | Service abstraction | cms-core exposes `IBlogPostService` / `ISiteConfigService` interfaces + DI tokens, enabling consumers to swap implementations. |
 | No internal leaks | Besides the `CmsAdminUi` scaffold, no underscore-prefixed, helper-only, or obviously-internal symbols are exported. |
+
+## Post-audit additions (2026-03-27)
+
+### cms-core — new exports since audit
+
+| Export | Kind | Rating | Notes |
+|--------|------|--------|-------|
+| `provideFolioKit()` | `(config: FolioKitConfig) => EnvironmentProviders` | **(A)** | Single-call bootstrapper; supersedes manual `provideFirebase()` + service aliases |
+| `FolioKitConfig` | Interface | **(A)** | Config shape for `provideFolioKit` |
+| `SITE_ID` | `InjectionToken<string>` | **(C) — candidate for removal** | Forward-looking token for multi-site deployments. No current consumer in any library. If still unconsumed at next minor release, remove from the public API to avoid dead-export accumulation. |

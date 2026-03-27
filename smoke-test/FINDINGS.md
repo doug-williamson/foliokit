@@ -54,9 +54,9 @@ This issue manifests only with local `file:` installs where the consumer and the
 }
 ```
 
-### Decision needed
+### Note
 
-This should not affect real npm consumers, but it is worth verifying once the packages are published to npm and installed in a fresh project. If it does surface, the mitigation is to ensure dist libraries are rebuilt against the same Angular minor.minor.patch that consumers are expected to use and document the required version range explicitly.
+**This is a `file:` path quirk, not a regression in the published packages.** When the libraries are published to npm and a consumer installs them, there is one `node_modules` tree, so TypeScript resolves `@angular/core` from the same path for both the library's `.d.ts` declarations and the app's source. The brand IDs will naturally match. If this error disappears after the first publish, that is the expected outcome — not a sign that something was silently fixed.
 
 ---
 
