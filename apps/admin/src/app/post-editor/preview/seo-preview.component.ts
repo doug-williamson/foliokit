@@ -102,7 +102,7 @@ const DISPLAY_DOMAIN = 'foliokitcms.com';
       @if (store.post(); as post) {
 
         <!-- A: Google SERP Snippet -->
-        <p class="text-xs font-medium opacity-40 uppercase tracking-widest mb-4">
+        <p class="text-xs font-medium uppercase tracking-widest mb-4" style="color: var(--text-disabled)">
           Search Result Preview
         </p>
         <div class="snippet">
@@ -119,14 +119,14 @@ const DISPLAY_DOMAIN = 'foliokitcms.com';
 
         <!-- Character count hints -->
         <div class="mt-4 flex flex-col gap-1">
-          <div class="text-xs opacity-50">
-            <span [class.text-red-500]="(post.seo.title || post.title || '').length > 60">
+          <div class="text-xs" style="color: var(--text-muted)">
+            <span [style.color]="(post.seo.title || post.title || '').length > 60 ? 'var(--red-600)' : null">
               Title: {{ (post.seo.title || post.title || '').length }} / 60 chars
             </span>
           </div>
-          <div class="text-xs opacity-50">
+          <div class="text-xs" style="color: var(--text-muted)">
             <span
-              [class.text-red-500]="(post.seo.description || post.excerpt || '').length > 160"
+              [style.color]="(post.seo.description || post.excerpt || '').length > 160 ? 'var(--red-600)' : null"
             >
               Description: {{ (post.seo.description || post.excerpt || '').length }} / 160 chars
             </span>
@@ -134,7 +134,7 @@ const DISPLAY_DOMAIN = 'foliokitcms.com';
         </div>
 
         <!-- B: Social Share / OG Card -->
-        <p class="text-xs font-medium opacity-40 uppercase tracking-widest mt-10 mb-4">
+        <p class="text-xs font-medium uppercase tracking-widest mt-10 mb-4" style="color: var(--text-disabled)">
           Social Share Preview
         </p>
         <div class="og-card">
@@ -159,7 +159,7 @@ const DISPLAY_DOMAIN = 'foliokitcms.com';
         </div>
 
       } @else {
-        <p class="opacity-40 text-sm">No post loaded.</p>
+        <p class="text-sm" style="color: var(--text-disabled)">No post loaded.</p>
       }
     </div>
   `,

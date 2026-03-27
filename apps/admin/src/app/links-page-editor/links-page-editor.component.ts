@@ -33,14 +33,14 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
       <!-- Toolbar -->
       <div
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+        style="border-color: var(--border)"
       >
         <h1 class="flex-1 text-xl font-semibold">Links Page</h1>
 
         @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
         } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
+          <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
         }
       </div>
 
@@ -55,9 +55,9 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
       <!-- Sticky footer -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
+           style="border-color: var(--border); background: var(--mat-sys-surface)">
         @if (store.isDirty()) {
-          <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
+          <span class="text-sm sm:flex-1" style="color: var(--text-secondary)">You have unsaved changes.</span>
         } @else {
           <span class="hidden sm:block sm:flex-1"></span>
         }

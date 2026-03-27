@@ -43,6 +43,10 @@
   --red-700:   #7D1F1A;
   --red-600:   #A12B24;
   --red-100:   #F9DEDD;
+  --amber-600: #C27820;
+  --amber-500: #D4892A;
+  --amber-400: #E09A40;
+  --amber-100: #FBF0DC;
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
@@ -89,6 +93,8 @@
   --shadow-xl: 0 20px 56px rgba(12,15,20,0.12), 0 4px 16px rgba(12,15,20,0.07);
   --nav-active-bg:    var(--teal-50);
   --nav-active-color: var(--teal-800);
+  --warning:          var(--amber-600);
+  --warning-subtle:   var(--amber-100);
   color-scheme: light;
 }
 // ─── Badge classes ────────────────────────────────────────────────────────────
@@ -202,5 +208,7 @@
   --shadow-xl: 0 20px 56px rgba(0,0,0,0.50);
   --nav-active-bg:    rgba(56, 178, 172, 0.14);
   --nav-active-color: var(--text-primary);
+  --warning:          var(--amber-400);
+  --warning-subtle:   rgba(122, 74, 0, 0.18);
   color-scheme: dark;
 }

@@ -76,12 +76,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Header -->
       <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+           style="border-color: var(--border)">
         <h1 class="flex-1 text-xl font-semibold">About Page</h1>
         @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
         } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
+          <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
         }
       </div>
 
@@ -143,7 +143,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <mat-progress-bar mode="determinate" [value]="aboutPhotoProgress()" />
                 }
                 @if (aboutPhotoError()) {
-                  <p class="text-sm text-red-500">{{ aboutPhotoError() }}</p>
+                  <p class="text-sm" style="color: var(--red-600)">{{ aboutPhotoError() }}</p>
                 }
 
                 <div class="flex items-center gap-3">
@@ -169,7 +169,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <!-- Dark mode photo upload -->
               <div class="flex flex-col gap-3">
                 <span class="text-sm font-medium opacity-70">Profile Photo (Dark Mode)</span>
-                <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode photo when dark mode is active.</p>
+                <p class="text-xs -mt-1" style="color: var(--text-muted)">Optional. Shown instead of the light-mode photo when dark mode is active.</p>
 
                 @if (aboutPhotoDarkUrl()) {
                   <div class="flex items-center gap-4">
@@ -190,7 +190,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <mat-progress-bar mode="determinate" [value]="aboutPhotoDarkProgress()" />
                 }
                 @if (aboutPhotoDarkError()) {
-                  <p class="text-sm text-red-500">{{ aboutPhotoDarkError() }}</p>
+                  <p class="text-sm" style="color: var(--red-600)">{{ aboutPhotoDarkError() }}</p>
                 }
 
                 <div class="flex items-center gap-3">
@@ -242,7 +242,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   Add Link
                 </button>
               </div>
-              <p class="text-xs text-gray-500 mt-1 mb-3">These links appear on your About page only. To manage your full links directory, go to the Links Page editor.</p>
+              <p class="text-xs mt-1 mb-3" style="color: var(--text-muted)">These links appear on your About page only. To manage your full links directory, go to the Links Page editor.</p>
 
               <div [formGroup]="aboutSocialForm" class="flex flex-col gap-3">
                 <div formArrayName="socialLinks" class="flex flex-col gap-3">
@@ -250,7 +250,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div
                       [formGroupName]="$index"
                       class="flex flex-col gap-2 p-3 rounded-lg border"
-                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+                      style="border-color: var(--border)"
                     >
                       <div class="flex items-start gap-2">
                         <mat-form-field appearance="outline" class="flex-1">
@@ -284,7 +284,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     </div>
                   }
                   @if (!aboutSocialLinksArray.length) {
-                    <p class="text-sm opacity-50 text-center py-4">
+                    <p class="text-sm text-center py-4" style="color: var(--text-muted)">
                       No social links yet.
                     </p>
                   }
@@ -324,9 +324,9 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
         <!-- Sticky footer: save / discard -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-             style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
+             style="border-color: var(--border); background: var(--mat-sys-surface)">
           @if (store.isDirty()) {
-            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
+            <span class="text-sm sm:flex-1" style="color: var(--text-secondary)">You have unsaved changes.</span>
           } @else {
             <span class="hidden sm:block sm:flex-1"></span>
           }

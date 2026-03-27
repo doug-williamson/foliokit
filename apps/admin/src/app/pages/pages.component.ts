@@ -36,7 +36,7 @@ type CardState = 'disabled' | 'empty' | 'published';
     @if (store.config()) {
       <div class="p-4 sm:p-6">
         <h1 class="text-2xl font-semibold mb-2">Pages</h1>
-        <p class="text-sm text-gray-500 mb-6">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
+        <p class="text-sm mb-6" style="color: var(--text-muted)">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (card of cards; track card.flag) {
@@ -49,7 +49,7 @@ type CardState = 'disabled' | 'empty' | 'published';
               <div class="flex items-start justify-between px-4 pt-4 pb-0 gap-3">
                 <div class="flex flex-col min-w-0">
                   <span class="text-base font-semibold leading-snug">{{ card.label }}</span>
-                  <span class="text-xs text-gray-500 mt-1 leading-snug">{{ card.description }}</span>
+                  <span class="text-xs mt-1 leading-snug" style="color: var(--text-muted)">{{ card.description }}</span>
                 </div>
                 <mat-slide-toggle
                   [checked]="enabled"
@@ -62,20 +62,20 @@ type CardState = 'disabled' | 'empty' | 'published';
               <mat-card-content class="flex-1 mt-4">
                 @switch (state) {
                   @case ('disabled') {
-                    <span class="inline-flex items-center gap-1 text-xs text-gray-400 font-medium">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--text-disabled)">
                       <mat-icon class="text-base leading-none" inline>block</mat-icon>
                       Not enabled
                     </span>
                   }
                   @case ('empty') {
-                    <span class="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--warning)">
                       <mat-icon class="text-base leading-none" inline>warning</mat-icon>
                       Enabled — no content saved yet
                     </span>
                   }
                   @case ('published') {
                     <div class="flex flex-col gap-2">
-                      <span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                      <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--green-600)">
                         <mat-icon class="text-base leading-none" inline>check_circle</mat-icon>
                         Live
                       </span>
@@ -106,7 +106,7 @@ type CardState = 'disabled' | 'empty' | 'published';
         </div>
 
         @if (store.saveError()) {
-          <p class="mt-4 text-sm text-red-600">{{ store.saveError() }}</p>
+          <p class="mt-4 text-sm" style="color: var(--red-600)">{{ store.saveError() }}</p>
         }
       </div>
     } @else {

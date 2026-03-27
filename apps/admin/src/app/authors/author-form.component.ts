@@ -72,7 +72,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
       <div class="flex items-center gap-3 px-6 py-3 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+           style="border-color: var(--border)">
         <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
           <mat-icon>arrow_back</mat-icon>
         </button>
@@ -81,11 +81,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         </h1>
 
         @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
         } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
+          <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
         } @else if (!store.isDirty() && !store.isNew()) {
-          <span class="text-xs opacity-40">Saved</span>
+          <span class="text-xs" style="color: var(--text-disabled)">Saved</span>
         }
 
         <button
@@ -126,10 +126,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     (click)="isBrowser && photoInput.click()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
-                    <span class="text-xs opacity-40">Upload</span>
+                    <span class="text-xs" style="color: var(--text-disabled)">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Light</span>
+                <span class="text-xs" style="color: var(--text-muted)">Light</span>
               </div>
               <!-- Dark mode -->
               <div class="flex flex-col items-center gap-1">
@@ -153,10 +153,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     (click)="isBrowser && photoDarkInput.click()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
-                    <span class="text-xs opacity-40">Upload</span>
+                    <span class="text-xs" style="color: var(--text-disabled)">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Dark</span>
+                <span class="text-xs" style="color: var(--text-muted)">Dark</span>
               </div>
             </div>
             <input #photoInput type="file" accept="image/*" class="hidden"
@@ -167,7 +167,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <mat-progress-bar mode="determinate" [value]="uploadProgress()" class="max-w-[13rem]" />
             }
             @if (uploadError()) {
-              <p class="text-xs text-red-500">{{ uploadError() }}</p>
+              <p class="text-xs" style="color: var(--red-600)">{{ uploadError() }}</p>
             }
           </div>
 
@@ -211,7 +211,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               @for (ctrl of socialLinksArray.controls; track $index) {
                 <div [formGroupName]="$index"
                      class="flex flex-col gap-2 p-3 rounded-lg border"
-                     style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+                     style="border-color: var(--border)">
                   <div class="flex items-start gap-2">
                     <mat-form-field appearance="outline" class="flex-1">
                       <mat-label>Platform</mat-label>

@@ -17,12 +17,12 @@ import { AuthService } from '@foliokit/cms-core';
   template: `
     <div class="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
       <h1 class="text-3xl font-bold tracking-tight">FolioKit</h1>
-      <p class="text-sm text-gray-500">Admin</p>
+      <p class="text-sm" style="color: var(--text-muted)">Admin</p>
       <button mat-raised-button color="primary" (click)="signIn()">
         Sign in with Google
       </button>
       @if (error()) {
-        <p class="text-sm text-red-600">{{ error() }}</p>
+        <p class="text-sm" style="color: var(--red-600)">{{ error() }}</p>
       }
     </div>
   `,

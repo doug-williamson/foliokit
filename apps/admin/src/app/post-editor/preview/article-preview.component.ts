@@ -46,11 +46,11 @@ import { Author, AuthorService } from '@foliokit/cms-core';
 
           <!-- Subtitle -->
           @if (post.subtitle) {
-            <h2 class="text-xl font-normal opacity-60 mb-4">{{ post.subtitle }}</h2>
+            <h2 class="text-xl font-normal mb-4" style="color: var(--text-secondary)">{{ post.subtitle }}</h2>
           }
 
           <!-- Meta row: Author · date · read time -->
-          <p class="text-sm opacity-50 mb-8">
+          <p class="text-sm mb-8" style="color: var(--text-muted)">
             @if (author()?.displayName; as name) {
               {{ name }} ·
             }
@@ -67,7 +67,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
               [embeddedMedia]="post.embeddedMedia"
             />
           } @else {
-            <div class="flex items-center justify-center py-16 opacity-40 text-sm">
+            <div class="flex items-center justify-center py-16 text-sm" style="color: var(--text-disabled)">
               No content yet.
             </div>
           }
