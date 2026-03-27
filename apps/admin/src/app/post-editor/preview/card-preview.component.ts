@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
-import { Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
+import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-card-preview',
@@ -71,7 +73,7 @@ import { Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
 
             <!-- Meta row -->
             <div class="flex items-center justify-between mt-4 text-xs opacity-50">
-              <span>{{ post.authorId ?? 'Unknown author' }}</span>
+              <span>{{ author()?.displayName ?? 'Unknown author' }}</span>
               @if (post.publishedAt) {
                 <span>{{ post.publishedAt | date: 'MMM d, y' }}</span>
               }
@@ -86,6 +88,15 @@ import { Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
 })
 export class CardPreviewComponent {
   readonly store = inject(PostEditorStore);
+
+  private readonly authorService = inject(AuthorService);
+  private readonly authorId = computed(() => this.store.post()?.authorId ?? null);
+  protected readonly author = toSignal(
+    toObservable(this.authorId).pipe(
+      switchMap((id) => (id ? this.authorService.getById(id) : of(null))),
+    ),
+    { initialValue: null as Author | null },
+  );
 
   private readonly allTags = toSignal(inject(TagService).getAllTags(), {
     initialValue: [] as Tag[],

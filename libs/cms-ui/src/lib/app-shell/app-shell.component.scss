@@ -119,11 +119,7 @@ mat-sidenav {
 
 ::ng-deep mat-sidenav [mat-list-item].active-link {
   border-left-color: var(--text-accent);
-  background: var(--teal-50);
-  color: var(--mat-sys-on-primary-container);
+  background: var(--nav-active-bg);
+  color: var(--nav-active-color);
   font-weight: 500;
-}
-
-[data-theme='dark'] ::ng-deep mat-sidenav [mat-list-item].active-link {
-  background: rgba(42, 151, 151, 0.1);
 }

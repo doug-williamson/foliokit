@@ -1,7 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
+import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import { PostEditorStore } from '@foliokit/cms-admin-ui';
+import { Author, AuthorService } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-article-preview',
@@ -46,8 +50,10 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 
           <!-- Meta row: Author · date · read time -->
           <p class="text-sm opacity-50 mb-8">
-            Author
-            · {{ post.publishedAt | date: 'MMM d, yyyy' }}
+            @if (author()?.displayName; as name) {
+              {{ name }} ·
+            }
+            {{ post.publishedAt | date: 'MMM d, yyyy' }}
             @if (post.readingTimeMinutes) {
               · {{ post.readingTimeMinutes }} min read
             }
@@ -71,4 +77,13 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 })
 export class ArticlePreviewComponent {
   readonly store = inject(PostEditorStore);
+
+  private readonly authorService = inject(AuthorService);
+  private readonly authorId = computed(() => this.store.post()?.authorId ?? null);
+  protected readonly author = toSignal(
+    toObservable(this.authorId).pipe(
+      switchMap((id) => (id ? this.authorService.getById(id) : of(null))),
+    ),
+    { initialValue: null as Author | null },
+  );
 }
