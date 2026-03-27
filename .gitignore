@@ -43,6 +43,7 @@ Thumbs.db
 
 .angular
 smoke-test/.angular/
+demo/.angular/
 
 __screenshots__/
 

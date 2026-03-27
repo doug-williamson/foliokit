@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "libs/cms-core": {
+      "component": "cms-core",
+      "release-type": "node"
+    },
+    "libs/cms-ui": {
+      "component": "cms-ui",
+      "release-type": "node"
+    },
+    "libs/cms-markdown": {
+      "component": "cms-markdown",
+      "release-type": "node"
+    },
+    "libs/cms-admin-ui": {
+      "component": "cms-admin-ui",
+      "release-type": "node"
+    },
+    "libs/docs-ui": {
+      "component": "docs-ui",
+      "release-type": "node"
+    }
+  },
+  "separate-pull-requests": true,
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "chore", "section": "Maintenance", "hidden": true }
+  ]
+}

@@ -1,0 +1,41 @@
+@use '@angular/material' as mat;
+
+// ─── Angular Material M3 Theme ──────────────────────────────────────────────
+// Required by AppShellComponent and all Material components.
+
+html,
+html[data-theme='light'] {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: 'Plus Jakarta Sans',
+    density: 0,
+  ));
+
+  // ─── Stark Industries token overrides ───────────────────────────────────
+  // Demonstrates that consumers can override FolioKit's design tokens.
+  // The arc reactor glow: a brighter cyan for the logo dot and focus ring.
+  --logo-dot: #00D4FF;
+  --focus-ring: rgba(0, 212, 255, 0.25);
+}
+
+html[data-theme='dark'] {
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: 'Plus Jakarta Sans',
+    density: 0,
+  ));
+
+  // ─── Stark Industries token overrides (dark) ───────────────────────────
+  --logo-dot: #00E5FF;
+  --focus-ring: rgba(0, 229, 255, 0.30);
+  --btn-primary-bg: #00BCD4;
+  --btn-primary-hover: #00ACC1;
+}
