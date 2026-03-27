@@ -26,7 +26,12 @@
     "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974",
     "deploy:functions": "cd functions && npm run build && firebase deploy --only functions --project foliokit-6f974",
     "deploy:storage": "firebase deploy --only storage --project foliokit-6f974",
-    "deploy:cors": "gcloud storage buckets update gs://foliokit-6f974.firebasestorage.app --cors-file=cors.json"
+    "deploy:cors": "gcloud storage buckets update gs://foliokit-6f974.firebasestorage.app --cors-file=cors.json",
+    "dev:wait-emulator": "wait-on tcp:127.0.0.1:8080",
+    "dev:seed-after-emulator": "npm run dev:wait-emulator && npm run seed",
+    "dev:blog": "npm run dev:wait-emulator && npm run start:blog",
+    "dev:admin": "npm run dev:wait-emulator && npm run start:admin",
+    "dev:all": "concurrently --kill-others-on-fail --names \"emulator,seed,blog,admin\" -c \"cyan,yellow,green,blue\" \"npm run emulator\" \"npm run dev:seed-after-emulator\" \"npm run dev:blog\" \"npm run dev:admin\""
   },
   "private": false,
   "devDependencies": {
@@ -67,6 +72,7 @@
     "@types/node": "20.19.9",
     "@typescript-eslint/utils": "^8.40.0",
     "angular-eslint": "^21.0.1",
+    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
@@ -80,7 +86,8 @@
     "tslib": "^2.3.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "wait-on": "^8.0.5"
   },
   "dependencies": {
     "@angular/animations": "^21.2.4",

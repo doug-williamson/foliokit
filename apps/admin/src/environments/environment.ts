@@ -1,3 +1,4 @@
+// See docs/recipes/environment-setup.md for setup instructions.
 import type { FirebaseOptions } from 'firebase/app';
 
 export interface Environment {

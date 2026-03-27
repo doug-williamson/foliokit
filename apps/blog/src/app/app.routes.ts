@@ -1,9 +1,11 @@
 import { Route } from '@angular/router';
-import { postsResolver } from './resolvers/posts.resolver';
+import { createAboutPageResolver, createLinksPageResolver, createPostsResolver } from '@foliokit/cms-core';
 import { postResolver } from './resolvers/post.resolver';
-import { linksPageResolver } from './resolvers/links-page.resolver';
-import { aboutPageResolver } from './resolvers/about-page.resolver';
 import { featureGuard } from './guards/feature.guard';
+
+const postsResolver = createPostsResolver();
+const aboutPageResolver = createAboutPageResolver();
+const linksPageResolver = createLinksPageResolver();
 
 export const appRoutes: Route[] = [
   {

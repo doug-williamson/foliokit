@@ -21,6 +21,7 @@ export * from './lib/routes/admin.routes';
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 export * from './lib/provide-admin-kit';
+export * from './lib/provide-admin-markdown';
 
 // ── Editor page components (Phase 2 — stubs in Phase 1) ──────────────────────
 export * from './lib/post-editor/post-editor-page.component';

@@ -12,6 +12,7 @@
   "peerDependencies": {
     "@angular/common": "^21.2.4",
     "@angular/core": "^21.2.4",
+    "@angular/router": "^21.2.4",
     "firebase": "^11.10.0",
     "rxjs": "~7.8.0"
   },

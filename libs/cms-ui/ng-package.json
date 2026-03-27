@@ -7,12 +7,12 @@
   "assets": [
     {
       "input": "src/styles",
-      "glob": "tokens.css",
+      "glob": "**/*.scss",
       "output": "styles"
     },
     {
       "input": "src/styles",
-      "glob": "_tokens.scss",
+      "glob": "tokens.css",
       "output": "styles"
     }
   ]
