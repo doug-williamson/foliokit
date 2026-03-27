@@ -1,0 +1,135 @@
+/*
+ * FolioKit Design Tokens
+ *
+ * CSS custom-property contract for the FolioKit design system.
+ * Import this file in your angular.json "styles" array:
+ *
+ *   "styles": ["@foliokit/cms-ui/src/styles/tokens.css"]
+ *
+ * All semantic tokens (--bg, --surface-*, --text-*, --btn-*, --logo-*)
+ * resolve against the active [data-theme] attribute on a parent element.
+ */
+
+:root {
+  /* Slate — primary neutral (cool blue-grey) */
+  --slate-950: #0C0F14;
+  --slate-900: #151A23;
+  --slate-800: #1E2533;
+  --slate-700: #2D3748;
+  --slate-600: #4A5568;
+  --slate-500: #718096;
+  --slate-400: #A0AEC0;
+  --slate-300: #CBD5E0;
+  --slate-200: #E2E8F0;
+  --slate-100: #EDF2F7;
+  --slate-50:  #F7FAFC;
+  /* Cloud — page surfaces */
+  --cloud-0:   #FFFFFF;
+  --cloud-100: #F8FAFD;
+  --cloud-200: #F0F4F9;
+  --cloud-300: #E4ECF4;
+  /* Teal — brand accent */
+  --teal-900: #0D2B2B;
+  --teal-800: #134040;
+  --teal-700: #1A5C5C;
+  --teal-600: #217A7A;
+  --teal-500: #2A9797;
+  --teal-400: #38B2AC;
+  --teal-300: #6DD5CE;
+  --teal-200: #B2E8E5;
+  --teal-100: #E0F5F4;
+  --teal-50:  #F0FAFA;
+  /* Violet — Angular flare, used sparingly */
+  --violet-600: #553C9A;
+  --violet-500: #6B46C1;
+  --violet-400: #805AD5;
+  --violet-100: #EDE9FE;
+  --violet-50:  #F5F3FF;
+  /* Functional */
+  --green-700: #1A5C38;
+  --green-600: #22794A;
+  --green-100: #D4EDDA;
+  --blue-700:  #1A3F7A;
+  --blue-600:  #2252A4;
+  --blue-100:  #D6E4F7;
+  --red-700:   #7D1F1A;
+  --red-600:   #A12B24;
+  --red-100:   #F9DEDD;
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  /* Radii */
+  --r-xs:  2px;
+  --r-sm:  4px;
+  --r-md:  6px;
+  --r-lg:  10px;
+  --r-xl:  14px;
+  --r-2xl: 20px;
+}
+[data-theme="light"] {
+  --bg:             var(--cloud-100);
+  --bg-subtle:      var(--cloud-200);
+  --surface-0:      var(--cloud-0);
+  --surface-1:      var(--cloud-100);
+  --surface-2:      var(--cloud-200);
+  --surface-3:      var(--cloud-300);
+  --border:         var(--slate-200);
+  --border-strong:  var(--slate-300);
+  --border-accent:  var(--teal-300);
+  --text-primary:   var(--slate-900);
+  --text-secondary: var(--slate-600);
+  --text-muted:     var(--slate-400);
+  --text-disabled:  var(--slate-300);
+  --text-accent:    var(--teal-600);
+  --text-on-accent: #FFFFFF;
+  --text-on-dark:   #E8EDF5;
+  --btn-primary-bg:    var(--teal-500);
+  --btn-primary-text:  #FFFFFF;
+  --btn-primary-hover: var(--teal-600);
+  --logo-bg:   var(--slate-900);
+  --logo-text: var(--cloud-0);
+  --logo-dot:  var(--teal-400);
+  --focus-ring:   rgba(42, 151, 151, 0.22);
+  --focus-border: var(--teal-500);
+  --shadow-sm: 0 1px 3px rgba(12,15,20,0.07), 0 1px 2px rgba(12,15,20,0.04);
+  --shadow-md: 0 3px 10px rgba(12,15,20,0.08), 0 1px 4px rgba(12,15,20,0.05);
+  --shadow-lg: 0 8px 28px rgba(12,15,20,0.10), 0 2px 8px rgba(12,15,20,0.06);
+  --shadow-xl: 0 20px 56px rgba(12,15,20,0.12), 0 4px 16px rgba(12,15,20,0.07);
+  --nav-active-bg:    var(--teal-50);
+  --nav-active-color: var(--teal-800);
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --bg:             #1A1F2E;
+  --bg-subtle:      #1E2535;
+  --surface-0:      #242B3D;
+  --surface-1:      #2A3347;
+  --surface-2:      #303B52;
+  --surface-3:      #3A4660;
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-accent:  rgba(56, 178, 172, 0.40);
+  --text-primary:   #E8EDF5;
+  --text-secondary: #9AACBF;
+  --text-muted:     #5F7490;
+  --text-disabled:  #3D4F63;
+  --text-accent:    var(--teal-300);
+  --text-on-accent: var(--slate-950);
+  --text-on-dark:   #E8EDF5;
+  --btn-primary-bg:    var(--teal-400);
+  --btn-primary-text:  var(--slate-950);
+  --btn-primary-hover: var(--teal-300);
+  --logo-bg:   var(--teal-500);
+  --logo-text: #FFFFFF;
+  --logo-dot:  var(--teal-200);
+  --focus-ring:   rgba(56, 178, 172, 0.28);
+  --focus-border: var(--teal-400);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
+  --shadow-md: 0 3px 10px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,0.40);
+  --shadow-xl: 0 20px 56px rgba(0,0,0,0.50);
+  --nav-active-bg:    rgba(56, 178, 172, 0.14);
+  --nav-active-color: var(--text-primary);
+  color-scheme: dark;
+}

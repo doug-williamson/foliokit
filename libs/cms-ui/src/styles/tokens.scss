@@ -1,0 +1,10 @@
+// FolioKit Design Tokens — SCSS entry point
+//
+// Usage:
+//   @use '@foliokit/cms-ui/src/styles/tokens';
+//
+// This forwards the _tokens.scss partial which defines all CSS custom
+// properties. No SCSS variables are generated — the design system is
+// built entirely on CSS custom properties for runtime theme switching.
+
+@forward 'tokens';
