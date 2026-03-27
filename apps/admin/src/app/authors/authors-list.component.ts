@@ -17,6 +17,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Author, AuthorService } from '@foliokit/cms-core';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'admin-authors-list',
@@ -66,9 +70,9 @@ import { Author, AuthorService } from '@foliokit/cms-core';
             <mat-spinner diameter="40" />
           </div>
         } @else if (!authors()?.length) {
-          <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
-            <p>No authors yet. Create one to get started.</p>
+          <div class="flex flex-col items-center justify-center gap-6 p-12 h-full">
+            <mat-icon class="opacity-50" style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
+            <p style="color: var(--text-muted)">No authors yet. Create one to get started.</p>
           </div>
         } @else {
           <mat-table [dataSource]="authors()!" class="w-full" style="min-width: 0">
@@ -167,14 +171,31 @@ export class AuthorsListComponent implements OnInit {
   }
 
   protected confirmDelete(author: Author): void {
-    if (!window.confirm(`Delete "${author.displayName}"? This cannot be undone.`)) return;
-    this.authorService.delete(author.id).subscribe({
-      next: () => {
-        this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
-      },
-      error: (err) => {
-        console.error('[AuthorsListComponent] delete failed', err);
-      },
-    });
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+        ConfirmDialogComponent,
+        {
+          data: {
+            title: 'Delete author',
+            message: `Delete "${author.displayName}"? This cannot be undone.`,
+            confirmLabel: 'Delete',
+            destructive: true,
+          },
+          width: '380px',
+          autoFocus: 'dialog',
+        },
+      )
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.authorService.delete(author.id).subscribe({
+          next: () => {
+            this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
+          },
+          error: (err) => {
+            console.error('[AuthorsListComponent] delete failed', err);
+          },
+        });
+      });
   }
 }

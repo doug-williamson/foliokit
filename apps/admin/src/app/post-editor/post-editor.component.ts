@@ -209,17 +209,27 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         >
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Right tab strip -->
-            <div class="tab-strip">
-              @for (tab of rightTabs; track tab) {
+            <div class="tab-strip" role="tablist" aria-label="Post preview tabs">
+              @for (tab of rightTabs; track tab; let i = $index) {
                 <button
                   class="tab-btn"
+                  role="tab"
+                  [id]="'preview-tab-' + tab"
+                  [attr.aria-selected]="rightTab() === tab"
+                  [attr.aria-controls]="'preview-panel-' + tab"
                   [class.active]="rightTab() === tab"
                   (click)="rightTab.set(tab)"
+                  (keydown)="onRightTabKeydown($event, i)"
                 >{{ tab }}</button>
               }
             </div>
             <!-- Right tab content -->
-            <div class="tab-content">
+            <div
+              class="tab-content"
+              role="tabpanel"
+              [id]="'preview-panel-' + rightTab()"
+              [attr.aria-labelledby]="'preview-tab-' + rightTab()"
+            >
               @switch (rightTab()) {
                 @case ('Article') { <folio-article-preview /> }
                 @case ('Card') { <folio-card-preview /> }
@@ -233,17 +243,27 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <mat-sidenav-content>
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Left tab strip -->
-            <div class="tab-strip">
-              @for (tab of leftTabs; track tab) {
+            <div class="tab-strip" role="tablist" aria-label="Post editor tabs">
+              @for (tab of leftTabs; track tab; let i = $index) {
                 <button
                   class="tab-btn"
+                  role="tab"
+                  [id]="'editor-tab-' + tab"
+                  [attr.aria-selected]="leftTab() === tab"
+                  [attr.aria-controls]="'editor-panel-' + tab"
                   [class.active]="leftTab() === tab"
                   (click)="leftTab.set(tab)"
+                  (keydown)="onLeftTabKeydown($event, i)"
                 >{{ tab }}</button>
               }
             </div>
             <!-- Left tab content -->
-            <div class="tab-content">
+            <div
+              class="tab-content"
+              role="tabpanel"
+              [id]="'editor-panel-' + leftTab()"
+              [attr.aria-labelledby]="'editor-tab-' + leftTab()"
+            >
               @switch (leftTab()) {
                 @case ('Content') { <folio-content-tab /> }
                 @case ('Metadata') { <folio-metadata-tab /> }
@@ -275,6 +295,32 @@ export class PostEditorComponent implements OnInit {
 
   readonly leftTab = signal<LeftTab>('Content');
   readonly rightTab = signal<RightTab>('Article');
+
+  protected onLeftTabKeydown(event: KeyboardEvent, currentIndex: number): void {
+    const tabs = this.leftTabs;
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') { nextIndex = (currentIndex + 1) % tabs.length; event.preventDefault(); }
+    else if (event.key === 'ArrowLeft') { nextIndex = (currentIndex - 1 + tabs.length) % tabs.length; event.preventDefault(); }
+    else if (event.key === 'Home') { nextIndex = 0; event.preventDefault(); }
+    else if (event.key === 'End') { nextIndex = tabs.length - 1; event.preventDefault(); }
+    if (nextIndex !== currentIndex) {
+      this.leftTab.set(tabs[nextIndex]);
+      document.getElementById('editor-tab-' + tabs[nextIndex])?.focus();
+    }
+  }
+
+  protected onRightTabKeydown(event: KeyboardEvent, currentIndex: number): void {
+    const tabs = this.rightTabs;
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') { nextIndex = (currentIndex + 1) % tabs.length; event.preventDefault(); }
+    else if (event.key === 'ArrowLeft') { nextIndex = (currentIndex - 1 + tabs.length) % tabs.length; event.preventDefault(); }
+    else if (event.key === 'Home') { nextIndex = 0; event.preventDefault(); }
+    else if (event.key === 'End') { nextIndex = tabs.length - 1; event.preventDefault(); }
+    if (nextIndex !== currentIndex) {
+      this.rightTab.set(tabs[nextIndex]);
+      document.getElementById('preview-tab-' + tabs[nextIndex])?.focus();
+    }
+  }
 
   readonly primaryLabel = computed(() => {
     const status = this.store.post()?.status;

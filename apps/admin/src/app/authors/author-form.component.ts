@@ -123,7 +123,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div
                     class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    role="button"
+                    [attr.tabindex]="uploading() ? -1 : 0"
+                    [attr.aria-disabled]="uploading()"
+                    aria-label="Upload profile photo (light mode)"
                     (click)="isBrowser && photoInput.click()"
+                    (keydown.enter)="isBrowser && photoInput.click()"
+                    (keydown.space)="isBrowser && photoInput.click(); $event.preventDefault()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
                     <span class="text-xs" style="color: var(--text-disabled)">Upload</span>
@@ -150,7 +156,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div
                     class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    role="button"
+                    [attr.tabindex]="uploading() ? -1 : 0"
+                    [attr.aria-disabled]="uploading()"
+                    aria-label="Upload profile photo (dark mode)"
                     (click)="isBrowser && photoDarkInput.click()"
+                    (keydown.enter)="isBrowser && photoDarkInput.click()"
+                    (keydown.space)="isBrowser && photoDarkInput.click(); $event.preventDefault()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
                     <span class="text-xs" style="color: var(--text-disabled)">Upload</span>

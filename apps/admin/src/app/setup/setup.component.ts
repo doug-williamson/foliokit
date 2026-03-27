@@ -254,7 +254,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           } @else {
                             <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                                 (click)="isBrowser && setupPhotoInput.click()">
+                                 role="button"
+                                 [attr.tabindex]="authorPhotoUploading() ? -1 : 0"
+                                 [attr.aria-disabled]="authorPhotoUploading()"
+                                 aria-label="Upload profile photo (light mode)"
+                                 (click)="isBrowser && setupPhotoInput.click()"
+                                 (keydown.enter)="isBrowser && setupPhotoInput.click()"
+                                 (keydown.space)="isBrowser && setupPhotoInput.click(); $event.preventDefault()">
                               <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
                             </div>
                           }
@@ -278,7 +284,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           } @else {
                             <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                                 (click)="isBrowser && setupPhotoDarkInput.click()">
+                                 role="button"
+                                 [attr.tabindex]="authorPhotoUploading() ? -1 : 0"
+                                 [attr.aria-disabled]="authorPhotoUploading()"
+                                 aria-label="Upload profile photo (dark mode)"
+                                 (click)="isBrowser && setupPhotoDarkInput.click()"
+                                 (keydown.enter)="isBrowser && setupPhotoDarkInput.click()"
+                                 (keydown.space)="isBrowser && setupPhotoDarkInput.click(); $event.preventDefault()">
                               <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
                             </div>
                           }
