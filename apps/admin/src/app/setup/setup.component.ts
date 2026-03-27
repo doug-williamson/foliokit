@@ -100,11 +100,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
              style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
 
         <div class="px-4 pt-6 pb-4 shrink-0">
-          <h2 class="text-sm font-semibold uppercase tracking-wider opacity-50">Site Setup</h2>
+          <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Site Setup</h2>
           <div class="mt-3 mb-1">
             <mat-progress-bar mode="determinate" [value]="progressPct()" />
           </div>
-          <p class="text-xs opacity-40 mt-1">{{ completedCount() }} of {{ steps.length }} complete</p>
+          <p class="text-xs mt-1" style="color: var(--text-disabled)">{{ completedCount() }} of {{ steps.length }} complete</p>
         </div>
 
         <nav class="flex flex-col gap-0.5 px-2 pb-4">
@@ -131,7 +131,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <div class="flex md:hidden items-center gap-2 px-4 py-3 border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
         <div class="flex-1 min-w-0">
-          <p class="text-xs font-semibold uppercase tracking-wider opacity-50">
+          <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">
             Step {{ activeStepIndex() + 1 }} of {{ steps.length }}
           </p>
           <p class="text-sm font-medium truncate">{{ activeStepDef()?.label }}</p>
@@ -158,16 +158,16 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
           <!-- Step header (desktop only — mobile uses the compact header above) -->
           <div class="hidden md:flex items-center gap-3 px-6 py-4 border-b shrink-0"
-               style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+               style="border-color: var(--border)">
             <mat-icon class="opacity-60">{{ activeStepDef()?.icon }}</mat-icon>
             <div class="flex-1">
-              <h1 class="text-lg font-semibold">{{ activeStepDef()?.label }}</h1>
-              <p class="text-xs opacity-50">{{ activeStepDef()?.description }}</p>
+              <h1 class="page-heading">{{ activeStepDef()?.label }}</h1>
+              <p class="text-xs" style="color: var(--text-muted)">{{ activeStepDef()?.description }}</p>
             </div>
             @if (store.isSaving()) {
-              <span class="text-xs opacity-40">Saving…</span>
+              <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
             } @else if (store.saveError()) {
-              <span class="text-xs text-red-500">{{ store.saveError() }}</span>
+              <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
             } @else if (stepSaveSuccess()) {
               <span class="text-xs" style="color: #22c55e">Saved ✓</span>
             }
@@ -215,7 +215,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                         <p class="text-sm font-medium">
                           {{ authors().length === 1 ? 'Author created' : authors().length + ' authors exist' }}
                         </p>
-                        <ul class="text-sm opacity-60 mt-1 list-none">
+                        <ul class="text-sm mt-1 list-none" style="color: var(--text-secondary)">
                           @for (a of authors(); track a.id) {
                             <li>{{ a.displayName }}</li>
                           }
@@ -228,13 +228,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   }
 
                   @if (!authors().length) {
-                    <p class="text-sm opacity-60">
+                    <p class="text-sm" style="color: var(--text-secondary)">
                       Create your author profile. It will be linked to your posts and displayed in the blog.
                     </p>
 
                     <!-- Photo upload (light + dark) -->
                     <div class="flex flex-col gap-2">
-                      <span class="text-sm font-semibold">Profile Photo</span>
+                      <span class="section-label">Profile Photo</span>
                       <div class="flex gap-5">
                         <!-- Light -->
                         <div class="flex flex-col items-center gap-1">
@@ -254,11 +254,17 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           } @else {
                             <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                                 (click)="isBrowser && setupPhotoInput.click()">
+                                 role="button"
+                                 [attr.tabindex]="authorPhotoUploading() ? -1 : 0"
+                                 [attr.aria-disabled]="authorPhotoUploading()"
+                                 aria-label="Upload profile photo (light mode)"
+                                 (click)="isBrowser && setupPhotoInput.click()"
+                                 (keydown.enter)="isBrowser && setupPhotoInput.click()"
+                                 (keydown.space)="isBrowser && setupPhotoInput.click(); $event.preventDefault()">
                               <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
                             </div>
                           }
-                          <span class="text-xs opacity-50">Light</span>
+                          <span class="text-xs" style="color: var(--text-muted)">Light</span>
                         </div>
                         <!-- Dark -->
                         <div class="flex flex-col items-center gap-1">
@@ -278,11 +284,17 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           } @else {
                             <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                                 (click)="isBrowser && setupPhotoDarkInput.click()">
+                                 role="button"
+                                 [attr.tabindex]="authorPhotoUploading() ? -1 : 0"
+                                 [attr.aria-disabled]="authorPhotoUploading()"
+                                 aria-label="Upload profile photo (dark mode)"
+                                 (click)="isBrowser && setupPhotoDarkInput.click()"
+                                 (keydown.enter)="isBrowser && setupPhotoDarkInput.click()"
+                                 (keydown.space)="isBrowser && setupPhotoDarkInput.click(); $event.preventDefault()">
                               <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
                             </div>
                           }
-                          <span class="text-xs opacity-50">Dark</span>
+                          <span class="text-xs" style="color: var(--text-muted)">Dark</span>
                         </div>
                       </div>
                       <input #setupPhotoInput type="file" accept="image/*" class="hidden"
@@ -293,7 +305,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                         <mat-progress-bar mode="determinate" [value]="authorPhotoProgress()" class="max-w-[11rem]" />
                       }
                       @if (authorPhotoError()) {
-                        <p class="text-xs text-red-500">{{ authorPhotoError() }}</p>
+                        <p class="text-xs" style="color: var(--red-600)">{{ authorPhotoError() }}</p>
                       }
                     </div>
 
@@ -321,7 +333,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   }
 
                   @if (authorSaveError()) {
-                    <p class="text-sm text-red-500">{{ authorSaveError() }}</p>
+                    <p class="text-sm" style="color: var(--red-600)">{{ authorSaveError() }}</p>
                   }
                 </div>
               }
@@ -329,7 +341,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <!-- ══ Step 3: Navigation ══ -->
               @if (activeStep() === 'nav') {
                 <div class="flex flex-col gap-5">
-                  <p class="text-sm opacity-60">
+                  <p class="text-sm" style="color: var(--text-secondary)">
                     Configure your site's header navigation. Drag to reorder.
                   </p>
 
@@ -337,7 +349,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     @for (ctrl of navItemsArray.controls; track $index) {
                       <div cdkDrag [formGroup]="$any(ctrl)"
                            class="flex flex-col gap-2 p-3 rounded-lg border"
-                           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+                           style="border-color: var(--border)">
                         <div class="flex items-center gap-2">
                           <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]">drag_indicator</mat-icon>
                           <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
@@ -362,7 +374,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   </button>
 
                   @if (!navItemsArray.length) {
-                    <p class="text-xs opacity-40 text-center -mt-2">
+                    <p class="text-xs text-center -mt-2" style="color: var(--text-disabled)">
                       Tip: typical nav includes Home (/), Blog (/posts), About (/about), Links (/links).
                     </p>
                   }
@@ -372,7 +384,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <!-- ══ Step 4: Home Page ══ -->
               @if (activeStep() === 'home') {
                 <div class="flex flex-col gap-5">
-                  <p class="text-sm opacity-60">
+                  <p class="text-sm" style="color: var(--text-secondary)">
                     Configure the hero section that visitors see on your home page.
                   </p>
 
@@ -412,7 +424,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div class="flex items-center justify-between">
                     <div>
                       <p class="text-sm font-medium">Enable About page</p>
-                      <p class="text-xs opacity-50">Adds /about to your blog and navigation</p>
+                      <p class="text-xs" style="color: var(--text-muted)">Adds /about to your blog and navigation</p>
                     </div>
                     <mat-slide-toggle
                       [checked]="aboutEnabled()"
@@ -443,7 +455,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       </mat-form-field>
                     </form>
 
-                    <p class="text-xs opacity-40">
+                    <p class="text-xs" style="color: var(--text-disabled)">
                       Photos and social links can be added in the
                       <a routerLink="/about-page" class="underline">About Page editor</a>.
                     </p>
@@ -457,7 +469,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div class="flex items-center justify-between">
                     <div>
                       <p class="text-sm font-medium">Enable Links page</p>
-                      <p class="text-xs opacity-50">Adds /links — a link-in-bio style page</p>
+                      <p class="text-xs" style="color: var(--text-muted)">Adds /links — a link-in-bio style page</p>
                     </div>
                     <mat-slide-toggle
                       [checked]="linksEnabled()"
@@ -480,7 +492,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <!-- Links list -->
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-medium">Links</span>
+                      <span class="section-label">Links</span>
                       <button mat-stroked-button type="button" (click)="addLink()">
                         <mat-icon>add</mat-icon>
                         Add link
@@ -491,7 +503,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       @for (ctrl of linksArray.controls; track $index) {
                         <div [formGroup]="$any(ctrl)"
                              class="flex flex-col gap-2 p-3 rounded-lg border"
-                             style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+                             style="border-color: var(--border)">
                           <div class="flex items-start gap-2">
                             <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
                               <mat-label>Platform</mat-label>
@@ -519,11 +531,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                         </div>
                       }
                       @if (!linksArray.length) {
-                        <p class="text-sm opacity-40 text-center py-4">No links yet. Add your first link above.</p>
+                        <p class="text-sm text-center py-4" style="color: var(--text-disabled)">No links yet. Add your first link above.</p>
                       }
                     </div>
 
-                    <p class="text-xs opacity-40">
+                    <p class="text-xs" style="color: var(--text-disabled)">
                       Avatar and full link management available in the
                       <a routerLink="/links-page" class="underline">Links Page editor</a>.
                     </p>
@@ -536,8 +548,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
           <!-- ── Sticky footer ── -->
           <div class="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 border-t shrink-0"
-               style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-            <span class="hidden sm:inline flex-1 text-sm opacity-50">
+               style="border-color: var(--border); background: var(--mat-sys-surface)">
+            <span class="hidden sm:inline flex-1 text-sm" style="color: var(--text-muted)">
               @if (isLastStep() && allStepsComplete()) { All steps complete — click Finish Setup to continue. }
               @else { Step {{ activeStepIndex() + 1 }} of {{ steps.length }} }
             </span>

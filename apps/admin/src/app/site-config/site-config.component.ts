@@ -86,14 +86,17 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Header -->
-      <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="flex-1 text-xl font-semibold">Site Configuration</h1>
-        @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Site Configuration</h1>
+        </div>
+        <div class="page-header-actions">
+          @if (store.isSaving()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
+          } @else if (store.saveError()) {
+            <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
+          }
+        </div>
       </div>
 
       @if (!store.config()) {
@@ -103,13 +106,13 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
       } @else {
         <!-- Tabs -->
         <mat-tab-group
-          class="flex flex-col flex-1 overflow-hidden"
+          class="flex flex-col flex-1 overflow-hidden page-enter"
           animationDuration="0"
           (selectedTabChange)="onTabChange()"
         >
           <!-- ── General ── -->
           <mat-tab label="General">
-            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col gap-5 max-w-2xl mx-auto px-6 py-6">
               <form [formGroup]="generalForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">
                   <mat-label>Site Name</mat-label>
@@ -148,9 +151,9 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
           <!-- ── Navigation ── -->
           <mat-tab label="Navigation">
-            <div class="flex flex-col gap-4 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col gap-5 max-w-2xl mx-auto px-6 py-6">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold">Nav Items</span>
+                <span class="section-label">Nav Items</span>
                 <button mat-stroked-button type="button" (click)="addNavItem()">
                   <mat-icon>add</mat-icon>
                   Add Nav Item
@@ -167,7 +170,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
                     cdkDrag
                     [formGroup]="asFormGroup(ctrl)"
                     class="flex flex-col gap-2 p-3 rounded-lg border"
-                    style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)"
+                    style="border-color: var(--border); background: var(--mat-sys-surface)"
                   >
                     <!-- Row 1: drag handle + label + url -->
                     <div class="flex items-start gap-2">
@@ -211,7 +214,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
                 }
 
                 @if (!navItemsArray.length) {
-                  <p class="text-sm opacity-50 text-center py-8">
+                  <p class="text-sm text-center py-8" style="color: var(--text-muted)">
                     No nav items yet. Add one to get started.
                   </p>
                 }
@@ -252,8 +255,8 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         <!-- Sticky footer: save / discard -->
         @if (store.isDirty()) {
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-               style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
+               style="border-color: var(--border); background: var(--mat-sys-surface)">
+            <span class="text-sm sm:flex-1" style="color: var(--text-secondary)">You have unsaved changes.</span>
             <div class="flex justify-end gap-2">
               <button mat-stroked-button [disabled]="store.isSaving()" (click)="onDiscard()">
                 Discard

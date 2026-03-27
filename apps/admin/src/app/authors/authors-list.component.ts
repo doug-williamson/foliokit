@@ -17,6 +17,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Author, AuthorService } from '@foliokit/cms-core';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
 
 @Component({
   selector: 'admin-authors-list',
@@ -29,6 +34,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
     MatTableModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    EmptyStateComponent,
   ],
   styles: [
     `
@@ -50,26 +56,32 @@ import { Author, AuthorService } from '@foliokit/cms-core';
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="text-xl font-semibold">Authors</h1>
-        <button mat-flat-button (click)="router.navigate(['/authors/new'])">
-          <mat-icon>add</mat-icon>
-          New Author
-        </button>
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Authors</h1>
+        </div>
+        <div class="page-header-actions">
+          <button mat-flat-button (click)="router.navigate(['/authors/new'])">
+            <mat-icon>add</mat-icon>
+            New Author
+          </button>
+        </div>
       </div>
 
       <!-- Content -->
-      <div class="flex-1 overflow-auto">
+      <div class="flex-1 overflow-auto page-enter">
         @if (loading()) {
           <div class="flex items-center justify-center p-12">
             <mat-spinner diameter="40" />
           </div>
         } @else if (!authors()?.length) {
-          <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
-            <p>No authors yet. Create one to get started.</p>
-          </div>
+          <app-empty-state
+            icon="person_outline"
+            heading="No authors yet"
+            body="Add an author to get started."
+            ctaLabel="Add author"
+            (ctaClick)="router.navigate(['/authors/new'])"
+          />
         } @else {
           <mat-table [dataSource]="authors()!" class="w-full" style="min-width: 0">
             <!-- Avatar column -->
@@ -167,14 +179,31 @@ export class AuthorsListComponent implements OnInit {
   }
 
   protected confirmDelete(author: Author): void {
-    if (!window.confirm(`Delete "${author.displayName}"? This cannot be undone.`)) return;
-    this.authorService.delete(author.id).subscribe({
-      next: () => {
-        this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
-      },
-      error: (err) => {
-        console.error('[AuthorsListComponent] delete failed', err);
-      },
-    });
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+        ConfirmDialogComponent,
+        {
+          data: {
+            title: 'Delete author',
+            message: `Delete "${author.displayName}"? This cannot be undone.`,
+            confirmLabel: 'Delete',
+            destructive: true,
+          },
+          width: '380px',
+          autoFocus: 'dialog',
+        },
+      )
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.authorService.delete(author.id).subscribe({
+          next: () => {
+            this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
+          },
+          error: (err) => {
+            console.error('[AuthorsListComponent] delete failed', err);
+          },
+        });
+      });
   }
 }

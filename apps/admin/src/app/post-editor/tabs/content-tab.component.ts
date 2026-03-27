@@ -26,8 +26,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
         overflow: hidden;
       }
       .markdown-textarea {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          monospace;
+        font-family: var(--font-mono);
         font-size: 0.875rem;
         line-height: 1.5;
         resize: none;
@@ -86,7 +85,7 @@ import { PostEditorStore } from '@foliokit/cms-admin-ui';
 
         <!-- Markdown editor — fills remaining height -->
         <div class="flex flex-col flex-1 min-h-0 gap-1">
-          <label class="text-xs font-medium opacity-60">
+          <label class="section-label" style="display: block; margin-bottom: 6px;">
             Content (Markdown)
           </label>
           <textarea

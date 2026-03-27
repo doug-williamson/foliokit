@@ -30,7 +30,7 @@ import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/
   ],
   template: `
     <div class="p-6 max-w-sm mx-auto w-full">
-      <p class="text-xs font-medium opacity-40 uppercase tracking-widest mb-3">
+      <p class="text-xs font-medium uppercase tracking-widest mb-3" style="color: var(--text-disabled)">
         Card Preview
       </p>
 
@@ -45,7 +45,7 @@ import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/
             />
           } @else {
             <div class="thumbnail-placeholder w-full h-48 flex items-center justify-center">
-              <span class="text-xs opacity-40">No thumbnail</span>
+              <span class="text-xs" style="color: var(--text-disabled)">No thumbnail</span>
             </div>
           }
 
@@ -73,7 +73,7 @@ import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/
             }
 
             <!-- Meta row -->
-            <div class="flex items-center justify-between mt-4 text-xs opacity-50">
+            <div class="flex items-center justify-between mt-4 text-xs" style="color: var(--text-muted)">
               <span>{{ author()?.displayName ?? 'Unknown author' }}</span>
               @if (post.publishedAt) {
                 <span>{{ post.publishedAt | date: 'MMM d, y' }}</span>
@@ -82,7 +82,7 @@ import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/
           </mat-card-content>
         </mat-card>
       } @else {
-        <p class="opacity-40 text-sm">No post loaded.</p>
+        <p class="text-sm" style="color: var(--text-disabled)">No post loaded.</p>
       }
     </div>
   `,

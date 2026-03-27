@@ -71,38 +71,37 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
-      <div class="flex items-center gap-3 px-6 py-3 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1 class="flex-1 text-lg font-semibold">
-          {{ store.isNew() ? 'New Author' : 'Edit Author' }}
-        </h1>
-
-        @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        } @else if (!store.isDirty() && !store.isNew()) {
-          <span class="text-xs opacity-40">Saved</span>
-        }
-
-        <button
-          mat-flat-button
-          [disabled]="form.invalid || store.isSaving()"
-          (click)="onSave()"
-        >
-          Save
-        </button>
+      <div class="page-header">
+        <div class="page-header-title">
+          <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h1 class="page-heading">{{ store.isNew() ? 'New Author' : 'Edit Author' }}</h1>
+        </div>
+        <div class="page-header-actions">
+          @if (store.isSaving()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
+          } @else if (store.saveError()) {
+            <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
+          } @else if (!store.isDirty() && !store.isNew()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saved</span>
+          }
+          <button
+            mat-flat-button
+            [disabled]="form.invalid || store.isSaving()"
+            (click)="onSave()"
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       <!-- Scrollable form -->
-      <div class="flex-1 overflow-y-auto">
-        <form [formGroup]="form" class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+      <div class="page-content-form page-enter">
+        <form [formGroup]="form" class="flex flex-col gap-5 max-w-2xl mx-auto">
           <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Profile Photo</span>
+            <span class="section-label">Profile Photo</span>
             <div class="flex gap-6">
               <!-- Light mode -->
               <div class="flex flex-col items-center gap-1">
@@ -123,13 +122,19 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div
                     class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    role="button"
+                    [attr.tabindex]="uploading() ? -1 : 0"
+                    [attr.aria-disabled]="uploading()"
+                    aria-label="Upload profile photo (light mode)"
                     (click)="isBrowser && photoInput.click()"
+                    (keydown.enter)="isBrowser && photoInput.click()"
+                    (keydown.space)="isBrowser && photoInput.click(); $event.preventDefault()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
-                    <span class="text-xs opacity-40">Upload</span>
+                    <span class="text-xs" style="color: var(--text-disabled)">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Light</span>
+                <span class="text-xs" style="color: var(--text-muted)">Light</span>
               </div>
               <!-- Dark mode -->
               <div class="flex flex-col items-center gap-1">
@@ -150,13 +155,19 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div
                     class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                    role="button"
+                    [attr.tabindex]="uploading() ? -1 : 0"
+                    [attr.aria-disabled]="uploading()"
+                    aria-label="Upload profile photo (dark mode)"
                     (click)="isBrowser && photoDarkInput.click()"
+                    (keydown.enter)="isBrowser && photoDarkInput.click()"
+                    (keydown.space)="isBrowser && photoDarkInput.click(); $event.preventDefault()"
                   >
                     <mat-icon class="opacity-40">upload</mat-icon>
-                    <span class="text-xs opacity-40">Upload</span>
+                    <span class="text-xs" style="color: var(--text-disabled)">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Dark</span>
+                <span class="text-xs" style="color: var(--text-muted)">Dark</span>
               </div>
             </div>
             <input #photoInput type="file" accept="image/*" class="hidden"
@@ -167,7 +178,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <mat-progress-bar mode="determinate" [value]="uploadProgress()" class="max-w-[13rem]" />
             }
             @if (uploadError()) {
-              <p class="text-xs text-red-500">{{ uploadError() }}</p>
+              <p class="text-xs" style="color: var(--red-600)">{{ uploadError() }}</p>
             }
           </div>
 
@@ -200,7 +211,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <!-- Social links -->
           <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
-              <span class="text-sm font-semibold">Social Links</span>
+              <span class="section-label">Social Links</span>
               <button mat-stroked-button type="button" (click)="addSocialLink()">
                 <mat-icon>add</mat-icon>
                 Add Link
@@ -211,7 +222,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               @for (ctrl of socialLinksArray.controls; track $index) {
                 <div [formGroupName]="$index"
                      class="flex flex-col gap-2 p-3 rounded-lg border"
-                     style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+                     style="border-color: var(--border)">
                   <div class="flex items-start gap-2">
                     <mat-form-field appearance="outline" class="flex-1">
                       <mat-label>Platform</mat-label>
