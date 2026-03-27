@@ -71,30 +71,29 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
-      <div class="flex items-center gap-3 px-6 py-3 border-b shrink-0"
-           style="border-color: var(--border)">
-        <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1 class="flex-1 text-lg font-semibold">
-          {{ store.isNew() ? 'New Author' : 'Edit Author' }}
-        </h1>
-
-        @if (store.isSaving()) {
-          <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
-        } @else if (!store.isDirty() && !store.isNew()) {
-          <span class="text-xs" style="color: var(--text-disabled)">Saved</span>
-        }
-
-        <button
-          mat-flat-button
-          [disabled]="form.invalid || store.isSaving()"
-          (click)="onSave()"
-        >
-          Save
-        </button>
+      <div class="page-header">
+        <div class="page-header-title">
+          <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h1 class="page-heading">{{ store.isNew() ? 'New Author' : 'Edit Author' }}</h1>
+        </div>
+        <div class="page-header-actions">
+          @if (store.isSaving()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
+          } @else if (store.saveError()) {
+            <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
+          } @else if (!store.isDirty() && !store.isNew()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saved</span>
+          }
+          <button
+            mat-flat-button
+            [disabled]="form.invalid || store.isSaving()"
+            (click)="onSave()"
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       <!-- Scrollable form -->

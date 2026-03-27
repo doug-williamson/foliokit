@@ -33,87 +33,94 @@ type CardState = 'disabled' | 'empty' | 'published';
     MatProgressSpinnerModule,
   ],
   template: `
-    @if (store.config()) {
-      <div class="p-4 sm:p-6">
-        <h1 class="page-heading mb-2">Pages</h1>
-        <p class="text-sm mb-6" style="color: var(--text-muted)">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
+    <div class="flex flex-col h-full overflow-hidden">
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Pages</h1>
+        </div>
+      </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          @for (card of cards; track card.flag) {
-            @let cfg = store.config()!;
-            @let state = cardState(card, cfg);
-            @let enabled = cfg.pages?.[card.flag]?.enabled ?? false;
-            @let liveUrl = cfg.siteUrl ? card.liveUrl(cfg.siteUrl) : null;
+      @if (store.config()) {
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+          <p class="text-sm mb-6" style="color: var(--text-muted)">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
 
-            <mat-card class="flex flex-col" [class.opacity-60]="state === 'disabled'">
-              <div class="flex items-start justify-between px-4 pt-4 pb-0 gap-3">
-                <div class="flex flex-col min-w-0">
-                  <span class="text-base font-semibold leading-snug">{{ card.label }}</span>
-                  <span class="text-xs mt-1 leading-snug" style="color: var(--text-muted)">{{ card.description }}</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            @for (card of cards; track card.flag) {
+              @let cfg = store.config()!;
+              @let state = cardState(card, cfg);
+              @let enabled = cfg.pages?.[card.flag]?.enabled ?? false;
+              @let liveUrl = cfg.siteUrl ? card.liveUrl(cfg.siteUrl) : null;
+
+              <mat-card class="flex flex-col" [class.opacity-60]="state === 'disabled'">
+                <div class="flex items-start justify-between px-4 pt-4 pb-0 gap-3">
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-base font-semibold leading-snug">{{ card.label }}</span>
+                    <span class="text-xs mt-1 leading-snug" style="color: var(--text-muted)">{{ card.description }}</span>
+                  </div>
+                  <mat-slide-toggle
+                    [checked]="enabled"
+                    [disabled]="store.isSaving()"
+                    (change)="toggle(card.flag, $event.checked)"
+                    class="shrink-0 mt-0.5"
+                  />
                 </div>
-                <mat-slide-toggle
-                  [checked]="enabled"
-                  [disabled]="store.isSaving()"
-                  (change)="toggle(card.flag, $event.checked)"
-                  class="shrink-0 mt-0.5"
-                />
-              </div>
 
-              <mat-card-content class="flex-1 mt-4">
-                @switch (state) {
-                  @case ('disabled') {
-                    <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--text-disabled)">
-                      <mat-icon class="text-base leading-none" inline>block</mat-icon>
-                      Not enabled
-                    </span>
-                  }
-                  @case ('empty') {
-                    <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--warning)">
-                      <mat-icon class="text-base leading-none" inline>warning</mat-icon>
-                      Enabled — no content saved yet
-                    </span>
-                  }
-                  @case ('published') {
-                    <div class="flex flex-col gap-2">
-                      <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--green-600)">
-                        <mat-icon class="text-base leading-none" inline>check_circle</mat-icon>
-                        Live
+                <mat-card-content class="flex-1 mt-4">
+                  @switch (state) {
+                    @case ('disabled') {
+                      <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--text-disabled)">
+                        <mat-icon class="text-base leading-none" inline>block</mat-icon>
+                        Not enabled
                       </span>
-                      @if (liveUrl) {
-                        <mat-chip-set>
-                          <mat-chip>
-                            <a [href]="liveUrl" target="_blank" rel="noopener" class="text-xs no-underline">
-                              {{ liveUrl }}
-                            </a>
-                          </mat-chip>
-                        </mat-chip-set>
-                      }
-                    </div>
+                    }
+                    @case ('empty') {
+                      <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--warning)">
+                        <mat-icon class="text-base leading-none" inline>warning</mat-icon>
+                        Enabled — no content saved yet
+                      </span>
+                    }
+                    @case ('published') {
+                      <div class="flex flex-col gap-2">
+                        <span class="inline-flex items-center gap-1 text-xs font-medium" style="color: var(--green-600)">
+                          <mat-icon class="text-base leading-none" inline>check_circle</mat-icon>
+                          Live
+                        </span>
+                        @if (liveUrl) {
+                          <mat-chip-set>
+                            <mat-chip>
+                              <a [href]="liveUrl" target="_blank" rel="noopener" class="text-xs no-underline">
+                                {{ liveUrl }}
+                              </a>
+                            </mat-chip>
+                          </mat-chip-set>
+                        }
+                      </div>
+                    }
                   }
-                }
-              </mat-card-content>
+                </mat-card-content>
 
-              <mat-card-actions>
-                @if (state !== 'disabled') {
-                  <button mat-button color="primary" (click)="navigate(card.editRoute)">
-                    Edit page
-                    <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-                  </button>
-                }
-              </mat-card-actions>
-            </mat-card>
+                <mat-card-actions>
+                  @if (state !== 'disabled') {
+                    <button mat-button color="primary" (click)="navigate(card.editRoute)">
+                      Edit page
+                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    </button>
+                  }
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+
+          @if (store.saveError()) {
+            <p class="mt-4 text-sm" style="color: var(--red-600)">{{ store.saveError() }}</p>
           }
         </div>
-
-        @if (store.saveError()) {
-          <p class="mt-4 text-sm" style="color: var(--red-600)">{{ store.saveError() }}</p>
-        }
-      </div>
-    } @else {
-      <div class="flex items-center justify-center h-64">
-        <mat-spinner diameter="40" />
-      </div>
-    }
+      } @else {
+        <div class="flex items-center justify-center flex-1">
+          <mat-spinner diameter="40" />
+        </div>
+      }
+    </div>
   `,
 })
 export class PagesComponent {

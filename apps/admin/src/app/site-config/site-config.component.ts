@@ -86,14 +86,17 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Header -->
-      <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-           style="border-color: var(--border)">
-        <h1 class="flex-1 page-heading">Site Configuration</h1>
-        @if (store.isSaving()) {
-          <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
-        }
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Site Configuration</h1>
+        </div>
+        <div class="page-header-actions">
+          @if (store.isSaving()) {
+            <span class="text-xs" style="color: var(--text-disabled)">Saving…</span>
+          } @else if (store.saveError()) {
+            <span class="text-xs" style="color: var(--red-600)">{{ store.saveError() }}</span>
+          }
+        </div>
       </div>
 
       @if (!store.config()) {

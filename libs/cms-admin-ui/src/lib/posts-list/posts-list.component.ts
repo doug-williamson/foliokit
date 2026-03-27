@@ -19,21 +19,16 @@ import { PostsBoardComponent } from './posts-board.component';
   host: { class: 'block h-full' },
   styles: [`
     :host { display: block; height: 100%; }
-
-    .posts-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
   `],
   template: `
     <div class="flex flex-col h-full">
-      <div class="posts-header">
-        <h1 class="page-heading">Posts</h1>
-        <button mat-raised-button (click)="newPost()">New Post</button>
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Posts</h1>
+        </div>
+        <div class="page-header-actions">
+          <button mat-flat-button (click)="newPost()">New Post</button>
+        </div>
       </div>
 
       @if (store.loading()) {

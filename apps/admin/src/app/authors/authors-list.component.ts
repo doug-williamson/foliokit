@@ -54,13 +54,16 @@ import {
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b shrink-0"
-           style="border-color: var(--border)">
-        <h1 class="page-heading">Authors</h1>
-        <button mat-flat-button (click)="router.navigate(['/authors/new'])">
-          <mat-icon>add</mat-icon>
-          New Author
-        </button>
+      <div class="page-header">
+        <div class="page-header-title">
+          <h1 class="page-heading">Authors</h1>
+        </div>
+        <div class="page-header-actions">
+          <button mat-flat-button (click)="router.navigate(['/authors/new'])">
+            <mat-icon>add</mat-icon>
+            New Author
+          </button>
+        </div>
       </div>
 
       <!-- Content -->

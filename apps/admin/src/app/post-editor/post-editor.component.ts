@@ -138,7 +138,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       <!-- Toolbar -->
       <div
         class="flex items-center gap-3 shrink-0"
-        style="height: 48px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
+        style="height: 52px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
       >
         <!-- Post title (left) -->
         <span
