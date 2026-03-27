@@ -7,7 +7,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
@@ -18,6 +18,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { SHELL_CONFIG } from '../shell-config.token';
 import { ThemeService } from '../theme.service';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
+
+const MOBILE_BP = '(max-width: 767.98px)';
+const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
 
 @Component({
   selector: 'folio-app-shell',
@@ -39,6 +42,7 @@ export class AppShellComponent implements OnInit, OnDestroy {
   @ContentChild(ShellNavFooterDirective) protected navFooter?: ShellNavFooterDirective;
 
   protected readonly isMobile = signal(false);
+  protected readonly isIconRail = signal(false);
   protected readonly sidenavOpen = signal(false);
 
   private readonly breakpointObserver = inject(BreakpointObserver);
@@ -48,10 +52,13 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.bpSub = this.breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .observe([MOBILE_BP, ICON_RAIL_BP])
       .subscribe((state) => {
-        const mobile = state.matches;
+        const mobile = state.breakpoints[MOBILE_BP];
+        const iconRail = state.breakpoints[ICON_RAIL_BP];
         this.isMobile.set(mobile);
+        this.isIconRail.set(iconRail);
+        // Mobile: close sidenav (overlay); everything else: keep open
         this.sidenavOpen.set(!mobile);
       });
 

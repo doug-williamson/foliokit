@@ -5,18 +5,18 @@
 .folio-prose {
 
   p {
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.85;
     color: var(--text-primary);
-    margin-bottom: 1.5em;
+    margin-bottom: 1.3em;
   }
 
   h2 {
     font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin: 2em 0 0.75em;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 2em 0 0.6em;
     color: var(--text-primary);
     line-height: 1.2;
   }
@@ -51,16 +51,16 @@
 
   code {
     font-family: var(--font-mono);
-    font-size: 0.88em;
+    font-size: 0.87em;
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: var(--r-xs);
-    padding: 1px 6px;
+    padding: 1px 5px;
     color: var(--text-accent);
   }
 
   pre {
-    background: #141920;
+    background: var(--code-block-bg);
     border-radius: var(--r-lg);
     padding: 20px;
     overflow-x: auto;
@@ -70,7 +70,7 @@
       background: none;
       border: none;
       padding: 0;
-      color: #CDD9E8;
+      color: var(--code-block-text);
       font-size: 13px;
       line-height: 1.75;
     }

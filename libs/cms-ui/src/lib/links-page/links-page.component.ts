@@ -11,81 +11,170 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
-import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { ThemeService } from '../theme.service';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
-  youtube: 'fa-brands fa-youtube',
-  twitch: 'fa-brands fa-twitch',
-  twitter: 'fa-brands fa-x-twitter',
-  bluesky: 'fa-brands fa-bluesky',
-  github: 'fa-brands fa-github',
-  linkedin: 'fa-brands fa-linkedin-in',
-  instagram: 'fa-brands fa-instagram',
-  tiktok: 'fa-brands fa-tiktok',
-  facebook: 'fa-brands fa-facebook',
-  email: 'fa-solid fa-envelope',
-  website: 'fa-solid fa-globe',
+  youtube: 'play_circle',
+  twitch: 'live_tv',
+  twitter: 'tag',
+  bluesky: 'cloud',
+  github: 'code',
+  linkedin: 'business',
+  instagram: 'photo_camera',
+  tiktok: 'music_note',
+  facebook: 'thumb_up',
+  email: 'mail',
+  website: 'language',
 };
 
 @Component({
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule],
+  imports: [MatIconModule],
   styles: [`
+    :host { display: block; }
+
+    .links-container {
+      max-width: 480px;
+      margin: 48px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .avatar--xl {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--logo-bg);
+      color: var(--logo-text);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .links-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .links-bio {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 480px;
+      margin: 8px auto 0;
+    }
+
+    .links-nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 24px;
+    }
+
     .link-btn {
-      background-color: var(--mat-sys-primary);
-      color: var(--mat-sys-on-primary);
-    }
-    .link-btn-featured {
-      background-color: var(--mat-sys-tertiary-container);
-      color: var(--mat-sys-on-tertiary-container);
-    }
-    .link-btn:hover, .link-btn-featured:hover {
-      opacity: 0.92;
+      width: 100%;
+      margin-top: 12px;
+      background: var(--surface-0);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-lg);
+      padding: 13px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: box-shadow 0.12s, transform 0.12s;
+
+      &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      .link-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--text-accent);
+        flex-shrink: 0;
+      }
+
+      .link-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        flex: 1;
+      }
+
+      .link-chevron {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
     }
   `],
   template: `
     @if (page()) {
-      <div class="flex flex-col items-center max-w-md mx-auto px-4 py-12 gap-6">
-        @if (page()!.avatarUrl) {
-          <img
-            class="w-24 h-24 rounded-full object-cover shadow-md"
-            [src]="avatarSrc()"
-            [alt]="page()!.avatarAlt || page()!.title"
-          />
-        }
+      <div class="links-container">
+        <div class="avatar--xl">
+          @if (avatarSrc()) {
+            <img [src]="avatarSrc()" [alt]="page()!.avatarAlt || page()!.title" />
+          } @else {
+            {{ initials() }}
+          }
+        </div>
+
         @if (page()!.headline) {
-          <h1 class="text-2xl font-bold text-center">{{ page()!.headline }}</h1>
+          <h1 class="links-name">{{ page()!.headline }}</h1>
         }
+
         @if (page()!.bio) {
-          <p class="text-center opacity-70">{{ page()!.bio }}</p>
+          <p class="links-bio">{{ page()!.bio }}</p>
         }
-        <nav class="flex flex-col w-full gap-3">
+
+        <nav class="links-nav">
           @for (link of sortedLinks(); track link.id) {
             <a
+              class="link-btn"
               [href]="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              [class]="link.highlighted ? 'link-btn-featured' : 'link-btn'"
-              class="w-full flex items-center rounded-full px-5 !py-3 text-base font-medium transition-opacity no-underline"
             >
-              <span class="w-6 flex-shrink-0 text-lg leading-none">
-                @if (getIcon(link)) {
-                  <i [class]="getIcon(link)"></i>
-                }
-              </span>
-              <span class="flex-1 text-center">{{ link.label }}</span>
-              <span class="w-6 flex-shrink-0"></span>
+              <mat-icon class="link-icon">{{ getIcon(link) }}</mat-icon>
+              <span class="link-label">{{ link.label }}</span>
+              <mat-icon class="link-chevron">chevron_right</mat-icon>
             </a>
           }
         </nav>
       </div>
     } @else {
-      <p class="p-10 text-center opacity-50">No content available.</p>
+      <p style="padding: 40px; text-align: center; color: var(--text-muted)">No content available.</p>
     }
   `,
 })
@@ -111,10 +200,21 @@ export class LinksPageComponent {
       : this.page()!.avatarUrl,
   );
 
+  protected readonly initials = computed(() => {
+    const headline = this.page()?.headline ?? this.page()?.title ?? '';
+    return headline
+      .split(' ')
+      .slice(0, 2)
+      .map((w: string) => w[0])
+      .join('')
+      .toUpperCase();
+  });
+
   getIcon(link: LinksLink): string {
-    if (link.icon) return link.icon;
-    if (link.platform) return PLATFORM_ICONS[link.platform] ?? '';
-    return '';
+    if (link.platform && PLATFORM_ICONS[link.platform]) {
+      return PLATFORM_ICONS[link.platform];
+    }
+    return 'open_in_new';
   }
 
   constructor() {

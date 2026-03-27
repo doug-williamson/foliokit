@@ -9,52 +9,292 @@ import { TagLabelPipe } from '@foliokit/cms-core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [RouterLink, DatePipe, TagLabelPipe],
+  styles: [`
+    :host { display: block; height: 100%; }
+
+    .card {
+      background: var(--surface-0);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      transition: box-shadow 0.18s, transform 0.18s;
+
+      &:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+      }
+    }
+
+    .card-link-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+    }
+
+    /* Thumbnail */
+    .card-thumb {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .card-thumb-fallback {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(130deg, var(--surface-3), var(--surface-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    /* Tag chips */
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      position: relative;
+      z-index: 20;
+    }
+
+    .chip--primary {
+      background: var(--teal-50);
+      border-color: var(--border-accent);
+      color: var(--text-accent);
+    }
+
+    [data-theme="dark"] .chip--primary {
+      background: color-mix(in srgb, var(--teal-500) 12%, transparent);
+    }
+
+    /* Title */
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    /* Excerpt */
+    .card-excerpt {
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Footer */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-author-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--logo-bg);
+      color: var(--logo-text);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-author-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .card-author-date {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* Hero variant */
+    .hero-card {
+      display: block;
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-md);
+      transition: box-shadow 0.18s;
+
+      &:hover .hero-thumb {
+        transform: scale(1.03);
+      }
+    }
+
+    .hero-thumb-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 52%;
+    }
+
+    .hero-thumb {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .hero-thumb-fallback {
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, var(--text-accent) 18%, var(--surface-0));
+    }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    }
+
+    .hero-body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 32px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .hero-chip {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 10px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      backdrop-filter: blur(4px);
+      transition: background 0.12s;
+      position: relative;
+      z-index: 20;
+
+      &:hover { background: rgba(255,255,255,0.3); }
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2.25rem);
+      font-weight: 700;
+      color: white;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+    }
+  `],
   template: `
     @if (variant() === 'hero') {
-      <div
-        class="hero-card block relative w-full overflow-hidden rounded-[var(--r-lg)] group"
-        [style.box-shadow]="'var(--shadow-md)'"
-      >
+      <div class="hero-card">
         <a
           [routerLink]="['/posts', post().slug]"
           class="absolute inset-0 z-10"
           [attr.aria-label]="post().title"
         ></a>
-        <div class="relative w-full" [style.padding-bottom]="'52%'">
+        <div class="hero-thumb-wrap">
           @if (post().thumbnailUrl) {
             <img
+              class="hero-thumb"
               [src]="post().thumbnailUrl"
               [alt]="post().thumbnailAlt || post().title"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           } @else {
-            <div
-              class="absolute inset-0 w-full h-full"
-              style="background-color: color-mix(in srgb, var(--text-accent) 18%, var(--surface-0))"
-            ></div>
+            <div class="hero-thumb-fallback"></div>
           }
-          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+          <div class="hero-gradient"></div>
+          <div class="hero-body">
             @if (firstTwoTags().length > 0) {
-              <div class="flex flex-wrap gap-1.5 mb-3">
+              <div class="hero-tags">
                 @for (tag of firstTwoTags(); track tag) {
                   <a
                     [routerLink]="['/posts']"
                     [queryParams]="{ tag: tag }"
-                    class="relative z-20 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-                  >
-                    {{ tag | tagLabel }}
-                  </a>
+                    class="hero-chip"
+                  >{{ tag | tagLabel }}</a>
                 }
               </div>
             }
-            <h2
-              class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-3"
-              style="font-family: var(--font-display)"
-            >
-              {{ post().title }}
-            </h2>
-            <div class="flex items-center gap-2 text-sm text-white/75">
+            <h2 class="hero-title">{{ post().title }}</h2>
+            <div class="hero-meta">
               <time [dateTime]="publishedDate().toISOString()">
                 {{ publishedDate() | date: 'MMM d, yyyy' }}
               </time>
@@ -67,113 +307,61 @@ import { TagLabelPipe } from '@foliokit/cms-core';
         </div>
       </div>
     } @else {
-      <div
-        class="card-link group relative flex flex-col md:flex-row lg:flex-col h-full overflow-hidden rounded-[var(--r-lg)] transition-all duration-200"
-        [style.background]="'var(--surface-0)'"
-        [style.box-shadow]="'var(--shadow-md)'"
-        [style.border]="'1px solid var(--border)'"
-      >
+      <div class="card">
         <a
           [routerLink]="['/posts', post().slug]"
-          class="absolute inset-0 z-10"
+          class="card-link-overlay"
           [attr.aria-label]="post().title"
         ></a>
-        <div
-          class="relative w-full flex-shrink-0 overflow-hidden
-                 md:w-[280px] md:self-stretch
-                 lg:w-full"
-        >
-          <div
-            class="relative w-full"
-            style="padding-bottom: 56.25%"
-          >
-            @if (post().thumbnailUrl) {
-              <img
-                [src]="post().thumbnailUrl"
-                [alt]="post().thumbnailAlt || post().title"
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            } @else {
-              <div
-                class="absolute inset-0 w-full h-full flex items-center justify-center"
-                style="background-color: color-mix(in srgb, var(--text-accent) 12%, var(--surface-0))"
-              >
-                <svg
-                  class="w-10 h-10 opacity-30"
-                  style="color: var(--text-accent)"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                </svg>
-              </div>
-            }
-          </div>
-        </div>
-        <div class="flex flex-col flex-1 p-4 md:p-5">
+
+        @if (post().thumbnailUrl) {
+          <img
+            class="card-thumb"
+            [src]="post().thumbnailUrl"
+            [alt]="post().thumbnailAlt || post().title"
+          />
+        } @else {
+          <div class="card-thumb-fallback">No image</div>
+        }
+
+        <div class="card-body">
           @if (firstTwoTags().length > 0) {
-            <div class="flex flex-wrap gap-1.5 mb-2.5">
-              @for (tag of firstTwoTags(); track tag) {
+            <div class="card-tags">
+              @for (tag of firstTwoTags(); track tag; let i = $index) {
                 <a
                   [routerLink]="['/posts']"
                   [queryParams]="{ tag: tag }"
-                  class="relative z-20 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
-                  style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
-                >
-                  {{ tag | tagLabel }}
-                </a>
+                  [class]="i === 0 ? 'chip chip--primary' : 'chip'"
+                  style="position: relative; z-index: 20;"
+                >{{ tag | tagLabel }}</a>
               }
             </div>
           }
-          <h2
-            class="text-base font-semibold leading-snug mb-2 group-hover:underline decoration-1 underline-offset-2 flex-grow-0"
-            style="font-family: var(--font-display); color: var(--text-primary)"
-          >
-            {{ post().title }}
-          </h2>
+
+          <h2 class="card-title">{{ post().title }}</h2>
+
           @if (post().excerpt) {
-            <p
-              class="text-sm line-clamp-3 mb-3 flex-1"
-              style="color: var(--text-secondary)"
-            >
-              {{ post().excerpt }}
-            </p>
+            <p class="card-excerpt">{{ post().excerpt }}</p>
           }
-          <div
-            class="flex items-center gap-1.5 text-xs mt-auto"
-            style="color: var(--text-muted)"
-          >
-            <time [dateTime]="publishedDate().toISOString()">
-              {{ publishedDate() | date: 'MMM d, yyyy' }}
-            </time>
-            @if (post().readingTimeMinutes) {
-              <span>·</span>
-              <span>{{ post().readingTimeMinutes }} min read</span>
-            }
+
+          <div class="card-footer">
+            <div class="card-author">
+              <div class="card-author-avatar">
+                {{ authorInitial() }}
+              </div>
+              <div class="card-author-meta">
+                <span class="card-author-name">Author</span>
+                <span class="card-author-date">
+                  {{ publishedDate() | date: 'MMM d, yyyy' }}
+                  @if (post().readingTimeMinutes) { · {{ post().readingTimeMinutes }} min }
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     }
   `,
-  styles: [`
-    :host { display: block; height: 100%; }
-
-    .card-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.12), 0 8px 24px 0 rgb(0 0 0 / 0.08) !important;
-    }
-
-    /* On tablet the thumbnail height matches the content column via align-self: stretch */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .card-link .relative[style*='padding-bottom'] {
-        padding-bottom: 0 !important;
-        height: 100%;
-      }
-    }
-  `],
 })
 export class PostCardComponent {
   readonly post = input.required<BlogPost>();
@@ -181,4 +369,8 @@ export class PostCardComponent {
 
   protected readonly publishedDate = computed(() => new Date(this.post().publishedAt));
   protected readonly firstTwoTags = computed(() => this.post().tags.slice(0, 2));
+  protected readonly authorInitial = computed(() => {
+    const title = this.post().title ?? '';
+    return title[0]?.toUpperCase() ?? 'A';
+  });
 }

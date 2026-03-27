@@ -8,21 +8,44 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PostsListStore } from './posts-list.store';
-import { PostsBoardComponent } from './posts-board.component';
+import { PostsTableComponent } from './posts-table.component';
 
 @Component({
   selector: 'folio-posts-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PostsListStore],
-  imports: [MatButtonModule, MatProgressSpinnerModule, PostsBoardComponent],
+  imports: [MatButtonModule, MatProgressSpinnerModule, PostsTableComponent],
   host: { class: 'block h-full' },
+  styles: [`
+    :host { display: block; height: 100%; }
+
+    .posts-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .posts-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .posts-body {
+      overflow-y: auto;
+      height: calc(100% - 61px);
+    }
+  `],
   template: `
     <div class="flex flex-col h-full">
-      <header class="shrink-0 flex items-center justify-between px-6 pt-6 pb-4">
-        <h1 class="text-2xl font-bold">Posts</h1>
+      <div class="posts-header">
+        <h1 class="posts-title">Posts</h1>
         <button mat-raised-button (click)="newPost()">New Post</button>
-      </header>
+      </div>
 
       @if (store.loading()) {
         <div class="flex-1 flex items-center justify-center">
@@ -33,8 +56,8 @@ import { PostsBoardComponent } from './posts-board.component';
           Failed to load posts. Please try again.
         </div>
       } @else {
-        <div class="flex-1 min-h-0 px-6 pb-6">
-          <folio-posts-board (postSelected)="onPostSelected($event)" />
+        <div class="posts-body">
+          <folio-posts-table (postSelected)="onPostSelected($event)" />
         </div>
       }
     </div>

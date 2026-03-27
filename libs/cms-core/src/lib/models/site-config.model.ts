@@ -11,6 +11,17 @@ export interface NavItem {
   icon?: string;
 }
 
+export interface NavGroup {
+  group: string;
+  items: NavItem[];
+}
+
+export type NavEntry = NavItem | NavGroup;
+
+export function isNavGroup(entry: NavEntry): entry is NavGroup {
+  return 'group' in entry && 'items' in entry;
+}
+
 export type SocialPlatform =
   | 'twitter'
   | 'instagram'

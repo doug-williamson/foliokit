@@ -54,6 +54,9 @@
   --r-lg:  10px;
   --r-xl:  14px;
   --r-2xl: 20px;
+  /* Code block (always dark regardless of theme) */
+  --code-block-bg:   #141920;
+  --code-block-text: #CDD9E8;
 }
 [data-theme="light"] {
   --bg:             var(--cloud-100);
@@ -88,6 +91,86 @@
   --nav-active-color: var(--teal-800);
   color-scheme: light;
 }
+// ─── Badge classes ────────────────────────────────────────────────────────────
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+}
+
+[data-theme="light"] {
+  .badge-pub {
+    background: var(--green-100);
+    color: var(--green-700);
+  }
+  .badge-draft {
+    background: var(--slate-100);
+    color: var(--slate-600);
+  }
+  .badge-sched {
+    background: var(--blue-100);
+    color: var(--blue-700);
+  }
+}
+
+[data-theme="dark"] .badge-pub {
+  background: color-mix(in srgb, var(--green-600) 20%, transparent);
+  color: var(--green-100);
+}
+[data-theme="dark"] .badge-draft {
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+  color: var(--text-muted);
+}
+[data-theme="dark"] .badge-sched {
+  background: color-mix(in srgb, var(--blue-600) 20%, transparent);
+  color: var(--blue-100);
+}
+
+// ─── Avatar classes ───────────────────────────────────────────────────────────
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--logo-bg);
+  color: var(--logo-text);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.avatar--lg {
+  width: 64px;
+  height: 64px;
+  font-size: 22px;
+}
+
+.avatar--xl {
+  width: 96px;
+  height: 96px;
+  font-size: 32px;
+}
+
 [data-theme="dark"] {
   --bg:             #1A1F2E;
   --bg-subtle:      #1E2535;

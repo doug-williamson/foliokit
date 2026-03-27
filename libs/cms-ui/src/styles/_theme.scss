@@ -26,6 +26,18 @@ html[data-theme='light'] {
   --mat-sys-surface-variant: var(--surface-2);
   --mat-sys-outline: var(--border-strong);
   --mat-sys-background: var(--bg);
+
+  // ── Brand motion timing (nudges Material animations) ─────────────────────
+  --mat-sys-motion-duration-short1: 120ms;
+  --mat-sys-motion-duration-medium1: 180ms;
+
+  // ── Form field overrides (OPTION A) ──────────────────────────────────────
+  --mat-form-field-container-shape: var(--r-md);
+  --mat-form-field-outlined-idle-outline-color: var(--border-strong);
+  --mat-form-field-outlined-hover-outline-color: var(--border-accent);
+  --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
+  --mdc-outlined-text-field-label-text-size: 12px;
+  --mdc-outlined-text-field-label-text-weight: 500;
 }
 
 // ─── Dark Theme ──────────────────────────────────────────────────────────────
@@ -49,4 +61,16 @@ html[data-theme='dark'] {
   --mat-sys-surface-variant: var(--surface-2);
   --mat-sys-outline: var(--border-strong);
   --mat-sys-background: var(--bg);
+
+  // ── Brand motion timing ───────────────────────────────────────────────────
+  --mat-sys-motion-duration-short1: 120ms;
+  --mat-sys-motion-duration-medium1: 180ms;
+
+  // ── Form field overrides (OPTION A) ──────────────────────────────────────
+  --mat-form-field-container-shape: var(--r-md);
+  --mat-form-field-outlined-idle-outline-color: var(--border-strong);
+  --mat-form-field-outlined-hover-outline-color: var(--border-accent);
+  --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
+  --mdc-outlined-text-field-label-text-size: 12px;
+  --mdc-outlined-text-field-label-text-weight: 500;
 }
