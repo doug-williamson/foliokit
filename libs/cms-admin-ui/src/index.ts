@@ -31,6 +31,9 @@ export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
 
+// ── Shared editor layout ──────────────────────────────────────────────────────
+export * from './lib/layout/admin-editor-page-layout.component';
+
 // ── Editor sub-components ─────────────────────────────────────────────────────
 export * from './lib/page-editor/links-editor-form.component';
 export * from './lib/post-editor/post-editor-media-tab.component';

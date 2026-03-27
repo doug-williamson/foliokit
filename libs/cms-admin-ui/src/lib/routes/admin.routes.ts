@@ -51,10 +51,6 @@ import { AdminShellComponent } from '../shell/admin-shell.component';
  * ];
  * ```
  *
- * **Phase note:** Editor route targets (post-editor, authors, pages, site-config,
- * links-page, about-page) currently resolve to components that will be promoted
- * into this library in Phase 2. Until then, consumers who need those routes
- * must supply the component implementations themselves by overriding those routes.
  */
 export const adminRoutes: Route[] = [
   {
