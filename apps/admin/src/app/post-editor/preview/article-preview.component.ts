@@ -20,6 +20,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
         flex: 1;
         min-height: 0;
         overflow-y: auto;
+        padding: 20px;
       }
     `,
   ],

@@ -18,6 +18,7 @@ const DISPLAY_DOMAIN = 'foliokitcms.com';
         flex: 1;
         min-height: 0;
         overflow-y: auto;
+        padding: 20px;
       }
       .snippet {
         font-family: arial, sans-serif;

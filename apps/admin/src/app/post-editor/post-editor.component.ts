@@ -49,7 +49,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
        * Force sidenav content to participate in flex height layout.
        */
       mat-sidenav {
-        width: min(420px, 100vw);
+        width: min(520px, 100vw);
         border-left: 1px solid var(--border);
       }
       mat-sidenav-container {
@@ -71,23 +71,23 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         display: flex;
         border-bottom: 1px solid var(--border);
         background: var(--surface-2);
-        padding: 0 16px;
-        gap: 2px;
+        gap: 1px;
         flex-shrink: 0;
       }
 
       .tab-btn {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
+        font-family: var(--font-display);
+        font-size: 13px;
+        letter-spacing: 0.02em;
         color: var(--text-muted);
-        padding: 10px 12px;
+        padding: 12px 16px;
         border-radius: var(--r-sm) var(--r-sm) 0 0;
         cursor: pointer;
         border: none;
         background: none;
         transition: background 0.12s, color 0.12s;
+        flex: 1;
+        text-align: center;
 
         &:hover {
           background: var(--surface-3);
@@ -104,6 +104,8 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 
       /* Tab content area */
       .tab-content {
+        display: flex;
+        flex-direction: column;
         flex: 1;
         overflow-y: auto;
         min-height: 0;
