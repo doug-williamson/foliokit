@@ -69,7 +69,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state.component
       </div>
 
       <!-- Content -->
-      <div class="flex-1 overflow-auto">
+      <div class="flex-1 overflow-auto page-enter">
         @if (loading()) {
           <div class="flex items-center justify-center p-12">
             <mat-spinner diameter="40" />

@@ -44,7 +44,7 @@ import { BlogPost } from '@foliokit/cms-core';
     }
   `],
   template: `
-    <mat-card appearance="outlined" class="flex flex-col overflow-hidden">
+    <mat-card appearance="outlined" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 60ms">
       <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
         <span class="text-sm font-semibold">Queued</span>
         <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">

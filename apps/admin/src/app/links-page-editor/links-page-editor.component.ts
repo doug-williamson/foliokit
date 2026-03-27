@@ -50,7 +50,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <admin-links-editor-form class="flex-1 min-h-0" />
+        <admin-links-editor-form class="flex-1 min-h-0 page-enter" />
       }
 
       <!-- Sticky footer -->

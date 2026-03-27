@@ -93,7 +93,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <div class="page-content-form">
+        <div class="page-content-form page-enter">
           <div class="flex flex-col gap-5 max-w-2xl mx-auto">
 
             @if (isAboutNew()) {

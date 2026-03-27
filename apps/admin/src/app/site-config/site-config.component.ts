@@ -106,7 +106,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
       } @else {
         <!-- Tabs -->
         <mat-tab-group
-          class="flex flex-col flex-1 overflow-hidden"
+          class="flex flex-col flex-1 overflow-hidden page-enter"
           animationDuration="0"
           (selectedTabChange)="onTabChange()"
         >

@@ -97,7 +97,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       </div>
 
       <!-- Scrollable form -->
-      <div class="page-content-form">
+      <div class="page-content-form page-enter">
         <form [formGroup]="form" class="flex flex-col gap-5 max-w-2xl mx-auto">
           <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
