@@ -6,7 +6,7 @@ import {
   inject,
   PLATFORM_ID,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -183,6 +183,7 @@ export class LinksPageComponent {
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject(DOCUMENT);
   readonly theme = inject(ThemeService);
 
   readonly page = toSignal(
@@ -210,6 +211,16 @@ export class LinksPageComponent {
       .toUpperCase();
   });
 
+  private upsertCanonical(href: string): void {
+    let el = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!el) {
+      el = this.document.createElement('link');
+      el.rel = 'canonical';
+      this.document.head.appendChild(el);
+    }
+    el.href = href;
+  }
+
   getIcon(link: LinksLink): string {
     if (link.platform && PLATFORM_ICONS[link.platform]) {
       return PLATFORM_ICONS[link.platform];
@@ -222,10 +233,16 @@ export class LinksPageComponent {
       const p = this.page();
       if (!p) return;
       if (!isPlatformBrowser(this.platformId)) return;
-      this.title.setTitle(p.seo?.title ?? p.title ?? 'Links');
+      const pageTitle = p.seo?.title ?? p.title ?? 'Links';
+      this.title.setTitle(pageTitle);
       if (p.seo?.description) {
         this.meta.updateTag({ name: 'description', content: p.seo.description });
       }
+      this.meta.updateTag({ property: 'og:title', content: pageTitle });
+      this.meta.updateTag({ property: 'og:type', content: 'website' });
+      const canonicalUrl = `${this.document.location?.origin ?? ''}/links`;
+      this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+      this.upsertCanonical(canonicalUrl);
       if (p.seo?.ogImage) {
         this.meta.updateTag({ property: 'og:image', content: p.seo.ogImage });
       }

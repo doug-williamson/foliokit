@@ -39,7 +39,8 @@ import { TagLabelPipe } from '@foliokit/cms-core';
     /* Thumbnail */
     .card-thumb {
       width: 100%;
-      height: 180px;
+      aspect-ratio: 16 / 9;
+      max-height: 200px;
       object-fit: cover;
       display: block;
       flex-shrink: 0;
@@ -47,7 +48,8 @@ import { TagLabelPipe } from '@foliokit/cms-core';
 
     .card-thumb-fallback {
       width: 100%;
-      height: 180px;
+      aspect-ratio: 16 / 9;
+      max-height: 200px;
       background: linear-gradient(130deg, var(--surface-3), var(--surface-2));
       display: flex;
       align-items: center;
@@ -350,7 +352,7 @@ import { TagLabelPipe } from '@foliokit/cms-core';
                 {{ authorInitial() }}
               </div>
               <div class="card-author-meta">
-                <span class="card-author-name">Author</span>
+                <span class="card-author-name">{{ authorName() || 'Author' }}</span>
                 <span class="card-author-date">
                   {{ publishedDate() | date: 'MMM d, yyyy' }}
                   @if (post().readingTimeMinutes) { · {{ post().readingTimeMinutes }} min }
@@ -366,11 +368,12 @@ import { TagLabelPipe } from '@foliokit/cms-core';
 export class PostCardComponent {
   readonly post = input.required<BlogPost>();
   readonly variant = input<'hero' | 'card'>('card');
+  readonly authorName = input<string | null>(null);
 
   protected readonly publishedDate = computed(() => new Date(this.post().publishedAt));
   protected readonly firstTwoTags = computed(() => this.post().tags.slice(0, 2));
   protected readonly authorInitial = computed(() => {
-    const title = this.post().title ?? '';
-    return title[0]?.toUpperCase() ?? 'A';
+    const name = this.authorName() ?? this.post().title ?? '';
+    return name[0]?.toUpperCase() ?? 'A';
   });
 }
