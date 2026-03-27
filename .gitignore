@@ -42,6 +42,7 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
+smoke-test/.angular/
 
 __screenshots__/
 

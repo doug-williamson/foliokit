@@ -1,0 +1,26 @@
+@use '@angular/material' as mat;
+
+html,
+html[data-theme='light'] {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: 'Plus Jakarta Sans',
+    density: 0,
+  ));
+}
+
+html[data-theme='dark'] {
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: 'Plus Jakarta Sans',
+    density: 0,
+  ));
+}
