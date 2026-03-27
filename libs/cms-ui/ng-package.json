@@ -3,5 +3,17 @@
   "dest": "../../dist/libs/cms-ui",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": [
+    {
+      "input": "src/styles",
+      "glob": "tokens.css",
+      "output": "styles"
+    },
+    {
+      "input": "src/styles",
+      "glob": "_tokens.scss",
+      "output": "styles"
+    }
+  ]
 }

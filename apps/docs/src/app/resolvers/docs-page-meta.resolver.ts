@@ -8,10 +8,12 @@ const META: Record<string, DocsPageMeta> = {
     description: 'Install FolioKit and wire up your first Angular app in minutes.',
     badge: 'v1.0.0',
     headings: [
-      { id: 'installation',   label: 'Installation',   level: 2 },
-      { id: 'firebase-setup', label: 'Firebase Setup', level: 2 },
-      { id: 'app-config',     label: 'App Config',     level: 2 },
-      { id: 'next-steps',     label: 'Next Steps',     level: 2 },
+      { id: 'installation',    label: 'Installation',         level: 2 },
+      { id: 'tokens',          label: 'Import Design Tokens', level: 2 },
+      { id: 'material-theme',  label: 'Material Theme',       level: 2 },
+      { id: 'app-config',      label: 'Wire provideFolioKit', level: 2 },
+      { id: 'shell',           label: 'App Shell',            level: 2 },
+      { id: 'next-steps',      label: 'Next Steps',           level: 2 },
     ],
   },
   'getting-started/nx': {
@@ -96,6 +98,61 @@ const META: Record<string, DocsPageMeta> = {
   },
   'markdown/examples': {
     title: 'MarkdownComponent — Live Examples',
+  },
+  'theming': {
+    title: 'Theming',
+    description: 'Design token contract, ThemeService API, and how to write custom theme overrides.',
+    badge: 'v1.0.0',
+    headings: [
+      { id: 'how-it-works',     label: 'How It Works',      level: 2 },
+      { id: 'token-reference',  label: 'Token Reference',   level: 2 },
+      { id: 'custom-overrides', label: 'Custom Overrides',  level: 2 },
+      { id: 'theme-service',    label: 'ThemeService API',  level: 2 },
+    ],
+  },
+  'firebase': {
+    title: 'Firebase Setup',
+    description: 'Firebase project configuration, Firestore schema, and security rules.',
+    headings: [
+      { id: 'project-setup',    label: 'Project Setup',     level: 2 },
+      { id: 'environment',      label: 'Environment Config', level: 2 },
+      { id: 'firestore-schema', label: 'Firestore Schema',  level: 2 },
+      { id: 'security-rules',   label: 'Security Rules',    level: 2 },
+      { id: 'emulator',         label: 'Local Emulator',    level: 2 },
+    ],
+  },
+  'components/about-page': {
+    title: 'AboutPageComponent',
+    description: 'Author profile page with avatar, markdown bio, and social links.',
+    badge: 'v1.0.0',
+    headings: [
+      { id: 'overview',    label: 'Overview',          level: 2 },
+      { id: 'api',         label: 'AboutPageConfig',   level: 2 },
+      { id: 'route-setup', label: 'Route Setup',       level: 2 },
+      { id: 'resolver',    label: 'Resolver Example',  level: 2 },
+      { id: 'dark-mode',   label: 'Dark Mode Avatar',  level: 2 },
+      { id: 'seo',         label: 'SEO',               level: 2 },
+    ],
+  },
+  'components/links-page': {
+    title: 'LinksPageComponent',
+    description: 'A link-in-bio page component driven by SocialLink config.',
+    badge: 'v1.0.0',
+    headings: [
+      { id: 'overview',    label: 'Overview',    level: 2 },
+      { id: 'basic-usage', label: 'Basic Usage', level: 2 },
+      { id: 'social-link', label: 'SocialLink',  level: 2 },
+    ],
+  },
+  'components/markdown': {
+    title: 'MarkdownComponent',
+    description: 'Renders Markdown with embedded media token support.',
+    badge: 'v1.0.0',
+    headings: [
+      { id: 'overview',       label: 'Overview',       level: 2 },
+      { id: 'basic-usage',    label: 'Basic Usage',    level: 2 },
+      { id: 'embedded-media', label: 'Embedded Media', level: 2 },
+    ],
   },
   'tokens': {
     title: 'Token Contracts',
