@@ -1,4 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+// ── Web fonts ─────────────────────────────────────────────────────────────────
+// Google Fonts CDN removed for privacy and CSP compliance.
+// The font CSS custom properties (--font-display, --font-mono, --font-sans) in
+// _tokens.scss include system font fallbacks that activate automatically when
+// the named web fonts are not loaded.
+//
+// To re-enable Google Fonts, uncomment the line below:
+// @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+//
+// Or use self-hosted font packages from Fontsource (no CDN, full control):
+//   npm install @fontsource-variable/fraunces @fontsource-variable/jetbrains-mono @fontsource-variable/plus-jakarta-sans
+// Then import in your app's styles.scss:
+//   @import '@fontsource-variable/fraunces/index.css';
+//   @import '@fontsource-variable/jetbrains-mono/index.css';
+//   @import '@fontsource-variable/plus-jakarta-sans/index.css';
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── Article body content ──────────────────────────────────────────────────────
 

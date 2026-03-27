@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { FIREBASE_STORAGE } from '@foliokit/cms-core';
+import { FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 import { PostEditorCoverImageComponent } from './post-editor-cover-image.component';
 import type { BlogPost } from '@foliokit/cms-core';
@@ -92,6 +92,11 @@ function setup(postOverrides: Partial<BlogPost> = {}) {
   const storeStub = {
     post: postSignal,
     updateField: vi.fn(),
+    tempPostId: vi.fn(() => 'draft-temp'),
+  };
+
+  const postServiceStub = {
+    deleteStorageFile: vi.fn(() => ({ subscribe: vi.fn() })),
   };
 
   TestBed.configureTestingModule({
@@ -100,6 +105,7 @@ function setup(postOverrides: Partial<BlogPost> = {}) {
       { provide: PostEditorStore, useValue: storeStub },
       { provide: FIREBASE_STORAGE, useValue: {} },
       { provide: PLATFORM_ID, useValue: 'browser' },
+      { provide: PostService, useValue: postServiceStub },
     ],
   });
 
@@ -107,20 +113,30 @@ function setup(postOverrides: Partial<BlogPost> = {}) {
   const component = fixture.componentInstance;
   fixture.detectChanges();
 
-  return { fixture, component, storeStub, postSignal };
+  return { fixture, component, storeStub, postServiceStub, postSignal };
 }
 
 // ---------------------------------------------------------------------------
 // Drag interactions
 // ---------------------------------------------------------------------------
 
+function fakeDragEvent(files?: File[]): DragEvent {
+  const preventDefault = vi.fn();
+  const fileList = files
+    ? Object.assign([...files], { item: (i: number) => files[i] ?? null, length: files.length })
+    : null;
+  return {
+    preventDefault,
+    dataTransfer: fileList ? { files: fileList } : { files: { length: 0 } },
+  } as unknown as DragEvent;
+}
+
 describe('PostEditorCoverImageComponent — drag interactions', () => {
   afterEach(() => TestBed.resetTestingModule());
 
   it('sets isDragOver to true on dragover', () => {
     const { component } = setup();
-    const event = new DragEvent('dragover');
-    vi.spyOn(event, 'preventDefault');
+    const event = fakeDragEvent();
 
     component.onDragOver(event);
 
@@ -130,8 +146,7 @@ describe('PostEditorCoverImageComponent — drag interactions', () => {
 
   it('clears isDragOver on dragleave', () => {
     const { component } = setup();
-    const dragover = new DragEvent('dragover');
-    component.onDragOver(dragover);
+    component.onDragOver(fakeDragEvent());
 
     component.onDragLeave();
 
@@ -144,10 +159,7 @@ describe('PostEditorCoverImageComponent — drag interactions', () => {
     const task = makeUploadTask();
     vi.mocked(uploadBytesResumable).mockReturnValue(task as never);
 
-    const dt = new DataTransfer();
-    dt.items.add(file);
-    const event = new DragEvent('drop', { dataTransfer: dt });
-    vi.spyOn(event, 'preventDefault');
+    const event = fakeDragEvent([file]);
 
     component.onDrop(event);
 
@@ -158,7 +170,7 @@ describe('PostEditorCoverImageComponent — drag interactions', () => {
 
   it('does nothing on drop when dataTransfer has no files', () => {
     const { component } = setup();
-    const event = new DragEvent('drop', { dataTransfer: new DataTransfer() });
+    const event = fakeDragEvent([]);
     component.onDrop(event);
     expect(vi.mocked(uploadBytesResumable)).not.toHaveBeenCalled();
   });
@@ -282,8 +294,8 @@ describe('PostEditorCoverImageComponent — onDeleteCover', () => {
 
     component.onDeleteCover();
 
-    expect(storeStub.updateField).toHaveBeenCalledWith('thumbnailUrl', undefined);
-    expect(storeStub.updateField).toHaveBeenCalledWith('thumbnailAlt', undefined);
+    expect(storeStub.updateField).toHaveBeenCalledWith('thumbnailUrl', '');
+    expect(storeStub.updateField).toHaveBeenCalledWith('thumbnailAlt', '');
   });
 
   it('does nothing when user cancels the confirm dialog', () => {

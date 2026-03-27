@@ -31,7 +31,8 @@
     "dev:seed-after-emulator": "npm run dev:wait-emulator && npm run seed",
     "dev:blog": "npm run dev:wait-emulator && npm run start:blog",
     "dev:admin": "npm run dev:wait-emulator && npm run start:admin",
-    "dev:all": "concurrently --kill-others-on-fail --names \"emulator,seed,blog,admin\" -c \"cyan,yellow,green,blue\" \"npm run emulator\" \"npm run dev:seed-after-emulator\" \"npm run dev:blog\" \"npm run dev:admin\""
+    "dev:all": "concurrently --kill-others-on-fail --names \"emulator,seed,blog,admin\" -c \"cyan,yellow,green,blue\" \"npm run emulator\" \"npm run dev:seed-after-emulator\" \"npm run dev:blog\" \"npm run dev:admin\"",
+    "check:peers": "node --require @swc-node/register tools/scripts/check-peer-deps.ts"
   },
   "private": false,
   "devDependencies": {
@@ -100,6 +101,7 @@
     "firebase-admin": "^13.7.0",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.4",
+    "material-icons": "^1.13.14",
     "ngx-markdown": "^21.1.0",
     "postcss": "^8.5.8",
     "rxjs": "~7.8.0",

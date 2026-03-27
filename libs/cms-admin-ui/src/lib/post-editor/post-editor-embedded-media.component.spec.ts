@@ -102,6 +102,7 @@ function setup(postOverrides: Partial<BlogPost> = {}) {
   const storeStub = {
     post: postSignal,
     updateField: vi.fn(),
+    tempPostId: vi.fn(() => 'draft-temp'),
   };
 
   TestBed.configureTestingModule({

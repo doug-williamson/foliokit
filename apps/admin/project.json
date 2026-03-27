@@ -20,7 +20,10 @@
             "input": "apps/admin/public"
           }
         ],
-        "styles": ["apps/admin/src/styles.scss"]
+        "styles": [
+          "node_modules/material-icons/iconfont/material-icons.css",
+          "apps/admin/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {

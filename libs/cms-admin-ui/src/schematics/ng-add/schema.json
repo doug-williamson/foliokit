@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "FolioKitAdminUiNgAdd",
+  "title": "FolioKit Admin UI ng-add options",
+  "type": "object",
+  "properties": {
+    "adminEmail": {
+      "type": "string",
+      "description": "Email address of the admin user. Must match your Firebase Authentication account and your Firestore rules.",
+      "x-prompt": "What is your admin email address?"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the Angular project to configure (defaults to the default project in angular.json)."
+    }
+  },
+  "required": ["adminEmail"]
+}

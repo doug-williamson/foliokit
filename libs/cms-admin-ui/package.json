@@ -24,5 +24,9 @@
     "ngx-markdown": "^21.1.0",
     "rxjs": "~7.8.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "schematics": "./schematics/collection.json",
+  "ng-add": {
+    "save": "dependencies"
+  }
 }

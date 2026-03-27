@@ -57,9 +57,9 @@ export function makeBlogPost(overrides: Partial<BlogPost> = {}): BlogPost {
     tags: [],
     embeddedMedia: {},
     seo: {},
-    publishedAt: fakeTimestamp,
-    updatedAt: fakeTimestamp,
-    createdAt: fakeTimestamp,
+    publishedAt: fakeTimestamp.seconds * 1000,
+    updatedAt: fakeTimestamp.seconds * 1000,
+    createdAt: fakeTimestamp.seconds * 1000,
     ...overrides,
   };
 }
