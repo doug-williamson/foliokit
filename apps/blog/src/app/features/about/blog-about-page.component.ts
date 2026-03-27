@@ -13,9 +13,23 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { MarkdownModule } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
-import type { AboutPageConfig } from '@foliokit/cms-core';
+import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BlogSeoService } from '../../services/blog-seo.service';
 import { ThemeService } from '@foliokit/cms-ui';
+
+const PLATFORM_ICONS: Record<SocialPlatform, string> = {
+  youtube: 'play_circle',
+  twitch: 'live_tv',
+  twitter: 'tag',
+  bluesky: 'cloud',
+  github: 'code',
+  linkedin: 'business',
+  instagram: 'photo_camera',
+  tiktok: 'music_note',
+  facebook: 'thumb_up',
+  email: 'mail',
+  website: 'language',
+};
 
 @Component({
   selector: 'blog-about-page',
@@ -147,7 +161,7 @@ import { ThemeService } from '@foliokit/cms-ui';
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <mat-icon>link</mat-icon>
+                <mat-icon>{{ platformIcon(link.platform) }}</mat-icon>
                 {{ link.label || link.platform }}
               </a>
             }
@@ -183,6 +197,10 @@ export class BlogAboutPageComponent {
     if (this.theme.isDark() && a.photoUrlDark) return a.photoUrlDark;
     return a.photoUrl ?? null;
   });
+
+  protected platformIcon(platform?: SocialPlatform): string {
+    return platform && PLATFORM_ICONS[platform] ? PLATFORM_ICONS[platform] : 'link';
+  }
 
   protected readonly initials = computed(() => {
     const headline = this.about()?.headline ?? '';

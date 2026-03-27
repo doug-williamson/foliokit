@@ -65,10 +65,7 @@ import type { PostRouteData } from '../../resolvers/post.resolver';
         <!-- ── Article ────────────────────────────────────────────────────── -->
         <article class="max-w-[720px] mx-auto">
           <!-- Title -->
-          <h1
-            class="text-3xl md:text-4xl font-bold leading-tight mb-3"
-            style="font-family: var(--font-display); color: var(--text-primary)"
-          >
+          <h1 class="post-title">
             {{ post()!.title }}
           </h1>
 
@@ -78,10 +75,7 @@ import type { PostRouteData } from '../../resolvers/post.resolver';
           }
 
           <!-- Meta row -->
-          <div
-            class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm mb-8"
-            style="color: var(--text-muted)"
-          >
+          <div class="post-meta flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-8">
             @if (author()?.displayName) {
               <span style="color: var(--text-secondary); font-weight: 500">
                 {{ author()!.displayName }}
@@ -115,7 +109,7 @@ import type { PostRouteData } from '../../resolvers/post.resolver';
           </div>
 
           <!-- Surface card -->
-          <div class="mt-6 rounded-2xl shadow-sm bg-white dark:bg-zinc-900 p-6 md:p-10">
+          <div class="surface-card mt-6 p-6 md:p-10">
 
             <!-- Thumbnail -->
             @if (post()!.thumbnailUrl) {
@@ -144,7 +138,40 @@ import type { PostRouteData } from '../../resolvers/post.resolver';
       }
     </div>
   `,
-  styles: [':host { display: block; }'],
+  styles: [`
+    :host { display: block; }
+
+    .surface-card {
+      background: var(--surface-0);
+      border-radius: var(--r-2xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .folio-post-subtitle {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.125rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .post-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3.5vw, 2.7rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .post-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  `],
 })
 export class PostDetailComponent {
   private readonly route = inject(ActivatedRoute);

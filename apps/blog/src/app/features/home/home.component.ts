@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { take } from 'rxjs/operators';
@@ -149,6 +150,7 @@ import { BlogSeoService } from '../../services/blog-seo.service';
 export class HomeComponent {
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly blogSeoService = inject(BlogSeoService);
+  private readonly document = inject(DOCUMENT);
 
   private readonly siteConfig = toSignal(
     this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
@@ -186,7 +188,8 @@ export class HomeComponent {
     effect(() => {
       const config = this.siteConfig();
       if (!config) return;
-      this.blogSeoService.setDefaultMeta(config);
+      const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
+      this.blogSeoService.setDefaultMeta(config, baseUrl);
     });
   }
 }
