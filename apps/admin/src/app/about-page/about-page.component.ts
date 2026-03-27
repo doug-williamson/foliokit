@@ -93,8 +93,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <div class="flex-1 overflow-y-auto">
-          <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+        <div class="page-content-form">
+          <div class="flex flex-col gap-5 max-w-2xl mx-auto">
 
             @if (isAboutNew()) {
               <div class="flex items-start gap-3 p-4 rounded-lg border"
@@ -237,7 +237,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             </form>
 
             <!-- Social links -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-5">
               <div class="flex items-center justify-between">
                 <span class="section-label">Social Links</span>
                 <button mat-stroked-button type="button" (click)="addAboutSocialLink()">
@@ -296,7 +296,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             </div>
 
             <!-- SEO -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-5">
               <span class="section-label">SEO</span>
               <form [formGroup]="aboutSeoForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">

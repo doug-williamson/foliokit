@@ -112,7 +112,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
         >
           <!-- ── General ── -->
           <mat-tab label="General">
-            <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col gap-5 max-w-2xl mx-auto px-6 py-6">
               <form [formGroup]="generalForm" class="flex flex-col gap-5">
                 <mat-form-field appearance="outline">
                   <mat-label>Site Name</mat-label>
@@ -151,7 +151,7 @@ import { SiteConfigEditorStore } from '@foliokit/cms-admin-ui';
 
           <!-- ── Navigation ── -->
           <mat-tab label="Navigation">
-            <div class="flex flex-col gap-4 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col gap-5 max-w-2xl mx-auto px-6 py-6">
               <div class="flex items-center justify-between">
                 <span class="section-label">Nav Items</span>
                 <button mat-stroked-button type="button" (click)="addNavItem()">
