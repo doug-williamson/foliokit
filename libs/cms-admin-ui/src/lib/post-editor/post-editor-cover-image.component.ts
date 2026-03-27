@@ -88,7 +88,9 @@ import { PostEditorStore } from './post-editor.store';
         <div
           class="drop-zone w-full flex flex-col items-center justify-center gap-2 py-10 cursor-pointer select-none"
           [class.drag-over]="isDragOver()"
+          role="button" tabindex="0"
           (click)="isBrowser && fileInput.click()"
+          (keydown.enter)="isBrowser && fileInput.click()"
           (dragover)="isBrowser && onDragOver($event)"
           (dragleave)="isBrowser && onDragLeave()"
           (drop)="isBrowser && onDrop($event)"
