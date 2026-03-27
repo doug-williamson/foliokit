@@ -8,14 +8,14 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PostsListStore } from './posts-list.store';
-import { PostsTableComponent } from './posts-table.component';
+import { PostsBoardComponent } from './posts-board.component';
 
 @Component({
   selector: 'folio-posts-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PostsListStore],
-  imports: [MatButtonModule, MatProgressSpinnerModule, PostsTableComponent],
+  imports: [MatButtonModule, MatProgressSpinnerModule, PostsBoardComponent],
   host: { class: 'block h-full' },
   styles: [`
     :host { display: block; height: 100%; }
@@ -35,10 +35,6 @@ import { PostsTableComponent } from './posts-table.component';
       color: var(--text-primary);
     }
 
-    .posts-body {
-      overflow-y: auto;
-      height: calc(100% - 61px);
-    }
   `],
   template: `
     <div class="flex flex-col h-full">
@@ -56,9 +52,7 @@ import { PostsTableComponent } from './posts-table.component';
           Failed to load posts. Please try again.
         </div>
       } @else {
-        <div class="posts-body">
-          <folio-posts-table (postSelected)="onPostSelected($event)" />
-        </div>
+        <folio-posts-board class="flex-1 min-h-0" (postSelected)="onPostSelected($event)" />
       }
     </div>
   `,

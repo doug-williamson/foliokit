@@ -21,6 +21,7 @@ import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/
         flex: 1;
         min-height: 0;
         overflow-y: auto;
+        padding: 20px;
       }
       .thumbnail-placeholder {
         background: color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
