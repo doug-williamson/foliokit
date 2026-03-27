@@ -20,6 +20,26 @@ export const DOCS_MANIFEST: DocsRouteNode[] = [
     ],
   },
   {
+    label: 'Theming',
+    path: '/docs/theming',
+    icon: 'palette',
+  },
+  {
+    label: 'Firebase',
+    path: '/docs/firebase',
+    icon: 'cloud',
+  },
+  {
+    label: 'Components',
+    path: '/docs/components/about-page',
+    icon: 'widgets',
+    children: [
+      { label: 'AboutPage',  path: '/docs/components/about-page' },
+      { label: 'LinksPage',  path: '/docs/components/links-page' },
+      { label: 'Markdown',   path: '/docs/components/markdown' },
+    ],
+  },
+  {
     label: 'LinksPage',
     path: '/docs/links-page',
     icon: 'link',

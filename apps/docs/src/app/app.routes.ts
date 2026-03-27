@@ -101,6 +101,41 @@ export const appRoutes: Route[] = [
             ),
           ),
 
+          // Theming
+          docsRoute('theming', () =>
+            import('./pages/theming/theming-page.component').then(
+              m => m.ThemingPageComponent,
+            ),
+          ),
+
+          // Firebase
+          docsRoute('firebase', () =>
+            import('./pages/firebase/firebase-page.component').then(
+              m => m.FirebasePageComponent,
+            ),
+          ),
+
+          // Components — AboutPage
+          docsRoute('components/about-page', () =>
+            import('./pages/about-page/about-page-docs.component').then(
+              m => m.AboutPageDocsComponent,
+            ),
+          ),
+
+          // Components — LinksPage (alias to existing)
+          docsRoute('components/links-page', () =>
+            import('./pages/links-page/links-page-overview-page.component').then(
+              m => m.LinksPageOverviewPageComponent,
+            ),
+          ),
+
+          // Components — Markdown (alias to existing)
+          docsRoute('components/markdown', () =>
+            import('./pages/markdown/markdown-overview-page.component').then(
+              m => m.MarkdownOverviewPageComponent,
+            ),
+          ),
+
           // Tokens
           docsRoute('tokens', () =>
             import('./pages/tokens/tokens-overview-page.component').then(

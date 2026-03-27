@@ -12,7 +12,7 @@
     },
     {
       "input": "src/styles",
-      "glob": "tokens.scss",
+      "glob": "_tokens.scss",
       "output": "styles"
     }
   ]
