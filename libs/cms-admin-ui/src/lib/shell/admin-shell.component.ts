@@ -11,14 +11,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
  * - **Content** nav group: Posts, Authors
- * - **Site** nav group: Site Config, Pages, About (when enabled), Links (when enabled)
+ * - **Site** nav group: Site Config, Pages, About (nested child, when enabled), Links (nested child, when enabled)
  * - Footer row with the signed-in user's email and a logout button
  *
  * `SHELL_CONFIG` is provided internally from the `appName` input — you do **not**
  * need to provide it separately in your route or app config.
  *
- * Conditionally shows the About and Links nav items based on whether those
- * pages are enabled in the site configuration (read from `SiteConfigEditorStore`).
+ * Conditionally shows the About and Links nav items (visually nested under Pages)
+ * based on whether those pages are enabled in the site configuration
+ * (read from `SiteConfigEditorStore`).
  *
  * @example
  * ```ts
@@ -69,18 +70,18 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           <mat-icon class="nav-icon" svgIcon="settings" />
           <span class="nav-label">Site Config</span>
         </a>
-        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link">
+        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
           <mat-icon class="nav-icon" svgIcon="auto_stories" />
           <span class="nav-label">Pages</span>
         </a>
         @if (pages()?.about?.enabled) {
-          <a class="nav-item" routerLink="/about-page" routerLinkActive="active-link">
+          <a class="nav-item nav-child" routerLink="/pages/about" routerLinkActive="active-link">
             <mat-icon class="nav-icon" svgIcon="person" />
             <span class="nav-label">About</span>
           </a>
         }
         @if (pages()?.links?.enabled) {
-          <a class="nav-item" routerLink="/links-page" routerLinkActive="active-link">
+          <a class="nav-item nav-child" routerLink="/pages/links" routerLinkActive="active-link">
             <mat-icon class="nav-icon" svgIcon="link" />
             <span class="nav-label">Links</span>
           </a>

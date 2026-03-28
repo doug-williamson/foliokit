@@ -93,7 +93,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       }
 
       .tab-btn {
-        font-family: var(--font-display);
+        font-family: var(--font-body);
         font-size: 13px;
         letter-spacing: 0.02em;
         color: var(--text-muted);

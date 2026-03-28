@@ -27,7 +27,7 @@ test.beforeEach(async () => {
 
 test('admin saves a new about headline → blog /about reflects it', async ({ page }) => {
   // ── Step 1: Admin — update the About Page headline ──────────────────────
-  await page.goto('/about-page');
+  await page.goto('/pages/about');
   await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 12_000 });
 
   await page.getByLabel('Headline').fill(UNIQUE_HEADLINE);
@@ -56,7 +56,7 @@ test('admin saves a new about headline → blog /about reflects it', async ({ pa
 
 test('admin disables about page → blog /about redirects to /not-found', async ({ page }) => {
   // ── Step 1: Admin — disable the About page ───────────────────────────────
-  await page.goto('/about-page');
+  await page.goto('/pages/about');
   await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 12_000 });
 
   const enableToggle = page.locator('mat-slide-toggle').filter({ hasText: /enable/i }).first();

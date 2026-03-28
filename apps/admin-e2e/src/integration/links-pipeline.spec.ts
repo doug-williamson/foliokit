@@ -18,7 +18,7 @@ test.beforeEach(async () => {
 
 test('admin adds a new link → blog /links shows it', async ({ page }) => {
   // ── Step 1: Admin — add a link ───────────────────────────────────────────
-  await page.goto('/links-page');
+  await page.goto('/pages/links');
   await expect(page.getByRole('button', { name: /add link/i })).toBeVisible({ timeout: 12_000 });
 
   await page.getByRole('button', { name: /add link/i }).click();
@@ -42,7 +42,7 @@ test('admin adds a new link → blog /links shows it', async ({ page }) => {
 
 test('admin disables links page → blog /links redirects to /not-found', async ({ page }) => {
   // ── Step 1: Admin — disable the Links page ───────────────────────────────
-  await page.goto('/links-page');
+  await page.goto('/pages/links');
   await expect(page.getByRole('heading', { name: 'Links Page' })).toBeVisible({ timeout: 12_000 });
 
   const enableToggle = page.locator('mat-slide-toggle').filter({ hasText: /enable/i }).first();

@@ -16,7 +16,7 @@ test.beforeEach(async () => {
 
 test.describe('Links Page editor — initial load', () => {
   test('loads the Links Page editor with seeded links', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('heading', { name: 'Links Page' })).toBeVisible({ timeout: 10_000 });
     // Seeded links: My Blog, GitHub, Bluesky, Twitter / X
     await expect(page.getByText('My Blog')).toBeVisible({ timeout: 8_000 });
@@ -24,7 +24,7 @@ test.describe('Links Page editor — initial load', () => {
   });
 
   test('shows Headline field with seeded value', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 8_000 });
     await expect(page.getByLabel('Headline')).toHaveValue('Dev Author');
   });
@@ -32,7 +32,7 @@ test.describe('Links Page editor — initial load', () => {
 
 test.describe('Links Page editor — adding and editing links', () => {
   test('adds a new link and saves — link appears after reload', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('button', { name: /add link/i })).toBeVisible({ timeout: 10_000 });
 
     await page.getByRole('button', { name: /add link/i }).click();
@@ -56,7 +56,7 @@ test.describe('Links Page editor — adding and editing links', () => {
   });
 
   test('edits an existing link URL and saves', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByText('My Blog')).toBeVisible({ timeout: 10_000 });
 
     // The first URL input corresponds to the "My Blog" link
@@ -75,7 +75,7 @@ test.describe('Links Page editor — adding and editing links', () => {
   });
 
   test('deletes a link and saves — link absent after reload', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByText('Twitter / X')).toBeVisible({ timeout: 10_000 });
 
     // Count delete buttons before
@@ -97,7 +97,7 @@ test.describe('Links Page editor — adding and editing links', () => {
 
 test.describe('Links Page editor — enabled toggle', () => {
   test('toggling enabled off saves false to Firestore', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('heading', { name: 'Links Page' })).toBeVisible({ timeout: 10_000 });
 
     // The Links editor form has a mat-slide-toggle for "Enable Links Page"
@@ -113,7 +113,7 @@ test.describe('Links Page editor — enabled toggle', () => {
   });
 
   test('toggling enabled back on saves true to Firestore', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('heading', { name: 'Links Page' })).toBeVisible({ timeout: 10_000 });
 
     const enableToggle = page.locator('mat-slide-toggle').filter({ hasText: /enable/i }).first();
@@ -135,7 +135,7 @@ test.describe('Links Page editor — enabled toggle', () => {
 
 test.describe('Links Page editor — unsaved changes guard', () => {
   test('navigating away with unsaved changes shows confirm dialog', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('button', { name: /add link/i })).toBeVisible({ timeout: 10_000 });
 
     // Dirty the form by adding a link
@@ -152,7 +152,7 @@ test.describe('Links Page editor — unsaved changes guard', () => {
   });
 
   test('Cancel button reverts unsaved changes', async ({ page }) => {
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     await page.getByLabel('Headline').fill('Dirty headline');

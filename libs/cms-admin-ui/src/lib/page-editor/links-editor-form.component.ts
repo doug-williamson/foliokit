@@ -97,85 +97,85 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
           />
         </mat-form-field>
 
-        <!-- Avatar upload -->
+        <!-- Avatar upload (light + dark) -->
         <div class="flex flex-col gap-2">
-          <span class="text-sm font-semibold">Avatar (Light Mode)</span>
-          @if (avatarUploading()) {
-            <mat-progress-bar mode="determinate" [value]="avatarProgress()" />
+          <span class="text-sm font-semibold">Avatar</span>
+          <p class="text-xs opacity-50 -mt-1">Dark avatar is optional — shown when dark mode is active.</p>
+          <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
+            <!-- Light mode -->
+            <div class="flex flex-col items-center gap-1">
+              @if (cfg.avatarUrl) {
+                <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
+                  <img [src]="cfg.avatarUrl" [alt]="cfg.avatarAlt || 'Avatar'" class="w-full h-full object-cover" />
+                  <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                       style="background: rgba(0,0,0,0.5)">
+                    <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarInput.click()">
+                      <mat-icon svgIcon="swap_horiz" />
+                    </button>
+                    <button mat-icon-button style="color:white" title="Remove" (click)="onDeleteAvatar(cfg)">
+                      <mat-icon svgIcon="delete" />
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div
+                  class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                  role="button"
+                  tabindex="0"
+                  (click)="isBrowser && avatarInput.click()"
+                  (keydown.enter)="isBrowser && avatarInput.click()"
+                >
+                  <mat-icon class="opacity-40" svgIcon="upload" />
+                  <span class="text-xs opacity-40">Upload</span>
+                </div>
+              }
+              <span class="text-xs opacity-50 leading-none">Light</span>
+            </div>
+            <!-- Dark mode -->
+            <div class="flex flex-col items-center gap-1">
+              @if (cfg.avatarUrlDark) {
+                <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                  <img [src]="cfg.avatarUrlDark" [alt]="cfg.avatarAlt || 'Dark mode avatar'" class="w-full h-full object-cover" />
+                  <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                       style="background: rgba(0,0,0,0.5)">
+                    <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarDarkInput.click()">
+                      <mat-icon svgIcon="swap_horiz" />
+                    </button>
+                    <button mat-icon-button style="color:white" title="Remove" (click)="onDeleteAvatarDark(cfg)">
+                      <mat-icon svgIcon="delete" />
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div
+                  class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                  role="button"
+                  tabindex="0"
+                  (click)="isBrowser && avatarDarkInput.click()"
+                  (keydown.enter)="isBrowser && avatarDarkInput.click()"
+                >
+                  <mat-icon class="opacity-40" svgIcon="upload" />
+                  <span class="text-xs opacity-40">Upload</span>
+                </div>
+              }
+              <span class="text-xs opacity-50 leading-none">Dark</span>
+            </div>
+          </div>
+          <input #avatarInput type="file" accept="image/*" class="hidden"
+                 (change)="onAvatarSelected($any($event.target).files)" />
+          <input #avatarDarkInput type="file" accept="image/*" class="hidden"
+                 (change)="onAvatarDarkSelected($any($event.target).files)" />
+          @if (avatarUploading() || avatarDarkUploading()) {
+            <mat-progress-bar mode="determinate" [value]="avatarUploading() ? avatarProgress() : avatarDarkProgress()" class="max-w-[13rem]" />
           }
           @if (avatarError()) {
-            <p class="text-sm text-red-500">{{ avatarError() }}</p>
-          }
-          <div class="flex items-center gap-4">
-            @if (cfg.avatarUrl) {
-              <img
-                [src]="cfg.avatarUrl"
-                [alt]="cfg.avatarAlt || 'Avatar'"
-                class="w-16 h-16 rounded-full object-cover shrink-0"
-              />
-            } @else {
-              <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
-                style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                <mat-icon class="opacity-40" svgIcon="person" />
-              </div>
-            }
-            <button mat-stroked-button [disabled]="avatarUploading()" (click)="isBrowser && avatarInput.click()">
-              {{ cfg.avatarUrl ? 'Replace' : 'Upload' }}
-            </button>
-            @if (cfg.avatarUrl) {
-              <button mat-icon-button (click)="onDeleteAvatar(cfg)" title="Remove avatar">
-                <mat-icon svgIcon="delete" />
-              </button>
-            }
-          </div>
-          <input
-            #avatarInput
-            type="file"
-            accept="image/*"
-            class="hidden"
-            (change)="onAvatarSelected($any($event.target).files)"
-          />
-        </div>
-
-        <!-- Dark mode avatar upload -->
-        <div class="flex flex-col gap-2">
-          <span class="text-sm font-semibold">Avatar (Dark Mode)</span>
-          <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode avatar when dark mode is active.</p>
-          @if (avatarDarkUploading()) {
-            <mat-progress-bar mode="determinate" [value]="avatarDarkProgress()" />
+            <p class="text-xs text-red-500">{{ avatarError() }}</p>
           }
           @if (avatarDarkError()) {
-            <p class="text-sm text-red-500">{{ avatarDarkError() }}</p>
+            <p class="text-xs text-red-500">{{ avatarDarkError() }}</p>
           }
-          <div class="flex items-center gap-4">
-            @if (cfg.avatarUrlDark) {
-              <img
-                [src]="cfg.avatarUrlDark"
-                [alt]="cfg.avatarAlt || 'Dark mode avatar'"
-                class="w-16 h-16 rounded-full object-cover shrink-0"
-              />
-            } @else {
-              <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
-                style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                <mat-icon class="opacity-40" svgIcon="dark_mode" />
-              </div>
-            }
-            <button mat-stroked-button [disabled]="avatarDarkUploading()" (click)="isBrowser && avatarDarkInput.click()">
-              {{ cfg.avatarUrlDark ? 'Replace' : 'Upload' }}
-            </button>
-            @if (cfg.avatarUrlDark) {
-              <button mat-icon-button (click)="onDeleteAvatarDark(cfg)" title="Remove dark avatar">
-                <mat-icon svgIcon="delete" />
-              </button>
-            }
-          </div>
-          <input
-            #avatarDarkInput
-            type="file"
-            accept="image/*"
-            class="hidden"
-            (change)="onAvatarDarkSelected($any($event.target).files)"
-          />
         </div>
 
         <!-- Headline -->

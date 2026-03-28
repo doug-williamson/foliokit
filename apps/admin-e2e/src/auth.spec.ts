@@ -22,13 +22,13 @@ test.describe('unauthenticated access', () => {
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });
 
-  test('redirects /about-page to /login', async ({ page }) => {
-    await page.goto('/about-page');
+  test('redirects /pages/about to /login', async ({ page }) => {
+    await page.goto('/pages/about');
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });
 
-  test('redirects /links-page to /login', async ({ page }) => {
-    await page.goto('/links-page');
+  test('redirects /pages/links to /login', async ({ page }) => {
+    await page.goto('/pages/links');
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });
 

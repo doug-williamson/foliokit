@@ -27,6 +27,26 @@ html[data-theme='light'] {
   --mat-sys-outline: var(--border-strong);
   --mat-sys-background: var(--bg);
 
+  // ── Typography token bridge ─────────────────────────────────────────────
+  // mat.theme() with a string typography emits an unquoted multi-word
+  // font-family, which browsers parse as separate (invalid) names.
+  // Bridge M3 typescale tokens to Folio's quoted CSS custom properties.
+  --mat-sys-body-large-font:     var(--font-body);
+  --mat-sys-body-medium-font:    var(--font-body);
+  --mat-sys-body-small-font:     var(--font-body);
+  --mat-sys-label-large-font:    var(--font-body);
+  --mat-sys-label-medium-font:   var(--font-body);
+  --mat-sys-label-small-font:    var(--font-body);
+  --mat-sys-title-medium-font:   var(--font-body);
+  --mat-sys-title-small-font:    var(--font-body);
+  --mat-sys-title-large-font:    var(--font-display);
+  --mat-sys-display-large-font:  var(--font-display);
+  --mat-sys-display-medium-font: var(--font-display);
+  --mat-sys-display-small-font:  var(--font-display);
+  --mat-sys-headline-large-font:  var(--font-display);
+  --mat-sys-headline-medium-font: var(--font-display);
+  --mat-sys-headline-small-font:  var(--font-display);
+
   // ── Brand motion timing (nudges Material animations) ─────────────────────
   --mat-sys-motion-duration-short1: 120ms;
   --mat-sys-motion-duration-medium1: 180ms;
@@ -61,6 +81,23 @@ html[data-theme='dark'] {
   --mat-sys-surface-variant: var(--surface-2);
   --mat-sys-outline: var(--border-strong);
   --mat-sys-background: var(--bg);
+
+  // ── Typography token bridge (same as light — see comment above) ─────────
+  --mat-sys-body-large-font:     var(--font-body);
+  --mat-sys-body-medium-font:    var(--font-body);
+  --mat-sys-body-small-font:     var(--font-body);
+  --mat-sys-label-large-font:    var(--font-body);
+  --mat-sys-label-medium-font:   var(--font-body);
+  --mat-sys-label-small-font:    var(--font-body);
+  --mat-sys-title-medium-font:   var(--font-body);
+  --mat-sys-title-small-font:    var(--font-body);
+  --mat-sys-title-large-font:    var(--font-display);
+  --mat-sys-display-large-font:  var(--font-display);
+  --mat-sys-display-medium-font: var(--font-display);
+  --mat-sys-display-small-font:  var(--font-display);
+  --mat-sys-headline-large-font:  var(--font-display);
+  --mat-sys-headline-medium-font: var(--font-display);
+  --mat-sys-headline-small-font:  var(--font-display);
 
   // ── Brand motion timing ───────────────────────────────────────────────────
   --mat-sys-motion-duration-short1: 120ms;
