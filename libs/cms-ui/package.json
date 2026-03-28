@@ -1,14 +1,22 @@
 {
   "name": "@foliokit/cms-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Angular shell layout components and theme service for FolioKit CMS",
-  "keywords": ["angular", "cms", "foliokit", "app-shell", "material"],
+  "keywords": [
+    "angular",
+    "cms",
+    "foliokit",
+    "app-shell",
+    "material"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dougwilliamson/foliokit.git"
   },
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/cdk": "^21.2.2",
     "@angular/common": "^21.2.4",
