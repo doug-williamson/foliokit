@@ -48,6 +48,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'links',
+    title: 'Links | FolioKit',
     canActivate: [featureGuard('links')],
     resolve: { page: linksPageResolver },
     loadComponent: () =>

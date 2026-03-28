@@ -5,6 +5,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { take } from 'rxjs/operators';
 import { SiteConfigService } from '@foliokit/cms-core';
 import type { AboutPageConfig, BlogPost, SiteConfig } from '@foliokit/cms-core';
+import { buildPageTitle } from '../utils/page-meta.utils';
 
 @Injectable({ providedIn: 'root' })
 export class BlogSeoService {
@@ -19,8 +20,7 @@ export class BlogSeoService {
   );
 
   setPostMeta(post: BlogPost, baseUrl: string, authorDisplayName?: string): void {
-    const siteName = this.siteConfig()?.siteName ?? 'FolioKit Blog';
-    const pageTitle = `${post.seo?.title ?? post.title} — ${siteName}`;
+    const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
     const canonical = post.seo?.canonicalUrl ?? `${baseUrl}/posts/${post.slug}`;
     const ogImage =
@@ -55,8 +55,7 @@ export class BlogSeoService {
   }
 
   setAboutMeta(config: AboutPageConfig, baseUrl: string): void {
-    const siteName = this.siteConfig()?.siteName ?? 'FolioKit Blog';
-    const pageTitle = `About — ${siteName}`;
+    const pageTitle = buildPageTitle('About');
     const description = config.seo?.description ?? config.subheadline ?? '';
     const canonical = config.seo?.canonicalUrl ?? `${baseUrl}/about`;
     const ogImage = config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
@@ -87,7 +86,7 @@ export class BlogSeoService {
     const description = siteConfig.defaultSeo?.description ?? '';
     const ogImage = siteConfig.defaultSeo?.ogImage ?? '';
 
-    this.title.setTitle(siteConfig.siteName);
+    this.title.setTitle(buildPageTitle('Blog'));
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ property: 'og:title', content: siteConfig.siteName });
     this.meta.updateTag({ property: 'og:description', content: description });
