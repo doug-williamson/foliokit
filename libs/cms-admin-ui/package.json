@@ -29,6 +29,7 @@
     "@foliokit/cms-ui": "^1.0.0",
     "@ngrx/signals": "^21.0.1",
     "firebase": "^11.10.0",
+    "material-icons": "^1.13.14",
     "ngx-markdown": "^21.1.0",
     "rxjs": "~7.8.0"
   },
