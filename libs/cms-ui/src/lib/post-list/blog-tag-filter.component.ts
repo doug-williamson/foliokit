@@ -54,7 +54,7 @@ import type { Tag } from '@foliokit/cms-core';
         color: var(--text-accent);
       }
 
-      &--active {
+      &.tag-chip--active {
         background-color: var(--text-accent);
         border-color: var(--text-accent);
         color: #fff;
