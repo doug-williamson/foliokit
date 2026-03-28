@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-admin-ui",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Admin UI components, guards, shell, routes, and providers for FolioKit CMS.",
   "keywords": [
     "angular",
@@ -33,6 +33,9 @@
     "rxjs": "~7.8.0"
   },
   "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
+  },
   "schematics": "./schematics/collection.json",
   "ng-add": {
     "save": "dependencies"

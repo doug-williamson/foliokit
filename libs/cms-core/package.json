@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Core Firebase services, models, and tokens for FolioKit CMS",
   "keywords": [
     "angular",
@@ -24,5 +24,8 @@
     "firebase": "^11.10.0",
     "rxjs": "~7.8.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
+  }
 }
