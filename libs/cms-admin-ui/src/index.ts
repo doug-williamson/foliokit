@@ -22,12 +22,14 @@ export * from './lib/routes/admin.routes';
 // ── Provider ──────────────────────────────────────────────────────────────────
 export * from './lib/provide-admin-kit';
 export * from './lib/provide-admin-markdown';
+export * from './lib/icons/provide-admin-mat-icons';
 
 // ── Editor page components (Phase 2 — stubs in Phase 1) ──────────────────────
 export * from './lib/post-editor/post-editor-page.component';
 export * from './lib/author-editor/authors-list.component';
 export * from './lib/author-editor/author-form.component';
 export * from './lib/pages/admin-pages.component';
+export * from './lib/pages/admin-pages-section.component';
 export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';

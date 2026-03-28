@@ -14,8 +14,8 @@
  *   /site-config    → update site name
  *   /authors/new    → create a new author
  *   /posts/new      → create and publish a post
- *   /about-page     → set headline and save
- *   /links-page     → add a new link and save
+ *   /pages/about    → set headline and save
+ *   /pages/links    → add a new link and save
  *
  * Blog pages verified (single new tab, no reloads):
  *   /posts          → new post title visible (slug field removed from editor,
@@ -128,7 +128,7 @@ test.describe('full simulation', () => {
     await expect(page.getByText('Saved')).toBeVisible({ timeout: 12_000 });
 
     // ── 4. About Page — update headline, ensure enabled ────────────────────
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     // Use exact:true — the about-page editor also has a "Subheadline" field
     // whose label contains "Headline" as a substring (strict mode violation).
     const headlineInput = page.getByRole('textbox', { name: 'Headline', exact: true });
@@ -148,8 +148,8 @@ test.describe('full simulation', () => {
     await expect(page.getByRole('button', { name: /save changes/i })).toBeEnabled({
       timeout: 5_000,
     });
-    // The enable/disable toggle was moved to /pages — it no longer lives on the
-    // about-page editor.  The seed data has about: enabled: true, so no toggle
+    // The enable/disable toggle lives on /pages — not on the about editor.
+    // The seed data has about: enabled: true, so no toggle
     // interaction is needed here.
     await page.getByRole('button', { name: /save changes/i }).click();
     await expect(page.getByText('Saving…')).not.toBeVisible({ timeout: 10_000 });
@@ -160,14 +160,14 @@ test.describe('full simulation', () => {
     expect(configSnap?.['pages']?.about?.headline).toBe(SIM_ABOUT_HEADLINE);
 
     // ── 5. Links Page — add a new link, ensure enabled ─────────────────────
-    await page.goto('/links-page');
+    await page.goto('/pages/links');
     await expect(page.getByRole('button', { name: /add link/i })).toBeVisible({ timeout: 12_000 });
     await page.getByRole('button', { name: /add link/i }).click();
     const lastLabel = page.getByLabel('Label').last();
     await expect(lastLabel).toBeVisible({ timeout: 5_000 });
     await lastLabel.fill(SIM_LINK_LABEL);
     await page.getByLabel('URL').last().fill(SIM_LINK_URL);
-    // Enable toggle is on /pages, not on the links editor — seed has links enabled.
+    // Enable toggle is on the /pages hub, not on the links editor — seed has links enabled.
     await page.getByRole('button', { name: /save changes/i }).click();
     await expect(page.getByText('Saving…')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator('.text-red-500')).not.toBeVisible();

@@ -4,6 +4,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { provideMarkdown } from 'ngx-markdown';
 import { ADMIN_EMAIL } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from './site-config-editor/site-config-editor.store';
+import { provideAdminMatIcons } from './icons/provide-admin-mat-icons';
 
 /**
  * Configuration accepted by {@link provideAdminKit}.
@@ -59,6 +60,8 @@ export interface AdminKitConfig {
  * - `provideAnimationsAsync()` — required by Angular Material
  * - `provideNativeDateAdapter()` — required by Material date pickers
  * - `SiteConfigEditorStore` — global NgRx Signals store for site config
+ * - `provideAdminMatIcons()` — registers all Material Icons used by admin
+ *   components as inlined SVGs so the host app does not need the font
  * - `provideMarkdown()` — required by the post editor's markdown preview
  *   (skip with `markdown: false` if you configure it yourself)
  *
@@ -70,6 +73,7 @@ export function provideAdminKit(config: AdminKitConfig): EnvironmentProviders {
     { provide: ADMIN_EMAIL, useValue: config.adminEmail },
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
+    provideAdminMatIcons(),
     SiteConfigEditorStore,
   ];
 

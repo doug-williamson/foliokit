@@ -166,9 +166,9 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <mat-icon class="link-icon">{{ getIcon(link) }}</mat-icon>
+              <mat-icon class="link-icon" [svgIcon]="getIcon(link)" />
               <span class="link-label">{{ link.label }}</span>
-              <mat-icon class="link-chevron">chevron_right</mat-icon>
+              <mat-icon class="link-chevron" svgIcon="chevron_right" />
             </a>
           }
         </nav>

@@ -22,7 +22,7 @@
       <mat-toolbar class="folio-toolbar">
         @if (isMobile()) {
           <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
-            <mat-icon>menu</mat-icon>
+            <mat-icon svgIcon="menu" />
           </button>
         }
 
@@ -45,7 +45,7 @@
           [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
           (click)="toggleTheme()"
         >
-          <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          <mat-icon [svgIcon]="theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode'" />
         </button>
       </mat-toolbar>
 

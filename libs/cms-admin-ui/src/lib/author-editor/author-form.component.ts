@@ -81,7 +81,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <div class="flex items-center gap-3 px-6 py-3 border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
         <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
-          <mat-icon>arrow_back</mat-icon>
+          <mat-icon svgIcon="arrow_back" />
         </button>
         <h1 class="flex-1 text-lg font-semibold">
           {{ store.isNew() ? 'New Author' : 'Edit Author' }}
@@ -110,66 +110,66 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
             <span class="text-sm font-semibold">Profile Photo</span>
-            <div class="flex gap-6">
+            <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
               <!-- Light mode -->
               <div class="flex flex-col items-center gap-1">
                 @if (store.author()?.photoUrl; as url) {
-                  <div class="relative w-24 h-24 rounded-full overflow-hidden group">
+                  <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
                     <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
-                        <mat-icon>swap_horiz</mat-icon>
+                        <mat-icon svgIcon="swap_horiz" />
                       </button>
                       <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('light')">
-                        <mat-icon>delete</mat-icon>
+                        <mat-icon svgIcon="delete" />
                       </button>
                     </div>
                   </div>
                 } @else {
                   <div
-                    class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                    class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
                     role="button"
                     tabindex="0"
                     (click)="isBrowser && photoInput.click()"
                     (keydown.enter)="isBrowser && photoInput.click()"
                   >
-                    <mat-icon class="opacity-40">upload</mat-icon>
+                    <mat-icon class="opacity-40" svgIcon="upload" />
                     <span class="text-xs opacity-40">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Light</span>
+                <span class="text-xs opacity-50 leading-none">Light</span>
               </div>
               <!-- Dark mode -->
               <div class="flex flex-col items-center gap-1">
                 @if (store.author()?.photoUrlDark; as url) {
-                  <div class="relative w-24 h-24 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                  <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
                     <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoDarkInput.click()">
-                        <mat-icon>swap_horiz</mat-icon>
+                        <mat-icon svgIcon="swap_horiz" />
                       </button>
                       <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('dark')">
-                        <mat-icon>delete</mat-icon>
+                        <mat-icon svgIcon="delete" />
                       </button>
                     </div>
                   </div>
                 } @else {
                   <div
-                    class="w-24 h-24 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                    class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                     style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
                     role="button"
                     tabindex="0"
                     (click)="isBrowser && photoDarkInput.click()"
                     (keydown.enter)="isBrowser && photoDarkInput.click()"
                   >
-                    <mat-icon class="opacity-40">upload</mat-icon>
+                    <mat-icon class="opacity-40" svgIcon="upload" />
                     <span class="text-xs opacity-40">Upload</span>
                   </div>
                 }
-                <span class="text-xs opacity-50">Dark</span>
+                <span class="text-xs opacity-50 leading-none">Dark</span>
               </div>
             </div>
             <input #photoInput type="file" accept="image/*" class="hidden"
@@ -215,7 +215,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <div class="flex items-center justify-between">
               <span class="text-sm font-semibold">Social Links</span>
               <button mat-stroked-button type="button" (click)="addSocialLink()">
-                <mat-icon>add</mat-icon>
+                <mat-icon svgIcon="add" />
                 Add Link
               </button>
             </div>
@@ -241,7 +241,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       matTooltip="Remove"
                       (click)="removeSocialLink($index)"
                     >
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon svgIcon="delete" />
                     </button>
                   </div>
                   <div class="flex gap-2">

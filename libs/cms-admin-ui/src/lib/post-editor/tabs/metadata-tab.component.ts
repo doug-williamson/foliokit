@@ -65,7 +65,7 @@ function slugify(title: string): string {
               <mat-chip-row (removed)="removeTag(tag, post.tags)">
                 {{ tag }}
                 <button matChipRemove aria-label="Remove tag">
-                  <mat-icon>cancel</mat-icon>
+                  <mat-icon svgIcon="cancel" />
                 </button>
               </mat-chip-row>
             }

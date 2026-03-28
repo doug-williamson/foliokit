@@ -11,7 +11,7 @@ service cloud.firestore {
     // See docs/security/admin-authorization.md for the full authorization model.
     // ────────────────────────────────────────────────────────────────────────
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'YOUR_ADMIN_EMAIL';
+      return request.auth != null && request.auth.token.email == 'dev.foliokit@gmail.com';
     }
 
     match /posts/{postId} {

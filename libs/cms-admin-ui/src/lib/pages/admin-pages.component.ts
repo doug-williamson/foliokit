@@ -36,6 +36,14 @@ type CardState = 'disabled' | 'empty' | 'published';
     MatIconModule,
     MatProgressSpinnerModule,
   ],
+  styles: [`
+    .status-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+  `],
   template: `
     @if (store.config()) {
       <div class="p-4 sm:p-6">
@@ -67,20 +75,20 @@ type CardState = 'disabled' | 'empty' | 'published';
                 @switch (state) {
                   @case ('disabled') {
                     <span class="inline-flex items-center gap-1 text-xs text-gray-400 font-medium">
-                      <mat-icon class="text-base leading-none" inline>block</mat-icon>
+                      <mat-icon class="status-icon" inline svgIcon="block" />
                       Not enabled
                     </span>
                   }
                   @case ('empty') {
                     <span class="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
-                      <mat-icon class="text-base leading-none" inline>warning</mat-icon>
+                      <mat-icon class="status-icon" inline svgIcon="warning" />
                       Enabled — no content saved yet
                     </span>
                   }
                   @case ('published') {
                     <div class="flex flex-col gap-2">
                       <span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
-                        <mat-icon class="text-base leading-none" inline>check_circle</mat-icon>
+                        <mat-icon class="status-icon" inline svgIcon="check_circle" />
                         Live
                       </span>
                       @if (liveUrl) {
@@ -101,7 +109,7 @@ type CardState = 'disabled' | 'empty' | 'published';
                 @if (state !== 'disabled') {
                   <button mat-button color="primary" (click)="navigate(card.editRoute)">
                     Edit page
-                    <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    <mat-icon iconPositionEnd svgIcon="arrow_forward" />
                   </button>
                 }
               </mat-card-actions>
@@ -129,7 +137,7 @@ export class AdminPagesComponent {
       flag: 'about',
       label: 'About',
       description: 'A page introducing you or your brand to readers.',
-      editRoute: '/about-page',
+      editRoute: '/pages/about',
       liveUrl: (siteUrl) => `${siteUrl}/about`,
       hasContent: (cfg) => !!(cfg.pages?.about?.bio?.trim().length),
     },
@@ -137,7 +145,7 @@ export class AdminPagesComponent {
       flag: 'links',
       label: 'Links',
       description: 'A curated links page for your social profiles and resources.',
-      editRoute: '/links-page',
+      editRoute: '/pages/links',
       liveUrl: (siteUrl) => `${siteUrl}/links`,
       hasContent: (cfg) => (cfg.pages?.links?.links?.length ?? 0) > 0,
     },

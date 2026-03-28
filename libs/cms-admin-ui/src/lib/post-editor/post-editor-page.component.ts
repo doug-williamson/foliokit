@@ -93,7 +93,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       }
 
       .tab-btn {
-        font-family: var(--font-display);
+        font-family: var(--font-body);
         font-size: 13px;
         letter-spacing: 0.02em;
         color: var(--text-muted);
@@ -187,10 +187,10 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 
         @if (!isDesktop()) {
           <button mat-icon-button (click)="togglePreview()" matTooltip="Toggle preview">
-            <mat-icon>preview</mat-icon>
+            <mat-icon svgIcon="preview" />
           </button>
           <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
-            <mat-icon>save</mat-icon>
+            <mat-icon svgIcon="save" />
           </button>
           <button
             mat-icon-button
@@ -198,7 +198,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             [disabled]="!canPrimaryAction() || store.isSaving()"
             [matTooltip]="primaryLabel()"
           >
-            <mat-icon>{{ store.post()?.status === 'scheduled' ? 'schedule' : 'publish' }}</mat-icon>
+            <mat-icon [svgIcon]="store.post()?.status === 'scheduled' ? 'schedule' : 'publish'" />
           </button>
         } @else {
           <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">

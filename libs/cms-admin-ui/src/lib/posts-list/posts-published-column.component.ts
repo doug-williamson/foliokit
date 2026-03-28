@@ -54,7 +54,7 @@ import { BlogPost } from '@foliokit/cms-core';
           </button>
         } @empty {
           <div class="empty-state">
-            <mat-icon class="empty-state-icon">check_circle_outline</mat-icon>
+            <mat-icon class="empty-state-icon" svgIcon="check_circle_outline" />
             <p class="empty-state-heading">Nothing published yet</p>
             <p class="empty-state-body">Your live posts will appear here.</p>
           </div>
@@ -81,7 +81,7 @@ import { BlogPost } from '@foliokit/cms-core';
             class="w-full text-xs"
             (click)="showArchived.set(!showArchived())"
           >
-            <mat-icon class="text-sm mr-1">{{ showArchived() ? 'expand_less' : 'expand_more' }}</mat-icon>
+            <mat-icon class="text-sm mr-1" [svgIcon]="showArchived() ? 'expand_less' : 'expand_more'" />
             {{ showArchived() ? 'Hide archived' : 'Show archived (' + archivedPosts().length + ')' }}
           </button>
         </div>

@@ -99,7 +99,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             @if (isAboutNew()) {
               <div class="flex items-start gap-3 p-4 rounded-lg border"
                    style="border-color: color-mix(in srgb, currentColor 20%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent)">
-                <mat-icon class="shrink-0 opacity-60">info</mat-icon>
+                <mat-icon class="shrink-0 opacity-60" svgIcon="info" />
                 <p class="text-sm opacity-70">
                   No About page exists yet. Fill in the form below and save to create one.
                   The blog's <code>/about</code> route will redirect to <code>/not-found</code>
@@ -123,97 +123,85 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                 <input matInput formControlName="subheadline" placeholder="Software engineer & writer" />
               </mat-form-field>
 
-              <!-- Photo upload -->
-              <div class="flex flex-col gap-3">
-                <span class="text-sm font-medium opacity-70">Profile Photo (Light Mode)</span>
-
-                @if (aboutPhotoUrl()) {
-                  <div class="flex items-center gap-4">
-                    <img
-                      [src]="aboutPhotoUrl()"
-                      alt="Profile photo preview"
-                      class="w-24 h-24 rounded-full object-cover border"
-                      style="border-color: color-mix(in srgb, currentColor 15%, transparent)"
-                    />
-                    <button mat-stroked-button type="button" (click)="removeAboutPhoto()">
-                      <mat-icon>delete</mat-icon>
-                      Remove
-                    </button>
+              <!-- Photo upload (light + dark) -->
+              <div class="flex flex-col gap-2">
+                <span class="text-sm font-semibold">Profile Photo</span>
+                <p class="text-xs opacity-50 -mt-1">Dark photo is optional — shown when dark mode is active.</p>
+                <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
+                  <!-- Light mode -->
+                  <div class="flex flex-col items-center gap-1">
+                    @if (aboutPhotoUrl(); as url) {
+                      <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
+                        <img [src]="url" alt="Profile photo (light)" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                             style="background: rgba(0,0,0,0.5)">
+                          <button mat-icon-button style="color:white" title="Replace" type="button" (click)="isBrowser && photoInput.click()">
+                            <mat-icon svgIcon="swap_horiz" />
+                          </button>
+                          <button mat-icon-button style="color:white" title="Remove" type="button" (click)="removeAboutPhoto()">
+                            <mat-icon svgIcon="delete" />
+                          </button>
+                        </div>
+                      </div>
+                    } @else {
+                      <div
+                        class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                        style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                        role="button"
+                        tabindex="0"
+                        (click)="isBrowser && photoInput.click()"
+                        (keydown.enter)="isBrowser && photoInput.click()"
+                      >
+                        <mat-icon class="opacity-40" svgIcon="upload" />
+                        <span class="text-xs opacity-40">Upload</span>
+                      </div>
+                    }
+                    <span class="text-xs opacity-50 leading-none">Light</span>
                   </div>
-                }
-
-                @if (aboutPhotoUploading()) {
-                  <mat-progress-bar mode="determinate" [value]="aboutPhotoProgress()" />
+                  <!-- Dark mode -->
+                  <div class="flex flex-col items-center gap-1">
+                    @if (aboutPhotoDarkUrl(); as url) {
+                      <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                        <img [src]="url" alt="Profile photo (dark)" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                             style="background: rgba(0,0,0,0.5)">
+                          <button mat-icon-button style="color:white" title="Replace" type="button" (click)="isBrowser && photoDarkInput.click()">
+                            <mat-icon svgIcon="swap_horiz" />
+                          </button>
+                          <button mat-icon-button style="color:white" title="Remove" type="button" (click)="removeAboutPhotoDark()">
+                            <mat-icon svgIcon="delete" />
+                          </button>
+                        </div>
+                      </div>
+                    } @else {
+                      <div
+                        class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                        style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
+                        role="button"
+                        tabindex="0"
+                        (click)="isBrowser && photoDarkInput.click()"
+                        (keydown.enter)="isBrowser && photoDarkInput.click()"
+                      >
+                        <mat-icon class="opacity-40" svgIcon="upload" />
+                        <span class="text-xs opacity-40">Upload</span>
+                      </div>
+                    }
+                    <span class="text-xs opacity-50 leading-none">Dark</span>
+                  </div>
+                </div>
+                <input #photoInput type="file" accept="image/*" class="hidden"
+                       (change)="onPhotoSelected($any($event.target).files)" />
+                <input #photoDarkInput type="file" accept="image/*" class="hidden"
+                       (change)="onPhotoDarkSelected($any($event.target).files)" />
+                @if (aboutPhotoUploading() || aboutPhotoDarkUploading()) {
+                  <mat-progress-bar mode="determinate" [value]="aboutPhotoUploading() ? aboutPhotoProgress() : aboutPhotoDarkProgress()" class="max-w-[13rem]" />
                 }
                 @if (aboutPhotoError()) {
-                  <p class="text-sm text-red-500">{{ aboutPhotoError() }}</p>
-                }
-
-                <div class="flex items-center gap-3">
-                  <input
-                    #photoInput
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    (change)="onPhotoSelected($any($event.target).files)"
-                  />
-                  <button
-                    mat-stroked-button
-                    type="button"
-                    [disabled]="aboutPhotoUploading() || !isBrowser"
-                    (click)="photoInput.click()"
-                  >
-                    <mat-icon>upload</mat-icon>
-                    {{ aboutPhotoUrl() ? 'Replace Photo' : 'Upload Photo' }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- Dark mode photo upload -->
-              <div class="flex flex-col gap-3">
-                <span class="text-sm font-medium opacity-70">Profile Photo (Dark Mode)</span>
-                <p class="text-xs opacity-50 -mt-1">Optional. Shown instead of the light-mode photo when dark mode is active.</p>
-
-                @if (aboutPhotoDarkUrl()) {
-                  <div class="flex items-center gap-4">
-                    <img
-                      [src]="aboutPhotoDarkUrl()"
-                      alt="Dark mode profile photo preview"
-                      class="w-24 h-24 rounded-full object-cover border"
-                      style="border-color: color-mix(in srgb, currentColor 15%, transparent)"
-                    />
-                    <button mat-stroked-button type="button" (click)="removeAboutPhotoDark()">
-                      <mat-icon>delete</mat-icon>
-                      Remove
-                    </button>
-                  </div>
-                }
-
-                @if (aboutPhotoDarkUploading()) {
-                  <mat-progress-bar mode="determinate" [value]="aboutPhotoDarkProgress()" />
+                  <p class="text-xs text-red-500">{{ aboutPhotoError() }}</p>
                 }
                 @if (aboutPhotoDarkError()) {
-                  <p class="text-sm text-red-500">{{ aboutPhotoDarkError() }}</p>
+                  <p class="text-xs text-red-500">{{ aboutPhotoDarkError() }}</p>
                 }
-
-                <div class="flex items-center gap-3">
-                  <input
-                    #photoDarkInput
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    (change)="onPhotoDarkSelected($any($event.target).files)"
-                  />
-                  <button
-                    mat-stroked-button
-                    type="button"
-                    [disabled]="aboutPhotoDarkUploading() || !isBrowser"
-                    (click)="photoDarkInput.click()"
-                  >
-                    <mat-icon>upload</mat-icon>
-                    {{ aboutPhotoDarkUrl() ? 'Replace Dark Photo' : 'Upload Dark Photo' }}
-                  </button>
-                </div>
               </div>
 
               <mat-form-field appearance="outline">
@@ -241,7 +229,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <div class="flex items-center justify-between">
                 <span class="text-sm font-semibold">Social Links</span>
                 <button mat-stroked-button type="button" (click)="addAboutSocialLink()">
-                  <mat-icon>add</mat-icon>
+                  <mat-icon svgIcon="add" />
                   Add Link
                 </button>
               </div>
@@ -271,7 +259,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           matTooltip="Remove"
                           (click)="removeAboutSocialLink($index)"
                         >
-                          <mat-icon>delete</mat-icon>
+                          <mat-icon svgIcon="delete" />
                         </button>
                       </div>
                       <div class="flex gap-2">

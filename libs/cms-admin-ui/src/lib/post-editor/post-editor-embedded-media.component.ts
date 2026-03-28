@@ -39,7 +39,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
           [disabled]="uploading()"
           (click)="isBrowser && fileInput.click()"
         >
-          <mat-icon>upload</mat-icon>
+          <mat-icon svgIcon="upload" />
           Upload Image
         </button>
       </div>

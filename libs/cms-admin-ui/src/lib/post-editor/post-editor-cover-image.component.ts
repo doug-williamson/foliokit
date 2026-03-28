@@ -70,7 +70,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Replace image"
                 (click)="isBrowser && fileInput.click()"
               >
-                <mat-icon>swap_horiz</mat-icon>
+                <mat-icon svgIcon="swap_horiz" />
               </button>
               <button
                 mat-icon-button
@@ -78,7 +78,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Delete image"
                 (click)="onDeleteCover()"
               >
-                <mat-icon>delete</mat-icon>
+                <mat-icon svgIcon="delete" />
               </button>
             </div>
           </div>
@@ -95,9 +95,7 @@ import { PostEditorStore } from './post-editor.store';
           (dragleave)="isBrowser && onDragLeave()"
           (drop)="isBrowser && onDrop($event)"
         >
-          <mat-icon class="opacity-40" style="font-size: 2.5rem; width: 2.5rem; height: 2.5rem">
-            upload_file
-          </mat-icon>
+          <mat-icon class="opacity-40" style="font-size: 2.5rem; width: 2.5rem; height: 2.5rem" svgIcon="upload_file" />
           <span class="text-sm opacity-50">Upload cover image</span>
         </div>
       }

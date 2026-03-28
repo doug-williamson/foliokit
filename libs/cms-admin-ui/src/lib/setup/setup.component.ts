@@ -77,6 +77,28 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   ],
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .setup-top-header {
+      min-height: 48px;
+    }
+    /* svgIcon + icon button: flex-center the glyph in the touch target */
+    .setup-theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .setup-theme-toggle mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+    }
+    .setup-theme-toggle mat-icon svg {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
     .step-item { transition: background 120ms ease; }
     .step-item.active { background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent); }
     .step-item:hover:not(.active) { background: color-mix(in srgb, currentColor 5%, transparent); }
@@ -85,12 +107,16 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   `],
   template: `
     <!-- Top header -->
-    <div class="flex items-center px-4 py-2 border-b shrink-0"
+    <div class="setup-top-header flex items-center px-4 py-2 border-b shrink-0"
          style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
-      <span class="flex-1 text-sm font-semibold">Site Setup</span>
-      <button mat-icon-button (click)="theme.toggle()"
-              [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
-        <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      <span class="flex-1 text-sm font-semibold leading-none">FolioKit Setup</span>
+      <button
+        mat-icon-button
+        class="setup-theme-toggle"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <mat-icon [svgIcon]="theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode'" />
       </button>
     </div>
 
@@ -101,7 +127,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
              style="border-color: color-mix(in srgb, currentColor 10%, transparent)">
 
         <div class="px-4 pt-6 pb-4 shrink-0">
-          <h2 class="text-sm font-semibold uppercase tracking-wider opacity-50">Site Setup</h2>
+          <h2 class="text-sm font-semibold uppercase tracking-wider opacity-50">FolioKit Setup</h2>
           <div class="mt-3 mb-1">
             <mat-progress-bar mode="determinate" [value]="progressPct()" />
           </div>
@@ -118,9 +144,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             >
               <mat-icon class="shrink-0 text-[18px]"
                 [class.done-icon]="isComplete(step.id)"
-                [class.incomplete-icon]="!isComplete(step.id)">
-                {{ isComplete(step.id) ? 'check_circle' : 'radio_button_unchecked' }}
-              </mat-icon>
+                [class.incomplete-icon]="!isComplete(step.id)"
+                [svgIcon]="isComplete(step.id) ? 'check_circle' : 'radio_button_unchecked'" />
               <span class="text-sm leading-snug">{{ step.label }}</span>
             </button>
           }
@@ -160,7 +185,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <!-- Step header (desktop only — mobile uses the compact header above) -->
           <div class="hidden md:flex items-center gap-3 px-6 py-4 border-b shrink-0"
                style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-            <mat-icon class="opacity-60">{{ activeStepDef()?.icon }}</mat-icon>
+            <mat-icon class="opacity-60" [svgIcon]="activeStepDef()?.icon ?? ''" />
             <div class="flex-1">
               <h1 class="text-lg font-semibold">{{ activeStepDef()?.label }}</h1>
               <p class="text-xs opacity-50">{{ activeStepDef()?.description }}</p>
@@ -211,7 +236,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   @if (authors().length) {
                     <div class="p-4 rounded-lg border flex items-start gap-3"
                          style="border-color: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent)">
-                      <mat-icon class="shrink-0 opacity-60" style="color: #22c55e">check_circle</mat-icon>
+                      <mat-icon class="shrink-0 opacity-60" style="color: #22c55e" svgIcon="check_circle" />
                       <div>
                         <p class="text-sm font-medium">
                           {{ authors().length === 1 ? 'Author created' : authors().length + ' authors exist' }}
@@ -236,58 +261,58 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <!-- Photo upload (light + dark) -->
                     <div class="flex flex-col gap-2">
                       <span class="text-sm font-semibold">Profile Photo</span>
-                      <div class="flex gap-5">
+                      <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
                         <!-- Light -->
                         <div class="flex flex-col items-center gap-1">
                           @if (authorPhotoUrl(); as url) {
-                            <div class="relative w-20 h-20 rounded-full overflow-hidden group">
+                            <div class="relative w-20 h-20 shrink-0 rounded-full overflow-hidden group">
                               <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
                               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                    style="background: rgba(0,0,0,0.5)">
                                 <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoInput.click()">
-                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="swap_horiz" />
                                 </button>
                                 <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoUrl.set(null)">
-                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="delete" />
                                 </button>
                               </div>
                             </div>
                           } @else {
-                            <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                            <div class="w-20 h-20 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
                                  role="button" tabindex="0"
                                  (click)="isBrowser && setupPhotoInput.click()"
                                  (keydown.enter)="isBrowser && setupPhotoInput.click()">
-                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                              <mat-icon class="opacity-40 text-[20px]" svgIcon="upload" />
                             </div>
                           }
-                          <span class="text-xs opacity-50">Light</span>
+                          <span class="text-xs opacity-50 leading-none">Light</span>
                         </div>
                         <!-- Dark -->
                         <div class="flex flex-col items-center gap-1">
                           @if (authorPhotoDarkUrl(); as url) {
-                            <div class="relative w-20 h-20 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                            <div class="relative w-20 h-20 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
                               <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
                               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                    style="background: rgba(0,0,0,0.5)">
                                 <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoDarkInput.click()">
-                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="swap_horiz" />
                                 </button>
                                 <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoDarkUrl.set(null)">
-                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="delete" />
                                 </button>
                               </div>
                             </div>
                           } @else {
-                            <div class="w-20 h-20 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
+                            <div class="w-20 h-20 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
                                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
                                  role="button" tabindex="0"
                                  (click)="isBrowser && setupPhotoDarkInput.click()"
                                  (keydown.enter)="isBrowser && setupPhotoDarkInput.click()">
-                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                              <mat-icon class="opacity-40 text-[20px]" svgIcon="upload" />
                             </div>
                           }
-                          <span class="text-xs opacity-50">Dark</span>
+                          <span class="text-xs opacity-50 leading-none">Dark</span>
                         </div>
                       </div>
                       <input #setupPhotoInput type="file" accept="image/*" class="hidden"
@@ -344,13 +369,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                            class="flex flex-col gap-2 p-3 rounded-lg border"
                            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
                         <div class="flex items-center gap-2">
-                          <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]">drag_indicator</mat-icon>
+                          <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]" svgIcon="drag_indicator" />
                           <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
                             <mat-label>Label</mat-label>
                             <input matInput formControlName="label" placeholder="Home" />
                           </mat-form-field>
                           <button mat-icon-button type="button" matTooltip="Remove" (click)="removeNavItem($index)">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon svgIcon="delete" />
                           </button>
                         </div>
                         <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -362,7 +387,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   </div>
 
                   <button mat-stroked-button type="button" (click)="addNavItem()">
-                    <mat-icon>add</mat-icon>
+                    <mat-icon svgIcon="add" />
                     Add nav item
                   </button>
 
@@ -450,7 +475,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <p class="text-xs opacity-40">
                       Photos and social links can be added in the
-                      <a routerLink="/about-page" class="underline">About Page editor</a>.
+                      <a routerLink="/pages/about" class="underline">About Page editor</a>.
                     </p>
                   }
                 </div>
@@ -487,7 +512,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div class="flex items-center justify-between">
                       <span class="text-sm font-medium">Links</span>
                       <button mat-stroked-button type="button" (click)="addLink()">
-                        <mat-icon>add</mat-icon>
+                        <mat-icon svgIcon="add" />
                         Add link
                       </button>
                     </div>
@@ -508,7 +533,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                             </mat-form-field>
                             <button mat-icon-button type="button" matTooltip="Remove" class="shrink-0 mt-1"
                                     (click)="removeLink($index)">
-                              <mat-icon>delete</mat-icon>
+                              <mat-icon svgIcon="delete" />
                             </button>
                           </div>
                           <div class="flex flex-col sm:flex-row gap-2">
@@ -530,7 +555,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <p class="text-xs opacity-40">
                       Avatar and full link management available in the
-                      <a routerLink="/links-page" class="underline">Links Page editor</a>.
+                      <a routerLink="/pages/links" class="underline">Links Page editor</a>.
                     </p>
                   }
                 </div>

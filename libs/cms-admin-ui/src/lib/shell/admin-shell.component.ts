@@ -11,14 +11,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
  * - **Content** nav group: Posts, Authors
- * - **Site** nav group: Site Config, Pages, About (when enabled), Links (when enabled)
+ * - **Site** nav group: Site Config, Pages, About (nested child, when enabled), Links (nested child, when enabled)
  * - Footer row with the signed-in user's email and a logout button
  *
  * `SHELL_CONFIG` is provided internally from the `appName` input — you do **not**
  * need to provide it separately in your route or app config.
  *
- * Conditionally shows the About and Links nav items based on whether those
- * pages are enabled in the site configuration (read from `SiteConfigEditorStore`).
+ * Conditionally shows the About and Links nav items (visually nested under Pages)
+ * based on whether those pages are enabled in the site configuration
+ * (read from `SiteConfigEditorStore`).
  *
  * @example
  * ```ts
@@ -56,32 +57,32 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
       <nav shellNav>
         <span class="nav-group-label">Content</span>
         <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">article</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="article" />
           <span class="nav-label">Posts</span>
         </a>
         <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">people</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="people" />
           <span class="nav-label">Authors</span>
         </a>
 
         <span class="nav-group-label">Site</span>
         <a class="nav-item" routerLink="/site-config" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">settings</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="settings" />
           <span class="nav-label">Site Config</span>
         </a>
-        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">auto_stories</mat-icon>
+        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <mat-icon class="nav-icon" svgIcon="auto_stories" />
           <span class="nav-label">Pages</span>
         </a>
         @if (pages()?.about?.enabled) {
-          <a class="nav-item" routerLink="/about-page" routerLinkActive="active-link">
-            <mat-icon class="nav-icon">person</mat-icon>
+          <a class="nav-item nav-child" routerLink="/pages/about" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="person" />
             <span class="nav-label">About</span>
           </a>
         }
         @if (pages()?.links?.enabled) {
-          <a class="nav-item" routerLink="/links-page" routerLinkActive="active-link">
-            <mat-icon class="nav-icon">link</mat-icon>
+          <a class="nav-item nav-child" routerLink="/pages/links" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="link" />
             <span class="nav-label">Links</span>
           </a>
         }
@@ -90,7 +91,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         <div class="flex items-center justify-between pl-4 pr-2 py-2">
           <span class="text-xs truncate" style="color: var(--text-muted)">{{ auth.user()?.email }}</span>
           <button mat-icon-button (click)="logout()" aria-label="Sign out">
-            <mat-icon>logout</mat-icon>
+            <mat-icon svgIcon="logout" />
           </button>
         </div>
       </ng-container>

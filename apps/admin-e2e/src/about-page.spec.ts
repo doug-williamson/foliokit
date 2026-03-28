@@ -16,7 +16,7 @@ test.beforeEach(async () => {
 
 test.describe('About Page editor — initial load', () => {
   test('loads the About Page editor with seeded data', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     // Wait for config to load (spinner should disappear)
     await expect(page.getByRole('heading', { name: 'About Page' })).toBeVisible({ timeout: 10_000 });
     // Seeded headline should be populated in the form
@@ -24,7 +24,7 @@ test.describe('About Page editor — initial load', () => {
   });
 
   test('bio textarea is populated with seeded bio', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Bio')).toBeVisible({ timeout: 8_000 });
     await expect(page.getByLabel('Bio')).not.toHaveValue('');
   });
@@ -32,7 +32,7 @@ test.describe('About Page editor — initial load', () => {
 
 test.describe('About Page editor — editing and saving', () => {
   test('edits headline and saves — no error banner shown', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     const headlineField = page.getByLabel('Headline');
     await expect(headlineField).toBeVisible({ timeout: 10_000 });
 
@@ -46,7 +46,7 @@ test.describe('About Page editor — editing and saving', () => {
   });
 
   test('edits bio and saves successfully', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     const bioField = page.getByLabel('Bio');
     await expect(bioField).toBeVisible({ timeout: 10_000 });
 
@@ -57,7 +57,7 @@ test.describe('About Page editor — editing and saving', () => {
   });
 
   test('saved changes persist after page reload', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     await page.getByLabel('Headline').fill('Persistent Headline E2E');
@@ -74,7 +74,7 @@ test.describe('About Page editor — editing and saving', () => {
 
 test.describe('About Page editor — enabled toggle', () => {
   test('toggling enabled off saves false to Firestore', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     // The "Enable About Page" toggle — seeded as enabled: true
@@ -92,7 +92,7 @@ test.describe('About Page editor — enabled toggle', () => {
 
   test('toggling enabled back on saves true to Firestore', async ({ page }) => {
     // Seed has enabled: true — toggle off, save, toggle on, save
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     const enableToggle = page.locator('mat-slide-toggle').filter({ hasText: /enable/i }).first();
@@ -114,14 +114,14 @@ test.describe('About Page editor — enabled toggle', () => {
 
 test.describe('About Page editor — social links', () => {
   test('existing seeded social links are visible', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
     // Seeded social links: GitHub, Bluesky, Twitter / X
     await expect(page.getByText('GitHub')).toBeVisible({ timeout: 8_000 });
   });
 
   test('adds a new social link and saves', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     // Click the "Add Social Link" button
@@ -139,7 +139,7 @@ test.describe('About Page editor — social links', () => {
   });
 
   test('removes a social link and saves', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     // Count social link remove buttons before
@@ -158,7 +158,7 @@ test.describe('About Page editor — social links', () => {
 
 test.describe('About Page editor — unsaved changes guard', () => {
   test('navigating away with unsaved changes shows confirm dialog', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     await expect(page.getByLabel('Headline')).toBeVisible({ timeout: 10_000 });
 
     // Dirty the form
@@ -175,7 +175,7 @@ test.describe('About Page editor — unsaved changes guard', () => {
   });
 
   test('Cancel button reverts unsaved changes', async ({ page }) => {
-    await page.goto('/about-page');
+    await page.goto('/pages/about');
     const headlineField = page.getByLabel('Headline');
     await expect(headlineField).toBeVisible({ timeout: 10_000 });
 

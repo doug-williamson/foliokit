@@ -6,6 +6,7 @@ import { authGuard } from '../guards/auth.guard';
 import { setupGuard } from '../guards/setup.guard';
 import { unsavedChangesGuard } from '../guards/unsaved-changes.guard';
 import { AdminShellComponent } from '../shell/admin-shell.component';
+import { AdminPagesSectionComponent } from '../pages/admin-pages-section.component';
 
 /**
  * Pre-configured route tree for the FolioKit admin application.
@@ -17,9 +18,9 @@ import { AdminShellComponent } from '../shell/admin-shell.component';
  *   - `/posts`, `/posts/new`, `/posts/:id/edit` — Post management
  *   - `/authors`, `/authors/new`, `/authors/:id/edit` — Author management
  *   - `/pages` — Pages hub (About / Links feature toggles)
+ *   - `/pages/about` — About page editor
+ *   - `/pages/links` — Links page editor
  *   - `/site-config` — Site configuration editor
- *   - `/links-page` — Links page editor
- *   - `/about-page` — About page editor
  *
  * All shell children are protected by `authGuard` + `setupGuard`.
  * All editor routes apply `unsavedChangesGuard` on deactivation.
@@ -121,8 +122,32 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'pages',
-        loadComponent: () =>
-          import('../pages/admin-pages.component').then((m) => m.AdminPagesComponent),
+        component: AdminPagesSectionComponent,
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../pages/admin-pages.component').then((m) => m.AdminPagesComponent),
+          },
+          {
+            path: 'about',
+            loadComponent: () =>
+              import('../page-editor/about-page-editor.component').then(
+                (m) => m.AboutPageEditorComponent,
+              ),
+            providers: [SiteConfigEditorStore],
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'links',
+            loadComponent: () =>
+              import('../page-editor/links-page-editor.component').then(
+                (m) => m.LinksPageEditorComponent,
+              ),
+            providers: [SiteConfigEditorStore],
+            canDeactivate: [unsavedChangesGuard],
+          },
+        ],
       },
       {
         path: 'site-config',
@@ -133,24 +158,8 @@ export const adminRoutes: Route[] = [
         providers: [SiteConfigEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
-      {
-        path: 'links-page',
-        loadComponent: () =>
-          import('../page-editor/links-page-editor.component').then(
-            (m) => m.LinksPageEditorComponent,
-          ),
-        providers: [SiteConfigEditorStore],
-        canDeactivate: [unsavedChangesGuard],
-      },
-      {
-        path: 'about-page',
-        loadComponent: () =>
-          import('../page-editor/about-page-editor.component').then(
-            (m) => m.AboutPageEditorComponent,
-          ),
-        providers: [SiteConfigEditorStore],
-        canDeactivate: [unsavedChangesGuard],
-      },
+      { path: 'about-page', redirectTo: 'pages/about' },
+      { path: 'links-page', redirectTo: 'pages/links' },
       { path: '**', redirectTo: 'posts' },
     ],
   },

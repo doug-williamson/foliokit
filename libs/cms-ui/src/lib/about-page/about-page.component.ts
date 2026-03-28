@@ -146,7 +146,7 @@ import { ThemeService } from '../theme.service';
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <mat-icon>link</mat-icon>
+                <mat-icon svgIcon="link" />
                 {{ link.label || link.platform }}
               </a>
             }

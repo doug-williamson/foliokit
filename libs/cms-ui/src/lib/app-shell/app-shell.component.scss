@@ -122,6 +122,22 @@ mat-sidenav.icon-rail .nav-group-label {
   }
 }
 
+::ng-deep mat-sidenav .nav-item.nav-child {
+  padding-left: 28px;
+  height: 36px;
+  font-size: 12px;
+
+  .nav-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  &.active-link {
+    padding-left: 26px;
+  }
+}
+
 [data-theme="dark"] ::ng-deep mat-sidenav .nav-item.active-link {
   background: var(--nav-active-bg);
 }

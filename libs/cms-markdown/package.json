@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-markdown",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Markdown rendering component with embedded media token resolution for FolioKit CMS",
   "keywords": [
     "angular",
