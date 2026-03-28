@@ -8,12 +8,14 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
 import { BLOG_POST_SERVICE, BLOG_SEO_SERVICE, PostService, SITE_CONFIG_SERVICE, SiteConfigService, provideFirebase } from '@foliokit/cms-core';
+import { provideCmsUiMatIcons } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
 import { BlogSeoService } from './services/blog-seo.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideCmsUiMatIcons(),
     provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes, withComponentInputBinding()),

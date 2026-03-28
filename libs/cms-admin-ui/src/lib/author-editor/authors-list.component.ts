@@ -58,7 +58,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
         <h1 class="text-xl font-semibold">Authors</h1>
         <button mat-flat-button (click)="router.navigate(['/authors/new'])">
-          <mat-icon>add</mat-icon>
+          <mat-icon svgIcon="add" />
           New Author
         </button>
       </div>
@@ -71,7 +71,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
           </div>
         } @else if (!authors()?.length) {
           <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem">person_off</mat-icon>
+            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="person_off" />
             <p>No authors yet. Create one to get started.</p>
           </div>
         } @else {
@@ -89,9 +89,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
                 } @else {
                   <div class="w-9 h-9 rounded-full flex items-center justify-center"
                        style="background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent)">
-                    <mat-icon style="font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: var(--mat-sys-primary)">
-                      person
-                    </mat-icon>
+                    <mat-icon style="font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: var(--mat-sys-primary)" svgIcon="person" />
                   </div>
                 }
               </mat-cell>
@@ -122,14 +120,14 @@ import { Author, AuthorService } from '@foliokit/cms-core';
                   matTooltip="Edit"
                   (click)="router.navigate(['/authors', author.id, 'edit'])"
                 >
-                  <mat-icon>edit</mat-icon>
+                  <mat-icon svgIcon="edit" />
                 </button>
                 <button
                   mat-icon-button
                   matTooltip="Delete"
                   (click)="confirmDelete(author)"
                 >
-                  <mat-icon>delete</mat-icon>
+                  <mat-icon svgIcon="delete" />
                 </button>
               </mat-cell>
             </ng-container>

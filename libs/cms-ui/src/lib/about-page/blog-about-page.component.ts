@@ -159,7 +159,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <mat-icon>{{ platformIcon(link.platform) }}</mat-icon>
+                <mat-icon [svgIcon]="platformIcon(link.platform)" />
                 {{ link.label || link.platform }}
               </a>
             }

@@ -156,7 +156,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
               <div class="flex items-center justify-between">
                 <span class="text-sm font-semibold">Nav Items</span>
                 <button mat-stroked-button type="button" (click)="addNavItem()">
-                  <mat-icon>add</mat-icon>
+                  <mat-icon svgIcon="add" />
                   Add Nav Item
                 </button>
               </div>
@@ -175,7 +175,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
                   >
                     <!-- Row 1: drag handle + label + url -->
                     <div class="flex items-start gap-2">
-                      <mat-icon cdkDragHandle class="drag-handle opacity-40 mt-3 shrink-0">drag_indicator</mat-icon>
+                      <mat-icon cdkDragHandle class="drag-handle opacity-40 mt-3 shrink-0" svgIcon="drag_indicator" />
 
                       <mat-form-field appearance="outline" class="flex-1 min-w-0">
                         <mat-label>Label</mat-label>
@@ -208,7 +208,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
                         matTooltip="Remove"
                         (click)="removeNavItem($index)"
                       >
-                        <mat-icon>delete</mat-icon>
+                        <mat-icon svgIcon="delete" />
                       </button>
                     </div>
                   </div>

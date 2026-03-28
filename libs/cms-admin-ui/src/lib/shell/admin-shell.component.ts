@@ -56,32 +56,32 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
       <nav shellNav>
         <span class="nav-group-label">Content</span>
         <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">article</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="article" />
           <span class="nav-label">Posts</span>
         </a>
         <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">people</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="people" />
           <span class="nav-label">Authors</span>
         </a>
 
         <span class="nav-group-label">Site</span>
         <a class="nav-item" routerLink="/site-config" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">settings</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="settings" />
           <span class="nav-label">Site Config</span>
         </a>
         <a class="nav-item" routerLink="/pages" routerLinkActive="active-link">
-          <mat-icon class="nav-icon">auto_stories</mat-icon>
+          <mat-icon class="nav-icon" svgIcon="auto_stories" />
           <span class="nav-label">Pages</span>
         </a>
         @if (pages()?.about?.enabled) {
           <a class="nav-item" routerLink="/about-page" routerLinkActive="active-link">
-            <mat-icon class="nav-icon">person</mat-icon>
+            <mat-icon class="nav-icon" svgIcon="person" />
             <span class="nav-label">About</span>
           </a>
         }
         @if (pages()?.links?.enabled) {
           <a class="nav-item" routerLink="/links-page" routerLinkActive="active-link">
-            <mat-icon class="nav-icon">link</mat-icon>
+            <mat-icon class="nav-icon" svgIcon="link" />
             <span class="nav-label">Links</span>
           </a>
         }
@@ -90,7 +90,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         <div class="flex items-center justify-between pl-4 pr-2 py-2">
           <span class="text-xs truncate" style="color: var(--text-muted)">{{ auth.user()?.email }}</span>
           <button mat-icon-button (click)="logout()" aria-label="Sign out">
-            <mat-icon>logout</mat-icon>
+            <mat-icon svgIcon="logout" />
           </button>
         </div>
       </ng-container>

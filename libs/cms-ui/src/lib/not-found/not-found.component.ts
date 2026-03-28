@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
         The page you're looking for doesn't exist or has been moved.
       </p>
       <a mat-flat-button routerLink="/">
-        <mat-icon>home</mat-icon>
+        <mat-icon svgIcon="home" />
         Back to home
       </a>
     </div>

@@ -44,7 +44,7 @@ import { BlogPost } from '@foliokit/cms-core';
           </button>
         } @empty {
           <div class="empty-state">
-            <mat-icon class="empty-state-icon">edit_note</mat-icon>
+            <mat-icon class="empty-state-icon" svgIcon="edit_note" />
             <p class="empty-state-heading">No drafts</p>
             <p class="empty-state-body">Posts you're working on will appear here.</p>
           </div>

@@ -90,7 +90,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <span class="flex-1 text-sm font-semibold">Site Setup</span>
       <button mat-icon-button (click)="theme.toggle()"
               [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
-        <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <mat-icon [svgIcon]="theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode'" />
       </button>
     </div>
 
@@ -118,9 +118,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             >
               <mat-icon class="shrink-0 text-[18px]"
                 [class.done-icon]="isComplete(step.id)"
-                [class.incomplete-icon]="!isComplete(step.id)">
-                {{ isComplete(step.id) ? 'check_circle' : 'radio_button_unchecked' }}
-              </mat-icon>
+                [class.incomplete-icon]="!isComplete(step.id)"
+                [svgIcon]="isComplete(step.id) ? 'check_circle' : 'radio_button_unchecked'" />
               <span class="text-sm leading-snug">{{ step.label }}</span>
             </button>
           }
@@ -160,7 +159,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <!-- Step header (desktop only — mobile uses the compact header above) -->
           <div class="hidden md:flex items-center gap-3 px-6 py-4 border-b shrink-0"
                style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-            <mat-icon class="opacity-60">{{ activeStepDef()?.icon }}</mat-icon>
+            <mat-icon class="opacity-60" [svgIcon]="activeStepDef()?.icon ?? ''" />
             <div class="flex-1">
               <h1 class="text-lg font-semibold">{{ activeStepDef()?.label }}</h1>
               <p class="text-xs opacity-50">{{ activeStepDef()?.description }}</p>
@@ -211,7 +210,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   @if (authors().length) {
                     <div class="p-4 rounded-lg border flex items-start gap-3"
                          style="border-color: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent)">
-                      <mat-icon class="shrink-0 opacity-60" style="color: #22c55e">check_circle</mat-icon>
+                      <mat-icon class="shrink-0 opacity-60" style="color: #22c55e" svgIcon="check_circle" />
                       <div>
                         <p class="text-sm font-medium">
                           {{ authors().length === 1 ? 'Author created' : authors().length + ' authors exist' }}
@@ -245,10 +244,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                    style="background: rgba(0,0,0,0.5)">
                                 <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoInput.click()">
-                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="swap_horiz" />
                                 </button>
                                 <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoUrl.set(null)">
-                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="delete" />
                                 </button>
                               </div>
                             </div>
@@ -258,7 +257,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                                  role="button" tabindex="0"
                                  (click)="isBrowser && setupPhotoInput.click()"
                                  (keydown.enter)="isBrowser && setupPhotoInput.click()">
-                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                              <mat-icon class="opacity-40 text-[20px]" svgIcon="upload" />
                             </div>
                           }
                           <span class="text-xs opacity-50">Light</span>
@@ -271,10 +270,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                    style="background: rgba(0,0,0,0.5)">
                                 <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && setupPhotoDarkInput.click()">
-                                  <mat-icon class="text-[18px]">swap_horiz</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="swap_horiz" />
                                 </button>
                                 <button mat-icon-button style="color:white" title="Remove" (click)="authorPhotoDarkUrl.set(null)">
-                                  <mat-icon class="text-[18px]">delete</mat-icon>
+                                  <mat-icon class="text-[18px]" svgIcon="delete" />
                                 </button>
                               </div>
                             </div>
@@ -284,7 +283,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                                  role="button" tabindex="0"
                                  (click)="isBrowser && setupPhotoDarkInput.click()"
                                  (keydown.enter)="isBrowser && setupPhotoDarkInput.click()">
-                              <mat-icon class="opacity-40 text-[20px]">upload</mat-icon>
+                              <mat-icon class="opacity-40 text-[20px]" svgIcon="upload" />
                             </div>
                           }
                           <span class="text-xs opacity-50">Dark</span>
@@ -344,13 +343,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                            class="flex flex-col gap-2 p-3 rounded-lg border"
                            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
                         <div class="flex items-center gap-2">
-                          <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]">drag_indicator</mat-icon>
+                          <mat-icon cdkDragHandle class="shrink-0 cursor-grab opacity-40 text-[18px]" svgIcon="drag_indicator" />
                           <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
                             <mat-label>Label</mat-label>
                             <input matInput formControlName="label" placeholder="Home" />
                           </mat-form-field>
                           <button mat-icon-button type="button" matTooltip="Remove" (click)="removeNavItem($index)">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon svgIcon="delete" />
                           </button>
                         </div>
                         <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -362,7 +361,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   </div>
 
                   <button mat-stroked-button type="button" (click)="addNavItem()">
-                    <mat-icon>add</mat-icon>
+                    <mat-icon svgIcon="add" />
                     Add nav item
                   </button>
 
@@ -487,7 +486,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div class="flex items-center justify-between">
                       <span class="text-sm font-medium">Links</span>
                       <button mat-stroked-button type="button" (click)="addLink()">
-                        <mat-icon>add</mat-icon>
+                        <mat-icon svgIcon="add" />
                         Add link
                       </button>
                     </div>
@@ -508,7 +507,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                             </mat-form-field>
                             <button mat-icon-button type="button" matTooltip="Remove" class="shrink-0 mt-1"
                                     (click)="removeLink($index)">
-                              <mat-icon>delete</mat-icon>
+                              <mat-icon svgIcon="delete" />
                             </button>
                           </div>
                           <div class="flex flex-col sm:flex-row gap-2">

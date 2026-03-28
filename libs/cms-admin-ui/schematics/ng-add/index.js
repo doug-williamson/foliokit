@@ -44,7 +44,6 @@ function addImport(source, symbols, from) {
     const insertAt = lastImportIdx !== -1 ? source.indexOf('\n', lastImportIdx) + 1 : 0;
     return source.slice(0, insertAt) + `import { ${symbols} } from '${from}';\n` + source.slice(insertAt);
 }
-const MATERIAL_ICONS_STYLE = 'node_modules/material-icons/iconfont/material-icons.css';
 // ── Env example content ───────────────────────────────────────────────────────
 const ENV_EXAMPLE = `# FolioKit — Firebase configuration
 # Copy this file to .env and fill in the values from your Firebase console:
@@ -61,20 +60,6 @@ NG_APP_FIREBASE_APP_ID=
 # Runtime variable — required by the blog SSR server (not the admin app)
 FIREBASE_PROJECT_ID=
 `;
-/**
- * Resolve the target project name from the parsed workspace file.
- * Priority: explicit --project flag → defaultProject → sole application project.
- */
-function resolveProject(ws, explicit) {
-    if (explicit && ws.projects[explicit])
-        return explicit;
-    if (explicit)
-        return null; // caller asked for a name that doesn't exist
-    if (ws.defaultProject && ws.projects[ws.defaultProject])
-        return ws.defaultProject;
-    const apps = Object.entries(ws.projects).filter(([, cfg]) => cfg.projectType === 'application');
-    return apps.length === 1 ? apps[0][0] : null;
-}
 // ── Setup checklist ───────────────────────────────────────────────────────────
 function printChecklist(context, adminEmail) {
     context.logger.info('');
@@ -155,38 +140,7 @@ function ngAdd(options) {
         else {
             context.logger.info('   .env.example already exists — skipped');
         }
-        // ── 4. Patch angular.json styles ────────────────────────────────────────
-        const angularJsonPath = '/angular.json';
-        if (!tree.exists(angularJsonPath)) {
-            context.logger.info('   angular.json not found (Nx workspace?) — add the Material Icons style manually:\n' +
-                `     "${MATERIAL_ICONS_STYLE}"`);
-        }
-        else {
-            const ws = JSON.parse(tree.read(angularJsonPath).toString('utf-8'));
-            const projectName = resolveProject(ws, options.project);
-            if (!projectName) {
-                context.logger.warn('⚠  Could not determine the target project in angular.json.\n' +
-                    '     Re-run with --project=<name> or add the style entry manually:\n' +
-                    `     "${MATERIAL_ICONS_STYLE}"`);
-            }
-            else {
-                const buildOptions = ws.projects[projectName].architect?.['build']?.options;
-                if (buildOptions) {
-                    if (!Array.isArray(buildOptions.styles)) {
-                        buildOptions.styles = [];
-                    }
-                    if (!buildOptions.styles.includes(MATERIAL_ICONS_STYLE)) {
-                        buildOptions.styles.unshift(MATERIAL_ICONS_STYLE);
-                        tree.overwrite(angularJsonPath, JSON.stringify(ws, null, 2) + '\n');
-                        context.logger.info(`✔  Added Material Icons style to ${projectName} build in angular.json`);
-                    }
-                    else {
-                        context.logger.info('   Material Icons style already present in angular.json — skipped');
-                    }
-                }
-            }
-        }
-        // ── 5. Print setup checklist ─────────────────────────────────────────────
+        // ── 4. Print setup checklist ─────────────────────────────────────────────
         printChecklist(context, adminEmail);
         return tree;
     };

@@ -99,7 +99,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             @if (isAboutNew()) {
               <div class="flex items-start gap-3 p-4 rounded-lg border"
                    style="border-color: color-mix(in srgb, currentColor 20%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent)">
-                <mat-icon class="shrink-0 opacity-60">info</mat-icon>
+                <mat-icon class="shrink-0 opacity-60" svgIcon="info" />
                 <p class="text-sm opacity-70">
                   No About page exists yet. Fill in the form below and save to create one.
                   The blog's <code>/about</code> route will redirect to <code>/not-found</code>
@@ -136,7 +136,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       style="border-color: color-mix(in srgb, currentColor 15%, transparent)"
                     />
                     <button mat-stroked-button type="button" (click)="removeAboutPhoto()">
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon svgIcon="delete" />
                       Remove
                     </button>
                   </div>
@@ -163,7 +163,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     [disabled]="aboutPhotoUploading() || !isBrowser"
                     (click)="photoInput.click()"
                   >
-                    <mat-icon>upload</mat-icon>
+                    <mat-icon svgIcon="upload" />
                     {{ aboutPhotoUrl() ? 'Replace Photo' : 'Upload Photo' }}
                   </button>
                 </div>
@@ -183,7 +183,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       style="border-color: color-mix(in srgb, currentColor 15%, transparent)"
                     />
                     <button mat-stroked-button type="button" (click)="removeAboutPhotoDark()">
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon svgIcon="delete" />
                       Remove
                     </button>
                   </div>
@@ -210,7 +210,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     [disabled]="aboutPhotoDarkUploading() || !isBrowser"
                     (click)="photoDarkInput.click()"
                   >
-                    <mat-icon>upload</mat-icon>
+                    <mat-icon svgIcon="upload" />
                     {{ aboutPhotoDarkUrl() ? 'Replace Dark Photo' : 'Upload Dark Photo' }}
                   </button>
                 </div>
@@ -241,7 +241,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <div class="flex items-center justify-between">
                 <span class="text-sm font-semibold">Social Links</span>
                 <button mat-stroked-button type="button" (click)="addAboutSocialLink()">
-                  <mat-icon>add</mat-icon>
+                  <mat-icon svgIcon="add" />
                   Add Link
                 </button>
               </div>
@@ -271,7 +271,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           matTooltip="Remove"
                           (click)="removeAboutSocialLink($index)"
                         >
-                          <mat-icon>delete</mat-icon>
+                          <mat-icon svgIcon="delete" />
                         </button>
                       </div>
                       <div class="flex gap-2">

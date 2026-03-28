@@ -48,7 +48,7 @@ import { PostEditorStore } from './post-editor.store';
             matTooltip="Insert at cursor"
             (click)="onInsert()"
           >
-            <mat-icon>add_photo_alternate</mat-icon>
+            <mat-icon svgIcon="add_photo_alternate" />
           </button>
           <button
             mat-icon-button
@@ -56,7 +56,7 @@ import { PostEditorStore } from './post-editor.store';
             matTooltip="Delete"
             (click)="onDelete()"
           >
-            <mat-icon>delete</mat-icon>
+            <mat-icon svgIcon="delete" />
           </button>
         </div>
       </div>

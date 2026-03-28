@@ -65,7 +65,7 @@ import { BlogPost } from '@foliokit/cms-core';
               cdkDragHandle
               aria-label="Drag to reorder"
             >
-              <mat-icon class="text-[1.1rem] leading-none">drag_indicator</mat-icon>
+              <mat-icon class="text-[1.1rem] leading-none" svgIcon="drag_indicator" />
             </button>
 
             <button
@@ -83,7 +83,7 @@ import { BlogPost } from '@foliokit/cms-core';
           </div>
         } @empty {
           <div class="empty-state">
-            <mat-icon class="empty-state-icon">schedule</mat-icon>
+            <mat-icon class="empty-state-icon" svgIcon="schedule" />
             <p class="empty-state-heading">Nothing scheduled</p>
             <p class="empty-state-body">Posts queued for future publishing will appear here.</p>
           </div>

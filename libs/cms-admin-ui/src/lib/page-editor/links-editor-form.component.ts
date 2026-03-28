@@ -116,7 +116,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
             } @else {
               <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
                 style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                <mat-icon class="opacity-40">person</mat-icon>
+                <mat-icon class="opacity-40" svgIcon="person" />
               </div>
             }
             <button mat-stroked-button [disabled]="avatarUploading()" (click)="isBrowser && avatarInput.click()">
@@ -124,7 +124,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
             </button>
             @if (cfg.avatarUrl) {
               <button mat-icon-button (click)="onDeleteAvatar(cfg)" title="Remove avatar">
-                <mat-icon>delete</mat-icon>
+                <mat-icon svgIcon="delete" />
               </button>
             }
           </div>
@@ -157,7 +157,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
             } @else {
               <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
                 style="background: color-mix(in srgb, currentColor 10%, transparent)">
-                <mat-icon class="opacity-40">dark_mode</mat-icon>
+                <mat-icon class="opacity-40" svgIcon="dark_mode" />
               </div>
             }
             <button mat-stroked-button [disabled]="avatarDarkUploading()" (click)="isBrowser && avatarDarkInput.click()">
@@ -165,7 +165,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
             </button>
             @if (cfg.avatarUrlDark) {
               <button mat-icon-button (click)="onDeleteAvatarDark(cfg)" title="Remove dark avatar">
-                <mat-icon>delete</mat-icon>
+                <mat-icon svgIcon="delete" />
               </button>
             }
           </div>
@@ -206,7 +206,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
           <div class="flex items-center justify-between">
             <span class="text-sm font-semibold">Links</span>
             <button mat-stroked-button (click)="addLink(cfg.links ?? [])">
-              <mat-icon>add</mat-icon>
+              <mat-icon svgIcon="add" />
               Add Link
             </button>
           </div>
@@ -224,9 +224,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
               >
                 <!-- Drag handle row -->
                 <div class="flex items-center gap-2">
-                  <mat-icon cdkDragHandle class="drag-handle opacity-40 shrink-0" style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem">
-                    drag_indicator
-                  </mat-icon>
+                  <mat-icon cdkDragHandle class="drag-handle opacity-40 shrink-0" style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem" svgIcon="drag_indicator" />
                   <span class="flex-1 text-sm font-medium truncate">{{ link.label || '(untitled)' }}</span>
                   <mat-slide-toggle
                     [checked]="!!link.highlighted"
@@ -235,7 +233,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                     matTooltip="Highlighted"
                   />
                   <button mat-icon-button (click)="deleteLink(cfg.links ?? [], link.id)" title="Delete link">
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon svgIcon="delete" />
                   </button>
                 </div>
 

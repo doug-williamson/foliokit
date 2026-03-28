@@ -67,20 +67,20 @@ type CardState = 'disabled' | 'empty' | 'published';
                 @switch (state) {
                   @case ('disabled') {
                     <span class="inline-flex items-center gap-1 text-xs text-gray-400 font-medium">
-                      <mat-icon class="text-base leading-none" inline>block</mat-icon>
+                      <mat-icon class="text-base leading-none" inline svgIcon="block" />
                       Not enabled
                     </span>
                   }
                   @case ('empty') {
                     <span class="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
-                      <mat-icon class="text-base leading-none" inline>warning</mat-icon>
+                      <mat-icon class="text-base leading-none" inline svgIcon="warning" />
                       Enabled — no content saved yet
                     </span>
                   }
                   @case ('published') {
                     <div class="flex flex-col gap-2">
                       <span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
-                        <mat-icon class="text-base leading-none" inline>check_circle</mat-icon>
+                        <mat-icon class="text-base leading-none" inline svgIcon="check_circle" />
                         Live
                       </span>
                       @if (liveUrl) {
@@ -101,7 +101,7 @@ type CardState = 'disabled' | 'empty' | 'published';
                 @if (state !== 'disabled') {
                   <button mat-button color="primary" (click)="navigate(card.editRoute)">
                     Edit page
-                    <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    <mat-icon iconPositionEnd svgIcon="arrow_forward" />
                   </button>
                 }
               </mat-card-actions>

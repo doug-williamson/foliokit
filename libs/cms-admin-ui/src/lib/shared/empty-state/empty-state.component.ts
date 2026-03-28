@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatIconModule, MatButtonModule],
   template: `
     <div class="empty-state">
-      <mat-icon class="empty-state-icon">{{ icon() }}</mat-icon>
+      <mat-icon class="empty-state-icon" [svgIcon]="icon()" />
       <p class="empty-state-heading">{{ heading() }}</p>
       @if (body()) {
         <p class="empty-state-body">{{ body() }}</p>
