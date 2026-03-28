@@ -55,6 +55,9 @@
   --red-700:   #7D1F1A;
   --red-600:   #A12B24;
   --red-100:   #F9DEDD;
+  /* Ink — pure neutrals for darkening mixes */
+  --ink-950: #050608;
+
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;

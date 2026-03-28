@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/blog/src",
-  "tags": [],
+  "tags": ["scope:blog"],
   "targets": {
     "build": {
       "executor": "@ngx-env/builder:application",

@@ -7,9 +7,10 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
-import { BLOG_POST_SERVICE, PostService, SITE_CONFIG_SERVICE, SiteConfigService, provideFirebase } from '@foliokit/cms-core';
+import { BLOG_POST_SERVICE, BLOG_SEO_SERVICE, PostService, SITE_CONFIG_SERVICE, SiteConfigService, provideFirebase } from '@foliokit/cms-core';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+import { BlogSeoService } from './services/blog-seo.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,5 +23,6 @@ export const appConfig: ApplicationConfig = {
     provideFirebase(environment.firebase, environment.useEmulator),
     { provide: BLOG_POST_SERVICE, useExisting: PostService },
     { provide: SITE_CONFIG_SERVICE, useExisting: SiteConfigService },
+    { provide: BLOG_SEO_SERVICE, useExisting: BlogSeoService },
   ],
 };
