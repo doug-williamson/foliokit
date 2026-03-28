@@ -20,6 +20,18 @@ import type { BlogPost } from '../models/post.model';
 import { normalizePost } from '../utils/normalize-post';
 import type { IBlogPostService } from '../tokens/post-service.token';
 
+/** Firestore inequality/order queries require Timestamp, not numeric ms. */
+function blogPostFirestoreTimestampFields(post: BlogPost): Record<string, Timestamp> {
+  const extra: Record<string, Timestamp> = {};
+  if (typeof post.scheduledPublishAt === 'number' && Number.isFinite(post.scheduledPublishAt)) {
+    extra['scheduledPublishAt'] = Timestamp.fromMillis(post.scheduledPublishAt);
+  }
+  if (typeof post.publishedAt === 'number' && Number.isFinite(post.publishedAt) && post.publishedAt > 0) {
+    extra['publishedAt'] = Timestamp.fromMillis(post.publishedAt);
+  }
+  return extra;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PostService implements IBlogPostService {
   // Non-null assertions are safe: PostService is only active in the browser
@@ -121,7 +133,12 @@ export class PostService implements IBlogPostService {
       const newId = doc(collection(this.firestore, 'posts')).id;
       const savedPost: BlogPost = { ...post, id: newId, createdAt: nowMs, updatedAt: nowMs };
       // Write Timestamp objects to Firestore for proper ordering/querying
-      const firestorePayload = { ...savedPost, createdAt: nowTs, updatedAt: nowTs };
+      const firestorePayload = {
+        ...savedPost,
+        createdAt: nowTs,
+        updatedAt: nowTs,
+        ...blogPostFirestoreTimestampFields(savedPost),
+      };
       return from(
         setDoc(doc(this.firestore, 'posts', newId), firestorePayload),
       ).pipe(
@@ -134,7 +151,11 @@ export class PostService implements IBlogPostService {
     }
 
     const savedPost: BlogPost = { ...post, updatedAt: nowMs };
-    const firestorePayload = { ...savedPost, updatedAt: nowTs };
+    const firestorePayload = {
+      ...savedPost,
+      updatedAt: nowTs,
+      ...blogPostFirestoreTimestampFields(savedPost),
+    };
     return from(
       updateDoc(doc(this.firestore, 'posts', post.id), firestorePayload),
     ).pipe(

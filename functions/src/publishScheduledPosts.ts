@@ -5,30 +5,45 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 if (!getApps().length) initializeApp();
 
+function scheduledPublishAtToMillis(value: unknown): number | null {
+  if (value == null) return null;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (value instanceof Timestamp) return value.toMillis();
+  const v = value as { toMillis?: () => number };
+  if (typeof v.toMillis === 'function') return v.toMillis();
+  return null;
+}
+
+function publishedAtForWrite(raw: unknown, ms: number): Timestamp {
+  if (raw instanceof Timestamp) return raw;
+  return Timestamp.fromMillis(ms);
+}
+
 export const publishScheduledPosts = onSchedule('every 5 minutes', async () => {
   const db = getFirestore();
-  const now = Timestamp.now();
+  const nowMs = Date.now();
 
-  const snapshot = await db
-    .collection('posts')
-    .where('status', '==', 'scheduled')
-    .where('scheduledPublishAt', '<=', now)
-    .get();
+  const snapshot = await db.collection('posts').where('status', '==', 'scheduled').get();
 
-  if (snapshot.empty) {
+  const batch = db.batch();
+  let count = 0;
+  for (const docSnap of snapshot.docs) {
+    const raw = docSnap.data()['scheduledPublishAt'];
+    const scheduledMs = scheduledPublishAtToMillis(raw);
+    if (scheduledMs === null || scheduledMs > nowMs) continue;
+
+    batch.update(docSnap.ref, {
+      status: 'published',
+      publishedAt: publishedAtForWrite(raw, scheduledMs),
+    });
+    count++;
+  }
+
+  if (count === 0) {
     logger.info('publishScheduledPosts: no posts due', { count: 0 });
     return;
   }
 
-  const batch = db.batch();
-  for (const docSnap of snapshot.docs) {
-    const scheduledAt = docSnap.data()['scheduledPublishAt'] as Timestamp;
-    batch.update(docSnap.ref, {
-      status: 'published',
-      publishedAt: scheduledAt, // preserve intended publish time, not Timestamp.now()
-    });
-  }
   await batch.commit();
-
-  logger.info('publishScheduledPosts: published posts', { count: snapshot.size });
+  logger.info('publishScheduledPosts: published posts', { count });
 });
