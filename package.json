@@ -1,6 +1,6 @@
 {
   "name": "foliokit",
-  "version": "0.4.29",
+  "version": "0.4.30",
   "license": "MIT",
   "scripts": {
     "build": "npx nx build blog",
@@ -15,10 +15,10 @@
     "build:all": "nx run-many --target=build",
     "publish:cms-core": "nx build cms-core && npm publish dist/libs/cms-core --access public",
     "publish:cms-ui": "nx build cms-ui && npm publish dist/libs/cms-ui --access public",
-    "publish:cms-admin-ui": "nx build cms-admin-ui && npm publish dist/libs/cms-admin-ui --access public",
+    "publish:cms-admin-ui": "nx build cms-admin-ui && npm publish dist/libs/cms-admin-ui --access public --tag next",
     "publish:cms-markdown": "nx build cms-markdown && npm publish dist/libs/cms-markdown --access public",
     "publish:docs-ui": "nx build docs-ui && npm publish dist/libs/docs-ui --access public",
-    "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
+    "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/cms-admin-ui --access public --tag next && npm publish dist/libs/docs-ui --access public",
     "verify:packs": "node tools/scripts/verify-dist-packs.mjs",
     "verify:publish-artifacts": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && node tools/scripts/verify-dist-packs.mjs",
     "emulator": "firebase emulators:start --only auth,firestore,storage",
