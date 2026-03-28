@@ -4,9 +4,7 @@ import {
   computed,
   effect,
   inject,
-  PLATFORM_ID,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
@@ -183,7 +181,6 @@ export class BlogAboutPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly blogSeoService = inject(BlogSeoService);
   private readonly document = inject(DOCUMENT);
-  private readonly platformId = inject(PLATFORM_ID);
   readonly theme = inject(ThemeService);
 
   readonly about = toSignal(
@@ -216,7 +213,6 @@ export class BlogAboutPageComponent {
     effect(() => {
       const a = this.about();
       if (!a) return;
-      if (!isPlatformBrowser(this.platformId)) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
       this.blogSeoService.setAboutMeta(a, baseUrl);
     });

@@ -11,10 +11,12 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { take } from 'rxjs/operators';
 import type { BlogPost, Tag } from '@foliokit/cms-core';
 import { SiteConfigService, TagService } from '@foliokit/cms-core';
 import { BlogSeoService } from '../../services/blog-seo.service';
+import { buildPageTitle } from '../../utils/page-meta.utils';
 import { PostCardComponent } from './post-card.component';
 import { TagFilterComponent } from './tag-filter.component';
 
@@ -77,6 +79,7 @@ export class PostListComponent implements AfterViewInit {
   private readonly tagService = inject(TagService);
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly blogSeoService = inject(BlogSeoService);
+  private readonly titleService = inject(Title);
   private readonly document = inject(DOCUMENT);
 
   private readonly siteConfig = toSignal(
@@ -130,6 +133,12 @@ export class PostListComponent implements AfterViewInit {
       if (!config) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
       this.blogSeoService.setDefaultMeta(config, `${baseUrl}/posts`);
+    });
+
+    effect(() => {
+      if (!this.siteConfig()) return;
+      const tag = this.selectedTag();
+      this.titleService.setTitle(tag ? buildPageTitle(`#${tag}`) : buildPageTitle('Blog'));
     });
   }
 
