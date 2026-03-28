@@ -2,6 +2,8 @@
 
 Pre-publish verification for the first external release of `@foliokit/*` packages.
 
+**Publishing workflow (build from `dist/`, guardrails, CI):** see [PUBLISHING.md](./PUBLISHING.md).
+
 ---
 
 ## 1. npm pack dry-run verification

@@ -19,6 +19,8 @@
     "publish:cms-markdown": "nx build cms-markdown && npm publish dist/libs/cms-markdown --access public",
     "publish:docs-ui": "nx build docs-ui && npm publish dist/libs/docs-ui --access public",
     "publish:libs": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-admin-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/docs-ui --access public",
+    "verify:packs": "node tools/scripts/verify-dist-packs.mjs",
+    "verify:publish-artifacts": "nx run-many --target=build --projects=cms-core,cms-ui,cms-admin-ui,cms-markdown,docs-ui && node tools/scripts/verify-dist-packs.mjs",
     "emulator": "firebase emulators:start --only auth,firestore,storage",
     "emulator:data": "firebase emulators:start --only auth,firestore,storage --import .firebase/emulator-data --export-on-exit",
     "seed": "nx run seed:emulator",

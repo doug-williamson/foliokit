@@ -23,5 +23,8 @@
     "@foliokit/cms-core": "^1.0.0",
     "ngx-markdown": "^21.1.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
+  }
 }

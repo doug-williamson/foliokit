@@ -29,6 +29,9 @@
     "rxjs": "~7.8.0"
   },
   "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
+  },
   "exports": {
     "./styles": {
       "sass": "./styles/index.scss"
