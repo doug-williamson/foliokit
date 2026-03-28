@@ -1,3 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// FolioKit Design Tokens
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// CSS custom properties that form the public theming API for all
+// @foliokit/cms-ui components. Override these in your own stylesheet to
+// restyle the entire blog without forking components.
+//
+// ── Palette scales ───────────────────────────────────────────────────────
+//   --slate-*, --cloud-*, --teal-*, --violet-*, functional colors
+//   --ink-950 (pure neutral for color-mix darkening)
+//
+// ── Semantic tokens (set per [data-theme]) ──────────────────────────────
+//   Backgrounds:  --bg, --bg-subtle
+//   Surfaces:     --surface-0 .. --surface-3
+//   Borders:      --border, --border-strong, --border-accent
+//   Text:         --text-primary, --text-secondary, --text-muted, --text-accent
+//   Buttons:      --btn-primary-bg, --btn-primary-text, --btn-primary-hover
+//   Logo:         --logo-bg, --logo-text, --logo-dot
+//   Shadows:      --shadow-sm, --shadow-md, --shadow-lg, --shadow-xl
+//   Navigation:   --nav-active-bg, --nav-active-color
+//
+// ── Blog components ─────────────────────────────────────────────────────
+//   BlogHomeComponent   — hero section uses --btn-primary-*, --surface-1,
+//                         --border-strong, --teal-50, --border-accent
+//   BlogPostCardComponent — cards use --surface-0, --shadow-sm/lg,
+//                          --r-xl, --teal-50, --border-accent
+//   BlogTagFilterComponent — chips use --border, --text-secondary,
+//                            --text-accent, --ink-950 (active darkening)
+//   BlogPostListComponent  — page bg via --bg, empty state --text-muted
+//   BlogPostDetailComponent — article surface --surface-0, --shadow-sm,
+//                             --r-2xl, prose --font-display/mono
+//   BlogAboutPageComponent  — avatar --logo-bg/text, links --border-strong,
+//                             --surface-0, --r-md
+//   NotFoundComponent      — uses Angular Material system tokens
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
 :root {
   /* Slate — primary neutral (cool blue-grey) */
   --slate-950: #0C0F14;
@@ -49,6 +87,9 @@
   --amber-500: #D4892A;
   --amber-400: #E09A40;
   --amber-100: #FBF0DC;
+  /* Ink — pure neutrals for darkening mixes */
+  --ink-950: #050608;
+
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;

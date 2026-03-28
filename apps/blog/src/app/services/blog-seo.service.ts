@@ -3,12 +3,11 @@ import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { take } from 'rxjs/operators';
-import { SiteConfigService } from '@foliokit/cms-core';
-import type { AboutPageConfig, BlogPost, SiteConfig } from '@foliokit/cms-core';
-import { buildPageTitle } from '../utils/page-meta.utils';
+import { SiteConfigService, buildPageTitle } from '@foliokit/cms-core';
+import type { AboutPageConfig, BlogPost, SiteConfig, IBlogSeoService } from '@foliokit/cms-core';
 
 @Injectable({ providedIn: 'root' })
-export class BlogSeoService {
+export class BlogSeoService implements IBlogSeoService {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);

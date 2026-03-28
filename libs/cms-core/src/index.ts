@@ -14,7 +14,12 @@ export * from './lib/services/site-config.service';
 export * from './lib/services/tag.service';
 export * from './lib/tokens/post-service.token';
 export * from './lib/tokens/site-config-service.token';
+export * from './lib/tokens/blog-seo-service.token';
 export * from './lib/pipes/tag-label.pipe';
+export * from './lib/utils/page-meta.utils';
+
+// ── Guards ─────────────────────────────────────────────────────────────────────
+export * from './lib/guards/feature.guard';
 
 // ── Resolvers ─────────────────────────────────────────────────────────────────
 export * from './lib/resolvers/about-page.resolver';

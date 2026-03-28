@@ -49,3 +49,7 @@ export * from './lib/posts-list/posts-queue-column.component';
 export * from './lib/posts-list/posts-published-column.component';
 export * from './lib/posts-list/posts-list.component';
 export * from './lib/posts-list/posts-table.component';
+
+// ── Shared UI ─────────────────────────────────────────────────────────────────
+export * from './lib/shared/confirm-dialog/confirm-dialog.component';
+export * from './lib/shared/empty-state/empty-state.component';
