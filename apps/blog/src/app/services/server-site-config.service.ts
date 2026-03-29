@@ -1,16 +1,19 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
-import { ISiteConfigService } from '@foliokit/cms-core';
+import { ISiteConfigService, resolveSiteConfigDocPath, SITE_ID } from '@foliokit/cms-core';
 import { normalizeSiteConfig } from '@foliokit/cms-core/utils/normalize-site-config';
 import type { AboutPageConfig, SiteConfig } from '@foliokit/cms-core';
 
 @Injectable()
 export class ServerSiteConfigService implements ISiteConfigService {
+  private readonly siteId = inject(SITE_ID, { optional: true });
+
   getConfig(): Observable<SiteConfig> {
     const db = getFirestore();
-    return from(db.collection('site-config').doc('default').get()).pipe(
+    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
+    return from(db.doc(docPath).get()).pipe(
       map((snap) => {
         if (!snap.exists) return null;
         return normalizeSiteConfig({
@@ -27,7 +30,8 @@ export class ServerSiteConfigService implements ISiteConfigService {
   }
 
   getAboutConfig(): Observable<AboutPageConfig | null> {
-    return from(getFirestore().collection('site-config').doc('default').get()).pipe(
+    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
+    return from(getFirestore().doc(docPath).get()).pipe(
       map((snap) => {
         if (!snap.exists) return null;
         const config = normalizeSiteConfig({

@@ -2,6 +2,7 @@ import { inject, Injectable, makeStateKey } from '@angular/core';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { defer, from, Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
+import { CollectionPaths } from '../firebase/collection-paths';
 import { FIRESTORE } from '../firebase/firebase.config';
 import type { AboutPageConfig, SiteConfig } from '../models/site-config.model';
 import { normalizeSiteConfig } from '../utils/normalize-site-config';
@@ -25,10 +26,13 @@ function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
 @Injectable({ providedIn: 'root' })
 export class SiteConfigService implements ISiteConfigService {
   private readonly firestore = inject(FIRESTORE);
+  private readonly paths = inject(CollectionPaths);
 
   getSiteConfig(siteId: string): Observable<SiteConfig | null> {
     if (!this.firestore) return of(null);
-    const ref = doc(this.firestore, 'site-config', siteId);
+    const docPath = this.paths.siteConfigDocPath(siteId);
+    const segments = docPath.split('/');
+    const ref = doc(this.firestore, segments[0], ...segments.slice(1));
     return from(getDoc(ref)).pipe(
       map((snap) => {
         if (!snap.exists()) return null;
@@ -42,7 +46,7 @@ export class SiteConfigService implements ISiteConfigService {
   }
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
-    return this.getSiteConfig('default');
+    return this.getSiteConfig(this.paths.siteId ?? 'default');
   }
 
   /** Returns the default SiteConfig, filtering out null (no-document) results. */
@@ -73,8 +77,10 @@ export class SiteConfigService implements ISiteConfigService {
       ...saved,
       updatedAt: nowTs,
     } as unknown as Record<string, unknown>);
+    const docPath = this.paths.siteConfigDocPath(siteId);
+    const segments = docPath.split('/');
     return defer(() =>
-      setDoc(doc(this.firestore!, 'site-config', siteId), firestorePayload),
+      setDoc(doc(this.firestore!, segments[0], ...segments.slice(1)), firestorePayload),
     ).pipe(
       map(() => saved),
       catchError((err) => {

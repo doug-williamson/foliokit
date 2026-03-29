@@ -26,7 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FIREBASE_STORAGE, SocialLink, SocialPlatform } from '@foliokit/cms-core';
+import { CollectionPaths, FIREBASE_STORAGE, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
@@ -338,6 +338,7 @@ export class AboutPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   private readonly fb = inject(FormBuilder);
   private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly paths = inject(CollectionPaths);
   private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -440,7 +441,7 @@ export class AboutPageEditorComponent implements OnInit {
 
   private uploadAboutPhoto(file: File): void {
     if (!this.storage) return;
-    const path = `site-config/about/photo/${file.name}`;
+    const path = this.paths.storagePath(`site-config/about/photo/${file.name}`);
 
     this.aboutPhotoUploading.set(true);
     this.aboutPhotoProgress.set(0);
@@ -472,7 +473,7 @@ export class AboutPageEditorComponent implements OnInit {
 
   private uploadAboutPhotoDark(file: File): void {
     if (!this.storage) return;
-    const path = `site-config/about/photo-dark/${file.name}`;
+    const path = this.paths.storagePath(`site-config/about/photo-dark/${file.name}`);
 
     this.aboutPhotoDarkUploading.set(true);
     this.aboutPhotoDarkProgress.set(0);

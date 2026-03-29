@@ -1,17 +1,19 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { IBlogPostService } from '@foliokit/cms-core';
+import { IBlogPostService, resolveCollectionPath, SITE_ID } from '@foliokit/cms-core';
 import { normalizePost } from '@foliokit/cms-core/utils/normalize-post';
 import type { BlogPost } from '@foliokit/cms-core';
 
 @Injectable()
 export class ServerBlogPostService implements IBlogPostService {
+  private readonly siteId = inject(SITE_ID, { optional: true });
+
   getPublishedPosts(): Observable<BlogPost[]> {
     const db = getFirestore();
     const q = db
-      .collection('posts')
+      .collection(resolveCollectionPath('posts', this.siteId))
       .where('status', '==', 'published')
       .orderBy('publishedAt', 'desc');
     return from(q.get()).pipe(
@@ -30,7 +32,7 @@ export class ServerBlogPostService implements IBlogPostService {
   getPostBySlug(slug: string): Observable<BlogPost | null> {
     const db = getFirestore();
     const q = db
-      .collection('posts')
+      .collection(resolveCollectionPath('posts', this.siteId))
       .where('status', '==', 'published')
       .where('slug', '==', slug)
       .limit(1);

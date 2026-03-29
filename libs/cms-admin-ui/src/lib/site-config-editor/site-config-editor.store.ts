@@ -5,7 +5,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, HomePageConfig, LinksPageConfig, NavItem, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
+import { AboutPageConfig, HomePageConfig, LinksPageConfig, NavItem, SITE_ID, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -15,17 +15,19 @@ export interface SiteConfigEditorState {
   saveError: string | null;
 }
 
-const emptyConfig: SiteConfig = {
-  id: 'default',
-  siteName: '',
-  siteUrl: '',
-  nav: [],
-  pages: {
-    home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
-    // about and links intentionally omitted — absence signals "not yet acknowledged"
-  },
-  updatedAt: 0,
-};
+function createEmptyConfig(siteId: string): SiteConfig {
+  return {
+    id: siteId,
+    siteName: '',
+    siteUrl: '',
+    nav: [],
+    pages: {
+      home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
+      // about and links intentionally omitted — absence signals "not yet acknowledged"
+    },
+    updatedAt: 0,
+  };
+}
 
 const initialState: SiteConfigEditorState = {
   config: null,
@@ -38,7 +40,7 @@ const initialState: SiteConfigEditorState = {
 export const SiteConfigEditorStore = signalStore(
   withState<SiteConfigEditorState>(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService)) => {
+  withMethods((store, siteConfigService = inject(SiteConfigService), siteId = inject(SITE_ID, { optional: true }) ?? 'default') => {
     let loadInProgress = false;
     return {
       load(): void {
@@ -46,7 +48,7 @@ export const SiteConfigEditorStore = signalStore(
         loadInProgress = true;
         siteConfigService.getDefaultSiteConfig().subscribe({
           next: (config) => {
-            const loaded = config ?? { ...emptyConfig };
+            const loaded = config ?? createEmptyConfig(siteId);
             patchState(store, {
               config: loaded,
               savedConfig: loaded,
