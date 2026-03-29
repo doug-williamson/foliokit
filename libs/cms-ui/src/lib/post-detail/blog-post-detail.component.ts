@@ -12,17 +12,8 @@ import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
-import type { BlogPost, Tag, Author } from '@foliokit/cms-core';
+import type { BlogPost, Tag, PostRouteData } from '@foliokit/cms-core';
 import { TagService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
-
-/**
- * Shape of the resolved route data expected by `BlogPostDetailComponent`.
- * The route resolver should place this object under the `'post'` key.
- */
-export interface PostRouteData {
-  post: BlogPost | null;
-  author: Author | null;
-}
 
 @Component({
   selector: 'folio-post-detail',

@@ -1,3 +1,5 @@
+import type { Author } from './author.model';
+
 export interface SeoMeta {
   title?: string;
   description?: string;
@@ -38,4 +40,13 @@ export interface BlogPost {
   updatedAt: number;
   /** Unix milliseconds. */
   createdAt: number;
+}
+
+/**
+ * Shape of the resolved route data for the post-detail route.
+ * The resolver places this object under the `'post'` data key.
+ */
+export interface PostRouteData {
+  post: BlogPost | null;
+  author: Author | null;
 }

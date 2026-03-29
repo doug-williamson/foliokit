@@ -14,6 +14,7 @@ export * from './lib/services/post.service';
 export * from './lib/services/site-config.service';
 export * from './lib/services/tag.service';
 export * from './lib/tokens/post-service.token';
+export * from './lib/tokens/author-service.token';
 export * from './lib/tokens/site-config-service.token';
 export * from './lib/tokens/blog-seo-service.token';
 export * from './lib/pipes/tag-label.pipe';
@@ -29,6 +30,7 @@ export * from './lib/guards/feature.guard';
 // ── Resolvers ─────────────────────────────────────────────────────────────────
 export * from './lib/resolvers/about-page.resolver';
 export * from './lib/resolvers/links-page.resolver';
+export * from './lib/resolvers/post-detail.resolver';
 export * from './lib/resolvers/posts.resolver';
 
 // ── High-level providers ──────────────────────────────────────────────────────
