@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "FolioKitCmsCoreNgAdd",
+  "title": "FolioKit CMS Core ng-add options",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the Angular project to configure (defaults to the default project in angular.json).",
+      "x-prompt": "Which Angular project should FolioKit be added to?"
+    },
+    "firebaseProject": {
+      "type": "string",
+      "default": "",
+      "description": "Firebase project ID. Leave empty to use a placeholder."
+    },
+    "siteId": {
+      "type": "string",
+      "default": "default",
+      "description": "Firestore site document ID.",
+      "x-prompt": "What is your Firestore site document ID?"
+    },
+    "appName": {
+      "type": "string",
+      "default": "My Blog",
+      "description": "Display name for the blog shell.",
+      "x-prompt": "What is your blog app name?"
+    }
+  },
+  "required": []
+}

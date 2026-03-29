@@ -7,9 +7,22 @@
   "tags": ["scope:shared"],
   "implicitDependencies": ["!cms-ui"],
   "targets": {
+    "build-schematics": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc -p libs/cms-core/tsconfig.schematics.json",
+          "cp libs/cms-core/src/schematics/collection.json libs/cms-core/schematics/collection.json",
+          "cp libs/cms-core/src/schematics/ng-add/schema.json libs/cms-core/schematics/ng-add/schema.json"
+        ],
+        "parallel": false,
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "dependsOn": ["build-schematics"],
       "options": {
         "project": "libs/cms-core/ng-package.json",
         "tsConfig": "libs/cms-core/tsconfig.lib.json"

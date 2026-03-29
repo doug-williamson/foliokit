@@ -3,5 +3,12 @@
   "dest": "../../dist/libs/cms-core",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": [
+    {
+      "input": "./schematics",
+      "glob": "**/*",
+      "output": "schematics"
+    }
+  ]
 }
