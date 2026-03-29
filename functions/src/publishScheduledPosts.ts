@@ -24,7 +24,7 @@ export const publishScheduledPosts = onSchedule('every 5 minutes', async () => {
   const nowMs = Date.now();
 
   // Use collectionGroup to catch posts in both root-level 'posts' collection
-  // and multi-tenant 'sites/{siteId}/posts' subcollections.
+  // and multi-tenant 'tenants/{tenantId}/posts' subcollections.
   const snapshot = await db.collectionGroup('posts').where('status', '==', 'scheduled').get();
 
   const batch = db.batch();

@@ -17,7 +17,7 @@ function isMultiTenant(tenantId: string | null | undefined): tenantId is string 
  * - `resolveCollectionPath('posts', 'default')` → `'posts'`
  */
 export function resolveCollectionPath(
-  name: 'posts' | 'authors' | 'tags',
+  name: 'posts' | 'authors' | 'tags' | 'pages',
   tenantId?: string | null,
 ): string {
   return isMultiTenant(tenantId) ? `tenants/${tenantId}/${name}` : name;
@@ -77,7 +77,7 @@ export class CollectionPaths {
   readonly tenantId = inject(SITE_ID, { optional: true }) ?? null;
 
   /** Resolves a Firestore collection path for the current tenant context. */
-  collection(name: 'posts' | 'authors' | 'tags'): string {
+  collection(name: 'posts' | 'authors' | 'tags' | 'pages'): string {
     return resolveCollectionPath(name, this.tenantId);
   }
 
