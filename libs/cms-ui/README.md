@@ -1,6 +1,31 @@
 # @foliokit/cms-ui
-Part of the [Folio](https://github.com/doug-williamson/foliokit) ecosystem.
-> This package is in early development. API is unstable.
+
+Angular shell layout components, design tokens, and theme service for the FolioKit CMS.
+Provides `AppShellComponent`, `ThemeService`, page components, and the full CSS/SCSS
+design token system.
+
+Part of the [FolioKit](https://github.com/doug-williamson/foliokit) ecosystem.
+
+## Install
+
+```bash
+npm install @foliokit/cms-ui
+```
+
+## Peer Dependencies
+
+| Package | Version |
+|---------|---------|
+| `@angular/cdk` | `^21.2.2` |
+| `@angular/common` | `^21.2.4` |
+| `@angular/core` | `^21.2.4` |
+| `@angular/material` | `^21.2.2` |
+| `@angular/platform-browser` | `^21.2.4` |
+| `@angular/router` | `^21.2.4` |
+| `@foliokit/cms-core` | `^1.0.0` |
+| `@foliokit/cms-markdown` | `^1.0.0` |
+| `ngx-markdown` | `^21.1.0` |
+| `rxjs` | `~7.8.0` |
 
 ---
 
@@ -156,3 +181,7 @@ toggleDark() {
 | `--nav-active-bg`, `--nav-active-color` | Navigation highlights |
 | `--font-display`, `--font-body`, `--font-mono` | Font stacks |
 | `--r-xs` .. `--r-2xl` | Border radii |
+
+## Full Documentation
+
+[foliokitcms.com/docs/components/shell](https://foliokitcms.com/docs/components/shell)
