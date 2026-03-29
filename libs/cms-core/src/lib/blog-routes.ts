@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import type { CanActivateFn, Routes } from '@angular/router';
 
 import { featureGuard } from './guards/feature.guard';
+import { createPostDetailResolver } from './resolvers/post-detail.resolver';
 import { createPostsResolver } from './resolvers/posts.resolver';
 import { createAboutPageResolver } from './resolvers/about-page.resolver';
 import { createLinksPageResolver } from './resolvers/links-page.resolver';
@@ -74,6 +75,7 @@ export const FOLIO_BLOG_ROUTES: Routes = [
     path: 'posts/:slug',
     loadComponent: () =>
       loadUi().then((m) => m['BlogPostDetailComponent'] as any),
+    resolve: { post: createPostDetailResolver() },
   },
   {
     path: 'about',
