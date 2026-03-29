@@ -80,6 +80,8 @@ export class DocsShellComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.theme.apply();
+
     this.#bpSub = this.#breakpointObserver
       .observe([Breakpoints.XSmall, Breakpoints.Small])
       .subscribe((state) => {
