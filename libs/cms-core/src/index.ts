@@ -19,6 +19,10 @@ export * from './lib/tokens/blog-seo-service.token';
 export * from './lib/pipes/tag-label.pipe';
 export * from './lib/utils/page-meta.utils';
 
+// ── Tokens ────────────────────────────────────────────────────────────────────
+export * from './lib/tokens/shell-config.token';
+export * from './lib/tokens/site-config.token';
+
 // ── Guards ─────────────────────────────────────────────────────────────────────
 export * from './lib/guards/feature.guard';
 
@@ -26,3 +30,9 @@ export * from './lib/guards/feature.guard';
 export * from './lib/resolvers/about-page.resolver';
 export * from './lib/resolvers/links-page.resolver';
 export * from './lib/resolvers/posts.resolver';
+
+// ── High-level providers ──────────────────────────────────────────────────────
+export * from './lib/provide-folio-kit';
+
+// ── Route definitions ─────────────────────────────────────────────────────────
+export * from './lib/blog-routes';
