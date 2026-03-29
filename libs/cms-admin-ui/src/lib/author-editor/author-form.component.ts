@@ -27,7 +27,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
+import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
 import { AuthorEditorStore } from './author-editor.store';
 
 const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
@@ -267,6 +267,7 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
   readonly store = inject(AuthorEditorStore);
   protected readonly router = inject(Router);
   private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly paths = inject(CollectionPaths);
   private readonly fb = inject(FormBuilder);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -388,7 +389,7 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
 
     const authorId = this.store.author()?.id || crypto.randomUUID();
     const folder = target === 'dark' ? 'photo-dark' : 'photo';
-    const path = `authors/${authorId}/${folder}/${file.name}`;
+    const path = this.paths.storagePath(`authors/${authorId}/${folder}/${file.name}`);
 
     this.uploading.set(true);
     this.uploadProgress.set(0);

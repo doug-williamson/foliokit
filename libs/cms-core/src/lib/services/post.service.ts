@@ -15,6 +15,7 @@ import {
 import { deleteObject, ref } from 'firebase/storage';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { CollectionPaths } from '../firebase/collection-paths';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
 import { normalizePost } from '../utils/normalize-post';
@@ -39,10 +40,11 @@ export class PostService implements IBlogPostService {
   // On the server, BLOG_POST_SERVICE resolves to ServerBlogPostService instead.
   private readonly firestore = inject(FIRESTORE)!;
   private readonly storage = inject(FIREBASE_STORAGE)!;
+  private readonly paths = inject(CollectionPaths);
 
   getPublishedPosts(): Observable<BlogPost[]> {
     const q = query(
-      collection(this.firestore, 'posts'),
+      collection(this.firestore, this.paths.collection('posts')),
       where('status', '==', 'published'),
       orderBy('publishedAt', 'desc'),
     );
@@ -59,7 +61,7 @@ export class PostService implements IBlogPostService {
 
   getPostBySlug(slug: string): Observable<BlogPost | null> {
     const q = query(
-      collection(this.firestore, 'posts'),
+      collection(this.firestore, this.paths.collection('posts')),
       where('status', '==', 'published'),
       where('slug', '==', slug),
       limit(1),
@@ -79,7 +81,7 @@ export class PostService implements IBlogPostService {
 
   getPostsByTag(tag: string): Observable<BlogPost[]> {
     const q = query(
-      collection(this.firestore, 'posts'),
+      collection(this.firestore, this.paths.collection('posts')),
       where('status', '==', 'published'),
       where('tags', 'array-contains', tag),
       orderBy('publishedAt', 'desc'),
@@ -97,7 +99,7 @@ export class PostService implements IBlogPostService {
 
   getAllPosts(): Observable<BlogPost[]> {
     const q = query(
-      collection(this.firestore, 'posts'),
+      collection(this.firestore, this.paths.collection('posts')),
       orderBy('updatedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(
@@ -112,7 +114,7 @@ export class PostService implements IBlogPostService {
   }
 
   getPostById(id: string): Observable<BlogPost> {
-    return from(getDoc(doc(this.firestore, 'posts', id))).pipe(
+    return from(getDoc(doc(this.firestore, this.paths.collection('posts'), id))).pipe(
       map((snapshot) => {
         if (!snapshot.exists()) throw new Error(`Post not found: ${id}`);
         return normalizePost({ id: snapshot.id, ...snapshot.data() });
@@ -130,7 +132,7 @@ export class PostService implements IBlogPostService {
     const nowTs = Timestamp.fromMillis(nowMs);
 
     if (post.id === '') {
-      const newId = doc(collection(this.firestore, 'posts')).id;
+      const newId = doc(collection(this.firestore, this.paths.collection('posts'))).id;
       const savedPost: BlogPost = { ...post, id: newId, createdAt: nowMs, updatedAt: nowMs };
       // Write Timestamp objects to Firestore for proper ordering/querying
       const firestorePayload = {
@@ -140,7 +142,7 @@ export class PostService implements IBlogPostService {
         ...blogPostFirestoreTimestampFields(savedPost),
       };
       return from(
-        setDoc(doc(this.firestore, 'posts', newId), firestorePayload),
+        setDoc(doc(this.firestore, this.paths.collection('posts'), newId), firestorePayload),
       ).pipe(
         map(() => savedPost),
         catchError((err) => {
@@ -157,7 +159,7 @@ export class PostService implements IBlogPostService {
       ...blogPostFirestoreTimestampFields(savedPost),
     };
     return from(
-      updateDoc(doc(this.firestore, 'posts', post.id), firestorePayload),
+      updateDoc(doc(this.firestore, this.paths.collection('posts'), post.id), firestorePayload),
     ).pipe(
       map(() => savedPost),
       catchError((err) => {

@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AuthorService, FIREBASE_STORAGE, NavItem, SocialPlatform } from '@foliokit/cms-core';
+import { AuthorService, CollectionPaths, FIREBASE_STORAGE, NavItem, SocialPlatform } from '@foliokit/cms-core';
 import { ThemeService } from '@foliokit/cms-ui';
 import type { Author } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
@@ -599,6 +599,7 @@ export class SetupComponent implements OnInit {
   private readonly authorService = inject(AuthorService);
   private readonly fb = inject(FormBuilder);
   private readonly storage = inject(FIREBASE_STORAGE);
+  private readonly paths = inject(CollectionPaths);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -785,7 +786,7 @@ export class SetupComponent implements OnInit {
   private uploadAuthorPhoto(file: File, target: 'light' | 'dark'): void {
     if (!this.storage) return;
     const folder = target === 'dark' ? 'photo-dark' : 'photo';
-    const path = `authors/${this.authorTempId}/${folder}/${file.name}`;
+    const path = this.paths.storagePath(`authors/${this.authorTempId}/${folder}/${file.name}`);
 
     this.authorPhotoUploading.set(true);
     this.authorPhotoProgress.set(0);

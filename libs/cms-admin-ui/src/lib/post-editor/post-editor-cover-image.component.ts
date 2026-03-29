@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
+import { CollectionPaths, FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 
 @Component({
@@ -126,6 +126,7 @@ export class PostEditorCoverImageComponent {
 
   readonly store = inject(PostEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE)!;
+  private readonly paths = inject(CollectionPaths);
   private readonly postService = inject(PostService);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -187,7 +188,7 @@ export class PostEditorCoverImageComponent {
   private upload(file: File): void {
     const previousPath = this.storagePath();
     const postId = this.store.post()?.id || this.store.tempPostId();
-    const storagePath = `posts/${postId}/cover/${file.name}`;
+    const storagePath = this.paths.storagePath(`posts/${postId}/cover/${file.name}`);
 
     if (previousPath) {
       this.postService.deleteStorageFile(previousPath).subscribe();

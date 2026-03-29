@@ -23,7 +23,7 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { FIREBASE_STORAGE } from '@foliokit/cms-core';
+import { CollectionPaths, FIREBASE_STORAGE } from '@foliokit/cms-core';
 import type { LinksLink, LinksPageConfig } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
@@ -293,6 +293,7 @@ export class LinksEditorFormComponent {
 
   readonly store = inject(SiteConfigEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE)!;
+  private readonly paths = inject(CollectionPaths);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -402,7 +403,7 @@ export class LinksEditorFormComponent {
 
   private uploadAvatar(file: File): void {
     const previous = this.avatarStoragePath();
-    const storagePath = `site-config/links/avatar/${file.name}`;
+    const storagePath = this.paths.storagePath(`site-config/links/avatar/${file.name}`);
 
     if (previous) {
       deleteObject(ref(this.storage, previous)).catch(() => undefined);
@@ -437,7 +438,7 @@ export class LinksEditorFormComponent {
 
   private uploadAvatarDark(file: File): void {
     const previous = this.avatarDarkStoragePath();
-    const storagePath = `site-config/links/avatar-dark/${file.name}`;
+    const storagePath = this.paths.storagePath(`site-config/links/avatar-dark/${file.name}`);
 
     if (previous) {
       deleteObject(ref(this.storage, previous)).catch(() => undefined);

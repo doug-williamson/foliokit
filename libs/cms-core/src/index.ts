@@ -1,3 +1,4 @@
+export * from './lib/firebase/collection-paths';
 export * from './lib/firebase/firebase.config';
 export * from './lib/firebase/firebase.providers';
 export * from './lib/firebase/foliokit.providers';

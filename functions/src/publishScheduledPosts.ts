@@ -23,7 +23,9 @@ export const publishScheduledPosts = onSchedule('every 5 minutes', async () => {
   const db = getFirestore();
   const nowMs = Date.now();
 
-  const snapshot = await db.collection('posts').where('status', '==', 'scheduled').get();
+  // Use collectionGroup to catch posts in both root-level 'posts' collection
+  // and multi-tenant 'sites/{siteId}/posts' subcollections.
+  const snapshot = await db.collectionGroup('posts').where('status', '==', 'scheduled').get();
 
   const batch = db.batch();
   let count = 0;

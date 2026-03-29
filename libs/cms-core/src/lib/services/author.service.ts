@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { CollectionPaths } from '../firebase/collection-paths';
 import { FIRESTORE } from '../firebase/firebase.config';
 import type { Author } from '../models/author.model';
 import { normalizeAuthor } from '../utils/normalize-author';
@@ -20,10 +21,11 @@ import { normalizeAuthor } from '../utils/normalize-author';
 @Injectable({ providedIn: 'root' })
 export class AuthorService {
   private readonly firestore = inject(FIRESTORE)!;
+  private readonly paths = inject(CollectionPaths);
 
   getAll(): Observable<Author[]> {
     const q = query(
-      collection(this.firestore, 'authors'),
+      collection(this.firestore, this.paths.collection('authors')),
       orderBy('displayName', 'asc'),
     );
     return from(getDocs(q)).pipe(
@@ -38,7 +40,7 @@ export class AuthorService {
   }
 
   getById(id: string): Observable<Author | null> {
-    return from(getDoc(doc(this.firestore, 'authors', id))).pipe(
+    return from(getDoc(doc(this.firestore, this.paths.collection('authors'), id))).pipe(
       map((snap) => {
         if (!snap.exists()) return null;
         return normalizeAuthor({ id: snap.id, ...snap.data() });
@@ -53,10 +55,10 @@ export class AuthorService {
   create(data: Omit<Author, 'id' | 'createdAt' | 'updatedAt'>): Observable<Author> {
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
-    const newId = doc(collection(this.firestore, 'authors')).id;
+    const newId = doc(collection(this.firestore, this.paths.collection('authors'))).id;
     const author: Author = { ...data, id: newId, createdAt: nowMs, updatedAt: nowMs };
     const firestorePayload = { ...author, createdAt: nowTs, updatedAt: nowTs };
-    return from(setDoc(doc(this.firestore, 'authors', newId), firestorePayload)).pipe(
+    return from(setDoc(doc(this.firestore, this.paths.collection('authors'), newId), firestorePayload)).pipe(
       map(() => author),
       catchError((err) => {
         console.error('[AuthorService.create]', err);
@@ -68,7 +70,7 @@ export class AuthorService {
   update(id: string, data: Partial<Omit<Author, 'id' | 'createdAt'>>): Observable<void> {
     const nowTs = Timestamp.fromMillis(Date.now());
     return from(
-      updateDoc(doc(this.firestore, 'authors', id), { ...data, updatedAt: nowTs }),
+      updateDoc(doc(this.firestore, this.paths.collection('authors'), id), { ...data, updatedAt: nowTs }),
     ).pipe(
       catchError((err) => {
         console.error('[AuthorService.update]', err);
@@ -78,7 +80,7 @@ export class AuthorService {
   }
 
   delete(id: string): Observable<void> {
-    return from(deleteDoc(doc(this.firestore, 'authors', id))).pipe(
+    return from(deleteDoc(doc(this.firestore, this.paths.collection('authors'), id))).pipe(
       catchError((err) => {
         console.error('[AuthorService.delete]', err);
         throw err;
