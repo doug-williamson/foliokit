@@ -1,9 +1,11 @@
 # @foliokit/cms-admin-ui
 
-## ⚠️ Pre-release
+## ⚠️ Unstable API
 
-This package is pre-release (`0.x`). The API is unstable and may change without
-notice between minor versions. Do not depend on it in production applications.
+This package provides internal admin tooling for the FolioKit CMS. While
+published as `1.x`, the API surface is **not yet stabilised** for external
+consumers and may change between minor versions. Use at your own risk in
+production applications.
 
 ---
 
@@ -16,10 +18,8 @@ Part of the [FolioKit](https://github.com/doug-williamson/foliokit) ecosystem.
 ## Install
 
 ```bash
-npm install @foliokit/cms-admin-ui@next
+npm install @foliokit/cms-admin-ui
 ```
-
-The `@next` tag ensures you get the latest pre-release version.
 
 ## Peer Dependencies
 

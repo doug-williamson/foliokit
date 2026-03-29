@@ -23,13 +23,13 @@ cd dist/libs/cms-admin-ui && npm pack --dry-run && cd -
 ```
 
 **Verify for each package:**
-- [ ] `package.json` is present with correct `name`, `version`, `peerDependencies`
-- [ ] No `.ts` source files included (only `.js`, `.d.ts`, `.mjs`)
-- [ ] No `node_modules/` included
-- [ ] No `.env` or service account files included
-- [ ] `README.md` is present
+- [x] `package.json` is present with correct `name`, `version`, `peerDependencies`
+- [x] No `.ts` source files included (only `.js`, `.d.ts`, `.mjs`)
+- [x] No `node_modules/` included
+- [x] No `.env` or service account files included
+- [x] `README.md` is present
 - [ ] `CHANGELOG.md` is present (after first release-please PR merge)
-- [ ] **cms-ui only:** `styles/tokens.css` and `styles/tokens.scss` are included
+- [x] **cms-ui only:** `styles/tokens.css` and `styles/tokens.scss` are included
 
 ---
 
@@ -39,12 +39,12 @@ Each published package must have:
 
 | Requirement | cms-core | cms-ui | cms-markdown | cms-admin-ui |
 |-------------|----------|--------|-------------|-------------|
-| One-paragraph description | [ ] | [ ] | [ ] | [ ] |
-| `npm install` command | [ ] | [ ] | [ ] | [ ] |
-| Peer dependencies table | [ ] | [ ] | [ ] | [ ] |
-| Minimal usage example | [ ] | [ ] | [ ] | [ ] |
-| Link to full docs | [ ] | [ ] | [ ] | [ ] |
-| Pre-release banner (admin-ui only) | n/a | n/a | n/a | [ ] |
+| One-paragraph description | [x] | [x] | [x] | [x] |
+| `npm install` command | [x] | [x] | [x] | [x] |
+| Peer dependencies table | [x] | [x] | [x] | [x] |
+| Minimal usage example | [x] | [x] | [x] | [ ] |
+| Link to full docs | [x] | [x] | [x] | [x] |
+| Unstable API banner (admin-ui only) | n/a | n/a | n/a | [x] |
 
 ---
 
