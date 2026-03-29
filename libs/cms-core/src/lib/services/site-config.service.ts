@@ -28,9 +28,9 @@ export class SiteConfigService implements ISiteConfigService {
   private readonly firestore = inject(FIRESTORE);
   private readonly paths = inject(CollectionPaths);
 
-  getSiteConfig(siteId: string): Observable<SiteConfig | null> {
+  getSiteConfig(tenantId: string): Observable<SiteConfig | null> {
     if (!this.firestore) return of(null);
-    const docPath = this.paths.siteConfigDocPath(siteId);
+    const docPath = this.paths.siteConfigDocPath(tenantId);
     const segments = docPath.split('/');
     const ref = doc(this.firestore, segments[0], ...segments.slice(1));
     return from(getDoc(ref)).pipe(
@@ -46,7 +46,7 @@ export class SiteConfigService implements ISiteConfigService {
   }
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
-    return this.getSiteConfig(this.paths.siteId ?? 'default');
+    return this.getSiteConfig(this.paths.tenantId ?? 'default');
   }
 
   /** Returns the default SiteConfig, filtering out null (no-document) results. */
@@ -69,15 +69,15 @@ export class SiteConfigService implements ISiteConfigService {
 
   saveSiteConfig(config: SiteConfig): Observable<SiteConfig> {
     if (!this.firestore) return of(config);
-    const siteId = config.id || 'default';
+    const tenantId = config.id || 'default';
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
-    const saved: SiteConfig = { ...config, id: siteId, updatedAt: nowMs };
+    const saved: SiteConfig = { ...config, id: tenantId, updatedAt: nowMs };
     const firestorePayload = stripUndefined({
       ...saved,
       updatedAt: nowTs,
     } as unknown as Record<string, unknown>);
-    const docPath = this.paths.siteConfigDocPath(siteId);
+    const docPath = this.paths.siteConfigDocPath(tenantId);
     const segments = docPath.split('/');
     return defer(() =>
       setDoc(doc(this.firestore!, segments[0], ...segments.slice(1)), firestorePayload),

@@ -15,9 +15,9 @@ export interface SiteConfigEditorState {
   saveError: string | null;
 }
 
-function createEmptyConfig(siteId: string): SiteConfig {
+function createEmptyConfig(tenantId: string): SiteConfig {
   return {
-    id: siteId,
+    id: tenantId,
     siteName: '',
     siteUrl: '',
     nav: [],
@@ -40,7 +40,7 @@ const initialState: SiteConfigEditorState = {
 export const SiteConfigEditorStore = signalStore(
   withState<SiteConfigEditorState>(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService), siteId = inject(SITE_ID, { optional: true }) ?? 'default') => {
+  withMethods((store, siteConfigService = inject(SiteConfigService), tenantId = inject(SITE_ID, { optional: true }) ?? 'default') => {
     let loadInProgress = false;
     return {
       load(): void {
@@ -48,7 +48,7 @@ export const SiteConfigEditorStore = signalStore(
         loadInProgress = true;
         siteConfigService.getDefaultSiteConfig().subscribe({
           next: (config) => {
-            const loaded = config ?? createEmptyConfig(siteId);
+            const loaded = config ?? createEmptyConfig(tenantId);
             patchState(store, {
               config: loaded,
               savedConfig: loaded,

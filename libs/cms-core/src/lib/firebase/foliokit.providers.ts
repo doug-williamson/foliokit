@@ -19,20 +19,20 @@ import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
  * Injection token for the current site identifier.
  *
  * **Provided by {@link provideFolioKit}** when `siteId` is set in the config.
- * Consumers should inject this token to read the active site ID — do not
+ * Consumers should inject this token to read the active tenant ID — do not
  * provide it yourself unless you are bypassing `provideFolioKit()`.
  *
- * Useful for multi-site deployments where a single Firebase project
- * serves several distinct sites. Services like `SiteConfigService` can
- * use this to scope Firestore reads to a specific site document.
+ * Useful for multi-tenant deployments where a single Firebase project
+ * serves several distinct tenants. Services like `SiteConfigService` can
+ * use this to scope Firestore reads to a specific tenant document.
  *
  * @example
  * ```ts
  * // In any component or service — reads the value set by provideFolioKit():
- * readonly siteId = inject(SITE_ID, { optional: true });
+ * readonly tenantId = inject(SITE_ID, { optional: true });
  *
  * loadConfig() {
- *   const id = this.siteId ?? 'default';
+ *   const id = this.tenantId ?? 'default';
  *   return this.siteConfigService.getSiteConfig(id);
  * }
  * ```
@@ -99,7 +99,7 @@ export interface FolioKitConfig {
  *
  * Registers all Firebase services (app, Firestore, Storage, Auth), binds the
  * default {@link PostService} and {@link SiteConfigService} implementations to
- * their public tokens, and optionally stores `siteId` / `tenantId` config.
+ * their public tokens, and optionally stores `siteId` (tenant routing) / `tenantId` (Firebase Auth) config.
  *
  * Use this instead of `provideFirebase()` unless you need custom service
  * implementations — in which case call `provideFirebase()` directly and
@@ -150,7 +150,7 @@ export function provideFolioKit(config: FolioKitConfig): EnvironmentProviders {
     { provide: SITE_CONFIG_SERVICE, useExisting: SiteConfigService },
   ];
 
-  // Optionally expose siteId as an injectable constant.
+  // Optionally expose the tenant routing ID as an injectable constant.
   if (config.siteId !== undefined) {
     providers.push({ provide: SITE_ID, useValue: config.siteId });
   }

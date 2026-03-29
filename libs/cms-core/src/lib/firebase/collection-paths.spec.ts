@@ -10,28 +10,28 @@ import {
 // ── Pure function tests ─────────────────────────────────────────────────────
 
 describe('resolveCollectionPath', () => {
-  it('returns root-level path when siteId is null', () => {
+  it('returns root-level path when tenantId is null', () => {
     expect(resolveCollectionPath('posts', null)).toBe('posts');
   });
 
-  it('returns root-level path when siteId is undefined', () => {
+  it('returns root-level path when tenantId is undefined', () => {
     expect(resolveCollectionPath('posts', undefined)).toBe('posts');
   });
 
-  it('returns root-level path when siteId is "default"', () => {
+  it('returns root-level path when tenantId is "default"', () => {
     expect(resolveCollectionPath('posts', 'default')).toBe('posts');
   });
 
-  it('returns scoped path when siteId is a non-default value', () => {
-    expect(resolveCollectionPath('posts', 'stark')).toBe('sites/stark/posts');
+  it('returns scoped path when tenantId is a non-default value', () => {
+    expect(resolveCollectionPath('posts', 'stark')).toBe('tenants/stark/posts');
   });
 
   it('works for authors collection', () => {
-    expect(resolveCollectionPath('authors', 'stark')).toBe('sites/stark/authors');
+    expect(resolveCollectionPath('authors', 'stark')).toBe('tenants/stark/authors');
   });
 
   it('works for tags collection', () => {
-    expect(resolveCollectionPath('tags', 'stark')).toBe('sites/stark/tags');
+    expect(resolveCollectionPath('tags', 'stark')).toBe('tenants/stark/tags');
   });
 });
 
@@ -40,26 +40,26 @@ describe('resolveSiteConfigDocPath', () => {
     expect(resolveSiteConfigDocPath('default', null)).toBe('site-config/default');
   });
 
-  it('returns root-level path when siteId is "default"', () => {
+  it('returns root-level path when tenantId is "default"', () => {
     expect(resolveSiteConfigDocPath('default', 'default')).toBe('site-config/default');
   });
 
   it('returns scoped path for multi-tenant site', () => {
-    expect(resolveSiteConfigDocPath('stark', 'stark')).toBe('sites/stark/site-config/stark');
+    expect(resolveSiteConfigDocPath('stark', 'stark')).toBe('tenants/stark/site-config/stark');
   });
 });
 
 describe('resolveStoragePath', () => {
-  it('returns unmodified path when siteId is null', () => {
+  it('returns unmodified path when tenantId is null', () => {
     expect(resolveStoragePath('posts/abc/cover/img.jpg', null)).toBe('posts/abc/cover/img.jpg');
   });
 
-  it('returns unmodified path when siteId is "default"', () => {
+  it('returns unmodified path when tenantId is "default"', () => {
     expect(resolveStoragePath('posts/abc/cover/img.jpg', 'default')).toBe('posts/abc/cover/img.jpg');
   });
 
   it('returns scoped path for multi-tenant site', () => {
-    expect(resolveStoragePath('posts/abc/cover/img.jpg', 'stark')).toBe('sites/stark/posts/abc/cover/img.jpg');
+    expect(resolveStoragePath('posts/abc/cover/img.jpg', 'stark')).toBe('tenants/stark/posts/abc/cover/img.jpg');
   });
 });
 
@@ -76,8 +76,8 @@ describe('CollectionPaths (injectable)', () => {
       paths = TestBed.inject(CollectionPaths);
     });
 
-    it('siteId is null', () => {
-      expect(paths.siteId).toBeNull();
+    it('tenantId is null', () => {
+      expect(paths.tenantId).toBeNull();
     });
 
     it('collection returns root-level path', () => {
@@ -105,26 +105,26 @@ describe('CollectionPaths (injectable)', () => {
       paths = TestBed.inject(CollectionPaths);
     });
 
-    it('siteId is "stark"', () => {
-      expect(paths.siteId).toBe('stark');
+    it('tenantId is "stark"', () => {
+      expect(paths.tenantId).toBe('stark');
     });
 
     it('collection returns scoped path', () => {
-      expect(paths.collection('posts')).toBe('sites/stark/posts');
-      expect(paths.collection('authors')).toBe('sites/stark/authors');
-      expect(paths.collection('tags')).toBe('sites/stark/tags');
+      expect(paths.collection('posts')).toBe('tenants/stark/posts');
+      expect(paths.collection('authors')).toBe('tenants/stark/authors');
+      expect(paths.collection('tags')).toBe('tenants/stark/tags');
     });
 
     it('siteConfigDocPath returns scoped path', () => {
-      expect(paths.siteConfigDocPath()).toBe('sites/stark/site-config/stark');
+      expect(paths.siteConfigDocPath()).toBe('tenants/stark/site-config/stark');
     });
 
     it('siteConfigDocPath with explicit docId returns scoped path', () => {
-      expect(paths.siteConfigDocPath('custom')).toBe('sites/stark/site-config/custom');
+      expect(paths.siteConfigDocPath('custom')).toBe('tenants/stark/site-config/custom');
     });
 
     it('storagePath returns scoped path', () => {
-      expect(paths.storagePath('posts/abc/cover/img.jpg')).toBe('sites/stark/posts/abc/cover/img.jpg');
+      expect(paths.storagePath('posts/abc/cover/img.jpg')).toBe('tenants/stark/posts/abc/cover/img.jpg');
     });
   });
 
