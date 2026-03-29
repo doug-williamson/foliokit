@@ -55,7 +55,7 @@ export const routes: Routes = [
 ];
 `;
 }
-function appConfigTs(siteId, appName) {
+function appConfigTs(tenantId, appName) {
     return `import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -70,7 +70,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     providesFolioKit({
       firebase: environment.firebaseConfig,
-      siteId: '${siteId}',
+      tenantId: '${tenantId}',
       shell: {
         appName: '${appName}',
         nav: [
@@ -143,7 +143,7 @@ function ngAdd(options) {
     return (tree, context) => {
         const sourceRoot = getSourceRoot(tree, options.project);
         const projectName = getProjectName(tree, options.project);
-        const siteId = options.siteId || 'default';
+        const tenantId = options.tenantId || 'default';
         const appName = options.appName || 'My Blog';
         const firebaseProject = options.firebaseProject || '';
         const generated = [];
@@ -176,11 +176,11 @@ function ngAdd(options) {
         if (tree.exists(configPath)) {
             skipped.push(configPath);
             context.logger.warn(`⚠  ${configPath} already exists — overwriting with FolioKit config.`);
-            tree.overwrite(configPath, appConfigTs(siteId, appName));
+            tree.overwrite(configPath, appConfigTs(tenantId, appName));
             generated.push(configPath);
         }
         else {
-            tree.create(configPath, appConfigTs(siteId, appName));
+            tree.create(configPath, appConfigTs(tenantId, appName));
             generated.push(configPath);
         }
         // ── Step 4: firebase.json ───────────────────────────────────────────────
