@@ -30,15 +30,15 @@ describe('cms-core public API smoke tests', () => {
 
   it('SITE_ID token is optionally injectable — returns null when absent', () => {
     TestBed.configureTestingModule({ providers: [] });
-    const siteId = TestBed.inject(SITE_ID, null);
-    expect(siteId).toBeNull();
+    const tenantId = TestBed.inject(SITE_ID, null);
+    expect(tenantId).toBeNull();
   });
 
   it('SITE_ID token is injectable when provided', () => {
     TestBed.configureTestingModule({
       providers: [{ provide: SITE_ID, useValue: 'my-site' }],
     });
-    const siteId = TestBed.inject(SITE_ID);
-    expect(siteId).toBe('my-site');
+    const tenantId = TestBed.inject(SITE_ID);
+    expect(tenantId).toBe('my-site');
   });
 });

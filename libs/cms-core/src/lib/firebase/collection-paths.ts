@@ -5,50 +5,50 @@ import { SITE_ID } from './foliokit.providers';
 // Use these in server-side services (Admin SDK), Cloud Functions, or tests
 // where Angular DI is not available.
 
-function isMultiTenant(siteId: string | null | undefined): siteId is string {
-  return siteId != null && siteId !== 'default';
+function isMultiTenant(tenantId: string | null | undefined): tenantId is string {
+  return tenantId != null && tenantId !== 'default';
 }
 
 /**
- * Resolves a Firestore collection path, scoped to a site when multi-tenant.
+ * Resolves a Firestore collection path, scoped to a tenant when multi-tenant.
  *
  * - `resolveCollectionPath('posts')` → `'posts'`
- * - `resolveCollectionPath('posts', 'stark')` → `'sites/stark/posts'`
+ * - `resolveCollectionPath('posts', 'stark')` → `'tenants/stark/posts'`
  * - `resolveCollectionPath('posts', 'default')` → `'posts'`
  */
 export function resolveCollectionPath(
   name: 'posts' | 'authors' | 'tags',
-  siteId?: string | null,
+  tenantId?: string | null,
 ): string {
-  return isMultiTenant(siteId) ? `sites/${siteId}/${name}` : name;
+  return isMultiTenant(tenantId) ? `tenants/${tenantId}/${name}` : name;
 }
 
 /**
  * Resolves the full Firestore document path for a site-config document.
  *
  * - `resolveSiteConfigDocPath('default')` → `'site-config/default'`
- * - `resolveSiteConfigDocPath('stark', 'stark')` → `'sites/stark/site-config/stark'`
+ * - `resolveSiteConfigDocPath('stark', 'stark')` → `'tenants/stark/site-config/stark'`
  */
 export function resolveSiteConfigDocPath(
   docId: string,
-  siteId?: string | null,
+  tenantId?: string | null,
 ): string {
-  return isMultiTenant(siteId)
-    ? `sites/${siteId}/site-config/${docId}`
+  return isMultiTenant(tenantId)
+    ? `tenants/${tenantId}/site-config/${docId}`
     : `site-config/${docId}`;
 }
 
 /**
- * Resolves a Firebase Storage path, scoped to a site when multi-tenant.
+ * Resolves a Firebase Storage path, scoped to a tenant when multi-tenant.
  *
  * - `resolveStoragePath('posts/abc/cover/img.jpg')` → `'posts/abc/cover/img.jpg'`
- * - `resolveStoragePath('posts/abc/cover/img.jpg', 'stark')` → `'sites/stark/posts/abc/cover/img.jpg'`
+ * - `resolveStoragePath('posts/abc/cover/img.jpg', 'stark')` → `'tenants/stark/posts/abc/cover/img.jpg'`
  */
 export function resolveStoragePath(
   relativePath: string,
-  siteId?: string | null,
+  tenantId?: string | null,
 ): string {
-  return isMultiTenant(siteId) ? `sites/${siteId}/${relativePath}` : relativePath;
+  return isMultiTenant(tenantId) ? `tenants/${tenantId}/${relativePath}` : relativePath;
 }
 
 // ── Injectable service ──────────────────────────────────────────────────────
@@ -74,20 +74,20 @@ export function resolveStoragePath(
  */
 @Injectable({ providedIn: 'root' })
 export class CollectionPaths {
-  readonly siteId = inject(SITE_ID, { optional: true }) ?? null;
+  readonly tenantId = inject(SITE_ID, { optional: true }) ?? null;
 
-  /** Resolves a Firestore collection path for the current site context. */
+  /** Resolves a Firestore collection path for the current tenant context. */
   collection(name: 'posts' | 'authors' | 'tags'): string {
-    return resolveCollectionPath(name, this.siteId);
+    return resolveCollectionPath(name, this.tenantId);
   }
 
-  /** Resolves the full Firestore doc path for the current site's config. */
+  /** Resolves the full Firestore doc path for the current tenant's config. */
   siteConfigDocPath(docId?: string): string {
-    return resolveSiteConfigDocPath(docId ?? this.siteId ?? 'default', this.siteId);
+    return resolveSiteConfigDocPath(docId ?? this.tenantId ?? 'default', this.tenantId);
   }
 
-  /** Resolves a Firebase Storage path for the current site context. */
+  /** Resolves a Firebase Storage path for the current tenant context. */
   storagePath(relativePath: string): string {
-    return resolveStoragePath(relativePath, this.siteId);
+    return resolveStoragePath(relativePath, this.tenantId);
   }
 }

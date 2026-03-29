@@ -4,7 +4,7 @@ import { addPackageJsonDependency, NodeDependencyType } from '@schematics/angula
 export interface NgAddOptions {
   project?: string;
   firebaseProject: string;
-  siteId: string;
+  tenantId: string;
   appName: string;
 }
 
@@ -67,7 +67,7 @@ export const routes: Routes = [
 `;
 }
 
-function appConfigTs(siteId: string, appName: string): string {
+function appConfigTs(tenantId: string, appName: string): string {
   return `import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -82,7 +82,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     providesFolioKit({
       firebase: environment.firebaseConfig,
-      siteId: '${siteId}',
+      tenantId: '${tenantId}',
       shell: {
         appName: '${appName}',
         nav: [
@@ -175,7 +175,7 @@ export function ngAdd(options: NgAddOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
     const sourceRoot = getSourceRoot(tree, options.project);
     const projectName = getProjectName(tree, options.project);
-    const siteId = options.siteId || 'default';
+    const tenantId = options.tenantId || 'default';
     const appName = options.appName || 'My Blog';
     const firebaseProject = options.firebaseProject || '';
 
@@ -212,10 +212,10 @@ export function ngAdd(options: NgAddOptions): Rule {
     if (tree.exists(configPath)) {
       skipped.push(configPath);
       context.logger.warn(`⚠  ${configPath} already exists — overwriting with FolioKit config.`);
-      tree.overwrite(configPath, appConfigTs(siteId, appName));
+      tree.overwrite(configPath, appConfigTs(tenantId, appName));
       generated.push(configPath);
     } else {
-      tree.create(configPath, appConfigTs(siteId, appName));
+      tree.create(configPath, appConfigTs(tenantId, appName));
       generated.push(configPath);
     }
 

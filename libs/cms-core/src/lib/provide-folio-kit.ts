@@ -29,18 +29,17 @@ class _SiteConfigRef {
   config: SiteConfig | null = null;
 }
 
-// Phase 11 note: tenantId will be added to FolioKitOptions here
-// for multi-tenant resolution via APP_INITIALIZER.
+// Phase 11 note: FolioKitOptions.tenantId added in Phase 11a commit 2.
 
 export interface FolioKitOptions {
   /** Firebase project credentials (required). */
   firebase: FirebaseOptions;
 
   /**
-   * Site identifier used to resolve the site-config Firestore document.
+   * Tenant identifier used to resolve the site-config Firestore document.
    * @default 'default'
    */
-  siteId?: string;
+  tenantId?: string;
 
   /** Optional shell configuration forwarded to {@link SHELL_CONFIG}. */
   shell?: Partial<ShellConfig>;
@@ -89,12 +88,12 @@ export interface FolioKitOptions {
  * ```
  */
 export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders {
-  const siteId = options.siteId ?? 'default';
+  const tenantId = options.tenantId ?? 'default';
 
   // Build the config for the lower-level provideFolioKit().
   const coreConfig: FolioKitConfig = {
     firebaseConfig: options.firebase,
-    siteId,
+    siteId: tenantId,
   };
 
   const providers: Parameters<typeof makeEnvironmentProviders>[0] = [
@@ -124,7 +123,7 @@ export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders
           // Client Firestore SDK is null on the server — skip gracefully.
           if (!isPlatformBrowser(platformId) || !firestore) return;
 
-          const docPath = resolveSiteConfigDocPath(siteId, siteId);
+          const docPath = resolveSiteConfigDocPath(tenantId, tenantId);
           const segments = docPath.split('/');
           // doc() expects (firestore, collectionPath, docId, ...pathSegments)
           const docRef = doc(firestore, segments[0], ...segments.slice(1));
