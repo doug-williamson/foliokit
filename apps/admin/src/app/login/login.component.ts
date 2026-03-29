@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '@foliokit/cms-core';
+import { ThemeService } from '@foliokit/cms-ui';
 
 @Component({
   selector: 'admin-login',
@@ -143,9 +144,11 @@ import { AuthService } from '@foliokit/cms-core';
 export class LoginComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly theme = inject(ThemeService);
   protected readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
+    this.theme.apply();
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/posts']);
     }
