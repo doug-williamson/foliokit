@@ -5,7 +5,11 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": []
+    "types": [],
+    "paths": {
+      "@foliokit/cms-core": ["./src/index.ts"],
+      "@foliokit/cms-ui": ["../../dist/libs/cms-ui"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]

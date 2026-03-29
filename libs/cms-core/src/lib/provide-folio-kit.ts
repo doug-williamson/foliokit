@@ -1,0 +1,158 @@
+import {
+  APP_INITIALIZER,
+  EnvironmentProviders,
+  Injectable,
+  PLATFORM_ID,
+  inject,
+  makeEnvironmentProviders,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import type { FirebaseOptions } from 'firebase/app';
+import { doc, getDoc } from 'firebase/firestore';
+import { provideMarkdown } from 'ngx-markdown';
+
+import { provideFolioKit, type FolioKitConfig } from './firebase/foliokit.providers';
+import { FIRESTORE } from './firebase/firebase.config';
+import { resolveSiteConfigDocPath } from './firebase/collection-paths';
+import { SITE_CONFIG } from './tokens/site-config.token';
+import { SHELL_CONFIG, type ShellConfig } from './tokens/shell-config.token';
+import { normalizeSiteConfig } from './utils/normalize-site-config';
+import type { SiteConfig } from './models/site-config.model';
+
+/**
+ * Internal holder populated by the APP_INITIALIZER and read by the
+ * SITE_CONFIG factory. Keeps the async-loaded value reachable from a
+ * synchronous useFactory.
+ */
+@Injectable()
+class _SiteConfigRef {
+  config: SiteConfig | null = null;
+}
+
+// Phase 11 note: tenantId will be added to FolioKitOptions here
+// for multi-tenant resolution via APP_INITIALIZER.
+
+export interface FolioKitOptions {
+  /** Firebase project credentials (required). */
+  firebase: FirebaseOptions;
+
+  /**
+   * Site identifier used to resolve the site-config Firestore document.
+   * @default 'default'
+   */
+  siteId?: string;
+
+  /** Optional shell configuration forwarded to {@link SHELL_CONFIG}. */
+  shell?: Partial<ShellConfig>;
+
+  features?: {
+    /**
+     * When `true` (the default), registers `provideMarkdown()` from
+     * ngx-markdown so that Markdown rendering works out of the box.
+     * @default true
+     */
+    markdown?: boolean;
+
+    /**
+     * When `true`, Firebase Auth is available for injection. Auth is
+     * always initialised by the underlying `provideFirebase()` call,
+     * but this flag signals intent for documentation / future gating.
+     * @default false
+     */
+    auth?: boolean;
+  };
+}
+
+/**
+ * High-level provider factory that bootstraps an entire FolioKit application
+ * in a single call.
+ *
+ * Internally delegates to {@link provideFolioKit} for Firebase + default
+ * service bindings, then layers on:
+ * - An `APP_INITIALIZER` that eagerly loads the `SiteConfig` document from
+ *   Firestore and makes it available via the {@link SITE_CONFIG} token.
+ * - Optional {@link SHELL_CONFIG} provision.
+ * - Optional `provideMarkdown()` from ngx-markdown.
+ *
+ * @example
+ * ```ts
+ * export const appConfig: ApplicationConfig = {
+ *   providers: [
+ *     providesFolioKit({
+ *       firebase: environment.firebase,
+ *       shell: { appName: 'My Blog' },
+ *       features: { markdown: true },
+ *     }),
+ *     provideRouter(routes),
+ *   ],
+ * };
+ * ```
+ */
+export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders {
+  const siteId = options.siteId ?? 'default';
+
+  // Build the config for the lower-level provideFolioKit().
+  const coreConfig: FolioKitConfig = {
+    firebaseConfig: options.firebase,
+    siteId,
+  };
+
+  const providers: Parameters<typeof makeEnvironmentProviders>[0] = [
+    // Firebase services + default service-token bindings.
+    provideFolioKit(coreConfig),
+
+    // Internal holder for the eagerly-loaded SiteConfig value.
+    { provide: _SiteConfigRef, useValue: new _SiteConfigRef() },
+
+    // SITE_CONFIG reads from the holder — guaranteed to run after
+    // APP_INITIALIZER because Angular resolves initializers before
+    // rendering any component or running any guard.
+    {
+      provide: SITE_CONFIG,
+      useFactory: () => inject(_SiteConfigRef).config,
+    },
+
+    // APP_INITIALIZER: fetch the SiteConfig document from Firestore.
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        const ref = inject(_SiteConfigRef);
+        const firestore = inject(FIRESTORE);
+        const platformId = inject(PLATFORM_ID);
+
+        return async () => {
+          // Client Firestore SDK is null on the server — skip gracefully.
+          if (!isPlatformBrowser(platformId) || !firestore) return;
+
+          const docPath = resolveSiteConfigDocPath(siteId, siteId);
+          const segments = docPath.split('/');
+          // doc() expects (firestore, collectionPath, docId, ...pathSegments)
+          const docRef = doc(firestore, segments[0], ...segments.slice(1));
+
+          try {
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+              ref.config = normalizeSiteConfig({ id: snap.id, ...snap.data() });
+            }
+          } catch {
+            // Swallow network errors during init — consumers should handle
+            // a null SITE_CONFIG gracefully.
+          }
+        };
+      },
+      multi: true,
+    },
+  ];
+
+  // Optional shell configuration.
+  if (options.shell !== undefined) {
+    providers.push({ provide: SHELL_CONFIG, useValue: options.shell });
+  }
+
+  // Markdown support (on by default).
+  if (options.features?.markdown !== false) {
+    providers.push(provideMarkdown());
+  }
+
+  return makeEnvironmentProviders(providers);
+}

@@ -5,6 +5,7 @@
   "prefix": "lib",
   "projectType": "library",
   "tags": ["scope:shared"],
+  "implicitDependencies": ["!cms-ui"],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
