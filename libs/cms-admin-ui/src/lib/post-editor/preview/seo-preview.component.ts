@@ -28,6 +28,7 @@ import { PostEditorStore } from '../post-editor.store';
         font-family: arial, sans-serif;
         max-width: 600px;
       }
+      /* platform-faithful: Google SERP */
       .snippet-url {
         font-size: 12px;
         color: #1a6e39;
@@ -49,6 +50,7 @@ import { PostEditorStore } from '../post-editor.store';
         line-height: 1.58;
         margin-top: 2px;
       }
+      /* platform-faithful: Facebook OG Card */
       .og-card {
         border: 1px solid #e0e0e0;
         border-radius: 8px;

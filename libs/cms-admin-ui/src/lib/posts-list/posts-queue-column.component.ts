@@ -19,7 +19,7 @@ import { BlogPost } from '@foliokit/cms-core';
   host: { class: 'contents' },
   styles: [`
     .cdk-drag-preview {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: var(--shadow-md);
       border-radius: 4px;
       background: var(--mat-sys-surface-container-high);
     }
