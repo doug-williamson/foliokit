@@ -26,7 +26,7 @@
   &__pre {
     margin: 0;
     padding: 1rem 1.25rem;
-    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.7;
     background: var(--mat-sys-surface-container);

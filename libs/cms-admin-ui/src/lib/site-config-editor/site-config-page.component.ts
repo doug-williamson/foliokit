@@ -77,7 +77,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
       .cdk-drag-preview {
         box-sizing: border-box;
         border-radius: 8px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        box-shadow: var(--shadow-lg);
       }
       .cdk-drag-placeholder {
         opacity: 0.3;

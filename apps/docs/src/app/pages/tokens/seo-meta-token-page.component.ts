@@ -23,7 +23,7 @@ const seo: SeoMeta = {
       font-family: system-ui, sans-serif;
     }
     .og-image {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-400) 100%);
       height: 160px;
       display: flex;
       align-items: center;

@@ -20,7 +20,10 @@
             "input": "apps/docs/public"
           }
         ],
-        "styles": ["apps/docs/src/styles.scss"],
+        "styles": [
+          "node_modules/material-icons/iconfont/material-icons.css",
+          "apps/docs/src/styles.scss"
+        ],
         "outputMode": "static"
       },
       "configurations": {

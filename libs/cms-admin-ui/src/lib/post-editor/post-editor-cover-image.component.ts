@@ -62,7 +62,7 @@ import { PostEditorStore } from './post-editor.store';
             <!-- Hover overlay -->
             <div
               class="hover-overlay absolute inset-0 flex items-center justify-center gap-3"
-              style="background: rgba(0,0,0,0.45)"
+              style="background: var(--overlay-dark)"
             >
               <button
                 mat-icon-button

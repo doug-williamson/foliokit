@@ -57,12 +57,12 @@ import type { Tag } from '@foliokit/cms-core';
       &.tag-chip--active {
         background-color: var(--text-accent);
         border-color: var(--text-accent);
-        color: #fff;
+        color: var(--btn-primary-text);
 
         &:hover {
           background-color: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950));
           border-color: color-mix(in srgb, var(--text-accent) 80%, var(--ink-950));
-          color: #fff;
+          color: var(--btn-primary-text);
         }
       }
     }
