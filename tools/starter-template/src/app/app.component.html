@@ -1,0 +1,16 @@
+<folio-app-shell>
+  <mat-nav-list shellNav>
+    @for (item of navItems(); track item.url) {
+      <a
+        mat-list-item
+        [routerLink]="item.url"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span matListItemTitle>{{ item.label }}</span>
+      </a>
+    }
+  </mat-nav-list>
+
+  <router-outlet />
+</folio-app-shell>

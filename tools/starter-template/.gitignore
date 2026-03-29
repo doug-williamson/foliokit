@@ -1,0 +1,33 @@
+# Compiled output
+dist
+tmp
+out-tsc
+
+# Dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.sublime-workspace
+
+# Misc
+/.angular
+/coverage
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Firebase credentials — never commit real env files
+.env
+.env.*
+!.env.example
+.firebaserc
+firebase.json
+
+# Service account keys
+*service-account*.json
+*serviceAccount*.json
