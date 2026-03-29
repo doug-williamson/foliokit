@@ -1,0 +1,13 @@
+{
+  "_comment": "Rename this file to .firebaserc and fill in your Firebase project ID.",
+  "projects": {
+    "default": "<YOUR_PROJECT_ID>"
+  },
+  "targets": {
+    "<YOUR_PROJECT_ID>": {
+      "hosting": {
+        "blog": ["<YOUR_PROJECT_ID>"]
+      }
+    }
+  }
+}

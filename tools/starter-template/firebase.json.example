@@ -1,0 +1,18 @@
+{
+  "_comment": "Rename this file to firebase.json. Update <YOUR_PROJECT_ID> and dist paths to match your project.",
+  "hosting": {
+    "target": "blog",
+    "public": "dist/blog-starter/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "ssrBlog"
+      }
+    ]
+  },
+  "functions": {
+    "source": ".",
+    "runtime": "nodejs22"
+  }
+}
