@@ -33,6 +33,14 @@ describe('resolveCollectionPath', () => {
   it('works for tags collection', () => {
     expect(resolveCollectionPath('tags', 'stark')).toBe('tenants/stark/tags');
   });
+
+  it('works for pages collection', () => {
+    expect(resolveCollectionPath('pages', 'stark')).toBe('tenants/stark/pages');
+  });
+
+  it('returns root-level path for pages when tenantId is null', () => {
+    expect(resolveCollectionPath('pages', null)).toBe('pages');
+  });
 });
 
 describe('resolveSiteConfigDocPath', () => {
@@ -84,6 +92,7 @@ describe('CollectionPaths (injectable)', () => {
       expect(paths.collection('posts')).toBe('posts');
       expect(paths.collection('authors')).toBe('authors');
       expect(paths.collection('tags')).toBe('tags');
+      expect(paths.collection('pages')).toBe('pages');
     });
 
     it('siteConfigDocPath returns root-level path', () => {
@@ -113,6 +122,7 @@ describe('CollectionPaths (injectable)', () => {
       expect(paths.collection('posts')).toBe('tenants/stark/posts');
       expect(paths.collection('authors')).toBe('tenants/stark/authors');
       expect(paths.collection('tags')).toBe('tenants/stark/tags');
+      expect(paths.collection('pages')).toBe('tenants/stark/pages');
     });
 
     it('siteConfigDocPath returns scoped path', () => {
@@ -145,5 +155,50 @@ describe('CollectionPaths (injectable)', () => {
     it('storagePath returns unmodified path', () => {
       expect(paths.storagePath('authors/abc/photo/img.jpg')).toBe('authors/abc/photo/img.jpg');
     });
+  });
+});
+
+// ── Cross-tenant isolation tests ────────────────────────────────────────────
+
+describe('cross-tenant isolation', () => {
+  const collections = ['posts', 'authors', 'tags', 'pages'] as const;
+
+  it('different tenants produce non-overlapping collection paths', () => {
+    for (const col of collections) {
+      const pathA = resolveCollectionPath(col, 'tenantA');
+      const pathB = resolveCollectionPath(col, 'tenantB');
+      const rootPath = resolveCollectionPath(col, null);
+
+      expect(pathA).not.toBe(pathB);
+      expect(pathA).not.toBe(rootPath);
+      expect(pathB).not.toBe(rootPath);
+    }
+  });
+
+  it('different tenants produce non-overlapping site-config paths', () => {
+    const pathA = resolveSiteConfigDocPath('tenantA', 'tenantA');
+    const pathB = resolveSiteConfigDocPath('tenantB', 'tenantB');
+    const rootPath = resolveSiteConfigDocPath('default', null);
+
+    expect(pathA).not.toBe(pathB);
+    expect(pathA).not.toBe(rootPath);
+    expect(pathB).not.toBe(rootPath);
+  });
+
+  it('different tenants produce non-overlapping storage paths', () => {
+    const file = 'posts/abc/cover/img.jpg';
+    const pathA = resolveStoragePath(file, 'tenantA');
+    const pathB = resolveStoragePath(file, 'tenantB');
+    const rootPath = resolveStoragePath(file, null);
+
+    expect(pathA).not.toBe(pathB);
+    expect(pathA).not.toBe(rootPath);
+    expect(pathB).not.toBe(rootPath);
+  });
+
+  it('tenant paths are properly namespaced under tenants/', () => {
+    expect(resolveCollectionPath('posts', 'acme')).toBe('tenants/acme/posts');
+    expect(resolveStoragePath('img.jpg', 'acme')).toBe('tenants/acme/img.jpg');
+    expect(resolveSiteConfigDocPath('acme', 'acme')).toBe('tenants/acme/site-config/acme');
   });
 });

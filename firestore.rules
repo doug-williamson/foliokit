@@ -27,9 +27,9 @@ service cloud.firestore {
     match /authors/{authorId} { allow read; allow write: if isAdmin(); }
 
     // ── Multi-tenant subcollections ──────────────────────────────────────────
-    // When siteId is provided to provideFolioKit(), data lives under
-    // sites/{siteId}/<collection>. These rules mirror the root-level rules.
-    match /sites/{siteId} {
+    // When tenantId is provided to provideFolioKit(), data lives under
+    // tenants/{tenantId}/<collection>. These rules mirror the root-level rules.
+    match /tenants/{tenantId} {
       match /posts/{postId} {
         allow read: if resource.data.status == 'published' || isAdmin();
         allow write: if isAdmin();
