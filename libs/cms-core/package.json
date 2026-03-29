@@ -25,6 +25,10 @@
     "rxjs": "~7.8.0"
   },
   "sideEffects": false,
+  "schematics": "./schematics/collection.json",
+  "ng-add": {
+    "save": "dependencies"
+  },
   "scripts": {
     "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
   }
