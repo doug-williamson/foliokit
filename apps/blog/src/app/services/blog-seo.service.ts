@@ -22,8 +22,9 @@ export class BlogSeoService implements IBlogSeoService {
     const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
     const canonical = post.seo?.canonicalUrl ?? `${baseUrl}/posts/${post.slug}`;
-    const ogImage =
-      post.seo?.ogImage ?? post.thumbnailUrl ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
+    const ogImage = this.toHttpsUrl(
+      post.seo?.ogImage ?? post.thumbnailUrl ?? this.siteConfig()?.defaultSeo?.ogImage ?? '',
+    );
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
@@ -33,6 +34,12 @@ export class BlogSeoService implements IBlogSeoService {
     this.meta.updateTag({ property: 'og:url', content: canonical });
     if (ogImage) {
       this.meta.updateTag({ property: 'og:image', content: ogImage });
+    }
+    this.meta.updateTag({ name: 'twitter:card', content: ogImage ? 'summary_large_image' : 'summary' });
+    this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    if (ogImage) {
+      this.meta.updateTag({ name: 'twitter:image', content: ogImage });
     }
 
     this.upsertLinkCanonical(canonical);
@@ -57,7 +64,7 @@ export class BlogSeoService implements IBlogSeoService {
     const pageTitle = buildPageTitle('About');
     const description = config.seo?.description ?? config.subheadline ?? '';
     const canonical = config.seo?.canonicalUrl ?? `${baseUrl}/about`;
-    const ogImage = config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
+    const ogImage = this.toHttpsUrl(config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '');
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
@@ -83,7 +90,7 @@ export class BlogSeoService implements IBlogSeoService {
 
   setDefaultMeta(siteConfig: SiteConfig, canonicalUrl?: string): void {
     const description = siteConfig.defaultSeo?.description ?? '';
-    const ogImage = siteConfig.defaultSeo?.ogImage ?? '';
+    const ogImage = this.toHttpsUrl(siteConfig.defaultSeo?.ogImage ?? '');
 
     this.title.setTitle(buildPageTitle('Blog'));
     this.meta.updateTag({ name: 'description', content: description });
@@ -106,6 +113,15 @@ export class BlogSeoService implements IBlogSeoService {
       url: siteConfig.siteUrl,
     };
     this.upsertJsonLd(schema, 'site');
+  }
+
+  private toHttpsUrl(url: string): string {
+    if (!url.startsWith('gs://')) return url;
+    const withoutScheme = url.slice(5);
+    const slashIdx = withoutScheme.indexOf('/');
+    const bucket = withoutScheme.slice(0, slashIdx);
+    const path = withoutScheme.slice(slashIdx + 1);
+    return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
   }
 
   private upsertLinkCanonical(href: string): void {
