@@ -30,6 +30,36 @@
         "outputPath": "dist/tools/seed",
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }
+    },
+    "tenant": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-tenant",
+        "watch": false
+      }
+    },
+    "build-tenant": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-tenant-dougwilliamson.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
+    },
+    "tenant-foliokit": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-tenant-foliokit",
+        "watch": false
+      }
+    },
+    "build-tenant-foliokit": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-tenant-foliokit.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
     }
   }
 }

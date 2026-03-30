@@ -5,5 +5,5 @@
     "outDir": "../../dist/tools/seed",
     "types": ["node"]
   },
-  "include": ["seed-firestore.ts", "seed-emulator.ts", "emulator-config.ts"]
+  "include": ["seed-firestore.ts", "seed-emulator.ts", "emulator-config.ts", "seed-tenant-dougwilliamson.ts", "seed-tenant-foliokit.ts"]
 }
