@@ -9,6 +9,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initAdminApp } from '../../../libs/cms-core/src/lib/firebase/firebase-admin';
+import { resolveTenantFromHostname } from '../../../libs/cms-core/src/lib/firebase/tenant-resolver';
+import { resolveCollectionPath } from '@foliokit/cms-core';
 
 initAdminApp();
 
@@ -18,8 +20,30 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+// ── Tenant resolution middleware ────────────────────────────────────────────
+// Resolves the hostname to a tenantId before any route handler runs.
+// The resolved value is stored on `req.tenantId` and passed to the
+// Angular app via REQUEST_CONTEXT so server-side services can read it.
+
+declare global {
+  namespace Express {
+    interface Request {
+      tenantId?: string;
+    }
+  }
+}
+
+app.use(async (req, _res, next) => {
+  try {
+    const hostname = req.hostname || req.headers.host || 'localhost';
+    req.tenantId = await resolveTenantFromHostname(hostname);
+  } catch {
+    req.tenantId = 'default';
+  }
+  next();
+});
+
 // ── Sitemap cache ────────────────────────────────────────────────────────────
-const BASE_URL = 'https://blog.foliokitcms.com';
 const SITEMAP_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 interface SitemapCache {
@@ -27,30 +51,40 @@ interface SitemapCache {
   timestamp: number;
 }
 
-let sitemapCache: SitemapCache | null = null;
+// Per-tenant sitemap cache.
+const sitemapCaches = new Map<string, SitemapCache>();
 
-function buildStaticSitemap(): string {
+function buildBaseUrl(req: express.Request): string {
+  const proto = req.protocol;
+  const host = req.get('host') || req.hostname;
+  return `${proto}://${host}`;
+}
+
+function buildStaticSitemap(baseUrl: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>${BASE_URL}/</loc>
+    <loc>${baseUrl}/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${BASE_URL}/about</loc>
+    <loc>${baseUrl}/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 </urlset>`;
 }
 
-app.get('/sitemap.xml', async (_req, res) => {
+app.get('/sitemap.xml', async (req, res) => {
+  const tenantId = req.tenantId ?? 'default';
   const now = Date.now();
+  const baseUrl = buildBaseUrl(req);
 
-  if (sitemapCache && now - sitemapCache.timestamp < SITEMAP_TTL_MS) {
+  const cached = sitemapCaches.get(tenantId);
+  if (cached && now - cached.timestamp < SITEMAP_TTL_MS) {
     res.setHeader('Content-Type', 'application/xml');
-    res.send(sitemapCache.xml);
+    res.send(cached.xml);
     return;
   }
 
@@ -58,8 +92,9 @@ app.get('/sitemap.xml', async (_req, res) => {
 
   try {
     const db = getFirestore();
+    const collectionPath = resolveCollectionPath('posts', tenantId);
     const snapshot = await db
-      .collection('posts')
+      .collection(collectionPath)
       .where('status', '==', 'published')
       .select('slug', 'updatedAt')
       .get();
@@ -81,7 +116,7 @@ app.get('/sitemap.xml', async (_req, res) => {
 
       const lastmod = new Date(updatedAtMs).toISOString().split('T')[0];
       postEntries += `  <url>
-    <loc>${BASE_URL}/posts/${slug}</loc>
+    <loc>${baseUrl}/posts/${slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -89,7 +124,7 @@ app.get('/sitemap.xml', async (_req, res) => {
     }
   } catch (err) {
     console.error('[sitemap] Firestore query failed, returning static-only sitemap:', err);
-    const xml = buildStaticSitemap();
+    const xml = buildStaticSitemap(baseUrl);
     res.setHeader('Content-Type', 'application/xml');
     res.send(xml);
     return;
@@ -98,33 +133,21 @@ app.get('/sitemap.xml', async (_req, res) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>${BASE_URL}/</loc>
+    <loc>${baseUrl}/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${BASE_URL}/about</loc>
+    <loc>${baseUrl}/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 ${postEntries}</urlset>`;
 
-  sitemapCache = { xml, timestamp: now };
+  sitemapCaches.set(tenantId, { xml, timestamp: now });
   res.setHeader('Content-Type', 'application/xml');
   res.send(xml);
 });
-
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
 
 /**
  * Serve static files from /browser
@@ -139,10 +162,12 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
+ * Passes the resolved tenantId via request context so Angular's DI
+ * can inject it on the server side.
  */
 app.use('/**', (req, res, next) => {
   angularApp
-    .handle(req)
+    .handle(req, { tenantId: req.tenantId ?? 'default' })
     .then((response) =>
       response ? writeResponseToNodeResponse(response, res) : next(),
     )
@@ -151,7 +176,6 @@ app.use('/**', (req, res, next) => {
 
 /**
  * Start the server if this module is the main entry point, or it is ran via PM2.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;

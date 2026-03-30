@@ -12,6 +12,14 @@ import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
 import { BlogSeoService } from './services/blog-seo.service';
 
+/**
+ * Default tenant ID used as the static fallback. In production, the SSR
+ * server resolves the actual tenant from the hostname and overrides
+ * SITE_ID in app.config.server.ts. On the client, this value is used
+ * unless the server's TransferState provides a different one.
+ */
+const DEFAULT_TENANT_ID = 'foliokit';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideCmsUiMatIcons(),
@@ -22,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     providesFolioKit({
       firebase: environment.firebase,
-      tenantId: 'foliokit',
+      tenantId: DEFAULT_TENANT_ID,
       features: { markdown: true, auth: false },
       shell: {
         appName: 'FolioKit Blog',
