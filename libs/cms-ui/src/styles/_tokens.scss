@@ -18,6 +18,7 @@
 //   Buttons:      --btn-primary-bg, --btn-primary-text, --btn-primary-hover
 //   Logo:         --logo-bg, --logo-text, --logo-dot
 //   Shadows:      --shadow-sm, --shadow-md, --shadow-lg, --shadow-xl
+//   Spacing:      --space-0 .. --space-24 (4 px base scale)
 //   Navigation:   --nav-active-bg, --nav-active-color
 //
 // ── Blog components ─────────────────────────────────────────────────────
@@ -90,6 +91,26 @@
   /* Ink — pure neutrals for darkening mixes */
   --ink-950: #050608;
 
+  /* Spacing scale (4 px base) */
+  --space-0:  0px;
+  --space-px: 1px;
+  --space-0-5: 2px;
+  --space-1:  4px;
+  --space-1-5: 6px;
+  --space-2:  8px;
+  --space-2-5: 10px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
@@ -137,6 +158,7 @@
   --nav-active-bg:    var(--teal-50);
   --nav-active-color: var(--teal-800);
   --overlay-dark: rgba(0, 0, 0, 0.45);
+  --shadow-drag: 0 4px 16px rgba(12,15,20,0.15);
   --warning:          var(--amber-600);
   --warning-subtle:   var(--amber-100);
   color-scheme: light;
@@ -253,6 +275,7 @@
   --nav-active-bg:    rgba(56, 178, 172, 0.14);
   --nav-active-color: var(--text-primary);
   --overlay-dark: rgba(0, 0, 0, 0.55);
+  --shadow-drag: 0 4px 16px rgba(0,0,0,0.30);
   --warning:          var(--amber-400);
   --warning-subtle:   rgba(122, 74, 0, 0.18);
   color-scheme: dark;

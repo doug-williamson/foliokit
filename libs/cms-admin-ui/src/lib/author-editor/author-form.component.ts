@@ -117,7 +117,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
                     <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                         style="background: rgba(0,0,0,0.5)">
+                         style="background: var(--overlay-dark)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
                         <mat-icon svgIcon="swap_horiz" />
                       </button>
@@ -147,7 +147,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
                     <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                         style="background: rgba(0,0,0,0.5)">
+                         style="background: var(--overlay-dark)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoDarkInput.click()">
                         <mat-icon svgIcon="swap_horiz" />
                       </button>

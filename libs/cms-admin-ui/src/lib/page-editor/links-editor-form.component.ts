@@ -70,7 +70,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
       }
       .drag-handle:active { cursor: grabbing; }
       .cdk-drag-preview {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        box-shadow: var(--shadow-drag);
         border-radius: 8px;
         opacity: 0.95;
       }
@@ -108,7 +108,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                 <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
                   <img [src]="cfg.avatarUrl" [alt]="cfg.avatarAlt || 'Avatar'" class="w-full h-full object-cover" />
                   <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                       style="background: rgba(0,0,0,0.5)">
+                       style="background: var(--overlay-dark)">
                     <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarInput.click()">
                       <mat-icon svgIcon="swap_horiz" />
                     </button>
@@ -138,7 +138,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                 <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
                   <img [src]="cfg.avatarUrlDark" [alt]="cfg.avatarAlt || 'Dark mode avatar'" class="w-full h-full object-cover" />
                   <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                       style="background: rgba(0,0,0,0.5)">
+                       style="background: var(--overlay-dark)">
                     <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarDarkInput.click()">
                       <mat-icon svgIcon="swap_horiz" />
                     </button>

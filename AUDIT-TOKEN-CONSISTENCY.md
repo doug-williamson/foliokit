@@ -314,10 +314,10 @@ The font priority order is reversed (Fira Code first vs JetBrains Mono first) an
 
 ### P2 — Tech Debt (Address Incrementally)
 
-| # | Issue | Impact |
+| # | Issue | Status |
 |---|-------|--------|
-| 8 | No spacing scale tokens in `_tokens.scss` | All spacing is hardcoded `px`/`rem` values; no systematic scale |
-| 9 | Admin/cms-ui components have many hardcoded `px` spacing values | Consistent but not token-driven |
-| 10 | Admin SEO preview uses platform-faithful hardcoded colors | Acceptable but undocumented — add comments |
-| 11 | Overlay/shadow rgba values in cms-admin-ui not tokenized | Minor consistency issue |
-| 12 | Admin `index.html` loading placeholder uses hardcoded `#F8FAFD` | Boot-screen flash doesn't respect dark mode |
+| 8 | No spacing scale tokens in `_tokens.scss` | **RESOLVED** — `--space-0` through `--space-24` (4 px base scale) added to `:root` in `_tokens.scss` |
+| 9 | Admin/cms-ui components have many hardcoded `px` spacing values | Open — gradual migration to `var(--space-*)` tokens as components are touched |
+| 10 | Admin SEO preview uses platform-faithful hardcoded colors | **RESOLVED** — already documented with `/* platform-faithful: ... */` comments |
+| 11 | Overlay/shadow rgba values in cms-admin-ui not tokenized | **RESOLVED** — replaced `rgba(0,0,0,0.5)` with `var(--overlay-dark)` across 4 components (9 instances); added `--shadow-drag` token and applied in links-editor drag preview |
+| 12 | Admin `index.html` loading placeholder uses hardcoded `#F8FAFD` | **RESOLVED** — added inline `<script>` to admin and docs `index.html` that reads `localStorage('folio-theme')` and sets `data-theme` before first paint, so `var(--bg)` resolves correctly |
