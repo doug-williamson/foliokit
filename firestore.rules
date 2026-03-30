@@ -14,6 +14,14 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == 'dev.foliokit@gmail.com';
     }
 
+    // Returns true when the authenticated user's email matches the ownerEmail
+    // stored in the tenant document at tenants/{tenantId}. This scopes write
+    // access so that each tenant owner can only modify their own data.
+    function isTenantOwner(tenantId) {
+      return request.auth != null
+        && get(/databases/$(database)/documents/tenants/$(tenantId)).data.ownerEmail == request.auth.token.email;
+    }
+
     match /posts/{postId} {
       allow read: if resource.data.status == 'published' || isAdmin();
       allow write: if isAdmin();
@@ -26,21 +34,29 @@ service cloud.firestore {
     match /site-config/{siteId} { allow read; allow write: if isAdmin(); }
     match /authors/{authorId} { allow read; allow write: if isAdmin(); }
 
-    // ── Multi-tenant subcollections ──────────────────────────────────────────
-    // When tenantId is provided to provideFolioKit(), data lives under
-    // tenants/{tenantId}/<collection>. These rules mirror the root-level rules.
+    // ── Tenant registry ───────────────────────────────────────────────────────
+    // Each tenant document stores ownerEmail, subdomain, customDomain, etc.
+    // Owners can read/write their own tenant doc; platform admin can manage all.
     match /tenants/{tenantId} {
+      allow read: if isAdmin() || isTenantOwner(tenantId);
+      allow write: if isAdmin();
+
+      // ── Multi-tenant subcollections ────────────────────────────────────────
+      // When tenantId is provided to provideFolioKit(), data lives under
+      // tenants/{tenantId}/<collection>. Write access is scoped to the tenant
+      // owner (looked up from the tenant document's ownerEmail field) or the
+      // platform super-admin.
       match /posts/{postId} {
-        allow read: if resource.data.status == 'published' || isAdmin();
-        allow write: if isAdmin();
+        allow read: if resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);
+        allow write: if isAdmin() || isTenantOwner(tenantId);
       }
       match /pages/{pageId} {
-        allow read: if resource == null || resource.data.status == 'published' || isAdmin();
-        allow write: if isAdmin();
+        allow read: if resource == null || resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);
+        allow write: if isAdmin() || isTenantOwner(tenantId);
       }
-      match /tags/{tagId} { allow read; allow write: if isAdmin(); }
-      match /site-config/{configId} { allow read; allow write: if isAdmin(); }
-      match /authors/{authorId} { allow read; allow write: if isAdmin(); }
+      match /tags/{tagId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
+      match /site-config/{configId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
+      match /authors/{authorId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
     }
   }
 }
