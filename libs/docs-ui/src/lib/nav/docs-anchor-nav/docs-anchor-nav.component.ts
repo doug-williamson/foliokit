@@ -50,7 +50,7 @@ export interface AnchorLink {
         color: var(--mat-sys-on-surface);
       }
 
-      &--active {
+      &.anchor-nav-link--active {
         color: var(--mat-sys-primary);
         font-weight: 500;
       }

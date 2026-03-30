@@ -297,20 +297,20 @@ The font priority order is reversed (Fira Code first vs JetBrains Mono first) an
 
 ### P0 — Fix Before Writing Any New Docs Components
 
-| # | Issue | Impact | Fix Effort |
-|---|-------|--------|------------|
-| 1 | **DocsShellComponent missing `theme.apply()`** | Docs app ignores saved theme; always starts in light mode; dark mode users see a flash on every page load | One line: add `this.theme.apply();` to `ngOnInit()` in `docs-shell.component.ts` |
-| 2 | **docs-preview hardcoded colors** | Code pane ignores `--code-block-bg` / `--code-block-text` tokens; new preview components will copy this anti-pattern | Replace 4 color values with token references in `docs-preview.component.scss` |
-| 3 | **docs-ui hardcoded font-family** | Two components use a non-standard monospace stack instead of `var(--font-mono)`; font priority is reversed from the design system | Replace 2 `font-family` declarations in `docs-code-block.component.scss` and `docs-preview.component.scss` |
+| # | Issue | Status |
+|---|-------|--------|
+| 1 | **DocsShellComponent missing `theme.apply()`** | **RESOLVED** — `this.theme.apply()` added to `ngOnInit()` in `docs-shell.component.ts` |
+| 2 | **docs-preview hardcoded colors** | **RESOLVED** — replaced with `var(--code-block-bg)`, `var(--code-block-text)`, and `color-mix()` in `docs-preview.component.scss` |
+| 3 | **docs-ui hardcoded font-family** | **RESOLVED** — both `docs-code-block.component.scss` and `docs-preview.component.scss` now use `var(--font-mono)` |
 
 ### P1 — Fix Soon (Before Beta)
 
-| # | Issue | Impact | Fix Effort |
-|---|-------|--------|------------|
-| 4 | **Docs Material Icons via CDN** | Inconsistent with blog (self-hosted) and admin (SVG); CSP risk; external network dependency | Switch to `material-icons` npm package or SVG registration |
-| 5 | **Admin login page missing theme init** | Login renders in light mode regardless of saved preference | Add `theme.apply()` to `LoginComponent.ngOnInit()` or use `APP_INITIALIZER` |
-| 6 | **blog-tag-filter `#fff` hardcoded** | Active chip text bypasses token system | Replace with `var(--btn-primary-text)` |
-| 7 | **Tailwind theme extend is empty** | Cannot use semantic Tailwind utilities for token-backed colors/spacing; forces inline `var()` usage | Extend `tailwind.config.js` with token mappings |
+| # | Issue | Status |
+|---|-------|--------|
+| 4 | **Docs Material Icons via CDN** | **RESOLVED** — CDN link removed from `index.html`; self-hosted `material-icons` npm package added to `project.json` styles |
+| 5 | **Admin login page missing theme init** | **RESOLVED** — `theme.apply()` added to `LoginComponent.ngOnInit()` |
+| 6 | **blog-tag-filter `#fff` hardcoded** | **RESOLVED** — replaced with `var(--btn-primary-text)` |
+| 7 | **Tailwind theme extend is empty** | **RESOLVED** — `tailwind.config.js` extended with colors, fontFamily, boxShadow, and borderRadius token mappings |
 
 ### P2 — Tech Debt (Address Incrementally)
 
