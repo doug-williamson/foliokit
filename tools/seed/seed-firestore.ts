@@ -1,6 +1,8 @@
 /**
  * Firestore seed script — foliokit-6f974
  *
+ * Seeds data under tenants/{TENANT_ID}/ for the foliokit-6f974 project.
+ *
  * Prerequisites:
  *   1. Download a service account key from Firebase Console >
  *      Project Settings > Service Accounts > Generate new private key
@@ -18,6 +20,8 @@
 // Never hardcode credentials or commit service account files to the repository.
 import * as admin from 'firebase-admin';
 
+const TENANT_ID = 'foliokit';
+
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -26,11 +30,27 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+const tenant = (collection: string) =>
+  db.collection(`tenants/${TENANT_ID}/${collection}`);
 
 async function seed(): Promise<void> {
   try {
-    console.log('[seed] Writing /authors/author-1...');
-    await db.collection('authors').doc('author-1').set(
+    console.log(`[seed] Writing tenants/${TENANT_ID}...`);
+    await db.collection('tenants').doc(TENANT_ID).set(
+      {
+        tenantId: TENANT_ID,
+        ownerEmail: 'dev.foliokit@gmail.com',
+        subdomain: TENANT_ID,
+        customDomain: null,
+        displayName: 'FolioKit Blog',
+        createdAt: admin.firestore.Timestamp.now(),
+        updatedAt: admin.firestore.Timestamp.now(),
+      },
+      { merge: true }
+    );
+
+    console.log(`[seed] Writing tenants/${TENANT_ID}/authors/author-1...`);
+    await tenant('authors').doc('author-1').set(
       {
         id: 'author-1',
         name: 'Your Name',
@@ -41,8 +61,8 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed] Writing /tags/tag-web...');
-    await db.collection('tags').doc('tag-web').set(
+    console.log(`[seed] Writing tenants/${TENANT_ID}/tags/tag-web...`);
+    await tenant('tags').doc('tag-web').set(
       {
         id: 'tag-web',
         label: 'Web Development',
@@ -51,10 +71,10 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed] Writing /site-config/default...');
-    await db.collection('site-config').doc('default').set(
+    console.log(`[seed] Writing tenants/${TENANT_ID}/site-config/${TENANT_ID}...`);
+    await tenant('site-config').doc(TENANT_ID).set(
       {
-        id: 'default',
+        id: TENANT_ID,
         siteName: 'FolioKit Blog',
         siteUrl: 'https://foliokit-6f974.web.app',
         defaultAuthorId: 'author-1',
@@ -85,8 +105,8 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed] Writing /posts/post-1...');
-    await db.collection('posts').doc('post-1').set(
+    console.log(`[seed] Writing tenants/${TENANT_ID}/posts/post-1...`);
+    await tenant('posts').doc('post-1').set(
       {
         id: 'post-1',
         slug: 'hello-world',

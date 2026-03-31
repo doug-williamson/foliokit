@@ -28,6 +28,7 @@ export const appConfig: ApplicationConfig = {
         messagingSenderId: '000000000000',
         appId: '1:000000000000:web:0000000000000000000000',
       },
+      siteId: 'smoke-test',
     }),
     {
       provide: SHELL_CONFIG,
