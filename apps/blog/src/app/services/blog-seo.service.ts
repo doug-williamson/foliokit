@@ -2,8 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { SiteConfigService, buildPageTitle } from '@foliokit/cms-core';
+import { SITE_CONFIG_SERVICE, buildPageTitle } from '@foliokit/cms-core';
 import type { AboutPageConfig, BlogPost, SiteConfig, IBlogSeoService } from '@foliokit/cms-core';
 
 @Injectable({ providedIn: 'root' })
@@ -11,10 +12,10 @@ export class BlogSeoService implements IBlogSeoService {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
-  private readonly siteConfigService = inject(SiteConfigService);
+  private readonly siteConfigService = inject(SITE_CONFIG_SERVICE, { optional: true });
 
   private readonly siteConfig = toSignal(
-    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
+    (this.siteConfigService?.getConfig() ?? of<SiteConfig | null>(null)).pipe(take(1)),
     { initialValue: null },
   );
 

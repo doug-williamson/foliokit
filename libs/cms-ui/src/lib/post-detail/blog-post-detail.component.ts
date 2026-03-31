@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
@@ -168,7 +169,7 @@ interface TagFetchState {
     }
   `],
 })
-export class BlogPostDetailComponent {
+export class BlogPostDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly tagService = inject(TagService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -206,8 +207,16 @@ export class BlogPostDetailComponent {
     return p ? new Date(p.publishedAt) : null;
   });
 
+  ngOnInit(): void {
+    const p = this.post();
+    if (!p) return;
+    const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
+    this.blogSeoService?.setPostMeta(p, baseUrl, this.author()?.displayName);
+  }
+
   constructor() {
     effect(() => {
+      if (!isPlatformBrowser(this.platformId)) return;
       const p = this.post();
       if (!p) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
