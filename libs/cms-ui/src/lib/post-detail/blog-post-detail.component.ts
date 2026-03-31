@@ -22,6 +22,7 @@ import {
   TagLabelPipe,
   resolvePostCanonicalUrl,
 } from '@foliokit/cms-core';
+import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
 /** Unified shape for `toSignal` (avoids union branches that break overload inference). */
 interface TagFetchState {
@@ -42,7 +43,7 @@ interface PostShareLinks {
   selector: 'folio-post-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe],
+  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent],
   template: `
     <div
       class="px-4 md:px-6 py-8 lg:py-12"
@@ -107,20 +108,29 @@ interface PostShareLinks {
                 <span aria-hidden="true">·</span>
                 <span>{{ post()!.readingTimeMinutes }} min read</span>
               }
-              @if (tagsReady() && post()!.tags.length) {
-                <span aria-hidden="true">·</span>
-                <div class="flex flex-wrap gap-1.5">
-                  @for (tag of post()!.tags; track tag) {
-                    <a
-                      [routerLink]="['/posts']"
-                      [queryParams]="{ tag: tag }"
-                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
-                      style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
-                    >
-                      {{ tag | tagLabel: tagLookup() }}
-                    </a>
-                  }
-                </div>
+              @if (post()!.tags.length) {
+                @if (tagsReady()) {
+                  <span aria-hidden="true">·</span>
+                  <div class="flex flex-wrap gap-1.5">
+                    @for (tag of post()!.tags; track tag) {
+                      <a
+                        [routerLink]="['/posts']"
+                        [queryParams]="{ tag: tag }"
+                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
+                        style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
+                      >
+                        {{ tag | tagLabel: tagLookup() }}
+                      </a>
+                    }
+                  </div>
+                } @else {
+                  <span aria-hidden="true">·</span>
+                  <div class="flex flex-wrap gap-1.5">
+                    <folio-skeleton width="3rem" height="1.25rem" borderRadius="9999px" />
+                    <folio-skeleton width="4rem" height="1.25rem" borderRadius="9999px" />
+                    <folio-skeleton width="3.5rem" height="1.25rem" borderRadius="9999px" />
+                  </div>
+                }
               }
             </div>
 

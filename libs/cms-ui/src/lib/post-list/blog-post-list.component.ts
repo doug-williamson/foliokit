@@ -25,6 +25,7 @@ import {
   buildPageTitle,
   tagIdFallbackLabel,
 } from '@foliokit/cms-core';
+import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 import { BlogPostCardComponent } from './blog-post-card.component';
 import { BlogTagFilterComponent } from './blog-tag-filter.component';
 
@@ -43,11 +44,20 @@ interface AuthorFetchState {
   selector: 'folio-post-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [BlogPostCardComponent, BlogTagFilterComponent],
+  imports: [BlogPostCardComponent, BlogTagFilterComponent, FolioSkeletonComponent],
   template: `
     <div
       class="w-full max-w-[1280px] mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col"
     >
+      @if (!tagsReady() && postsHaveTags()) {
+        <div class="mb-8 flex flex-wrap gap-2" [style.padding-bottom]="'0.5rem'">
+          <folio-skeleton width="3.25rem" height="2.125rem" borderRadius="9999px" />
+          <folio-skeleton width="4.5rem" height="2.125rem" borderRadius="9999px" />
+          <folio-skeleton width="3.75rem" height="2.125rem" borderRadius="9999px" />
+          <folio-skeleton width="5rem" height="2.125rem" borderRadius="9999px" />
+          <folio-skeleton width="3.5rem" height="2.125rem" borderRadius="9999px" />
+        </div>
+      }
       @if (tagsReady() && allTagOptions().length > 0) {
         <div class="mb-8" [style.padding-bottom]="'0.5rem'">
           <folio-tag-filter
@@ -211,6 +221,10 @@ export class BlogPostListComponent {
     if (!tag) return this.posts();
     return this.posts().filter((p) => p.tags.includes(tag));
   });
+
+  protected readonly postsHaveTags = computed(() =>
+    this.posts().some((p) => p.tags.length > 0),
+  );
 
   constructor() {
     effect(() => {

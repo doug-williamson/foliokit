@@ -3,15 +3,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { take } from 'rxjs/operators';
+import { concat, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import type { NavItem, SiteConfig } from '@foliokit/cms-core';
 import { SiteConfigService } from '@foliokit/cms-core';
-import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
-import type { NavItem } from '@foliokit/cms-core';
+import { AppShellComponent, FolioSkeletonComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
 const DEFAULT_NAV: NavItem[] = [
   { label: 'Home', url: '/' },
   { label: 'Blog', url: '/posts' },
 ];
+
+type NavLoadState =
+  | { pending: true }
+  | { pending: false; config: SiteConfig | null };
 
 @Component({
   selector: 'app-root',
@@ -25,6 +30,7 @@ const DEFAULT_NAV: NavItem[] = [
     RouterLinkActive,
     MatListModule,
     MatIconModule,
+    FolioSkeletonComponent,
   ],
   providers: [
     {
@@ -40,10 +46,23 @@ const DEFAULT_NAV: NavItem[] = [
 export class App {
   private readonly siteConfigService = inject(SiteConfigService);
 
-  private readonly siteConfig = toSignal(
-    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
-    { initialValue: null },
+  private readonly navLoadState = toSignal(
+    concat(
+      of<NavLoadState>({ pending: true }),
+      this.siteConfigService.getDefaultSiteConfig().pipe(
+        take(1),
+        map((config): NavLoadState => ({ pending: false, config })),
+      ),
+    ),
+    { initialValue: { pending: true } satisfies NavLoadState },
   );
+
+  protected readonly navPending = computed(() => this.navLoadState().pending);
+
+  private readonly siteConfig = computed((): SiteConfig | null | undefined => {
+    const s = this.navLoadState();
+    return s.pending ? undefined : s.config;
+  });
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();

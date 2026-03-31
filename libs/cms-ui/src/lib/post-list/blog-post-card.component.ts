@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import type { BlogPost } from '@foliokit/cms-core';
 import { TagLabelPipe } from '@foliokit/cms-core';
+import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
 @Component({
   selector: 'folio-post-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, TagLabelPipe],
+  imports: [RouterLink, DatePipe, TagLabelPipe, FolioSkeletonComponent],
   styles: [`
     :host { display: block; height: 100%; }
 
@@ -170,6 +171,13 @@ import { TagLabelPipe } from '@foliokit/cms-core';
       flex-direction: column;
     }
 
+    .card-author-skel-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+    }
+
     .card-author-name {
       font-size: 11px;
       font-weight: 600;
@@ -291,21 +299,31 @@ import { TagLabelPipe } from '@foliokit/cms-core';
           }
           <div class="hero-gradient"></div>
           <div class="hero-body">
-            @if (firstTwoTags().length > 0 && tagLabelsReady()) {
-              <div class="hero-tags">
-                @for (tag of firstTwoTags(); track tag) {
-                  <a
-                    [routerLink]="['/posts']"
-                    [queryParams]="{ tag: tag }"
-                    class="hero-chip"
-                  >{{ tag | tagLabel: tagLookupForLabels() }}</a>
-                }
-              </div>
+            @if (firstTwoTags().length > 0) {
+              @if (tagLabelsReady()) {
+                <div class="hero-tags">
+                  @for (tag of firstTwoTags(); track tag) {
+                    <a
+                      [routerLink]="['/posts']"
+                      [queryParams]="{ tag: tag }"
+                      class="hero-chip"
+                    >{{ tag | tagLabel: tagLookupForLabels() }}</a>
+                  }
+                </div>
+              } @else {
+                <div class="hero-tags">
+                  <folio-skeleton tone="inverse" width="3.5rem" height="1.625rem" borderRadius="9999px" />
+                  <folio-skeleton tone="inverse" width="4.25rem" height="1.625rem" borderRadius="9999px" />
+                </div>
+              }
             }
             <h2 class="hero-title">{{ post().title }}</h2>
             <div class="hero-meta">
               @if (authorsReady() && authorName()) {
                 <span>{{ authorName() }}</span>
+                <span aria-hidden="true">·</span>
+              } @else if (post().authorId && !authorsReady()) {
+                <folio-skeleton tone="inverse" width="5.5rem" height="0.95rem" borderRadius="4px" />
                 <span aria-hidden="true">·</span>
               }
               <time [dateTime]="publishedDate().toISOString()">
@@ -338,17 +356,24 @@ import { TagLabelPipe } from '@foliokit/cms-core';
         }
 
         <div class="card-body">
-          @if (firstTwoTags().length > 0 && tagLabelsReady()) {
-            <div class="card-tags">
-              @for (tag of firstTwoTags(); track tag; let i = $index) {
-                <a
-                  [routerLink]="['/posts']"
-                  [queryParams]="{ tag: tag }"
-                  [class]="i === 0 ? 'chip chip--primary' : 'chip'"
-                  style="position: relative; z-index: 20;"
-                >{{ tag | tagLabel: tagLookupForLabels() }}</a>
-              }
-            </div>
+          @if (firstTwoTags().length > 0) {
+            @if (tagLabelsReady()) {
+              <div class="card-tags">
+                @for (tag of firstTwoTags(); track tag; let i = $index) {
+                  <a
+                    [routerLink]="['/posts']"
+                    [queryParams]="{ tag: tag }"
+                    [class]="i === 0 ? 'chip chip--primary' : 'chip'"
+                    style="position: relative; z-index: 20;"
+                  >{{ tag | tagLabel: tagLookupForLabels() }}</a>
+                }
+              </div>
+            } @else {
+              <div class="card-tags">
+                <folio-skeleton width="3.25rem" height="1.35rem" borderRadius="100px" />
+                <folio-skeleton width="4rem" height="1.35rem" borderRadius="100px" />
+              </div>
+            }
           }
 
           <h2 class="card-title">{{ post().title }}</h2>
@@ -377,6 +402,14 @@ import { TagLabelPipe } from '@foliokit/cms-core';
                     {{ publishedDate() | date: 'MMM d, yyyy' }}
                     @if (post().readingTimeMinutes) { · {{ post().readingTimeMinutes }} min }
                   </span>
+                </div>
+              </div>
+            } @else if (post().authorId && !authorsReady()) {
+              <div class="card-author">
+                <folio-skeleton width="26px" height="26px" borderRadius="50%" />
+                <div class="card-author-skel-meta">
+                  <folio-skeleton width="6.5rem" height="0.7rem" borderRadius="4px" />
+                  <folio-skeleton width="7.5rem" height="0.65rem" borderRadius="4px" />
                 </div>
               </div>
             } @else {

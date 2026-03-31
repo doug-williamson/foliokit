@@ -2,14 +2,21 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { concat, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import type { SiteConfig } from '@foliokit/cms-core';
 import { SiteConfigService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
+import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
+
+type HomeLoadState =
+  | { pending: true }
+  | { pending: false; config: SiteConfig | null };
 
 @Component({
   selector: 'folio-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FolioSkeletonComponent],
   styles: [`
     :host { display: block; height: 100%; }
 
@@ -83,6 +90,36 @@ import { SiteConfigService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
       justify-content: center;
     }
 
+    .hero-skel-eyebrow {
+      display: inline-flex;
+      margin-bottom: 20px;
+    }
+
+    .hero-skel-headline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .hero-skel-sub {
+      max-width: 460px;
+      margin: 0 auto 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hero-skel-sub-line-full {
+      width: 100%;
+    }
+
+    .hero-skel-sub-line--narrow {
+      width: 85%;
+      align-self: center;
+    }
+
     .btn-primary {
       display: inline-block;
       background: var(--btn-primary-bg);
@@ -125,23 +162,45 @@ import { SiteConfigService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
   template: `
     <div class="hero">
       <div class="hero-inner">
-        <div class="hero-eyebrow">
-          <span class="hero-eyebrow-dot"></span>
-          {{ eyebrowLabel() }}
-        </div>
+        @if (configPending()) {
+          <div class="hero-skel-eyebrow">
+            <folio-skeleton width="7rem" height="1.35rem" borderRadius="100px" />
+          </div>
+          <div class="hero-skel-headline">
+            <folio-skeleton width="min(92%, 22rem)" height="2.75rem" borderRadius="var(--r-lg)" />
+            <folio-skeleton width="min(70%, 14rem)" height="2.75rem" borderRadius="var(--r-lg)" />
+          </div>
+          <div class="hero-skel-sub">
+            <div class="hero-skel-sub-line-full">
+              <folio-skeleton width="100%" height="1rem" borderRadius="var(--r-md)" />
+            </div>
+            <div class="hero-skel-sub-line--narrow">
+              <folio-skeleton width="100%" height="1rem" borderRadius="var(--r-md)" />
+            </div>
+          </div>
+          <div class="hero-cta-row">
+            <folio-skeleton width="9.5rem" height="2.875rem" borderRadius="var(--r-lg)" />
+            <folio-skeleton width="7.5rem" height="2.875rem" borderRadius="var(--r-lg)" />
+          </div>
+        } @else {
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            {{ eyebrowLabel() }}
+          </div>
 
-        <h1 class="hero-headline" [innerHTML]="heroHeadline()"></h1>
+          <h1 class="hero-headline" [innerHTML]="heroHeadline()"></h1>
 
-        @if (heroSubheadline()) {
-          <p class="hero-subheadline">{{ heroSubheadline() }}</p>
-        }
-
-        <div class="hero-cta-row">
-          <a class="btn-primary" [routerLink]="ctaUrl()">{{ ctaLabel() }}</a>
-          @if (secondaryCtaUrl()) {
-            <a class="btn-secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
+          @if (heroSubheadline()) {
+            <p class="hero-subheadline">{{ heroSubheadline() }}</p>
           }
-        </div>
+
+          <div class="hero-cta-row">
+            <a class="btn-primary" [routerLink]="ctaUrl()">{{ ctaLabel() }}</a>
+            @if (secondaryCtaUrl()) {
+              <a class="btn-secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
+            }
+          </div>
+        }
       </div>
     </div>
   `,
@@ -151,10 +210,23 @@ export class BlogHomeComponent {
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
 
-  private readonly siteConfig = toSignal(
-    this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),
-    { initialValue: null },
+  private readonly loadState = toSignal(
+    concat(
+      of<HomeLoadState>({ pending: true }),
+      this.siteConfigService.getDefaultSiteConfig().pipe(
+        take(1),
+        map((config): HomeLoadState => ({ pending: false, config })),
+      ),
+    ),
+    { initialValue: { pending: true } satisfies HomeLoadState },
   );
+
+  protected readonly configPending = computed(() => this.loadState().pending);
+
+  private readonly siteConfig = computed((): SiteConfig | null | undefined => {
+    const s = this.loadState();
+    return s.pending ? undefined : s.config;
+  });
 
   protected readonly eyebrowLabel = computed(() =>
     this.siteConfig()?.siteName ?? 'Blog',
@@ -185,10 +257,10 @@ export class BlogHomeComponent {
 
   constructor() {
     effect(() => {
-      const config = this.siteConfig();
-      if (!config) return;
+      const s = this.loadState();
+      if (s.pending || !s.config) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
-      this.blogSeoService?.setDefaultMeta(config, baseUrl);
+      this.blogSeoService?.setDefaultMeta(s.config, baseUrl);
     });
   }
 }
