@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx nx:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(netstat -ano)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx firebase:*)"
+    ]
+  }
+}
