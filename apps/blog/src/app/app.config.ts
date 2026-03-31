@@ -6,7 +6,12 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { BLOG_SEO_SERVICE, providesFolioKit } from '@foliokit/cms-core';
+import {
+  AUTHOR_SERVICE,
+  AuthorService,
+  BLOG_SEO_SERVICE,
+  providesFolioKit,
+} from '@foliokit/cms-core';
 import { provideCmsUiMatIcons } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
 import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
@@ -35,5 +40,6 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     { provide: BLOG_SEO_SERVICE, useExisting: BlogSeoService },
+    { provide: AUTHOR_SERVICE, useExisting: AuthorService },
   ],
 };

@@ -126,9 +126,14 @@ import { TagLabelPipe } from '@foliokit/cms-core';
     .card-footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       padding-top: 12px;
       border-top: 1px solid var(--border);
+    }
+
+    .card-footer-date-only {
+      display: flex;
+      align-items: center;
     }
 
     .card-author {
@@ -149,6 +154,14 @@ import { TagLabelPipe } from '@foliokit/cms-core';
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-author-avatar-img {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
       flex-shrink: 0;
     }
 
@@ -291,11 +304,15 @@ import { TagLabelPipe } from '@foliokit/cms-core';
             }
             <h2 class="hero-title">{{ post().title }}</h2>
             <div class="hero-meta">
+              @if (authorsReady() && authorName()) {
+                <span>{{ authorName() }}</span>
+                <span aria-hidden="true">·</span>
+              }
               <time [dateTime]="publishedDate().toISOString()">
                 {{ publishedDate() | date: 'MMM d, yyyy' }}
               </time>
               @if (post().readingTimeMinutes) {
-                <span>·</span>
+                <span aria-hidden="true">·</span>
                 <span>{{ post().readingTimeMinutes }} min read</span>
               }
             </div>
@@ -341,18 +358,35 @@ import { TagLabelPipe } from '@foliokit/cms-core';
           }
 
           <div class="card-footer">
-            <div class="card-author">
-              <div class="card-author-avatar">
-                {{ authorInitial() }}
+            @if (authorsReady() && authorName()) {
+              <div class="card-author">
+                @if (authorPhotoUrl()) {
+                  <img
+                    class="card-author-avatar-img"
+                    [src]="authorPhotoUrl()!"
+                    alt=""
+                  />
+                } @else {
+                  <div class="card-author-avatar">
+                    {{ authorInitial() }}
+                  </div>
+                }
+                <div class="card-author-meta">
+                  <span class="card-author-name">{{ authorName() }}</span>
+                  <span class="card-author-date">
+                    {{ publishedDate() | date: 'MMM d, yyyy' }}
+                    @if (post().readingTimeMinutes) { · {{ post().readingTimeMinutes }} min }
+                  </span>
+                </div>
               </div>
-              <div class="card-author-meta">
-                <span class="card-author-name">{{ authorName() || 'Author' }}</span>
+            } @else {
+              <div class="card-footer-date-only">
                 <span class="card-author-date">
                   {{ publishedDate() | date: 'MMM d, yyyy' }}
                   @if (post().readingTimeMinutes) { · {{ post().readingTimeMinutes }} min }
                 </span>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
@@ -363,6 +397,12 @@ export class BlogPostCardComponent {
   readonly post = input.required<BlogPost>();
   readonly variant = input<'hero' | 'card'>('card');
   readonly authorName = input<string | null>(null);
+  readonly authorPhotoUrl = input<string | null>(null);
+  /**
+   * When false (e.g. SSR), omit author until client resolves Firestore authors.
+   * When true without {@link authorName}, show date-only footer.
+   */
+  readonly authorsReady = input(false);
   /** When false, tag chips are hidden until Firestore tag labels are available. */
   readonly tagLabelsReady = input(false);
   /** Optional map from tag id → Tag; improves labels when {@link tagLabelsReady} is true. */
@@ -371,7 +411,8 @@ export class BlogPostCardComponent {
   protected readonly publishedDate = computed(() => new Date(this.post().publishedAt));
   protected readonly firstTwoTags = computed(() => this.post().tags.slice(0, 2));
   protected readonly authorInitial = computed(() => {
-    const name = this.authorName() ?? this.post().title ?? '';
-    return name[0]?.toUpperCase() ?? 'A';
+    const name = this.authorName()?.trim();
+    if (name) return name[0]?.toUpperCase() ?? '?';
+    return (this.post().title ?? '')[0]?.toUpperCase() ?? '?';
   });
 }

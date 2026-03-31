@@ -4,7 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { SITE_CONFIG_SERVICE, buildPageTitle } from '@foliokit/cms-core';
+import {
+  SITE_CONFIG_SERVICE,
+  buildPageTitle,
+  resolvePostOgImageUrl,
+  toPublicImageUrl,
+} from '@foliokit/cms-core';
 import type { AboutPageConfig, BlogPost, SiteConfig, IBlogSeoService } from '@foliokit/cms-core';
 
 @Injectable({ providedIn: 'root' })
@@ -23,12 +28,10 @@ export class BlogSeoService implements IBlogSeoService {
     const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
     const canonical = this.resolvePostCanonical(post, baseUrl);
-    const rawSeoOgImage = post.seo?.ogImage;
-    const ogImageSource =
-      rawSeoOgImage && !rawSeoOgImage.startsWith('gs://')
-        ? rawSeoOgImage
-        : post.thumbnailUrl ?? rawSeoOgImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
-    const ogImage = this.toHttpsUrl(ogImageSource);
+    const ogImage = resolvePostOgImageUrl(
+      post,
+      this.siteConfig()?.defaultSeo?.ogImage ?? '',
+    );
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
@@ -69,7 +72,9 @@ export class BlogSeoService implements IBlogSeoService {
     const pageTitle = buildPageTitle('About');
     const description = config.seo?.description ?? config.subheadline ?? '';
     const canonical = config.seo?.canonicalUrl ?? `${baseUrl}/about`;
-    const ogImage = this.toHttpsUrl(config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '');
+    const ogImage = toPublicImageUrl(
+      config.seo?.ogImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '',
+    );
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
@@ -95,7 +100,7 @@ export class BlogSeoService implements IBlogSeoService {
 
   setDefaultMeta(siteConfig: SiteConfig, canonicalUrl?: string): void {
     const description = siteConfig.defaultSeo?.description ?? '';
-    const ogImage = this.toHttpsUrl(siteConfig.defaultSeo?.ogImage ?? '');
+    const ogImage = toPublicImageUrl(siteConfig.defaultSeo?.ogImage ?? '');
 
     this.title.setTitle(buildPageTitle('Blog'));
     this.meta.updateTag({ name: 'description', content: description });
@@ -141,22 +146,6 @@ export class BlogSeoService implements IBlogSeoService {
       /* invalid URL — use fallback */
     }
     return fallback;
-  }
-
-  /** CMS / copy-paste sometimes stores `&amp;` in HTTPS URLs; normalize before meta tags. */
-  private decodeEntitiesInUrl(url: string): string {
-    if (!url) return url;
-    return url.replace(/&amp;/gi, '&').trim();
-  }
-
-  private toHttpsUrl(url: string): string {
-    const u = this.decodeEntitiesInUrl(url);
-    if (!u.startsWith('gs://')) return u;
-    const withoutScheme = u.slice(5);
-    const slashIdx = withoutScheme.indexOf('/');
-    const bucket = withoutScheme.slice(0, slashIdx);
-    const path = withoutScheme.slice(slashIdx + 1);
-    return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
   }
 
   private upsertLinkCanonical(href: string): void {

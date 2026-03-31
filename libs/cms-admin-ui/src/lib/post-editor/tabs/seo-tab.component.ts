@@ -73,7 +73,10 @@ import { PostEditorStore } from '../post-editor.store';
             "
             placeholder="https://example.com/og-image.png"
           />
-          <mat-hint>Leave blank to use the post thumbnail.</mat-hint>
+          <mat-hint>
+            Leave blank to use the post thumbnail. Firebase <code>gs://</code> URLs are converted for
+            sharing; the preview matches public meta tags.
+          </mat-hint>
         </mat-form-field>
 
         <!-- Advanced SEO -->

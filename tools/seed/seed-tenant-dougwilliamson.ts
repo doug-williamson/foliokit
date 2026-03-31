@@ -36,9 +36,9 @@ async function seed(): Promise<void> {
     await tenant('authors').doc('author-1').set(
       {
         id: 'author-1',
-        name: 'Doug Williamson',
+        displayName: 'Doug Williamson',
         bio: 'Writer and developer.',
-        avatarUrl: '',
+        photoUrl: '',
         socialLinks: [],
       },
       { merge: false }

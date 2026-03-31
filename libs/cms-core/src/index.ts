@@ -19,6 +19,7 @@ export * from './lib/tokens/site-config-service.token';
 export * from './lib/tokens/blog-seo-service.token';
 export * from './lib/pipes/tag-label.pipe';
 export * from './lib/utils/page-meta.utils';
+export * from './lib/utils/og-image-url';
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 export * from './lib/tokens/shell-config.token';

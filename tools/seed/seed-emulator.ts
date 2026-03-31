@@ -79,12 +79,11 @@ async function seed(): Promise<void> {
     await tenant('authors').doc('author-1').set(
       {
         id: 'author-1',
-        name: 'Dev Author',
-        slug: 'dev-author',
+        displayName: 'Dev Author',
         bio: 'Test bio for local development.',
-        avatarUrl: AVATAR_LIGHT,
+        photoUrl: AVATAR_LIGHT,
         email: '',
-        social: [],
+        socialLinks: [],
         createdAt: Timestamp.fromDate(new Date('2025-01-01')),
         updatedAt: now,
       },
