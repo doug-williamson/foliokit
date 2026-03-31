@@ -7,6 +7,7 @@ import { take } from 'rxjs/operators';
 import {
   SITE_CONFIG_SERVICE,
   buildPageTitle,
+  resolvePostCanonicalUrl,
   resolvePostOgImageUrl,
   toPublicImageUrl,
 } from '@foliokit/cms-core';
@@ -27,7 +28,7 @@ export class BlogSeoService implements IBlogSeoService {
   setPostMeta(post: BlogPost, baseUrl: string, authorDisplayName?: string): void {
     const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
-    const canonical = this.resolvePostCanonical(post, baseUrl);
+    const canonical = resolvePostCanonicalUrl(post, baseUrl);
     const ogImage = resolvePostOgImageUrl(
       post,
       this.siteConfig()?.defaultSeo?.ogImage ?? '',
@@ -123,29 +124,6 @@ export class BlogSeoService implements IBlogSeoService {
       url: siteConfig.siteUrl,
     };
     this.upsertJsonLd(schema, 'site');
-  }
-
-  /**
-   * Open Graph consumers expect the canonical URL to match the link users share. Stored
-   * `seo.canonicalUrl` can omit `/posts/`; Facebook then treats og:url vs share URL as a
-   * mismatch and often drops image/title from the link preview.
-   */
-  private resolvePostCanonical(post: BlogPost, baseUrl: string): string {
-    const base = baseUrl.replace(/\/$/, '');
-    const fallback = `${base}/posts/${post.slug}`;
-    const fromSeo = post.seo?.canonicalUrl?.trim();
-    if (!fromSeo) return fallback;
-    try {
-      const u = new URL(fromSeo);
-      const path = (u.pathname.replace(/\/$/, '') || '/') as string;
-      const expected = `/posts/${post.slug}`;
-      if (path === expected) {
-        return fromSeo;
-      }
-    } catch {
-      /* invalid URL — use fallback */
-    }
-    return fallback;
   }
 
   private upsertLinkCanonical(href: string): void {
