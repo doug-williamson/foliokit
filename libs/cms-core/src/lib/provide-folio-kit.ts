@@ -11,7 +11,7 @@ import type { FirebaseOptions } from 'firebase/app';
 import { doc, getDoc } from 'firebase/firestore';
 import { provideMarkdown } from 'ngx-markdown';
 
-import { provideFolioKit, type FolioKitConfig } from './firebase/foliokit.providers';
+import { provideFolioKit, SITE_ID, type FolioKitConfig } from './firebase/foliokit.providers';
 import { FIRESTORE } from './firebase/firebase.config';
 import { resolveSiteConfigDocPath } from './firebase/collection-paths';
 import { SITE_CONFIG } from './tokens/site-config.token';
@@ -112,18 +112,21 @@ export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders
     },
 
     // APP_INITIALIZER: fetch the SiteConfig document from Firestore.
+    // Reads SITE_ID at injection time so that server-side overrides
+    // (e.g. per-request tenant resolution) are respected.
     {
       provide: APP_INITIALIZER,
       useFactory: () => {
         const ref = inject(_SiteConfigRef);
         const firestore = inject(FIRESTORE);
         const platformId = inject(PLATFORM_ID);
+        const activeTenantId = inject(SITE_ID, { optional: true }) ?? tenantId;
 
         return async () => {
           // Client Firestore SDK is null on the server — skip gracefully.
           if (!isPlatformBrowser(platformId) || !firestore) return;
 
-          const docPath = resolveSiteConfigDocPath(tenantId, tenantId);
+          const docPath = resolveSiteConfigDocPath(activeTenantId, activeTenantId);
           const segments = docPath.split('/');
           // doc() expects (firestore, collectionPath, docId, ...pathSegments)
           const docRef = doc(firestore, segments[0], ...segments.slice(1));
