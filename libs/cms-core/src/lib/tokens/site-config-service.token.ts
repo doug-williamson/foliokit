@@ -3,6 +3,8 @@ import type { Observable } from 'rxjs';
 import type { AboutPageConfig, SiteConfig } from '../models/site-config.model';
 
 export interface ISiteConfigService {
+  /** Full site document for the default tenant, or null if missing / unreadable. */
+  getDefaultSiteConfig(): Observable<SiteConfig | null>;
   getAboutConfig(): Observable<AboutPageConfig | null>;
   getConfig(): Observable<SiteConfig>;
 }

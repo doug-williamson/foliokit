@@ -5,6 +5,7 @@ import { featureGuard } from './guards/feature.guard';
 import { createPostDetailResolver } from './resolvers/post-detail.resolver';
 import { createPostsResolver } from './resolvers/posts.resolver';
 import { createAboutPageResolver } from './resolvers/about-page.resolver';
+import { createHomeSiteConfigResolver } from './resolvers/home-site-config.resolver';
 import { createLinksPageResolver } from './resolvers/links-page.resolver';
 import { SITE_CONFIG } from './tokens/site-config.token';
 
@@ -63,6 +64,7 @@ export const FOLIO_BLOG_ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    resolve: { homeSiteConfig: createHomeSiteConfigResolver() },
     loadComponent: () => loadUi().then((m) => m['BlogHomeComponent'] as any),
   },
   {

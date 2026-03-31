@@ -31,6 +31,7 @@ export * from './lib/guards/feature.guard';
 
 // ── Resolvers ─────────────────────────────────────────────────────────────────
 export * from './lib/resolvers/about-page.resolver';
+export * from './lib/resolvers/home-site-config.resolver';
 export * from './lib/resolvers/links-page.resolver';
 export * from './lib/resolvers/post-detail.resolver';
 export * from './lib/resolvers/posts.resolver';

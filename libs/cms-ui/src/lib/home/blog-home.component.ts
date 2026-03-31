@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { SiteConfig } from '@foliokit/cms-core';
-import { SiteConfigService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
+import { BLOG_SEO_SERVICE, SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
 type HomeLoadState =
@@ -206,19 +206,33 @@ type HomeLoadState =
   `,
 })
 export class BlogHomeComponent {
-  private readonly siteConfigService = inject(SiteConfigService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly siteConfigService = inject(SITE_CONFIG_SERVICE);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
 
+  /** Set by {@link createHomeSiteConfigResolver} on standard blog routes (SSR + TransferState). */
+  private readonly resolvedHomeConfig = this.route.snapshot.data['homeSiteConfig'] as
+    | SiteConfig
+    | null
+    | undefined;
+
   private readonly loadState = toSignal(
-    concat(
-      of<HomeLoadState>({ pending: true }),
-      this.siteConfigService.getDefaultSiteConfig().pipe(
-        take(1),
-        map((config): HomeLoadState => ({ pending: false, config })),
-      ),
-    ),
-    { initialValue: { pending: true } satisfies HomeLoadState },
+    this.resolvedHomeConfig !== undefined
+      ? of<HomeLoadState>({ pending: false, config: this.resolvedHomeConfig })
+      : concat(
+          of<HomeLoadState>({ pending: true }),
+          this.siteConfigService.getDefaultSiteConfig().pipe(
+            take(1),
+            map((config): HomeLoadState => ({ pending: false, config })),
+          ),
+        ),
+    {
+      initialValue:
+        this.resolvedHomeConfig !== undefined
+          ? { pending: false, config: this.resolvedHomeConfig }
+          : ({ pending: true } satisfies HomeLoadState),
+    },
   );
 
   protected readonly configPending = computed(() => this.loadState().pending);
