@@ -16,3 +16,18 @@ export const setupGuard: CanActivateFn = async () => {
 
   return router.createUrlTree(['/setup']);
 };
+
+/**
+ * Redirects away from /setup if setup is already complete.
+ * Prevents users from seeing the wizard after finishing onboarding.
+ */
+export const setupCompleteGuard: CanActivateFn = async () => {
+  const siteConfigService = inject(SiteConfigService);
+  const router = inject(Router);
+
+  const config = await firstValueFrom(siteConfigService.getDefaultSiteConfig());
+  if (config && config.setupComplete) {
+    return router.createUrlTree(['/posts']);
+  }
+  return true;
+};

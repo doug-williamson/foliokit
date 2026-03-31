@@ -3,7 +3,7 @@ import { AuthorEditorStore } from '../author-editor/author-editor.store';
 import { PostEditorStore } from '../post-editor/post-editor.store';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { authGuard } from '../guards/auth.guard';
-import { setupGuard } from '../guards/setup.guard';
+import { setupGuard, setupCompleteGuard } from '../guards/setup.guard';
 import { unsavedChangesGuard } from '../guards/unsaved-changes.guard';
 import { AdminShellComponent } from '../shell/admin-shell.component';
 import { AdminPagesSectionComponent } from '../pages/admin-pages-section.component';
@@ -64,7 +64,7 @@ export const adminRoutes: Route[] = [
     loadComponent: () =>
       import('../setup/setup.component').then((m) => m.SetupComponent),
     providers: [SiteConfigEditorStore],
-    canActivate: [authGuard],
+    canActivate: [authGuard, setupCompleteGuard],
   },
   {
     path: '',
