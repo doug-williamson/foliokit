@@ -23,9 +23,12 @@ export class BlogSeoService implements IBlogSeoService {
     const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
     const canonical = post.seo?.canonicalUrl ?? `${baseUrl}/posts/${post.slug}`;
-    const ogImage = this.toHttpsUrl(
-      post.seo?.ogImage ?? post.thumbnailUrl ?? this.siteConfig()?.defaultSeo?.ogImage ?? '',
-    );
+    const rawSeoOgImage = post.seo?.ogImage;
+    const ogImageSource =
+      rawSeoOgImage && !rawSeoOgImage.startsWith('gs://')
+        ? rawSeoOgImage
+        : post.thumbnailUrl ?? rawSeoOgImage ?? this.siteConfig()?.defaultSeo?.ogImage ?? '';
+    const ogImage = this.toHttpsUrl(ogImageSource);
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
