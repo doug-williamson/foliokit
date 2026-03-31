@@ -36,6 +36,27 @@ npm install @foliokit/cms-admin-ui
 | `firebase` | `^11.10.0` |
 | `rxjs` | `~7.8.0` |
 
+## Quick Start
+
+```typescript
+// app.config.ts
+import { provideFolioKit } from '@foliokit/cms-core';
+import { provideAdminKit } from '@foliokit/cms-admin-ui';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(appRoutes),
+    provideFolioKit({ firebaseConfig: environment.firebase, siteId: 'my-site' }),
+    provideAdminKit({ adminEmail: 'you@example.com' }),
+  ],
+};
+
+// app.routes.ts
+import { adminRoutes } from '@foliokit/cms-admin-ui';
+
+export const appRoutes: Route[] = [...adminRoutes];
+```
+
 ## What's Included
 
 **Signal Stores:**

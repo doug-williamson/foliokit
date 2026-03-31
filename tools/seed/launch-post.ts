@@ -3,12 +3,17 @@
  *
  * Usage:
  *   export GOOGLE_APPLICATION_CREDENTIALS=~/.config/foliokit/service-account.json
- *   npx ts-node tools/seed/launch-post.ts
+ *   npx ts-node tools/seed/launch-post.ts [--tenant <id>]
  *
- * This creates (or overwrites) a single "introducing-foliokit" post in Firestore.
+ * This creates (or overwrites) a single "introducing-foliokit" post in Firestore
+ * under tenants/{tenantId}/.
  */
 
 import * as admin from 'firebase-admin';
+
+const args = process.argv.slice(2);
+const tenantArgIndex = args.indexOf('--tenant');
+const TENANT_ID = tenantArgIndex !== -1 ? args[tenantArgIndex + 1] : 'foliokit';
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -18,6 +23,8 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+const tenant = (collection: string) =>
+  db.collection(`tenants/${TENANT_ID}/${collection}`);
 
 const content = `# Introducing FolioKit: An Angular CMS for Personal Sites
 
@@ -108,8 +115,8 @@ feature requests are welcome.
 async function seedLaunchPost(): Promise<void> {
   const now = admin.firestore.Timestamp.now();
 
-  console.log('[seed] Writing /posts/introducing-foliokit...');
-  await db.collection('posts').doc('introducing-foliokit').set(
+  console.log(`[seed] Writing tenants/${TENANT_ID}/posts/introducing-foliokit...`);
+  await tenant('posts').doc('introducing-foliokit').set(
     {
       id: 'introducing-foliokit',
       slug: 'introducing-foliokit',
@@ -143,14 +150,14 @@ async function seedLaunchPost(): Promise<void> {
   );
 
   // Ensure the announcement and open-source tags exist
-  console.log('[seed] Writing /tags/announcement...');
-  await db.collection('tags').doc('announcement').set(
+  console.log(`[seed] Writing tenants/${TENANT_ID}/tags/announcement...`);
+  await tenant('tags').doc('announcement').set(
     { id: 'announcement', label: 'Announcement', slug: 'announcement' },
     { merge: false }
   );
 
-  console.log('[seed] Writing /tags/open-source...');
-  await db.collection('tags').doc('open-source').set(
+  console.log(`[seed] Writing tenants/${TENANT_ID}/tags/open-source...`);
+  await tenant('tags').doc('open-source').set(
     { id: 'open-source', label: 'Open Source', slug: 'open-source' },
     { merge: false }
   );

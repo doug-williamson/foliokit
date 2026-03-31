@@ -42,7 +42,7 @@ Each published package must have:
 | One-paragraph description | [x] | [x] | [x] | [x] |
 | `npm install` command | [x] | [x] | [x] | [x] |
 | Peer dependencies table | [x] | [x] | [x] | [x] |
-| Minimal usage example | [x] | [x] | [x] | [ ] |
+| Minimal usage example | [x] | [x] | [x] | [x] |
 | Link to full docs | [x] | [x] | [x] | [x] |
 | Unstable API banner (admin-ui only) | n/a | n/a | n/a | [x] |
 

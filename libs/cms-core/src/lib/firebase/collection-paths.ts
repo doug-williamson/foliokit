@@ -76,6 +76,16 @@ export function resolveStoragePath(
 export class CollectionPaths {
   readonly tenantId = inject(SITE_ID, { optional: true }) ?? null;
 
+  constructor() {
+    if (this.tenantId == null && typeof ngDevMode !== 'undefined' && ngDevMode) {
+      console.warn(
+        '[FolioKit] No SITE_ID provided — data resolves to root-level Firestore paths. ' +
+        'Set siteId in provideFolioKit() to use tenant-scoped paths. ' +
+        'Root-level path support will be removed in a future major version.',
+      );
+    }
+  }
+
   /** Resolves a Firestore collection path for the current tenant context. */
   collection(name: 'posts' | 'authors' | 'tags' | 'pages'): string {
     return resolveCollectionPath(name, this.tenantId);
