@@ -8,7 +8,9 @@
       "Bash(git push:*)",
       "Bash(npx firebase:*)",
       "Bash(curl -s http://localhost:4100/posts/why-we-built-a-cms-instead-of-using-one -H \"Host: blog.foliokitcms.com\")",
-      "Bash(curl -v http://localhost:4100/posts/why-we-built-a-cms-instead-of-using-one -H \"Host: blog.foliokitcms.com\")"
+      "Bash(curl -v http://localhost:4100/posts/why-we-built-a-cms-instead-of-using-one -H \"Host: blog.foliokitcms.com\")",
+      "Bash(grep -o '.\\\\{0,120\\\\}gs://.\\\\{0,120\\\\}' C:/GitHub/foliokit/dist/apps/blog/server/main.server.mjs)",
+      "Bash(curl -s \"http://localhost:4201/posts/why-we-built-a-cms-instead-of-using-one\")"
     ]
   }
 }

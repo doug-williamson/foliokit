@@ -11,6 +11,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initAdminApp } from '../../../libs/cms-core/src/lib/firebase/firebase-admin';
 import { resolveTenantFromHostname } from '../../../libs/cms-core/src/lib/firebase/tenant-resolver';
 import { resolveCollectionPath } from '@foliokit/cms-core';
+import { BLOG_STATIC_SITE_ID } from './app/blog-app-tenant';
 
 initAdminApp();
 
@@ -21,9 +22,8 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 // ── Tenant resolution middleware ────────────────────────────────────────────
-// Resolves the hostname to a tenantId before any route handler runs.
-// The resolved value is stored on `req.tenantId` and passed to the
-// Angular app via REQUEST_CONTEXT so server-side services can read it.
+// Resolves the hostname to a tenant document id (for logging / future use).
+// Firestore paths for this binary use BLOG_STATIC_SITE_ID so SSR matches providesFolioKit().
 
 declare global {
   namespace Express {
@@ -77,7 +77,7 @@ function buildStaticSitemap(baseUrl: string): string {
 }
 
 app.get('/sitemap.xml', async (req, res) => {
-  const tenantId = req.tenantId ?? 'default';
+  const tenantId = BLOG_STATIC_SITE_ID;
   const now = Date.now();
   const baseUrl = buildBaseUrl(req);
 
@@ -162,12 +162,11 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
- * Passes the resolved tenantId via request context so Angular's DI
- * can inject it on the server side.
+ * Request context tenant matches SITE_ID / providesFolioKit tenant for this deploy.
  */
 app.use('/**', (req, res, next) => {
   angularApp
-    .handle(req, { tenantId: req.tenantId ?? 'default' })
+    .handle(req, { tenantId: BLOG_STATIC_SITE_ID })
     .then((response) =>
       response ? writeResponseToNodeResponse(response, res) : next(),
     )
