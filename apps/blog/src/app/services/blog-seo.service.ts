@@ -22,7 +22,7 @@ export class BlogSeoService implements IBlogSeoService {
   setPostMeta(post: BlogPost, baseUrl: string, authorDisplayName?: string): void {
     const pageTitle = buildPageTitle(post.seo?.title ?? post.title);
     const description = post.seo?.description ?? post.excerpt ?? '';
-    const canonical = post.seo?.canonicalUrl ?? `${baseUrl}/posts/${post.slug}`;
+    const canonical = this.resolvePostCanonical(post, baseUrl);
     const rawSeoOgImage = post.seo?.ogImage;
     const ogImageSource =
       rawSeoOgImage && !rawSeoOgImage.startsWith('gs://')
@@ -38,6 +38,7 @@ export class BlogSeoService implements IBlogSeoService {
     this.meta.updateTag({ property: 'og:url', content: canonical });
     if (ogImage) {
       this.meta.updateTag({ property: 'og:image', content: ogImage });
+      this.meta.updateTag({ property: 'og:image:secure_url', content: ogImage });
     }
     this.meta.updateTag({ name: 'twitter:card', content: ogImage ? 'summary_large_image' : 'summary' });
     this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
@@ -119,9 +120,39 @@ export class BlogSeoService implements IBlogSeoService {
     this.upsertJsonLd(schema, 'site');
   }
 
+  /**
+   * Open Graph consumers expect the canonical URL to match the link users share. Stored
+   * `seo.canonicalUrl` can omit `/posts/`; Facebook then treats og:url vs share URL as a
+   * mismatch and often drops image/title from the link preview.
+   */
+  private resolvePostCanonical(post: BlogPost, baseUrl: string): string {
+    const base = baseUrl.replace(/\/$/, '');
+    const fallback = `${base}/posts/${post.slug}`;
+    const fromSeo = post.seo?.canonicalUrl?.trim();
+    if (!fromSeo) return fallback;
+    try {
+      const u = new URL(fromSeo);
+      const path = (u.pathname.replace(/\/$/, '') || '/') as string;
+      const expected = `/posts/${post.slug}`;
+      if (path === expected) {
+        return fromSeo;
+      }
+    } catch {
+      /* invalid URL — use fallback */
+    }
+    return fallback;
+  }
+
+  /** CMS / copy-paste sometimes stores `&amp;` in HTTPS URLs; normalize before meta tags. */
+  private decodeEntitiesInUrl(url: string): string {
+    if (!url) return url;
+    return url.replace(/&amp;/gi, '&').trim();
+  }
+
   private toHttpsUrl(url: string): string {
-    if (!url.startsWith('gs://')) return url;
-    const withoutScheme = url.slice(5);
+    const u = this.decodeEntitiesInUrl(url);
+    if (!u.startsWith('gs://')) return u;
+    const withoutScheme = u.slice(5);
     const slashIdx = withoutScheme.indexOf('/');
     const bucket = withoutScheme.slice(0, slashIdx);
     const path = withoutScheme.slice(slashIdx + 1);
