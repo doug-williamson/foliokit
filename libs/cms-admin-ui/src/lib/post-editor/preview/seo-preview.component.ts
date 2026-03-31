@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { SlicePipe } from '@angular/common';
+import type { BlogPost } from '@foliokit/cms-core';
+import { resolvePostOgImageUrl } from '@foliokit/cms-core';
 import { PostEditorStore } from '../post-editor.store';
 
 /**
@@ -144,10 +146,11 @@ import { PostEditorStore } from '../post-editor.store';
           Social Share Preview
         </p>
         <div class="og-card">
-          @if (post.seo.ogImage || post.thumbnailUrl) {
+          @let shareImg = shareImageUrl(post);
+          @if (shareImg) {
             <img
               class="og-card-image"
-              [src]="post.seo.ogImage || post.thumbnailUrl"
+              [src]="shareImg"
               alt=""
             />
           } @else {
@@ -172,6 +175,11 @@ import { PostEditorStore } from '../post-editor.store';
 })
 export class SeoPreviewComponent {
   readonly store = inject(PostEditorStore);
+
+  /** Same resolution as public `og:image` (HTTPS, `gs://` → Firebase URL). */
+  protected shareImageUrl(post: BlogPost): string {
+    return resolvePostOgImageUrl(post);
+  }
 
   /**
    * Full site URL used to construct the canonical-URL breadcrumb in the

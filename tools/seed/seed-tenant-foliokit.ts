@@ -36,9 +36,9 @@ async function seed(): Promise<void> {
     await tenant('authors').doc('author-1').set(
       {
         id: 'author-1',
-        name: 'FolioKit Team',
+        displayName: 'FolioKit Team',
         bio: 'Building the open-source Angular blog platform.',
-        avatarUrl: '',
+        photoUrl: '',
         socialLinks: [],
       },
       { merge: false }

@@ -36,11 +36,17 @@ function normalizeSocialLinks(raw: unknown): SocialLink[] | undefined {
 }
 
 export function normalizeAuthor(raw: Record<string, unknown>): Author {
+  const displayName =
+    (raw['displayName'] as string | undefined)?.trim() ||
+    (raw['name'] as string | undefined)?.trim() ||
+    '';
   return {
     id: (raw['id'] as string) ?? '',
-    displayName: (raw['displayName'] as string) ?? '',
+    displayName,
     bio: raw['bio'] as string | undefined,
-    photoUrl: raw['photoUrl'] as string | undefined,
+    photoUrl:
+      (raw['photoUrl'] as string | undefined) ||
+      (raw['avatarUrl'] as string | undefined),
     photoUrlDark: raw['photoUrlDark'] as string | undefined,
     socialLinks: normalizeSocialLinks(raw['socialLinks']),
     email: raw['email'] as string | undefined,

@@ -11,13 +11,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import type { BlogPost, Tag } from '@foliokit/cms-core';
+import { forkJoin, of, type Observable } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
+import type { Author, BlogPost, Tag } from '@foliokit/cms-core';
 import {
+  AUTHOR_SERVICE,
   SiteConfigService,
   TagService,
   BLOG_SEO_SERVICE,
@@ -31,6 +32,11 @@ import { BlogTagFilterComponent } from './blog-tag-filter.component';
 interface TagFetchState {
   readonly ready: boolean;
   readonly tags: Tag[];
+}
+
+interface AuthorFetchState {
+  readonly ready: boolean;
+  readonly byId: Map<string, Author | null>;
 }
 
 @Component({
@@ -61,9 +67,13 @@ interface TagFetchState {
         </div>
       } @else {
         <div class="hidden lg:block mb-10">
+          @let hero = filteredPosts()[0];
           <folio-post-card
-            [post]="filteredPosts()[0]"
+            [post]="hero"
             variant="hero"
+            [authorsReady]="authorsReady()"
+            [authorName]="authorDisplayName(hero)"
+            [authorPhotoUrl]="authorPhotoUrl(hero)"
             [tagLabelsReady]="tagsReady()"
             [tagLookupForLabels]="tagLookup()"
           />
@@ -74,6 +84,9 @@ interface TagFetchState {
             <div [class]="i === 0 ? 'lg:hidden' : ''">
               <folio-post-card
                 [post]="post"
+                [authorsReady]="authorsReady()"
+                [authorName]="authorDisplayName(post)"
+                [authorPhotoUrl]="authorPhotoUrl(post)"
                 [tagLabelsReady]="tagsReady()"
                 [tagLookupForLabels]="tagLookup()"
               />
@@ -91,6 +104,7 @@ export class BlogPostListComponent {
   private readonly injector = inject(Injector);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly tagService = inject(TagService);
+  private readonly authorService = inject(AUTHOR_SERVICE, { optional: true });
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   private readonly titleService = inject(Title);
@@ -123,6 +137,51 @@ export class BlogPostListComponent {
   );
 
   protected readonly tagsReady = computed(() => this.tagFetchState()?.ready ?? false);
+
+  /**
+   * Browser: resolve authors for post `authorId`s (or ready with empty map when no service).
+   * SSR: `ready: false` until hydration (matches tag label pattern).
+   */
+  private readonly authorFetchState = toSignal(
+    !isPlatformBrowser(this.platformId)
+      ? of<AuthorFetchState>({ ready: false, byId: new Map() })
+      : !this.authorService
+        ? toObservable(this.posts).pipe(
+            map((): AuthorFetchState => ({ ready: true, byId: new Map() })),
+          )
+        : toObservable(this.posts).pipe(
+            switchMap((list) => {
+              const ids = [
+                ...new Set(
+                  list
+                    .map((p) => p.authorId)
+                    .filter((id): id is string => typeof id === 'string' && id.length > 0),
+                ),
+              ];
+              if (!ids.length) {
+                return of<AuthorFetchState>({ ready: true, byId: new Map() });
+              }
+              const sources = Object.fromEntries(
+                ids.map((id) => [
+                  id,
+                  this.authorService!.getById(id).pipe(take(1)),
+                ]),
+              ) as Record<string, Observable<Author | null>>;
+              return forkJoin(sources).pipe(
+                map((record): AuthorFetchState => {
+                  const byId = new Map<string, Author | null>();
+                  for (const [id, a] of Object.entries(record)) {
+                    byId.set(id, a);
+                  }
+                  return { ready: true, byId };
+                }),
+              );
+            }),
+          ),
+    { initialValue: { ready: false, byId: new Map() } satisfies AuthorFetchState },
+  );
+
+  protected readonly authorsReady = computed(() => this.authorFetchState().ready);
 
   protected readonly tagLookup = computed(
     () =>
@@ -178,6 +237,20 @@ export class BlogPostListComponent {
         { injector: this.injector },
       );
     });
+  }
+
+  protected authorDisplayName(post: BlogPost): string | null {
+    const st = this.authorFetchState();
+    if (!st.ready || !post.authorId) return null;
+    const n = st.byId.get(post.authorId)?.displayName?.trim();
+    return n || null;
+  }
+
+  protected authorPhotoUrl(post: BlogPost): string | null {
+    const st = this.authorFetchState();
+    if (!st.ready || !post.authorId) return null;
+    const u = st.byId.get(post.authorId)?.photoUrl?.trim();
+    return u || null;
   }
 
   protected onTagSelected(tag: string | null): void {
