@@ -6,6 +6,7 @@ import { serverRoutes } from './app.routes.server';
 import { ServerAuthorService } from './services/server-author.service';
 import { ServerBlogPostService } from './services/server-post.service';
 import { ServerSiteConfigService } from './services/server-site-config.service';
+import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
 
 /**
  * Expected shape of the request context passed from the Express
@@ -30,7 +31,10 @@ const serverConfig: ApplicationConfig = {
       provide: SITE_ID,
       useFactory: () => {
         const ctx = inject(REQUEST_CONTEXT) as FolioKitRequestContext | null;
-        return ctx?.tenantId ?? 'default';
+        const fromHost = ctx?.tenantId ?? 'default';
+        // Hostname resolution returns `default` for localhost / unknown hosts; the SPA still
+        // uses BLOG_STATIC_SITE_ID from providesFolioKit — align SSR or TransferState is empty.
+        return fromHost === 'default' ? BLOG_STATIC_SITE_ID : fromHost;
       },
     },
   ],

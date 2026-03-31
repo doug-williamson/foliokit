@@ -41,6 +41,14 @@ export interface FolioKitOptions {
    */
   tenantId?: string;
 
+  /**
+   * When `true`, the client Firebase SDK connects to the local emulators
+   * (Firestore, Storage, Auth). Must match SSR when using
+   * `FIRESTORE_EMULATOR_HOST` for the Admin SDK, or lists and detail views
+   * will read different backends after navigation vs full reload.
+   */
+  useEmulator?: boolean;
+
   /** Optional shell configuration forwarded to {@link SHELL_CONFIG}. */
   shell?: Partial<ShellConfig>;
 
@@ -94,6 +102,7 @@ export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders
   const coreConfig: FolioKitConfig = {
     firebaseConfig: options.firebase,
     siteId: tenantId,
+    useEmulator: options.useEmulator ?? false,
   };
 
   const providers: Parameters<typeof makeEnvironmentProviders>[0] = [

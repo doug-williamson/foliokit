@@ -9,16 +9,9 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { BLOG_SEO_SERVICE, providesFolioKit } from '@foliokit/cms-core';
 import { provideCmsUiMatIcons } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
+import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
 import { appRoutes } from './app.routes';
 import { BlogSeoService } from './services/blog-seo.service';
-
-/**
- * Default tenant ID used as the static fallback. In production, the SSR
- * server resolves the actual tenant from the hostname and overrides
- * SITE_ID in app.config.server.ts. On the client, this value is used
- * unless the server's TransferState provides a different one.
- */
-const DEFAULT_TENANT_ID = 'foliokit';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,7 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     providesFolioKit({
       firebase: environment.firebase,
-      tenantId: DEFAULT_TENANT_ID,
+      tenantId: BLOG_STATIC_SITE_ID,
+      useEmulator: environment.useEmulator,
       features: { markdown: true, auth: false },
       shell: {
         appName: 'FolioKit Blog',

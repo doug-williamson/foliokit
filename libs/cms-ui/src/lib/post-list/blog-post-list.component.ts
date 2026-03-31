@@ -1,22 +1,37 @@
 import {
-  AfterViewInit,
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   inject,
+  Injector,
+  PLATFORM_ID,
   signal,
   ViewChild,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { take } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import type { BlogPost, Tag } from '@foliokit/cms-core';
-import { SiteConfigService, TagService, BLOG_SEO_SERVICE, buildPageTitle } from '@foliokit/cms-core';
+import {
+  SiteConfigService,
+  TagService,
+  BLOG_SEO_SERVICE,
+  buildPageTitle,
+  tagIdFallbackLabel,
+} from '@foliokit/cms-core';
 import { BlogPostCardComponent } from './blog-post-card.component';
 import { BlogTagFilterComponent } from './blog-tag-filter.component';
+
+/** Unified shape for `toSignal` (avoids union branches that break overload inference). */
+interface TagFetchState {
+  readonly ready: boolean;
+  readonly tags: Tag[];
+}
 
 @Component({
   selector: 'folio-post-list',
@@ -25,11 +40,9 @@ import { BlogTagFilterComponent } from './blog-tag-filter.component';
   imports: [BlogPostCardComponent, BlogTagFilterComponent],
   template: `
     <div
-      class="px-4 md:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col"
-      [style.max-width]="'1280px'"
-      style="margin-inline: auto"
+      class="w-full max-w-[1280px] mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col"
     >
-      @if (allTagOptions().length > 0) {
+      @if (tagsReady() && allTagOptions().length > 0) {
         <div class="mb-8" [style.padding-bottom]="'0.5rem'">
           <folio-tag-filter
             #tagFilter
@@ -48,13 +61,22 @@ import { BlogTagFilterComponent } from './blog-tag-filter.component';
         </div>
       } @else {
         <div class="hidden lg:block mb-10">
-          <folio-post-card [post]="filteredPosts()[0]" variant="hero" />
+          <folio-post-card
+            [post]="filteredPosts()[0]"
+            variant="hero"
+            [tagLabelsReady]="tagsReady()"
+            [tagLookupForLabels]="tagLookup()"
+          />
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           @for (post of filteredPosts(); track post.id; let i = $index) {
             <div [class]="i === 0 ? 'lg:hidden' : ''">
-              <folio-post-card [post]="post" />
+              <folio-post-card
+                [post]="post"
+                [tagLabelsReady]="tagsReady()"
+                [tagLookupForLabels]="tagLookup()"
+              />
             </div>
           }
         </div>
@@ -63,9 +85,11 @@ import { BlogTagFilterComponent } from './blog-tag-filter.component';
   `,
   styles: [':host { display: flex; flex-direction: column; background: var(--bg); min-height: 100%; }'],
 })
-export class BlogPostListComponent implements AfterViewInit {
+export class BlogPostListComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly tagService = inject(TagService);
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
@@ -87,16 +111,26 @@ export class BlogPostListComponent implements AfterViewInit {
     (this.route.snapshot.queryParamMap.get('tag') ?? null),
   );
 
-  private readonly fetchedTags = toSignal(
-    this.tagService.getAllTags().pipe(take(1)),
-    { initialValue: [] as Tag[] },
+  /** Browser-only fetch so SSR stays `ready: false` and hydration matches (no tag strip on server). */
+  private readonly tagFetchState = toSignal(
+    isPlatformBrowser(this.platformId)
+      ? this.tagService.getAllTags().pipe(
+          take(1),
+          map((tags): TagFetchState => ({ ready: true, tags })),
+        )
+      : of<TagFetchState>({ ready: false, tags: [] }),
+    { initialValue: { ready: false, tags: [] } satisfies TagFetchState },
   );
 
-  private readonly tagLookup = computed(
-    () => new Map(this.fetchedTags().map((t) => [t.id, t])),
+  protected readonly tagsReady = computed(() => this.tagFetchState()?.ready ?? false);
+
+  protected readonly tagLookup = computed(
+    () =>
+      new Map((this.tagFetchState()?.tags ?? []).map((t) => [t.id, t])),
   );
 
   protected readonly allTagOptions = computed<Tag[]>(() => {
+    if (!this.tagsReady()) return [];
     const lookup = this.tagLookup();
     const seen = new Set<string>();
     const options: Tag[] = [];
@@ -104,7 +138,9 @@ export class BlogPostListComponent implements AfterViewInit {
       for (const id of post.tags) {
         if (!seen.has(id)) {
           seen.add(id);
-          options.push(lookup.get(id) ?? { id, label: id, slug: id });
+          options.push(
+            lookup.get(id) ?? { id, label: tagIdFallbackLabel(id), slug: id },
+          );
         }
       }
     }
@@ -130,13 +166,18 @@ export class BlogPostListComponent implements AfterViewInit {
       const tag = this.selectedTag();
       this.titleService.setTitle(tag ? buildPageTitle(`#${tag}`) : buildPageTitle('Blog'));
     });
-  }
 
-  ngAfterViewInit(): void {
-    const initial = this.selectedTag();
-    if (initial) {
-      this.tagFilterRef?.setActive(initial);
-    }
+    effect(() => {
+      if (!this.tagsReady() || !this.allTagOptions().length) return;
+      const initial = this.selectedTag();
+      if (!initial) return;
+      afterNextRender(
+        () => {
+          this.tagFilterRef?.setActive(initial);
+        },
+        { injector: this.injector },
+      );
+    });
   }
 
   protected onTagSelected(tag: string | null): void {
