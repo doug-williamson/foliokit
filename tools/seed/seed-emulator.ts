@@ -1,6 +1,8 @@
 /**
  * Firestore emulator seed script
  *
+ * Seeds data under tenants/{TENANT_ID}/ for multi-tenant local development.
+ *
  * Prerequisites:
  *   1. Start the Firebase emulator suite:
  *        npm run emulator
@@ -22,6 +24,10 @@ import { FIREBASE_EMULATOR_PROJECT_ID } from './emulator-config';
 initializeApp({ projectId: FIREBASE_EMULATOR_PROJECT_ID });
 
 const db = getFirestore();
+
+const TENANT_ID = 'foliokit';
+const tenant = (collection: string) =>
+  db.collection(`tenants/${TENANT_ID}/${collection}`);
 
 const now = Timestamp.now();
 
@@ -54,8 +60,23 @@ async function seed(): Promise<void> {
       console.warn('[seed:emulator] Admin user import warnings:', errors.map((e) => e.error.message));
     }
 
-    console.log('[seed:emulator] Writing /authors/author-1...');
-    await db.collection('authors').doc('author-1').set(
+    // ── tenant registry ─────────────────────────────────────────────────────
+    console.log(`[seed:emulator] Writing /tenants/${TENANT_ID}...`);
+    await db.collection('tenants').doc(TENANT_ID).set(
+      {
+        tenantId: TENANT_ID,
+        ownerEmail: 'dev.foliokit@gmail.com',
+        subdomain: TENANT_ID,
+        customDomain: null,
+        displayName: 'FolioKit Blog',
+        createdAt: Timestamp.fromDate(new Date('2025-01-01')),
+        updatedAt: now,
+      },
+      { merge: false }
+    );
+
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/authors/author-1...`);
+    await tenant('authors').doc('author-1').set(
       {
         id: 'author-1',
         name: 'Dev Author',
@@ -70,22 +91,22 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /tags/tag-web...');
-    await db.collection('tags').doc('tag-web').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/tags/tag-web...`);
+    await tenant('tags').doc('tag-web').set(
       { id: 'tag-web', label: 'Web', slug: 'web' },
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /tags/tag-angular...');
-    await db.collection('tags').doc('tag-angular').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/tags/tag-angular...`);
+    await tenant('tags').doc('tag-angular').set(
       { id: 'tag-angular', label: 'Angular', slug: 'angular' },
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /site-config/default...');
-    await db.collection('site-config').doc('default').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/site-config/${TENANT_ID}...`);
+    await tenant('site-config').doc(TENANT_ID).set(
       {
-        id: 'default',
+        id: TENANT_ID,
         siteName: 'FolioKit Blog',
         siteUrl: 'http://localhost:4201',
         description: 'A developer portfolio and blog.',
@@ -176,8 +197,8 @@ async function seed(): Promise<void> {
 
     // ── pages ──────────────────────────────────────────────────────────────────
 
-    console.log('[seed:emulator] Writing /pages/links...');
-    await db.collection('pages').doc('links').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/pages/links...`);
+    await tenant('pages').doc('links').set(
       {
         id: 'links',
         type: 'links',
@@ -235,8 +256,8 @@ async function seed(): Promise<void> {
 
     // ── published ──────────────────────────────────────────────────────────────
 
-    console.log('[seed:emulator] Writing /posts/post-1 (published)...');
-    await db.collection('posts').doc('post-1').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/posts/post-1 (published)...`);
+    await tenant('posts').doc('post-1').set(
       {
         id: 'post-1',
         slug: 'hello-world',
@@ -259,8 +280,8 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Writing /posts/post-2 (published)...');
-    await db.collection('posts').doc('post-2').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/posts/post-2 (published)...`);
+    await tenant('posts').doc('post-2').set(
       {
         id: 'post-2',
         slug: 'angular-signals',
@@ -285,8 +306,8 @@ async function seed(): Promise<void> {
 
     // ── scheduled ──────────────────────────────────────────────────────────────
 
-    console.log('[seed:emulator] Writing /posts/post-3 (scheduled)...');
-    await db.collection('posts').doc('post-3').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/posts/post-3 (scheduled)...`);
+    await tenant('posts').doc('post-3').set(
       {
         id: 'post-3',
         slug: 'tailwind-v4-first-look',
@@ -312,8 +333,8 @@ async function seed(): Promise<void> {
 
     // ── draft ──────────────────────────────────────────────────────────────────
 
-    console.log('[seed:emulator] Writing /posts/post-4 (draft)...');
-    await db.collection('posts').doc('post-4').set(
+    console.log(`[seed:emulator] Writing tenants/${TENANT_ID}/posts/post-4 (draft)...`);
+    await tenant('posts').doc('post-4').set(
       {
         id: 'post-4',
         slug: 'ngrx-signals-patterns',
@@ -337,7 +358,7 @@ async function seed(): Promise<void> {
       { merge: false }
     );
 
-    console.log('[seed:emulator] Done. 1 auth user, 1 author, 2 tags, 1 site-config (home + about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.');
+    console.log(`[seed:emulator] Done. Tenant: ${TENANT_ID}. 1 auth user, 1 tenant doc, 1 author, 2 tags, 1 site-config (home + about + links enabled, 4 nav items), 1 pages/links, 4 posts (2 published, 1 scheduled, 1 draft) written.`);
   } catch (err) {
     console.error('[seed:emulator] Error:', err);
     process.exit(1);

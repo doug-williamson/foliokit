@@ -22,17 +22,18 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/tenants/$(tenantId)).data.ownerEmail == request.auth.token.email;
     }
 
+    // ── Root-level collections (deprecated — read-only) ───────────────────
+    // All new writes go through tenants/{tenantId}/<collection>.
+    // These rules exist only for backwards compatibility during migration.
     match /posts/{postId} {
-      allow read: if resource.data.status == 'published' || isAdmin();
-      allow write: if isAdmin();
+      allow read: if resource.data.status == 'published';
     }
     match /pages/{pageId} {
-      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
-      allow write: if isAdmin();
+      allow read: if resource == null || resource.data.status == 'published';
     }
-    match /tags/{tagId} { allow read; allow write: if isAdmin(); }
-    match /site-config/{siteId} { allow read; allow write: if isAdmin(); }
-    match /authors/{authorId} { allow read; allow write: if isAdmin(); }
+    match /tags/{tagId} { allow read; }
+    match /site-config/{siteId} { allow read; }
+    match /authors/{authorId} { allow read; }
 
     // ── Tenant registry ───────────────────────────────────────────────────────
     // Each tenant document stores ownerEmail, subdomain, customDomain, etc.
