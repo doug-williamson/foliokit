@@ -10,16 +10,22 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import type { BlogPost, Tag, PostRouteData } from '@foliokit/cms-core';
-import { TagService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
+import { TagService, BLOG_SEO_SERVICE, TagLabelPipe } from '@foliokit/cms-core';
+
+/** Unified shape for `toSignal` (avoids union branches that break overload inference). */
+interface TagFetchState {
+  readonly ready: boolean;
+  readonly tags: Tag[];
+}
 
 @Component({
   selector: 'folio-post-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MarkdownComponent],
+  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe],
   template: `
     <div
       class="px-4 md:px-6 py-8 lg:py-12"
@@ -83,7 +89,7 @@ import { TagService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
               <span aria-hidden="true">·</span>
               <span>{{ post()!.readingTimeMinutes }} min read</span>
             }
-            @if (post()!.tags.length) {
+            @if (tagsReady() && post()!.tags.length) {
               <span aria-hidden="true">·</span>
               <div class="flex flex-wrap gap-1.5">
                 @for (tag of post()!.tags; track tag) {
@@ -93,7 +99,7 @@ import { TagService, BLOG_SEO_SERVICE } from '@foliokit/cms-core';
                     class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors"
                     style="background-color: color-mix(in srgb, var(--text-accent) 12%, transparent); color: var(--text-accent)"
                   >
-                    {{ tagLookup().get(tag)?.label ?? tag }}
+                    {{ tag | tagLabel: tagLookup() }}
                   </a>
                 }
               </div>
@@ -169,15 +175,22 @@ export class BlogPostDetailComponent {
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
 
-  private readonly fetchedTags = toSignal(
+  /** Browser-only fetch: SSR keeps `ready: false` so hydrated DOM matches (tags appear after load). */
+  private readonly tagFetchState = toSignal(
     isPlatformBrowser(this.platformId)
-      ? this.tagService.getAllTags().pipe(take(1))
-      : of([] as Tag[]),
-    { initialValue: [] as Tag[] },
+      ? this.tagService.getAllTags().pipe(
+          take(1),
+          map((tags): TagFetchState => ({ ready: true, tags })),
+        )
+      : of<TagFetchState>({ ready: false, tags: [] }),
+    { initialValue: { ready: false, tags: [] } satisfies TagFetchState },
   );
 
+  protected readonly tagsReady = computed(() => this.tagFetchState()?.ready ?? false);
+
   protected readonly tagLookup = computed(
-    () => new Map(this.fetchedTags().map((t) => [t.id, t])),
+    () =>
+      new Map((this.tagFetchState()?.tags ?? []).map((t) => [t.id, t])),
   );
 
   private readonly routeData = computed(

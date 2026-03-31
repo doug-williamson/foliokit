@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import type { Tag } from '@foliokit/cms-core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import type { BlogPost } from '@foliokit/cms-core';
@@ -277,14 +278,14 @@ import { TagLabelPipe } from '@foliokit/cms-core';
           }
           <div class="hero-gradient"></div>
           <div class="hero-body">
-            @if (firstTwoTags().length > 0) {
+            @if (firstTwoTags().length > 0 && tagLabelsReady()) {
               <div class="hero-tags">
                 @for (tag of firstTwoTags(); track tag) {
                   <a
                     [routerLink]="['/posts']"
                     [queryParams]="{ tag: tag }"
                     class="hero-chip"
-                  >{{ tag | tagLabel }}</a>
+                  >{{ tag | tagLabel: tagLookupForLabels() }}</a>
                 }
               </div>
             }
@@ -320,7 +321,7 @@ import { TagLabelPipe } from '@foliokit/cms-core';
         }
 
         <div class="card-body">
-          @if (firstTwoTags().length > 0) {
+          @if (firstTwoTags().length > 0 && tagLabelsReady()) {
             <div class="card-tags">
               @for (tag of firstTwoTags(); track tag; let i = $index) {
                 <a
@@ -328,7 +329,7 @@ import { TagLabelPipe } from '@foliokit/cms-core';
                   [queryParams]="{ tag: tag }"
                   [class]="i === 0 ? 'chip chip--primary' : 'chip'"
                   style="position: relative; z-index: 20;"
-                >{{ tag | tagLabel }}</a>
+                >{{ tag | tagLabel: tagLookupForLabels() }}</a>
               }
             </div>
           }
@@ -362,6 +363,10 @@ export class BlogPostCardComponent {
   readonly post = input.required<BlogPost>();
   readonly variant = input<'hero' | 'card'>('card');
   readonly authorName = input<string | null>(null);
+  /** When false, tag chips are hidden until Firestore tag labels are available. */
+  readonly tagLabelsReady = input(false);
+  /** Optional map from tag id → Tag; improves labels when {@link tagLabelsReady} is true. */
+  readonly tagLookupForLabels = input<Map<string, Tag> | undefined>(undefined);
 
   protected readonly publishedDate = computed(() => new Date(this.post().publishedAt));
   protected readonly firstTwoTags = computed(() => this.post().tags.slice(0, 2));

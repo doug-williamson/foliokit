@@ -16,7 +16,7 @@
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
-      "dependsOn": ["build-schematics"],
+      "dependsOn": ["build-schematics", "^build"],
       "options": {
         "project": "libs/cms-admin-ui/ng-package.json",
         "tsConfig": "libs/cms-admin-ui/tsconfig.lib.json"
