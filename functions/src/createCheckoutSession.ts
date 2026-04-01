@@ -5,16 +5,9 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { ADMIN_ALLOWED_ORIGINS } from './shared-constants';
 import { stripeSecretKey, getStripeClient } from './stripeClient';
-import { environment } from '../../apps/admin/src/environments/environment';
+import { PRICE_IDS } from './stripe-constants';
 
 if (!getApps().length) initializeApp();
-
-// TODO: Replace these placeholder values with your real Stripe Price IDs
-// before going live. Find them in the Stripe Dashboard → Products.
-const PRICE_IDS: Record<'pro' | 'agency', string> = {
-  pro: environment.stripe.proPriceId,       // e.g. price_1ABC...
-  agency: environment.stripe.agencyPriceId, // e.g. price_1DEF...
-};
 
 export const createCheckoutSession = onRequest(
   { secrets: [stripeSecretKey] },
