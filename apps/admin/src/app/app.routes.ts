@@ -7,5 +7,10 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./login/login.component').then((m) => m.LoginComponent),
   },
+  {
+    path: 'error',
+    loadComponent: () =>
+      import('./error/error.component').then((m) => m.ErrorComponent),
+  },
   ...adminRoutes.filter((r) => r.path !== 'login'),
 ];

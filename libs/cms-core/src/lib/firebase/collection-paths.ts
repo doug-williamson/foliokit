@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { SITE_ID } from './foliokit.providers';
+import { SITE_ID, SiteIdRef } from './foliokit.providers';
 
 // ── Pure functions ──────────────────────────────────────────────────────────
 // Use these in server-side services (Admin SDK), Cloud Functions, or tests
@@ -74,7 +74,8 @@ export function resolveStoragePath(
  */
 @Injectable({ providedIn: 'root' })
 export class CollectionPaths {
-  readonly tenantId = inject(SITE_ID, { optional: true }) ?? null;
+  private readonly _siteIdRef = inject(SiteIdRef, { optional: true });
+  private readonly _staticSiteId = inject(SITE_ID, { optional: true }) ?? null;
 
   constructor() {
     if (this.tenantId == null && typeof ngDevMode !== 'undefined' && ngDevMode) {
@@ -84,6 +85,15 @@ export class CollectionPaths {
         'Root-level path support will be removed in a future major version.',
       );
     }
+  }
+
+  /**
+   * The active tenant ID. Reads from {@link SiteIdRef} at call time to
+   * support late binding (e.g. admin app resolves tenant after auth).
+   * Falls back to the static {@link SITE_ID} token for backward compat.
+   */
+  get tenantId(): string | null {
+    return this._siteIdRef?.value ?? this._staticSiteId;
   }
 
   /** Resolves a Firestore collection path for the current tenant context. */
