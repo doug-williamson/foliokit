@@ -1,5 +1,10 @@
 export const ALLOWED_ORIGINS = ['https://foliokitcms.com', 'http://localhost:4202'];
 
+export const ADMIN_ALLOWED_ORIGINS = [
+  'https://admin.foliokitcms.com',
+  'http://localhost:4203',
+];
+
 export const RESERVED_SUBDOMAINS = [
   'www', 'admin', 'api', 'mail', 'ftp', 'blog', 'app', 'foliokitcms',
 ];
