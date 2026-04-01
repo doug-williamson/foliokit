@@ -3,17 +3,9 @@ import { logger } from 'firebase-functions';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { ALLOWED_ORIGINS, RESERVED_SUBDOMAINS, EMAIL_RE, SUBDOMAIN_RE } from './shared-constants';
 
 if (!getApps().length) initializeApp();
-
-const ALLOWED_ORIGINS = ['https://foliokitcms.com', 'http://localhost:4202'];
-
-const RESERVED_SUBDOMAINS = [
-  'www', 'admin', 'api', 'mail', 'ftp', 'blog', 'app', 'foliokitcms',
-];
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
 
 export const provisionTenant = onRequest(async (req, res) => {
   const origin = req.headers.origin ?? '';
