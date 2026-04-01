@@ -160,6 +160,12 @@ export const appRoutes: Route[] = [
         ],
       },
       {
+        path: 'signup',
+        loadComponent: () =>
+          import('./pages/signup/signup.component').then(m => m.SignupComponent),
+        title: 'Get Started — FolioKit',
+      },
+      {
         path: '**',
         loadComponent: () =>
           import('./pages/not-found/not-found-page.component').then(m => m.NotFoundPageComponent),

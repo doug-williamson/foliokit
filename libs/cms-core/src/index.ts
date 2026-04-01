@@ -45,6 +45,7 @@ export * from './lib/blog-routes';
 // ── Multi-tenancy ─────────────────────────────────────────────────────────────
 export * from './lib/models/tenant-config.model';
 export * from './lib/models/billing-record.model';
+export * from './lib/models/signup.model';
 export * from './lib/services/tenant.service';
 export { TenantConfigRef, TENANT_CONFIG } from './lib/tokens/tenant-config.token';
 export * from './lib/utils/resolve-tenant-from-hostname';
