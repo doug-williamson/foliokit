@@ -33,14 +33,34 @@ declare global {
   }
 }
 
-app.use(async (req, _res, next) => {
-  try {
-    const hostname = req.hostname || req.headers.host || 'localhost';
-    req.tenantId = await resolveTenantFromHostname(hostname);
-  } catch {
-    req.tenantId = 'default';
+const DEV_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+const DEV_TENANT_ID = 'foliokitcms';
+
+app.use(async (req, res, next) => {
+  const hostname = (req.hostname || req.headers.host || 'localhost')
+    .toLowerCase()
+    .replace(/:\d+$/, '');
+
+  // Dev bypass — skip Firestore, use a hardcoded dev tenant.
+  if (DEV_HOSTNAMES.has(hostname)) {
+    req.tenantId = DEV_TENANT_ID;
+    return next();
   }
-  next();
+
+  // Resolve tenant via Firestore (may throw on infra failure).
+  try {
+    const tenantId = await resolveTenantFromHostname(hostname);
+    if (!tenantId) {
+      res.status(404).send('Unknown tenant');
+      return;
+    }
+    req.tenantId = tenantId;
+    res.setHeader('X-Tenant-Id', tenantId);
+    return next();
+  } catch (err) {
+    console.error('[server] Tenant resolution failed:', err);
+    res.status(503).send('Service temporarily unavailable');
+  }
 });
 
 // ── Sitemap cache ────────────────────────────────────────────────────────────

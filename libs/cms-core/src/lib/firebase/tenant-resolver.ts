@@ -9,12 +9,13 @@
  */
 import { getFirestore } from 'firebase-admin/firestore';
 
-const DEFAULT_TENANT = 'default';
 const CACHE_MAX_SIZE = 200;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+
 interface CacheEntry {
-  tenantId: string;
+  tenantId: string | null;
   timestamp: number;
 }
 
@@ -37,17 +38,21 @@ function evictStale(): void {
  * 1. Check the LRU cache.
  * 2. Query Firestore for a TenantConfig where `customDomain == hostname`.
  * 3. Extract the subdomain and query for `subdomain == extracted`.
- * 4. Fall back to `'default'`.
+ * 4. Return `null` when no match is found (caller decides how to handle).
  *
  * @param hostname - The `Host` header value (without port).
  * @param baseDomain - The base domain for subdomain extraction
  *   (e.g. `'foliokit.app'`). Defaults to `FOLIOKIT_BASE_DOMAIN` env var.
+ * @throws When Firestore is unreachable — caller should handle with 503.
  */
 export async function resolveTenantFromHostname(
   hostname: string,
   baseDomain?: string,
-): Promise<string> {
+): Promise<string | null> {
   const host = hostname.toLowerCase().replace(/:\d+$/, '');
+
+  // Belt-and-suspenders: local dev hosts bypass Firestore.
+  if (LOCAL_HOSTS.has(host)) return null;
 
   // Cache hit?
   const cached = cache.get(host);
@@ -58,45 +63,39 @@ export async function resolveTenantFromHostname(
   const db = getFirestore();
   let tenantId: string | null = null;
 
-  try {
-    // 1. Try custom domain match.
-    const customDomainSnap = await db
-      .collection('tenants')
-      .where('customDomain', '==', host)
-      .limit(1)
-      .get();
-    if (!customDomainSnap.empty) {
-      tenantId = customDomainSnap.docs[0].id;
-    }
+  // 1. Try custom domain match.
+  const customDomainSnap = await db
+    .collection('tenants')
+    .where('customDomain', '==', host)
+    .limit(1)
+    .get();
+  if (!customDomainSnap.empty) {
+    tenantId = customDomainSnap.docs[0].id;
+  }
 
-    // 2. Try subdomain match.
-    if (!tenantId) {
-      const base = (baseDomain ?? process.env['FOLIOKIT_BASE_DOMAIN'] ?? '').toLowerCase();
-      if (base && host.endsWith(`.${base}`)) {
-        const subdomain = host.slice(0, -(base.length + 1));
-        if (subdomain && !subdomain.includes('.')) {
-          const subSnap = await db
-            .collection('tenants')
-            .where('subdomain', '==', subdomain)
-            .limit(1)
-            .get();
-          if (!subSnap.empty) {
-            tenantId = subSnap.docs[0].id;
-          }
+  // 2. Try subdomain match.
+  if (!tenantId) {
+    const base = (baseDomain ?? process.env['FOLIOKIT_BASE_DOMAIN'] ?? '').toLowerCase();
+    if (base && host.endsWith(`.${base}`)) {
+      const subdomain = host.slice(0, -(base.length + 1));
+      if (subdomain && !subdomain.includes('.')) {
+        const subSnap = await db
+          .collection('tenants')
+          .where('subdomain', '==', subdomain)
+          .limit(1)
+          .get();
+        if (!subSnap.empty) {
+          tenantId = subSnap.docs[0].id;
         }
       }
     }
-  } catch (err) {
-    console.error('[TenantResolver] Firestore query failed:', err);
   }
 
-  const resolved = tenantId ?? DEFAULT_TENANT;
-
-  // Populate cache.
-  cache.set(host, { tenantId: resolved, timestamp: Date.now() });
+  // Populate cache (stores null for unknown hosts — avoids repeat Firestore hits).
+  cache.set(host, { tenantId, timestamp: Date.now() });
   evictStale();
 
-  return resolved;
+  return tenantId;
 }
 
 /**
