@@ -6,6 +6,11 @@ export interface Environment {
   useEmulator: boolean;
   adminEmail: string;
   firebase: FirebaseOptions;
+  stripe: {
+    publishableKey: string;
+    proPriceId: string;
+    agencyPriceId: string;
+  };
 }
 
 export const environment: Environment = {
@@ -20,4 +25,9 @@ export const environment: Environment = {
     messagingSenderId: import.meta.env['NG_APP_FIREBASE_MESSAGING_SENDER_ID'],
     appId: import.meta.env['NG_APP_FIREBASE_APP_ID'],
   },
+  stripe: {
+    publishableKey: 'pk_live_51THQgWFzZbJgjuvrLBvDUKsm1wXGLqMeaw8Z7WvjT8U6TNTMoV0UeBtRWzZ955YvVxovadOs08K5JqZi9JZe8UxA00SJdN5kWz',
+    proPriceId: 'price_1THQxnFzZbJgjuvrT4HVE0ui',
+    agencyPriceId: 'price_1THQyEFzZbJgjuvr328S5y0n',
+  }
 };
