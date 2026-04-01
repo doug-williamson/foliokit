@@ -1,7 +1,6 @@
 import {
   APP_INITIALIZER,
   EnvironmentProviders,
-  Injectable,
   InjectionToken,
   PLATFORM_ID,
   inject,
@@ -39,23 +38,6 @@ import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
  * ```
  */
 export const SITE_ID = new InjectionToken<string>('SITE_ID');
-
-/**
- * Mutable holder for the active site/tenant identifier.
- *
- * Used for late-binding scenarios (e.g. the admin app resolves the tenant
- * from Firebase Auth at bootstrap rather than from a static config value).
- * Services that need the tenant ID at call time — such as
- * {@link CollectionPaths} — inject this ref and read `.value` on each
- * method invocation.
- *
- * Provided automatically by {@link provideFolioKit}. When a static `siteId`
- * is passed in the config, `.value` is pre-populated immediately.
- */
-@Injectable()
-export class SiteIdRef {
-  value: string | null = null;
-}
 
 /**
  * Configuration object accepted by {@link provideFolioKit}.
@@ -158,12 +140,6 @@ export interface FolioKitConfig {
  * ```
  */
 export function provideFolioKit(config: FolioKitConfig): EnvironmentProviders {
-  // Pre-populate the mutable holder when a static siteId is provided.
-  const siteIdRef = new SiteIdRef();
-  if (config.siteId !== undefined) {
-    siteIdRef.value = config.siteId;
-  }
-
   const providers: Parameters<typeof makeEnvironmentProviders>[0] = [
     // Firebase services: app, Firestore, Storage, Auth (SSR-safe).
     provideFirebase(config.firebaseConfig, config.useEmulator ?? false),
@@ -172,9 +148,6 @@ export function provideFolioKit(config: FolioKitConfig): EnvironmentProviders {
     // Override by re-providing the token after this call in the same array.
     { provide: BLOG_POST_SERVICE, useExisting: PostService },
     { provide: SITE_CONFIG_SERVICE, useExisting: SiteConfigService },
-
-    // Mutable holder — always provided so late-binding consumers can inject it.
-    { provide: SiteIdRef, useValue: siteIdRef },
   ];
 
   // Optionally expose the tenant routing ID as an injectable constant.

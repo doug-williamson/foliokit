@@ -21,10 +21,6 @@ export const FIREBASE_AUTH = new InjectionToken<Auth | null>('FIREBASE_AUTH');
  * 3. The `isAdmin()` function in `firestore.rules`
  * 4. The author document created by the seed script
  *
- * @deprecated TODO: Remove — replaced by Firestore-backed `ownerEmail`
- * check via `resolveTenantFromAuth()` and the auth guard's ownership
- * verification. Kept temporarily for backward compatibility.
- *
  * @see {@link https://github.com/dougwilliamson/foliokit/blob/main/docs/security/admin-authorization.md}
  */
 export const ADMIN_EMAIL = new InjectionToken<string>('ADMIN_EMAIL');
