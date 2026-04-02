@@ -11,6 +11,7 @@ export interface Environment {
     proPriceId: string;
     agencyPriceId: string;
   };
+  cloudFunctionsBaseUrl: string;
 }
 
 export const environment: Environment = {
@@ -29,5 +30,6 @@ export const environment: Environment = {
     publishableKey: 'pk_live_51THQgWFzZbJgjuvrLBvDUKsm1wXGLqMeaw8Z7WvjT8U6TNTMoV0UeBtRWzZ955YvVxovadOs08K5JqZi9JZe8UxA00SJdN5kWz',
     proPriceId: 'price_1THQxnFzZbJgjuvrT4HVE0ui',
     agencyPriceId: 'price_1THQyEFzZbJgjuvr328S5y0n',
-  }
+  },
+  cloudFunctionsBaseUrl: 'http://localhost:5001/foliokit-6f974/us-central1',
 };

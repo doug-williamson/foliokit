@@ -15,6 +15,9 @@ export const appConfig: ApplicationConfig = {
       siteId: 'foliokit',
       useEmulator: environment.useEmulator,
     }),
-    provideAdminKit({ adminEmail: environment.adminEmail }),
+    provideAdminKit({
+      adminEmail: environment.adminEmail,
+      cloudFunctionsBaseUrl: environment.cloudFunctionsBaseUrl,
+    }),
   ],
 };

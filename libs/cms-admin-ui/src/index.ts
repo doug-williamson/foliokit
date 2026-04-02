@@ -33,6 +33,7 @@ export * from './lib/pages/admin-pages-section.component';
 export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
+export * from './lib/settings/settings-page.component';
 
 // ── Shared editor layout ──────────────────────────────────────────────────────
 export * from './lib/layout/admin-editor-page-layout.component';
