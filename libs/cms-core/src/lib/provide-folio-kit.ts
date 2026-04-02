@@ -5,6 +5,7 @@ import {
   PLATFORM_ID,
   inject,
   makeEnvironmentProviders,
+  signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import type { FirebaseOptions } from 'firebase/app';
@@ -157,7 +158,7 @@ export function providesFolioKit(options: FolioKitOptions): EnvironmentProviders
 
   // Optional shell configuration.
   if (options.shell !== undefined) {
-    providers.push({ provide: SHELL_CONFIG, useValue: options.shell });
+    providers.push({ provide: SHELL_CONFIG, useValue: signal(options.shell as ShellConfig) });
   }
 
   // Markdown support (on by default).

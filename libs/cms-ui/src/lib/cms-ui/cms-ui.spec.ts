@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -50,17 +51,17 @@ describe('cms-ui public API smoke tests', () => {
 
   it('SHELL_CONFIG token is injectable when provided', () => {
     TestBed.configureTestingModule({
-      providers: [{ provide: SHELL_CONFIG, useValue: testConfig }],
+      providers: [{ provide: SHELL_CONFIG, useValue: signal(testConfig) }],
     });
     const config = TestBed.inject(SHELL_CONFIG);
-    expect(config.appName).toBe('Test App');
+    expect(config().appName).toBe('Test App');
   });
 
   it('AppShellComponent renders when SHELL_CONFIG is provided', async () => {
     await TestBed.configureTestingModule({
       imports: [AppShellComponent],
       providers: [
-        { provide: SHELL_CONFIG, useValue: testConfig },
+        { provide: SHELL_CONFIG, useValue: signal(testConfig) },
         provideRouter([]),
         provideAnimationsAsync(),
         ...firebaseNullProviders,
@@ -77,7 +78,7 @@ describe('cms-ui public API smoke tests', () => {
     await TestBed.configureTestingModule({
       imports: [AppShellComponent],
       providers: [
-        { provide: SHELL_CONFIG, useValue: { appName: 'My Blog', nav: [] } },
+        { provide: SHELL_CONFIG, useValue: signal<ShellConfig>({ appName: 'My Blog', nav: [] }) },
         provideRouter([]),
         provideAnimationsAsync(),
         ...firebaseNullProviders,

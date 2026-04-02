@@ -49,7 +49,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
-      useFactory: () => ({ appName: inject(AdminShellComponent).appName() }),
+      useFactory: () => computed(() => ({ appName: inject(AdminShellComponent).appName() })),
     },
   ],
   template: `

@@ -1,4 +1,4 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, Signal } from '@angular/core';
 import type { PlanFeatures } from '../models/plan-features.model';
 import type { NavEntry } from '../models/site-config.model';
 
@@ -10,4 +10,4 @@ export interface ShellConfig {
   features?: PlanFeatures;
 }
 
-export const SHELL_CONFIG = new InjectionToken<ShellConfig>('SHELL_CONFIG');
+export const SHELL_CONFIG = new InjectionToken<Signal<ShellConfig>>('SHELL_CONFIG');
