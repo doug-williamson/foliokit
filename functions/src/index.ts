@@ -4,3 +4,5 @@ export { checkSubdomain } from './checkSubdomain';
 export { createCheckoutSession } from './createCheckoutSession';
 export { stripeWebhook } from './stripeWebhook';
 export { createBillingPortalSession } from './createBillingPortalSession';
+export { setCustomDomain } from './setCustomDomain';
+export { verifyCustomDomain } from './verifyCustomDomain';
