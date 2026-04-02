@@ -10,7 +10,7 @@ import {
 import { isPlatformBrowser, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { doc, getDoc } from 'firebase/firestore';
-import { AuthService, FIRESTORE, SITE_ID } from '@foliokit/cms-core';
+import { AuthService, FIRESTORE, SITE_ID, getPlanFeatures } from '@foliokit/cms-core';
 import type { BillingRecord, BillingStatus } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
 
@@ -61,7 +61,7 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
           </div>
 
           @if (record?.plan === 'starter') {
-            <div class="upgrade-card">
+            <div class="upgrade-card" id="upgrade-cta">
               <h3 class="upgrade-title">Upgrade to Pro</h3>
               <p class="upgrade-body">
                 Add a custom domain, unlock all page types, and publish without limits.
@@ -90,6 +90,46 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
             </div>
           }
         </section>
+
+        @if (features().customDomain) {
+          <section class="settings-section">
+            <h2 class="settings-section-title">Custom Domain</h2>
+            <p class="settings-section-body">
+              Configure a custom domain for your site. DNS setup instructions will appear here.
+            </p>
+            <p class="settings-section-hint">Custom domain configuration coming soon.</p>
+          </section>
+        } @else {
+          <section class="settings-section settings-section--gated">
+            <h2 class="settings-section-title">Custom Domain <span class="pro-badge">Pro</span></h2>
+            <p class="settings-section-body">
+              Point your own domain to your FolioKit site.
+            </p>
+            <button mat-stroked-button color="primary" (click)="scrollToUpgrade()">
+              Upgrade to Pro to unlock
+            </button>
+          </section>
+        }
+
+        @if (features().removeBranding) {
+          <section class="settings-section">
+            <h2 class="settings-section-title">Branding</h2>
+            <p class="settings-section-body">
+              Upload a custom logo to replace the FolioKit mark in your site header.
+            </p>
+            <p class="settings-section-hint">Logo upload coming soon.</p>
+          </section>
+        } @else {
+          <section class="settings-section settings-section--gated">
+            <h2 class="settings-section-title">Branding <span class="pro-badge">Pro</span></h2>
+            <p class="settings-section-body">
+              Replace the FolioKit header mark with your own logo.
+            </p>
+            <button mat-stroked-button color="primary" (click)="scrollToUpgrade()">
+              Upgrade to Pro to unlock
+            </button>
+          </section>
+        }
       }
     </div>
   `,
@@ -212,6 +252,50 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
       border-top: 1px solid var(--border);
       padding-top: 1.5rem;
     }
+
+    .settings-section {
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .settings-section--gated {
+      opacity: 0.75;
+    }
+
+    .settings-section-title {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-section-body {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+    }
+
+    .settings-section-hint {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    .pro-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-accent);
+      border: 1px solid var(--text-accent);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: var(--font-mono);
+    }
   `],
 })
 export class SettingsPageComponent implements OnInit {
@@ -229,6 +313,10 @@ export class SettingsPageComponent implements OnInit {
   readonly trialEndsDate = computed(() => this.billingRecord()?.trialEndsAt?.toDate() ?? null);
   readonly periodEndsDate = computed(() => this.billingRecord()?.currentPeriodEndsAt?.toDate() ?? null);
 
+  protected readonly features = computed(() =>
+    getPlanFeatures(this.billingRecord()?.plan ?? 'starter'),
+  );
+
   async ngOnInit(): Promise<void> {
     if (!isPlatformBrowser(this.platformId) || !this.firestore) return;
     try {
@@ -240,6 +328,10 @@ export class SettingsPageComponent implements OnInit {
     } catch {
       this.loadState.set('error');
     }
+  }
+
+  protected scrollToUpgrade(): void {
+    document.getElementById('upgrade-cta')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   protected planLabel(plan: string | undefined): string {
