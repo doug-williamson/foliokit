@@ -4,6 +4,7 @@ import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { ADMIN_ALLOWED_ORIGINS } from './shared-constants';
+import { featuresForPlan } from './plan-features';
 
 if (!getApps().length) initializeApp();
 
@@ -96,7 +97,8 @@ export const setCustomDomain = onRequest(async (req, res) => {
     // --- Plan gate ---
     const billingSnap = await db.doc(`billing/${tenantId}`).get();
     const billingData = billingSnap.data() as { plan?: string } | undefined;
-    if (billingData?.plan === 'starter') {
+    const features = featuresForPlan(billingData?.plan);
+    if (!features.platform.customDomain) {
       res.status(403).json({ error: 'plan_upgrade_required' });
       return;
     }
@@ -104,6 +106,7 @@ export const setCustomDomain = onRequest(async (req, res) => {
     // --- Persist ---
     await db.doc(`tenants/${tenantId}`).update({
       customDomain: normalizedDomain,
+      customDomainStatus: 'pending_dns',
       updatedAt: FieldValue.serverTimestamp(),
     });
 

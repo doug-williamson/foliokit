@@ -1,7 +1,7 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { getApps, initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { ADMIN_ALLOWED_ORIGINS } from './shared-constants';
 import * as dns from 'node:dns/promises';
@@ -99,8 +99,16 @@ export const verifyCustomDomain = onRequest(async (req, res) => {
     if (resolved.length > 0) {
       const verified = resolved.some((r) => r.includes('hosted.app'));
       if (verified) {
+        await db.doc(`tenants/${tenantId}`).set(
+          { customDomainStatus: 'active', updatedAt: FieldValue.serverTimestamp() },
+          { merge: true },
+        );
         res.status(200).json({ status: 'verified', domain: customDomain });
       } else {
+        await db.doc(`tenants/${tenantId}`).set(
+          { customDomainStatus: 'pending_dns', updatedAt: FieldValue.serverTimestamp() },
+          { merge: true },
+        );
         res.status(200).json({
           status: 'wrong_target',
           domain: customDomain,
@@ -120,12 +128,17 @@ export const verifyCustomDomain = onRequest(async (req, res) => {
     );
 
     if (isPropagationError) {
+      await db.doc(`tenants/${tenantId}`).set(
+        { customDomainStatus: 'pending_dns', updatedAt: FieldValue.serverTimestamp() },
+        { merge: true },
+      );
       res.status(200).json({
         status: 'pending',
         domain: customDomain,
         message: 'DNS records not yet propagated. This can take up to 48 hours.',
       });
     } else {
+      // Transient DNS error — do not clobber a previously active status
       res.status(200).json({
         status: 'error',
         domain: customDomain,
