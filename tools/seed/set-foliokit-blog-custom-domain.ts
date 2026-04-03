@@ -1,17 +1,22 @@
 /**
- * Merge `customDomain` on tenants/foliokitcms so blog SSR resolves blog.foliokitcms.com.
- * The setCustomDomain Cloud Function rejects *.foliokitcms.com as reserved.
+ * Merge `customDomain` on a tenants/{id} doc so blog SSR resolves blog.foliokitcms.com.
+ * The setCustomDomain Cloud Function rejects *.foliokitcms.com as reserved, so this
+ * script writes directly via the Admin SDK.
  *
  * Usage (repo root):
  *   export GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-account.json>
  *   nx run seed:set-foliokit-blog-custom-domain
+ *
+ * To target a different tenant doc (e.g. legacy 'foliokit' before the rename migration):
+ *   nx run seed:set-foliokit-blog-custom-domain -- --tenant foliokit
  */
 
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 const PROJECT_ID = 'foliokit-6f974';
-const TENANT_ID = 'foliokitcms';
+const tenantArgIdx = process.argv.indexOf('--tenant');
+const TENANT_ID = tenantArgIdx !== -1 ? process.argv[tenantArgIdx + 1] : 'foliokitcms';
 const DOMAIN = 'blog.foliokitcms.com';
 
 if (!getApps().length) {
