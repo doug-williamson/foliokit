@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideFolioKit({
       firebaseConfig: environment.firebase,
-      siteId: 'foliokit',
+      siteId: 'foliokitcms',
       useEmulator: environment.useEmulator,
     }),
     provideAdminKit({

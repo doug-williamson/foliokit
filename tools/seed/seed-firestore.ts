@@ -20,7 +20,7 @@
 // Never hardcode credentials or commit service account files to the repository.
 import * as admin from 'firebase-admin';
 
-const TENANT_ID = 'foliokit';
+const TENANT_ID = 'foliokitcms';
 
 if (!admin.apps.length) {
   admin.initializeApp({

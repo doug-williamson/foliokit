@@ -58,7 +58,7 @@ type NavLoadState =
 export class App implements OnInit {
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly firestore = inject(FIRESTORE);
-  private readonly siteId = inject(SITE_ID, { optional: true }) ?? 'foliokit';
+  private readonly siteId = inject(SITE_ID, { optional: true }) ?? 'foliokitcms';
   private readonly platformId = inject(PLATFORM_ID);
   private readonly billingRecord = signal<BillingRecord | null>(null);
 

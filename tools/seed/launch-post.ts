@@ -13,7 +13,7 @@ import * as admin from 'firebase-admin';
 
 const args = process.argv.slice(2);
 const tenantArgIndex = args.indexOf('--tenant');
-const TENANT_ID = tenantArgIndex !== -1 ? args[tenantArgIndex + 1] : 'foliokit';
+const TENANT_ID = tenantArgIndex !== -1 ? args[tenantArgIndex + 1] : 'foliokitcms';
 
 if (!admin.apps.length) {
   admin.initializeApp({

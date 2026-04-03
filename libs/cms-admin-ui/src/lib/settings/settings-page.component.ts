@@ -8,17 +8,18 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { doc, getDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID, getPlanFeatures } from '@foliokit/cms-core';
-import type { BillingRecord, BillingStatus } from '@foliokit/cms-core';
+import type { BillingRecord, BillingStatus, TenantConfig } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
 
 @Component({
   selector: 'folio-settings-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, DatePipe],
+  imports: [MatButtonModule, DatePipe, FormsModule],
   template: `
     <div class="settings-page">
       <header class="page-header">
@@ -95,9 +96,104 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
           <section class="settings-section">
             <h2 class="settings-section-title">Custom Domain</h2>
             <p class="settings-section-body">
-              Configure a custom domain for your site. DNS setup instructions will appear here.
+              Point your own domain to your FolioKit site. Enter your domain below to get DNS setup instructions.
             </p>
-            <p class="settings-section-hint">Custom domain configuration coming soon.</p>
+
+            <div class="domain-input-row">
+              <input
+                class="domain-input"
+                type="text"
+                placeholder="www.yourdomain.com"
+                [value]="domainInput()"
+                (input)="domainInput.set($any($event.target).value)"
+              />
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="saveDomain()"
+                [disabled]="domainSaveState() === 'saving' || !domainInput()"
+              >
+                {{ domainSaveState() === 'saving' ? 'Saving…' : domainSaveState() === 'saved' ? 'Saved ✓' : 'Save' }}
+              </button>
+            </div>
+
+            @if (domainError()) {
+              <p class="domain-error">{{ domainError() }}</p>
+            }
+
+            @if (cnameInstructions()) {
+              <div class="dns-instructions">
+                <h3 class="dns-title">DNS Configuration</h3>
+                <p class="dns-body">Add the following record to your DNS provider:</p>
+                <table class="dns-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Name</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>{{ cnameInstructions()!.type }}</code></td>
+                      <td><code>{{ cnameInstructions()!.name }}</code></td>
+                      <td><code class="dns-value">{{ cnameInstructions()!.value }}</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+                @if (apexNote()) {
+                  <p class="dns-apex-note">⚠ {{ apexNote() }}</p>
+                }
+
+                <div class="verify-row">
+                  <button
+                    mat-stroked-button
+                    (click)="verifyDomain()"
+                    [disabled]="domainVerifyState() === 'verifying'"
+                  >
+                    {{ domainVerifyState() === 'verifying' ? 'Checking…' : 'Verify DNS' }}
+                  </button>
+
+                  @if (domainVerifyState() === 'verified') {
+                    <span class="verify-status verify-status--verified">✓ Domain verified</span>
+                  }
+                  @if (domainVerifyState() === 'pending') {
+                    <span class="verify-status verify-status--pending">DNS propagating — check back in a few hours</span>
+                  }
+                  @if (domainVerifyState() === 'wrong_target') {
+                    <span class="verify-status verify-status--error">CNAME points to wrong target. Expected: foliokit-blog--foliokit-6f974.us-central1.hosted.app</span>
+                  }
+                  @if (domainVerifyState() === 'error') {
+                    <span class="verify-status verify-status--error">Could not verify DNS records</span>
+                  }
+                </div>
+
+                @if (domainVerifyState() === 'verified') {
+                  <div class="registration-note">
+                    <p>Your DNS is configured correctly. To complete setup, contact FolioKit support or check your admin panel — manual domain registration is required to activate SSL.</p>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (customDomain() && !cnameInstructions()) {
+              <div class="current-domain-row">
+                <span class="current-domain-label">Current domain:</span>
+                <code class="current-domain-value">{{ customDomain() }}</code>
+                <button mat-stroked-button (click)="verifyDomain()" [disabled]="domainVerifyState() === 'verifying'">
+                  {{ domainVerifyState() === 'verifying' ? 'Checking…' : 'Verify DNS' }}
+                </button>
+                @if (domainVerifyState() === 'verified') {
+                  <span class="verify-status verify-status--verified">✓ Verified</span>
+                }
+                @if (domainVerifyState() === 'pending') {
+                  <span class="verify-status verify-status--pending">Pending propagation</span>
+                }
+                @if (domainVerifyState() === 'wrong_target') {
+                  <span class="verify-status verify-status--error">Wrong CNAME target</span>
+                }
+              </div>
+            }
           </section>
         } @else {
           <section class="settings-section settings-section--gated">
@@ -296,6 +392,137 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
       padding: 1px 6px;
       font-family: var(--font-mono);
     }
+
+    .domain-input-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .domain-input {
+      flex: 1;
+      height: 36px;
+      padding: 0 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-0);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--text-accent);
+      }
+    }
+
+    .domain-error {
+      color: #d32f2f;
+      font-size: 0.8rem;
+      margin: 0 0 0.75rem;
+    }
+
+    .dns-instructions {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .dns-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+    }
+
+    .dns-body {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+    }
+
+    .dns-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+
+      th {
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        padding: 0.4rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      td {
+        padding: 0.6rem 0.75rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .dns-value {
+      font-size: 0.75rem;
+      word-break: break-all;
+    }
+
+    .dns-apex-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0.5rem 0 0;
+      line-height: 1.5;
+    }
+
+    .verify-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .verify-status {
+      font-size: 0.8rem;
+    }
+
+    .verify-status--verified { color: #166534; }
+    .verify-status--pending  { color: #92400e; }
+    .verify-status--error    { color: #991b1b; }
+
+    .registration-note {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #e8f0fe;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #1a56db;
+      line-height: 1.5;
+    }
+
+    .current-domain-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .current-domain-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .current-domain-value {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
   `],
 })
 export class SettingsPageComponent implements OnInit {
@@ -309,6 +536,15 @@ export class SettingsPageComponent implements OnInit {
   readonly loadState = signal<'loading' | 'loaded' | 'error'>('loading');
   readonly checkoutState = signal<'idle' | 'redirecting'>('idle');
   readonly portalState = signal<'idle' | 'redirecting'>('idle');
+
+  readonly customDomain = signal<string | null>(null);
+  readonly customDomainStatus = signal<'unregistered' | 'registration_pending' | 'active' | 'failed' | null>(null);
+  readonly domainInput = signal<string>('');
+  readonly domainSaveState = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  readonly domainVerifyState = signal<'idle' | 'verifying' | 'verified' | 'pending' | 'wrong_target' | 'error'>('idle');
+  readonly cnameInstructions = signal<{ type: string; name: string; value: string } | null>(null);
+  readonly apexNote = signal<string | null>(null);
+  readonly domainError = signal<string | null>(null);
 
   readonly trialEndsDate = computed(() => this.billingRecord()?.trialEndsAt?.toDate() ?? null);
   readonly periodEndsDate = computed(() => this.billingRecord()?.currentPeriodEndsAt?.toDate() ?? null);
@@ -327,6 +563,20 @@ export class SettingsPageComponent implements OnInit {
       this.loadState.set('loaded');
     } catch {
       this.loadState.set('error');
+    }
+
+    try {
+      const tenantSnap = await getDoc(doc(this.firestore, 'tenants', this.siteId));
+      if (tenantSnap.exists()) {
+        const tenantData = tenantSnap.data() as TenantConfig;
+        this.customDomain.set(tenantData.customDomain ?? null);
+        this.customDomainStatus.set(tenantData.customDomainStatus ?? null);
+        if (tenantData.customDomain) {
+          this.domainInput.set(tenantData.customDomain);
+        }
+      }
+    } catch (err) {
+      console.error('SettingsPageComponent: failed to load tenant doc', err);
     }
   }
 
@@ -392,6 +642,79 @@ export class SettingsPageComponent implements OnInit {
       else this.portalState.set('idle');
     } catch {
       this.portalState.set('idle');
+    }
+  }
+
+  protected async saveDomain(): Promise<void> {
+    if (!this.domainInput()) return;
+    this.domainSaveState.set('saving');
+    this.domainError.set(null);
+    const idToken = await this.auth.user()?.getIdToken();
+    if (!idToken) {
+      this.domainSaveState.set('error');
+      this.domainError.set('Failed to save domain. Please try again.');
+      return;
+    }
+    try {
+      const res = await fetch(`${this.functionsBaseUrl}/setCustomDomain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ tenantId: this.siteId, domain: this.domainInput() }),
+      });
+      const data = (await res.json()) as {
+        domain?: string;
+        cname?: { type: string; name: string; value: string };
+        apexNote?: string;
+        error?: string;
+      };
+      if (res.ok && data.domain) {
+        this.customDomain.set(data.domain);
+        this.cnameInstructions.set(data.cname ?? null);
+        this.apexNote.set(data.apexNote ?? null);
+        this.domainSaveState.set('saved');
+        this.domainVerifyState.set('idle');
+        setTimeout(() => this.domainSaveState.set('idle'), 3000);
+      } else if (res.status === 403 && data.error === 'plan_upgrade_required') {
+        this.domainError.set('Your plan does not support custom domains.');
+        this.domainSaveState.set('error');
+      } else if (res.status === 400 && data.error === 'reserved_domain') {
+        this.domainError.set('That domain is reserved and cannot be used.');
+        this.domainSaveState.set('error');
+      } else {
+        this.domainError.set('Failed to save domain. Please try again.');
+        this.domainSaveState.set('error');
+      }
+    } catch {
+      this.domainError.set('Failed to save domain. Please try again.');
+      this.domainSaveState.set('error');
+    }
+  }
+
+  protected async verifyDomain(): Promise<void> {
+    if (!this.customDomain()) return;
+    this.domainVerifyState.set('verifying');
+    const idToken = await this.auth.user()?.getIdToken();
+    if (!idToken) {
+      this.domainVerifyState.set('error');
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${this.functionsBaseUrl}/verifyCustomDomain?tenantId=${encodeURIComponent(this.siteId)}`,
+        { headers: { 'Authorization': `Bearer ${idToken}` } },
+      );
+      const data = (await res.json()) as { status?: string };
+      switch (data.status) {
+        case 'verified':     this.domainVerifyState.set('verified');     break;
+        case 'pending':      this.domainVerifyState.set('pending');      break;
+        case 'wrong_target': this.domainVerifyState.set('wrong_target'); break;
+        default:             this.domainVerifyState.set('error');
+      }
+    } catch {
+      this.domainVerifyState.set('error');
     }
   }
 }

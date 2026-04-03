@@ -1,7 +1,7 @@
 /**
  * Tenant seed script — foliokit
  *
- * Writes initial data under tenants/foliokit/* in the foliokit-6f974 project.
+ * Writes initial data under tenants/foliokitcms/* in the foliokit-6f974 project.
  *
  * Prerequisites:
  *   1. Download a service account key from Firebase Console >
@@ -19,7 +19,7 @@
 
 import * as admin from 'firebase-admin';
 
-const TENANT_ID = 'foliokit';
+const TENANT_ID = 'foliokitcms';
 
 if (!admin.apps.length) {
   admin.initializeApp({

@@ -1,5 +1,5 @@
 /**
- * Merge `customDomain` on tenants/foliokit so blog SSR resolves blog.foliokitcms.com.
+ * Merge `customDomain` on tenants/foliokitcms so blog SSR resolves blog.foliokitcms.com.
  * The setCustomDomain Cloud Function rejects *.foliokitcms.com as reserved.
  *
  * Usage (repo root):
@@ -11,7 +11,7 @@ import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 const PROJECT_ID = 'foliokit-6f974';
-const TENANT_ID = 'foliokit';
+const TENANT_ID = 'foliokitcms';
 const DOMAIN = 'blog.foliokitcms.com';
 
 if (!getApps().length) {

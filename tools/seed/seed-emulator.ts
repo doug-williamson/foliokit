@@ -25,7 +25,7 @@ initializeApp({ projectId: FIREBASE_EMULATOR_PROJECT_ID });
 
 const db = getFirestore();
 
-const TENANT_ID = 'foliokit';
+const TENANT_ID = 'foliokitcms';
 const tenant = (collection: string) =>
   db.collection(`tenants/${TENANT_ID}/${collection}`);
 
