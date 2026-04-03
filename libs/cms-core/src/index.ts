@@ -29,6 +29,11 @@ export * from './lib/tokens/site-config.token';
 // ── Guards ─────────────────────────────────────────────────────────────────────
 export * from './lib/guards/feature.guard';
 
+// ── Plan gating ───────────────────────────────────────────────────────────────
+export * from './lib/services/plan-gating.service';
+export * from './lib/guards/require-platform-feature.guard';
+export * from './lib/guards/require-page-type.guard';
+
 // ── Resolvers ─────────────────────────────────────────────────────────────────
 export * from './lib/resolvers/about-page.resolver';
 export * from './lib/resolvers/home-site-config.resolver';
