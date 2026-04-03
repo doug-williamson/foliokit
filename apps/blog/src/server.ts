@@ -37,9 +37,16 @@ const DEV_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 const DEV_TENANT_ID = 'foliokitcms';
 
 app.use(async (req, res, next) => {
-  const hostname = (req.hostname || req.headers.host || 'localhost')
-    .toLowerCase()
-    .replace(/:\d+$/, '');
+  // Firebase App Hosting forwards requests to Cloud Run using an internal
+  // traffic-tagged URL (e.g. t-xxx---service-hash-uc.a.run.app). The original
+  // public hostname (e.g. blog.foliokitcms.com) is in X-Forwarded-Host.
+  // Without reading that header, req.hostname resolves to the internal URL
+  // which has no Firestore tenant match, causing a 404.
+  const rawHost = (req.headers['x-forwarded-host'] as string | undefined)
+    ?? req.hostname
+    ?? (req.headers.host as string | undefined)
+    ?? 'localhost';
+  const hostname = rawHost.split(',')[0].trim().toLowerCase().replace(/:\d+$/, '');
 
   // Dev bypass — skip Firestore, use a hardcoded dev tenant.
   if (DEV_HOSTNAMES.has(hostname)) {
