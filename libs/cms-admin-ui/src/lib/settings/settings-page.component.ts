@@ -115,6 +115,12 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
               >
                 {{ domainSaveState() === 'saving' ? 'Saving…' : domainSaveState() === 'saved' ? 'Saved ✓' : 'Save' }}
               </button>
+              @if (customDomainStatus() === 'active') {
+                <span class="domain-status-chip domain-status-chip--active">Active</span>
+              }
+              @if (customDomainStatus() === 'pending_dns') {
+                <span class="domain-status-chip domain-status-chip--pending">Pending DNS</span>
+              }
             </div>
 
             @if (domainError()) {
@@ -180,6 +186,12 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
               <div class="current-domain-row">
                 <span class="current-domain-label">Current domain:</span>
                 <code class="current-domain-value">{{ customDomain() }}</code>
+                @if (customDomainStatus() === 'active') {
+                  <span class="domain-status-chip domain-status-chip--active">Active</span>
+                }
+                @if (customDomainStatus() === 'pending_dns') {
+                  <span class="domain-status-chip domain-status-chip--pending">Pending DNS</span>
+                }
                 <button mat-stroked-button (click)="verifyDomain()" [disabled]="domainVerifyState() === 'verifying'">
                   {{ domainVerifyState() === 'verifying' ? 'Checking…' : 'Verify DNS' }}
                 </button>
@@ -523,6 +535,26 @@ import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
       font-size: 0.875rem;
       color: var(--text-primary);
     }
+
+    .domain-status-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .domain-status-chip--active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .domain-status-chip--pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
   `],
 })
 export class SettingsPageComponent implements OnInit {
@@ -538,7 +570,7 @@ export class SettingsPageComponent implements OnInit {
   readonly portalState = signal<'idle' | 'redirecting'>('idle');
 
   readonly customDomain = signal<string | null>(null);
-  readonly customDomainStatus = signal<'unregistered' | 'registration_pending' | 'active' | 'failed' | null>(null);
+  readonly customDomainStatus = signal<'pending_dns' | 'active' | null>(null);
   readonly domainInput = signal<string>('');
   readonly domainSaveState = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
   readonly domainVerifyState = signal<'idle' | 'verifying' | 'verified' | 'pending' | 'wrong_target' | 'error'>('idle');
@@ -708,10 +740,21 @@ export class SettingsPageComponent implements OnInit {
       );
       const data = (await res.json()) as { status?: string };
       switch (data.status) {
-        case 'verified':     this.domainVerifyState.set('verified');     break;
-        case 'pending':      this.domainVerifyState.set('pending');      break;
-        case 'wrong_target': this.domainVerifyState.set('wrong_target'); break;
-        default:             this.domainVerifyState.set('error');
+        case 'verified':
+          this.domainVerifyState.set('verified');
+          this.customDomainStatus.set('active');
+          break;
+        case 'pending':
+          this.domainVerifyState.set('pending');
+          this.customDomainStatus.set('pending_dns');
+          break;
+        case 'wrong_target':
+          this.domainVerifyState.set('wrong_target');
+          this.customDomainStatus.set('pending_dns');
+          break;
+        default:
+          this.domainVerifyState.set('error');
+          // transient DNS error — do not patch customDomainStatus
       }
     } catch {
       this.domainVerifyState.set('error');

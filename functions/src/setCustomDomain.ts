@@ -104,6 +104,7 @@ export const setCustomDomain = onRequest(async (req, res) => {
     // --- Persist ---
     await db.doc(`tenants/${tenantId}`).update({
       customDomain: normalizedDomain,
+      customDomainStatus: 'pending_dns',
       updatedAt: FieldValue.serverTimestamp(),
     });
 

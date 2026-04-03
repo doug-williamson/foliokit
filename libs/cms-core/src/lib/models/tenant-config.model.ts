@@ -2,7 +2,7 @@ export interface TenantConfig {
   tenantId: string;
   subdomain: string;
   customDomain: string | null;
-  customDomainStatus?: 'unregistered' | 'registration_pending' | 'active' | 'failed';
+  customDomainStatus?: 'pending_dns' | 'active';
   ownerEmail: string;
   displayName: string;
   createdAt: import('@firebase/firestore').Timestamp;
