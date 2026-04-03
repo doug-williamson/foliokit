@@ -1,7 +1,7 @@
 /**
  * Tenant seed script — foliokit
  *
- * Writes initial data under tenants/foliokit/* in the foliokit-6f974 project.
+ * Writes initial data under tenants/foliokitcms/* in the foliokit-6f974 project.
  *
  * Prerequisites:
  *   1. Download a service account key from Firebase Console >
@@ -12,12 +12,14 @@
  *   4. Run:
  *        nx run seed:tenant-foliokit
  *
- * Re-running this script will overwrite all seeded documents.
+ * Re-running this script will overwrite all seeded subcollections. The tenant
+ * root document is merged so `customDomain` stays set for blog SSR hostname
+ * resolution (see resolveTenantFromHostname).
  */
 
 import * as admin from 'firebase-admin';
 
-const TENANT_ID = 'foliokit';
+const TENANT_ID = 'foliokitcms';
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -32,6 +34,18 @@ const tenant = (collection: string) =>
 
 async function seed(): Promise<void> {
   try {
+    console.log(
+      `[seed] Merging tenants/${TENANT_ID} (customDomain for blog.foliokitcms.com)...`
+    );
+    await db.doc(`tenants/${TENANT_ID}`).set(
+      {
+        customDomain: 'blog.foliokitcms.com',
+        customDomainStatus: 'active',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
     console.log(`[seed] Writing tenants/${TENANT_ID}/authors/author-1...`);
     await tenant('authors').doc('author-1').set(
       {

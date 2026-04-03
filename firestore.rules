@@ -2,21 +2,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // ── Admin authorization ─────────────────────────────────────────────────
-    // Replace 'YOUR_ADMIN_EMAIL' below with your actual admin email address.
-    // This must match all four authorization surfaces:
-    //   1. The Firebase Authentication account used to sign in with Google
-    //   2. The adminEmail value passed to provideAdminKit() in app.config.ts
-    //   3. The author document created by the seed script
-    //   4. This file (the only surface that cannot read a runtime value)
-    // See docs/security/admin-authorization.md for the full authorization model.
+    // isAdmin() checks for a 'superadmin' custom claim set via tools/scripts/set-superadmin-claim.ts.
+    // Never hardcode email addresses here — claims are set out-of-band and are not visible in source.
+    // To grant superadmin: run `npx ts-node tools/scripts/set-superadmin-claim.ts <uid>`.
+    // To find your UID: Firebase Console → Authentication → Users.
     // ────────────────────────────────────────────────────────────────────────
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'dev.foliokit@gmail.com';
+      return request.auth != null && request.auth.token.role == 'superadmin';
     }
 
-    // Returns true when the authenticated user's email matches the ownerEmail
-    // stored in the tenant document at tenants/{tenantId}. This scopes write
-    // access so that each tenant owner can only modify their own data.
+    // isTenantOwner() performs a get() on the tenant document on every write.
+    // This is intentional — custom claim-based resolution is deferred until write
+    // volume justifies the added Auth trigger complexity. Revisit when tenants > 100.
     function isTenantOwner(tenantId) {
       return request.auth != null
         && get(/databases/$(database)/documents/tenants/$(tenantId)).data.ownerEmail == request.auth.token.email;
@@ -27,13 +24,24 @@ service cloud.firestore {
     // These rules exist only for backwards compatibility during migration.
     match /posts/{postId} {
       allow read: if resource.data.status == 'published';
+      allow write: if false;
     }
     match /pages/{pageId} {
       allow read: if resource == null || resource.data.status == 'published';
+      allow write: if false;
     }
-    match /tags/{tagId} { allow read; }
-    match /site-config/{siteId} { allow read; }
-    match /authors/{authorId} { allow read; }
+    match /tags/{tagId} {
+      allow read;
+      allow write: if false;
+    }
+    match /site-config/{siteId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /authors/{authorId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
 
     // ── Tenant registry ───────────────────────────────────────────────────────
     // Each tenant document stores ownerEmail, subdomain, customDomain, etc.
@@ -58,6 +66,15 @@ service cloud.firestore {
       match /tags/{tagId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
       match /site-config/{configId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
       match /authors/{authorId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
+    }
+
+    // ── Billing ───────────────────────────────────────────────────────────────
+    match /billing/{tenantId} {
+      // Owners can read their own billing record to display plan/status in the admin UI.
+      // Writes are performed exclusively via Admin SDK (Cloud Functions) which bypasses
+      // these rules. Client-side writes are never legitimate.
+      allow read: if isAdmin() || isTenantOwner(tenantId);
+      allow write: if false;
     }
   }
 }

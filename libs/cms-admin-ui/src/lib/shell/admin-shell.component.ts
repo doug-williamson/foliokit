@@ -49,7 +49,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
-      useFactory: () => ({ appName: inject(AdminShellComponent).appName() }),
+      useFactory: () => computed(() => ({ appName: inject(AdminShellComponent).appName() })),
     },
   ],
   template: `
@@ -86,6 +86,10 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
             <span class="nav-label">Links</span>
           </a>
         }
+        <a class="nav-item" routerLink="/settings" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="tune" />
+          <span class="nav-label">Settings</span>
+        </a>
       </nav>
       <ng-container shellNavFooter>
         <div class="flex items-center justify-between pl-4 pr-2 py-2">

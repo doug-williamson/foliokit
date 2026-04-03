@@ -26,17 +26,25 @@
           </button>
         }
 
-        <div class="folio-logo-mark">
-          <span class="folio-logo-mark-f">F</span>
-          <div class="folio-logo-dot"></div>
-        </div>
-        <span class="folio-app-name">{{ config.appName }}</span>
+        @if (config().logoUrl) {
+          <img
+            class="folio-custom-logo"
+            [src]="config().logoUrl"
+            [alt]="config().appName"
+          />
+        } @else {
+          <div class="folio-logo-mark">
+            <span class="folio-logo-mark-f">F</span>
+            <div class="folio-logo-dot"></div>
+          </div>
+        }
+        <span class="folio-app-name">{{ config().appName }}</span>
 
         <span class="flex-1"></span>
 
         <ng-content select="[shellHeaderActions]" />
 
-        @if (config.showAuth) {
+        @if (config().showAuth) {
           <ng-content select="[shellAuthSlot]" />
         }
 
@@ -52,6 +60,13 @@
       <main class="shell-main">
         <ng-content />
       </main>
+
+      @if (!config().features?.removeBranding) {
+        <footer class="folio-powered-footer">
+          <span>Powered by </span>
+          <a href="https://foliokitcms.com" target="_blank" rel="noopener noreferrer">FolioKit</a>
+        </footer>
+      }
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>

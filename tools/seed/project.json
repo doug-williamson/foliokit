@@ -60,6 +60,21 @@
         "outputPath": "dist/tools/seed",
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }
+    },
+    "set-foliokit-blog-custom-domain": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-set-foliokit-blog-custom-domain",
+        "watch": false
+      }
+    },
+    "build-set-foliokit-blog-custom-domain": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/set-foliokit-blog-custom-domain.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
     }
   }
 }

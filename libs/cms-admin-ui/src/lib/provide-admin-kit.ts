@@ -1,6 +1,7 @@
 import {
   APP_INITIALIZER,
   EnvironmentProviders,
+  InjectionToken,
   PLATFORM_ID,
   inject,
   makeEnvironmentProviders,
@@ -19,6 +20,15 @@ import {
 import { doc, getDoc } from 'firebase/firestore';
 import { SiteConfigEditorStore } from './site-config-editor/site-config-editor.store';
 import { provideAdminMatIcons } from './icons/provide-admin-mat-icons';
+
+/**
+ * Base URL for Cloud Function calls (e.g. createCheckoutSession, createBillingPortalSession).
+ * Defaults to the production URL. Override with the emulator URL in dev environments.
+ */
+export const FUNCTIONS_BASE_URL = new InjectionToken<string>(
+  'FUNCTIONS_BASE_URL',
+  { factory: () => 'https://us-central1-foliokit-6f974.cloudfunctions.net' },
+);
 
 /**
  * Configuration accepted by {@link provideAdminKit}.
@@ -44,6 +54,13 @@ export interface AdminKitConfig {
    * @default true
    */
   markdown?: boolean;
+
+  /**
+   * Base URL for Cloud Function calls.
+   * Defaults to the production URL if not provided.
+   * Override with `http://localhost:5001/foliokit-6f974/us-central1` when using the emulator.
+   */
+  cloudFunctionsBaseUrl?: string;
 }
 
 /**
@@ -133,6 +150,10 @@ export function provideAdminKit(config: AdminKitConfig): EnvironmentProviders {
 
   if (config.markdown !== false) {
     providers.push(provideMarkdown());
+  }
+
+  if (config.cloudFunctionsBaseUrl !== undefined) {
+    providers.push({ provide: FUNCTIONS_BASE_URL, useValue: config.cloudFunctionsBaseUrl });
   }
 
   return makeEnvironmentProviders(providers);

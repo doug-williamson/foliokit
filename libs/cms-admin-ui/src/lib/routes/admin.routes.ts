@@ -158,6 +158,13 @@ export const adminRoutes: Route[] = [
         providers: [SiteConfigEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('../settings/settings-page.component').then(
+            (m) => m.SettingsPageComponent,
+          ),
+      },
       { path: 'about-page', redirectTo: 'pages/about' },
       { path: 'links-page', redirectTo: 'pages/links' },
       { path: '**', redirectTo: 'posts' },

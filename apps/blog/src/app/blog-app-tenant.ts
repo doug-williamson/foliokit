@@ -3,4 +3,4 @@
  * When hostname resolution yields `default` (e.g. localhost), SSR still uses this so Firestore
  * paths match the browser and TransferState is not populated with an empty root-level query.
  */
-export const BLOG_STATIC_SITE_ID = 'foliokit';
+export const BLOG_STATIC_SITE_ID = 'foliokitcms';

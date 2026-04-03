@@ -1,12 +1,28 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  PLATFORM_ID,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { doc, getDoc } from 'firebase/firestore';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { NavItem, SiteConfig } from '@foliokit/cms-core';
-import { SiteConfigService } from '@foliokit/cms-core';
+import {
+  FIRESTORE,
+  SITE_ID,
+  SiteConfigService,
+  getPlanFeatures,
+} from '@foliokit/cms-core';
+import type { BillingRecord } from '@foliokit/cms-core';
 import { AppShellComponent, FolioSkeletonComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
 const DEFAULT_NAV: NavItem[] = [
@@ -35,16 +51,16 @@ type NavLoadState =
   providers: [
     {
       provide: SHELL_CONFIG,
-      useFactory: (): ShellConfig => ({
-        appName: 'FolioKit Blog',
-        showAuth: false,
-        nav: DEFAULT_NAV,
-      }),
+      useFactory: () => inject(App).shellConfig,
     },
   ],
 })
-export class App {
+export class App implements OnInit {
   private readonly siteConfigService = inject(SiteConfigService);
+  private readonly firestore = inject(FIRESTORE);
+  private readonly siteId = inject(SITE_ID, { optional: true }) ?? 'foliokitcms';
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly billingRecord = signal<BillingRecord | null>(null);
 
   private readonly navLoadState = toSignal(
     concat(
@@ -77,4 +93,29 @@ export class App {
     const existingUrls = new Set(base.map((i) => i.url));
     return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });
+
+  readonly shellConfig = computed((): ShellConfig => {
+    const config = this.siteConfig();
+    const billing = this.billingRecord();
+    const features = getPlanFeatures(billing?.plan ?? 'starter');
+    return {
+      appName: config?.siteName ?? 'FolioKit Blog',
+      logoUrl: features.removeBranding ? config?.logo : undefined,
+      showAuth: false,
+      nav: this.navItems(),
+      features,
+    };
+  });
+
+  async ngOnInit(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId) || !this.firestore) return;
+    try {
+      const snap = await getDoc(doc(this.firestore, 'billing', this.siteId));
+      if (snap.exists()) {
+        this.billingRecord.set(snap.data() as BillingRecord);
+      }
+    } catch (e) {
+      console.warn('[FolioKit] Failed to load billing record:', e);
+    }
+  }
 }
