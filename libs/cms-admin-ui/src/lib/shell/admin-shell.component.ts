@@ -32,6 +32,10 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  * }
  * ```
  */
+function adminShellConfigFactory(shell: AdminShellComponent) {
+  return computed(() => ({ appName: shell.appName() }));
+}
+
 @Component({
   selector: 'folio-admin-shell',
   standalone: true,
@@ -49,7 +53,8 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
-      useFactory: () => computed(() => ({ appName: inject(AdminShellComponent).appName() })),
+      useFactory: adminShellConfigFactory,
+      deps: [AdminShellComponent],
     },
   ],
   template: `
