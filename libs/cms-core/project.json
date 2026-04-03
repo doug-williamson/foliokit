@@ -12,8 +12,8 @@
       "options": {
         "commands": [
           "tsc -p libs/cms-core/tsconfig.schematics.json",
-          "cp libs/cms-core/src/schematics/collection.json libs/cms-core/schematics/collection.json",
-          "cp libs/cms-core/src/schematics/ng-add/schema.json libs/cms-core/schematics/ng-add/schema.json"
+          "node -e \"require('fs').copyFileSync('libs/cms-core/src/schematics/collection.json','libs/cms-core/schematics/collection.json')\"",
+          "node -e \"require('fs').copyFileSync('libs/cms-core/src/schematics/ng-add/schema.json','libs/cms-core/schematics/ng-add/schema.json')\""
         ],
         "parallel": false,
         "cwd": "{workspaceRoot}"
