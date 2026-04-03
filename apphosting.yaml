@@ -45,9 +45,21 @@ env:
     availability:
       - BUILD
       - RUNTIME
-  # Angular SSR SSRF protection — allow the App Hosting hostname(s)
+  # Angular SSR SSRF protection — allow the App Hosting hostname(s).
+  #
+  # *.us-central1.hosted.app covers all App Hosting backend revision URLs so
+  # this value does not need to change when new revisions are deployed.
+  # blog.foliokitcms.com is the primary custom domain and must be listed
+  # explicitly.
+  #
+  # OPERATOR ACTION REQUIRED FOR TENANT CUSTOM DOMAINS:
+  # When a tenant's domain is verified (customDomainStatus === 'active'), the
+  # domain must be appended to this list and the App Hosting backend must be
+  # redeployed for the change to take effect. This is a manual step until
+  # domain provisioning is automated.
+  # Current operator tool: tools/scripts/register-custom-domain.ts
   - variable: NG_ALLOWED_HOSTS
-    value: foliokit-blog--foliokit-6f974.us-central1.hosted.app,blog.foliokitcms.com
+    value: "*.us-central1.hosted.app,blog.foliokitcms.com"
     availability:
       - RUNTIME
   # Service account key pulled from Secret Manager at runtime
