@@ -170,8 +170,8 @@ import { MatIconModule } from '@angular/material/icon';
         A headless Angular CMS toolkit built on Firebase, Material 3, and Nx
       </p>
       <div class="flex flex-wrap gap-4 justify-center">
-        <a mat-flat-button routerLink="/docs/getting-started" class="!text-base !px-6 !py-3">
-          Get Started
+        <a mat-flat-button routerLink="/signup" class="!text-base !px-6 !py-3">
+          Get Started Free
         </a>
         <a
           mat-stroked-button
