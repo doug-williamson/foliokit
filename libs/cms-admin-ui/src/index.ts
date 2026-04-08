@@ -5,6 +5,7 @@ export * from './lib/author-editor/author-editor.store';
 export * from './lib/site-config-editor/site-config-editor.store';
 export * from './lib/post-editor/post-editor.store';
 export * from './lib/posts-list/posts-list.store';
+export * from './lib/taxonomy/taxonomy.store';
 
 // ── Guards ────────────────────────────────────────────────────────────────────
 export * from './lib/guards/auth.guard';
@@ -34,6 +35,11 @@ export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
 export * from './lib/settings/settings-page.component';
+
+// ── Taxonomy ──────────────────────────────────────────────────────────────────
+export * from './lib/taxonomy/pillars-list.component';
+export * from './lib/taxonomy/pillar-form.component';
+export * from './lib/taxonomy/series-form.component';
 
 // ── Shared editor layout ──────────────────────────────────────────────────────
 export * from './lib/layout/admin-editor-page-layout.component';
