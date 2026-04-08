@@ -152,7 +152,7 @@ class ReassignPillarDialogComponent {
 
               <!-- Pillar sections -->
               @for (pillar of store.pillars(); track pillar.id) {
-                @let pillarSeries = (store.seriesByPillar())[pillar.id] ?? [];
+                @let pillarSeries = (store.seriesByPillar())[pillar.id];
                 <div
                   class="border rounded-lg overflow-hidden"
                   style="border-color: var(--border)"

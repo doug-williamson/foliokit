@@ -31,6 +31,9 @@ export const TaxonomyStore = signalStore(
           (map[s.pillarId] ??= []).push(s);
         }
       }
+      for (const p of store.pillars()) {
+        map[p.id] ??= [];
+      }
       return map;
     }),
   })),
