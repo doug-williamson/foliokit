@@ -9,7 +9,7 @@ import { DOCUMENT } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
@@ -33,7 +33,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'folio-blog-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownModule, MatIconModule],
+  imports: [MarkdownComponent, MatIconModule],
   styles: [`
     :host { display: block; }
 

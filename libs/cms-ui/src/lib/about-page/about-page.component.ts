@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 import { ThemeService } from '../theme.service';
@@ -20,7 +20,7 @@ import { ThemeService } from '../theme.service';
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownModule, MatIconModule],
+  imports: [MarkdownComponent, MatIconModule],
   styles: [`
     :host { display: block; }
 

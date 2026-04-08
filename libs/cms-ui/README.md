@@ -29,6 +29,26 @@ npm install @foliokit/cms-ui
 
 ---
 
+## ⚠️ Required: Vite pre-bundling exclusion
+
+If your app uses the Angular CLI `application` builder (Vite-based), you **must** exclude FolioKit packages from Vite's dep-optimizer. Without this, the bundler inlines a second copy of Angular inside the FolioKit chunk, causing `NG0203` injection errors on every standalone route.
+
+```jsonc
+// angular.json → projects.<name>.architect.build.options
+// (repeat for the "serve" target if it has its own options block)
+{
+  "prebundle": {
+    "exclude": [
+      "@foliokit/cms-ui",
+      "@foliokit/cms-core",
+      "@foliokit/cms-markdown"
+    ]
+  }
+}
+```
+
+---
+
 ## ⚠️ Required: Angular Material theme setup
 
 `AppShellComponent` and all page components use Angular Material. Due to how
@@ -84,8 +104,18 @@ on `<html>` and persists the user's preference to `localStorage`.
 In your `app.config.ts`, register `SHELL_CONFIG` alongside `provideFolioKit()`:
 
 ```ts
+import { signal } from '@angular/core';
 import { provideFolioKit } from '@foliokit/cms-core';
-import { SHELL_CONFIG } from '@foliokit/cms-ui';
+import { SHELL_CONFIG, ShellConfig, ShellConfigSignal } from '@foliokit/cms-ui';
+
+// SHELL_CONFIG requires a Signal<ShellConfig>, not a plain object.
+const shellConfig: ShellConfigSignal = signal<ShellConfig>({
+  appName: 'My Site',
+  nav: [
+    { label: 'Blog', path: '/blog' },
+    { label: 'About', path: '/about' },
+  ],
+});
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -94,16 +124,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideMarkdown(),
     provideFolioKit({ firebaseConfig: environment.firebase }),
-    {
-      provide: SHELL_CONFIG,
-      useValue: {
-        appName: 'My Site',
-        nav: [
-          { label: 'Blog', path: '/blog' },
-          { label: 'About', path: '/about' },
-        ],
-      },
-    },
+    { provide: SHELL_CONFIG, useValue: shellConfig },
   ],
 };
 ```
@@ -126,21 +147,27 @@ import { AppShellComponent } from '@foliokit/cms-ui';
 export class AppComponent {}
 ```
 
-### 3. Import design tokens
+### 3. Import design tokens and Tailwind utilities
 
 In `angular.json` (or `project.json`) styles array:
 
 ```jsonc
 "styles": [
-  "node_modules/@foliokit/cms-ui/styles/tokens.css",
+  "node_modules/@foliokit/cms-ui/styles/utilities.css",
   "src/styles.scss"
 ]
 ```
 
-Or via SCSS:
+`utilities.css` is a pre-built snapshot of every Tailwind utility class used by FolioKit component templates. It must be loaded before your own styles so your overrides take precedence.
+
+In your root `styles.scss`, import the FolioKit SCSS design system:
 
 ```scss
-@use '@foliokit/cms-ui/styles/tokens';
+@use '@foliokit/cms-ui/styles/index' as folio;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 ```
 
 ---
@@ -181,6 +208,71 @@ toggleDark() {
 | `--nav-active-bg`, `--nav-active-color` | Navigation highlights |
 | `--font-display`, `--font-body`, `--font-mono` | Font stacks |
 | `--r-xs` .. `--r-2xl` | Border radii |
+
+---
+
+## Theming — brand colour override
+
+Replace the default teal palette using the `folio-theme()` Sass mixin:
+
+```scss
+// src/styles.scss
+@use '@foliokit/cms-ui/styles/index' as folio;
+@use '@foliokit/cms-ui/styles/theme-factory' as folio-factory;
+
+// Emit [data-theme="light"] and [data-theme="dark"] token blocks for your brand:
+@include folio-factory.folio-theme(
+  $primary:    #6366f1,  // your accent colour (replaces teal)
+  $on-primary: #ffffff,  // text on primary-coloured buttons
+  $surface:    #ffffff   // light-theme card surface
+);
+```
+
+The mixin overrides `--btn-primary-*`, `--text-accent`, `--border-accent`, `--nav-active-*`, `--surface-0`, and `--focus-*` in both themes. All other tokens keep their default values.
+
+> **Important:** When overriding `--btn-primary-bg` in dark mode, always also set `--btn-primary-text`. The default dark value is `#ffffff` (white), designed for contrast against teal. A dark button background paired with white text may fail WCAG AA — set `--btn-primary-text` explicitly to a contrasting colour.
+
+### Hero card overlay tokens
+
+The hero post card exposes these tokens for photographic treatment customisation:
+
+| Token | Default |
+|---|---|
+| `--hero-overlay-start` | `rgba(0,0,0,0.75)` |
+| `--hero-overlay-mid` | `rgba(0,0,0,0.2)` |
+| `--hero-chip-bg` | `rgba(255,255,255,0.18)` |
+| `--hero-chip-bg-hover` | `rgba(255,255,255,0.30)` |
+| `--hero-title-color` | `#ffffff` |
+| `--hero-meta-color` | `rgba(255,255,255,0.75)` |
+
+---
+
+## Route customisation
+
+`createBlogRoutes()` accepts component overrides so you can substitute any page while keeping the library's resolvers and guards:
+
+```ts
+import { createBlogRoutes, BLOG_ROUTE_PATHS } from '@foliokit/cms-ui';
+import { MyAboutPage } from './about/my-about-page.component';
+
+export const appRoutes: Route[] = createBlogRoutes({
+  postResolver,
+  aboutComponent: MyAboutPage,  // receives { about: AboutPageConfig | null } in route data
+  linksComponent: MyLinksPage,
+  homeComponent:  MyHomePage,
+});
+```
+
+Use `BLOG_ROUTE_PATHS` when you need to match or augment routes by path string — avoids magic strings:
+
+```ts
+import { BLOG_ROUTE_PATHS } from '@foliokit/cms-ui';
+// BLOG_ROUTE_PATHS.about      === 'about'
+// BLOG_ROUTE_PATHS.postDetail === 'posts/:slug'
+// BLOG_ROUTE_PATHS.links      === 'links'
+```
+
+---
 
 ## Full Documentation
 

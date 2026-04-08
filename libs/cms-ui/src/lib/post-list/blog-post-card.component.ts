@@ -229,7 +229,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
     .hero-gradient {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      background: linear-gradient(to top, var(--hero-overlay-start) 0%, var(--hero-overlay-mid) 50%, transparent 100%);
     }
 
     .hero-body {
@@ -252,21 +252,21 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       font-weight: 500;
       padding: 2px 10px;
       border-radius: 100px;
-      background: rgba(255,255,255,0.2);
+      background: var(--hero-chip-bg);
       color: white;
       backdrop-filter: blur(4px);
       transition: background 0.12s;
       position: relative;
       z-index: 20;
 
-      &:hover { background: rgba(255,255,255,0.3); }
+      &:hover { background: var(--hero-chip-bg-hover); }
     }
 
     .hero-title {
       font-family: var(--font-display);
       font-size: clamp(1.4rem, 3vw, 2.25rem);
       font-weight: 700;
-      color: white;
+      color: var(--hero-title-color);
       line-height: 1.15;
       margin-bottom: 12px;
     }
@@ -276,7 +276,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       align-items: center;
       gap: 8px;
       font-size: 14px;
-      color: rgba(255,255,255,0.75);
+      color: var(--hero-meta-color);
     }
   `],
   template: `
