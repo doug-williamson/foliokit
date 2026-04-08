@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-admin-ui",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Admin UI components, guards, shell, routes, and providers for FolioKit CMS.",
   "keywords": [
     "angular",

@@ -1,5 +1,11 @@
-import { inject } from '@angular/core';
-import type { CanActivateFn, Routes } from '@angular/router';
+import { inject, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import type { CanActivateFn, ResolveFn, Routes } from '@angular/router';
+import { map, take } from 'rxjs/operators';
+import { SeriesService } from './services/series.service';
+import { PillarService } from './services/pillar.service';
+import type { Series } from './models/series.model';
+import type { Pillar } from './models/pillar.model';
 
 import { featureGuard } from './guards/feature.guard';
 import { createPostDetailResolver } from './resolvers/post-detail.resolver';
@@ -39,6 +45,80 @@ export const linksPageEnabledGuard: CanActivateFn = () => {
 function loadUi(): Promise</* @foliokit/cms-ui */ Record<string, unknown>> {
   // @ts-ignore TS2307 — @foliokit/cms-ui is a peer, resolved at app build time
   return import('@foliokit/cms-ui');
+}
+
+// ── Private taxonomy resolver factories ──────────────────────────────────────
+// These mirror the exported factories in @foliokit/cms-ui but live here to
+// avoid a circular dependency (cms-ui → cms-core). TransferState keys match
+// so hydration is compatible if consumers switch between the two route sets.
+
+const SERIES_ALL_KEY = makeStateKey<Series[]>('series-all');
+const PILLARS_ALL_KEY = makeStateKey<Pillar[]>('pillars-all');
+
+function createSeriesAllResolver(): ResolveFn<Series[]> {
+  return () => {
+    const transferState = inject(TransferState);
+    const platformId = inject(PLATFORM_ID);
+    if (transferState.hasKey(SERIES_ALL_KEY)) {
+      const series = transferState.get(SERIES_ALL_KEY, []);
+      transferState.remove(SERIES_ALL_KEY);
+      return series;
+    }
+    if (!isPlatformBrowser(platformId)) return [];
+    return inject(SeriesService).getAll().pipe(take(1));
+  };
+}
+
+function createSeriesDetailResolver(): ResolveFn<Series | null> {
+  return (route) => {
+    const slug = route.paramMap.get('slug') ?? '';
+    const transferState = inject(TransferState);
+    const platformId = inject(PLATFORM_ID);
+    const stateKey = makeStateKey<Series | null>(`series-detail:${slug}`);
+    if (transferState.hasKey(stateKey)) {
+      const series = transferState.get(stateKey, null);
+      transferState.remove(stateKey);
+      return series;
+    }
+    if (!isPlatformBrowser(platformId)) return null;
+    return inject(SeriesService).getAll().pipe(
+      take(1),
+      map((list) => list.find((s) => s.slug === slug) ?? null),
+    );
+  };
+}
+
+function createPillarsAllResolver(): ResolveFn<Pillar[]> {
+  return () => {
+    const transferState = inject(TransferState);
+    const platformId = inject(PLATFORM_ID);
+    if (transferState.hasKey(PILLARS_ALL_KEY)) {
+      const pillars = transferState.get(PILLARS_ALL_KEY, []);
+      transferState.remove(PILLARS_ALL_KEY);
+      return pillars;
+    }
+    if (!isPlatformBrowser(platformId)) return [];
+    return inject(PillarService).getAll().pipe(take(1));
+  };
+}
+
+function createPillarDetailResolver(): ResolveFn<Pillar | null> {
+  return (route) => {
+    const slug = route.paramMap.get('slug') ?? '';
+    const transferState = inject(TransferState);
+    const platformId = inject(PLATFORM_ID);
+    const stateKey = makeStateKey<Pillar | null>(`pillar-detail:${slug}`);
+    if (transferState.hasKey(stateKey)) {
+      const pillar = transferState.get(stateKey, null);
+      transferState.remove(stateKey);
+      return pillar;
+    }
+    if (!isPlatformBrowser(platformId)) return null;
+    return inject(PillarService).getAll().pipe(
+      take(1),
+      map((list) => list.find((p) => p.slug === slug) ?? null),
+    );
+  };
 }
 
 /**
@@ -92,6 +172,26 @@ export const FOLIO_BLOG_ROUTES: Routes = [
     canActivate: [featureGuard('links')],
     resolve: { page: createLinksPageResolver() },
     loadComponent: () => loadUi().then((m) => m['LinksPageComponent'] as any),
+  },
+  {
+    path: 'series',
+    loadComponent: () => loadUi().then((m) => m['SeriesListComponent'] as any),
+    resolve: { series: createSeriesAllResolver(), pillars: createPillarsAllResolver() },
+  },
+  {
+    path: 'series/:slug',
+    loadComponent: () => loadUi().then((m) => m['SeriesDetailComponent'] as any),
+    resolve: { series: createSeriesDetailResolver() },
+  },
+  {
+    path: 'pillars',
+    loadComponent: () => loadUi().then((m) => m['PillarsListComponent'] as any),
+    resolve: { pillars: createPillarsAllResolver() },
+  },
+  {
+    path: 'pillars/:slug',
+    loadComponent: () => loadUi().then((m) => m['PillarDetailComponent'] as any),
+    resolve: { pillar: createPillarDetailResolver(), series: createSeriesAllResolver() },
   },
   {
     path: 'not-found',

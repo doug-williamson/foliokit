@@ -19,3 +19,11 @@ export * from './lib/not-found/not-found.component';
 
 // ── Blog routes ───────────────────────────────────────────────────────────────
 export * from './lib/routes/blog.routes';
+
+// ── Taxonomy ──────────────────────────────────────────────────────────────────
+export * from './lib/series/series.resolver';
+export * from './lib/series/series-list.component';
+export * from './lib/series/series-detail.component';
+export * from './lib/pillar/pillar.resolver';
+export * from './lib/pillar/pillars-list.component';
+export * from './lib/pillar/pillar-detail.component';

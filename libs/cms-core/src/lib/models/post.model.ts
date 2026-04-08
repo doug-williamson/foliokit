@@ -28,6 +28,9 @@ export interface BlogPost {
   thumbnailUrl?: string;
   thumbnailAlt?: string;
   tags: string[];
+  seriesId?: string;
+  /** Denormalized from Series. null = pillar-free; absent (undefined) = unassigned. */
+  pillarId?: string | null;
   authorId?: string;
   readingTimeMinutes?: number;
   embeddedMedia: Record<string, EmbeddedMediaEntry>;

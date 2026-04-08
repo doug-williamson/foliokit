@@ -2,6 +2,8 @@ import { Route, ResolveFn } from '@angular/router';
 import { Type } from '@angular/core';
 import type { BlogPost, AboutPageConfig, LinksPageConfig } from '@foliokit/cms-core';
 import { createPostsResolver, createAboutPageResolver, createLinksPageResolver, featureGuard } from '@foliokit/cms-core';
+import { createSeriesResolver, createSeriesDetailResolver } from '../series/series.resolver';
+import { createPillarsResolver, createPillarDetailResolver } from '../pillar/pillar.resolver';
 
 /**
  * Well-known path segments for routes produced by {@link createBlogRoutes}.
@@ -145,6 +147,30 @@ export function createBlogRoutes(config?: BlogRoutesConfig): Route[] {
         config?.linksComponent,
         () => import('../links-page/links-page.component').then((m) => m.LinksPageComponent),
       ),
+    },
+    {
+      path: 'series',
+      loadComponent: () =>
+        import('../series/series-list.component').then((m) => m.SeriesListComponent),
+      resolve: { series: createSeriesResolver(), pillars: createPillarsResolver() },
+    },
+    {
+      path: 'series/:slug',
+      loadComponent: () =>
+        import('../series/series-detail.component').then((m) => m.SeriesDetailComponent),
+      resolve: { series: createSeriesDetailResolver() },
+    },
+    {
+      path: 'pillars',
+      loadComponent: () =>
+        import('../pillar/pillars-list.component').then((m) => m.PillarsListComponent),
+      resolve: { pillars: createPillarsResolver() },
+    },
+    {
+      path: 'pillars/:slug',
+      loadComponent: () =>
+        import('../pillar/pillar-detail.component').then((m) => m.PillarDetailComponent),
+      resolve: { pillar: createPillarDetailResolver(), series: createSeriesResolver() },
     },
     {
       path: '**',
