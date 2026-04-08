@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { AuthorEditorStore } from '../author-editor/author-editor.store';
 import { PostEditorStore } from '../post-editor/post-editor.store';
+import { TaxonomyStore } from '../taxonomy/taxonomy.store';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { authGuard } from '../guards/auth.guard';
 import { setupGuard, setupCompleteGuard } from '../guards/setup.guard';
@@ -148,6 +149,14 @@ export const adminRoutes: Route[] = [
             canDeactivate: [unsavedChangesGuard],
           },
         ],
+      },
+      {
+        path: 'taxonomy',
+        loadComponent: () =>
+          import('../taxonomy/pillars-list.component').then(
+            (m) => m.PillarsListComponent,
+          ),
+        providers: [TaxonomyStore],
       },
       {
         path: 'site-config',
