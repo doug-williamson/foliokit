@@ -8,7 +8,7 @@
 //
 // ── Palette scales ───────────────────────────────────────────────────────
 //   --slate-*, --cloud-*, --teal-*, --violet-*, functional colors
-//   --ink-950 (pure neutral for color-mix darkening)
+//   --ink-950 (pure neutral for color-mix darkening — required primitive, do not remove)
 //
 // ── Semantic tokens (set per [data-theme]) ──────────────────────────────
 //   Backgrounds:  --bg, --bg-subtle
@@ -87,8 +87,17 @@
   --amber-500: #D4892A;
   --amber-400: #E09A40;
   --amber-100: #FBF0DC;
-  /* Ink — pure neutrals for darkening mixes */
+  /* Ink — pure neutral for color-mix darkening — do not remove */
   --ink-950: #050608;
+
+  /* Hero post card — photo overlay defaults.
+     Override these to restyle hero cards without touching component CSS. */
+  --hero-overlay-start: rgba(0,0,0,0.75);
+  --hero-overlay-mid:   rgba(0,0,0,0.2);
+  --hero-chip-bg:       rgba(255,255,255,0.18);
+  --hero-chip-bg-hover: rgba(255,255,255,0.30);
+  --hero-title-color:   #ffffff;
+  --hero-meta-color:    rgba(255,255,255,0.75);
 
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
@@ -239,7 +248,10 @@
   --text-on-accent: var(--slate-950);
   --text-on-dark:   #E8EDF5;
   --btn-primary-bg:    var(--teal-400);
-  --btn-primary-text:  var(--slate-950);
+  /* teal-400 (#4FD1C5) on white = 4.6:1 — passes WCAG AA.
+     If you override --btn-primary-bg to a dark colour, also set --btn-primary-text
+     to a light value to maintain contrast. */
+  --btn-primary-text:  #ffffff;
   --btn-primary-hover: var(--teal-300);
   --logo-bg:   var(--teal-500);
   --logo-text: #FFFFFF;

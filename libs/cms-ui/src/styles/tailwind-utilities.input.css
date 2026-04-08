@@ -1,0 +1,5 @@
+/* Entry point for generating the pre-built Tailwind utilities snapshot.
+ * Run: npm run build:utilities-css
+ * Output: libs/cms-ui/src/styles/utilities.css (committed + shipped in the package)
+ */
+@tailwind utilities;

@@ -1,0 +1,54 @@
+@use 'sass:color';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// folio-theme() — Brand colour escape hatch
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Generates the minimal set of semantic token overrides needed to rebrand
+// FolioKit components without forking component stylesheets.
+//
+// Usage in your app's styles.scss:
+//
+//   @use '@foliokit/cms-ui/styles/theme-factory' as folio;
+//   @include folio.folio-theme(#6366f1);                       // indigo brand
+//   @include folio.folio-theme(#e85d04, #ffffff, #fffaf7);    // orange + warm surface
+//
+// Parameters
+//   $primary    Accent colour that replaces teal (buttons, links, active states).
+//   $on-primary Text colour rendered on top of primary-coloured buttons.
+//               Default: #ffffff. Override when $primary is very light.
+//   $surface    Light-theme card surface base colour. Default: #ffffff.
+//
+// The mixin emits [data-theme="light"] and [data-theme="dark"] blocks.
+// Tokens not listed here retain their default values from _tokens.scss.
+
+@mixin folio-theme($primary, $on-primary: #ffffff, $surface: #ffffff) {
+  $primary-dark: color.adjust($primary, $lightness: 8%);
+  $primary-light: color.adjust($primary, $lightness: 15%);
+  $accent-border: color.change($primary, $alpha: 0.4);
+  $nav-bg: color.change($primary, $alpha: 0.12);
+  $nav-color: color.adjust($primary, $lightness: -20%);
+
+  [data-theme='light'] {
+    --btn-primary-bg:    #{$primary};
+    --btn-primary-text:  #{$on-primary};
+    --btn-primary-hover: #{color.adjust($primary, $lightness: -8%)};
+    --text-accent:       #{$primary};
+    --border-accent:     #{$accent-border};
+    --nav-active-bg:     #{$nav-bg};
+    --nav-active-color:  #{$nav-color};
+    --surface-0:         #{$surface};
+    --focus-border:      #{$primary};
+    --focus-ring:        #{color.change($primary, $alpha: 0.22)};
+  }
+
+  [data-theme='dark'] {
+    --btn-primary-bg:    #{$primary-dark};
+    --btn-primary-text:  #{$on-primary};
+    --btn-primary-hover: #{$primary-light};
+    --text-accent:       #{$primary-light};
+    --border-accent:     #{color.change($primary-dark, $alpha: 0.4)};
+    --focus-border:      #{$primary-dark};
+    --focus-ring:        #{color.change($primary-dark, $alpha: 0.28)};
+  }
+}

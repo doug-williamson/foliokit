@@ -14,6 +14,11 @@
       "input": "src/styles",
       "glob": "tokens.css",
       "output": "styles"
+    },
+    {
+      "input": "src/styles",
+      "glob": "utilities.css",
+      "output": "styles"
     }
   ]
 }
