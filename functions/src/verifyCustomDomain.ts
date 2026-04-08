@@ -10,20 +10,7 @@ if (!getApps().length) initializeApp();
 
 const CNAME_TARGET = 'foliokit-blog--foliokit-6f974.us-central1.hosted.app';
 
-export const verifyCustomDomain = onRequest(async (req, res) => {
-  // CORS
-  const origin = req.headers.origin ?? '';
-  if (ADMIN_ALLOWED_ORIGINS.includes(origin)) {
-    res.set('Access-Control-Allow-Origin', origin);
-  }
-  res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.status(204).send('');
-    return;
-  }
-
+export const verifyCustomDomain = onRequest({ cors: ADMIN_ALLOWED_ORIGINS }, async (req, res) => {
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'method_not_allowed' });
     return;
