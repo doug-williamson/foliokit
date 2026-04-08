@@ -97,6 +97,40 @@ export class PostService implements IBlogPostService {
     );
   }
 
+  getBySeriesId(seriesId: string): Observable<BlogPost[]> {
+    const q = query(
+      collection(this.firestore, this.paths.collection('posts')),
+      where('seriesId', '==', seriesId),
+      orderBy('publishedAt', 'desc'),
+    );
+    return from(getDocs(q)).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
+      ),
+      catchError((err) => {
+        console.error('[PostService.getBySeriesId]', err);
+        return of([]);
+      }),
+    );
+  }
+
+  getByPillarId(pillarId: string): Observable<BlogPost[]> {
+    const q = query(
+      collection(this.firestore, this.paths.collection('posts')),
+      where('pillarId', '==', pillarId),
+      orderBy('publishedAt', 'desc'),
+    );
+    return from(getDocs(q)).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
+      ),
+      catchError((err) => {
+        console.error('[PostService.getByPillarId]', err);
+        return of([]);
+      }),
+    );
+  }
+
   getAllPosts(): Observable<BlogPost[]> {
     const q = query(
       collection(this.firestore, this.paths.collection('posts')),
