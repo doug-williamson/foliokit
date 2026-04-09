@@ -78,21 +78,9 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   template: `
     @if (linksConfig(); as cfg) {
       <div class="flex flex-col gap-6">
-        <!-- Title -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Title</mat-label>
-          <input
-            matInput
-            [value]="cfg.title ?? ''"
-            (input)="updateField('title', $any($event.target).value)"
-            placeholder="Links"
-          />
-        </mat-form-field>
-
-        <!-- Avatar upload (light + dark) -->
+        <!-- Profile photo (light + dark) — same order as About page -->
         <admin-image-upload-pair
-          label="Avatar"
-          subtitle="Dark avatar is optional — shown when dark mode is active."
+          label="Profile Photo"
           [lightUrl]="cfg.avatarUrl"
           [darkUrl]="cfg.avatarUrlDark"
           [lightUploading]="avatarUploading()"
@@ -106,6 +94,26 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
           (lightRemoved)="onDeleteAvatar(cfg)"
           (darkRemoved)="onDeleteAvatarDark(cfg)"
         />
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Photo Alt Text</mat-label>
+          <input
+            matInput
+            [value]="cfg.avatarAlt ?? ''"
+            (input)="updateField('avatarAlt', $any($event.target).value)"
+            placeholder="Describe the image for screen readers"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Title</mat-label>
+          <input
+            matInput
+            [value]="cfg.title ?? ''"
+            (input)="updateField('title', $any($event.target).value)"
+            placeholder="Links"
+          />
+        </mat-form-field>
 
         <!-- Headline -->
         <mat-form-field appearance="outline" class="w-full">
@@ -250,7 +258,7 @@ export class LinksEditorFormComponent {
   }
 
   onDeleteAvatar(cfg: LinksPageConfig): void {
-    if (!window.confirm('Remove avatar?')) return;
+    if (!window.confirm('Remove profile photo?')) return;
     const path = this.avatarStoragePath();
     const clear = () => {
       this.flush({ avatarUrl: undefined, avatarAlt: undefined });
@@ -268,7 +276,7 @@ export class LinksEditorFormComponent {
   }
 
   onDeleteAvatarDark(cfg: LinksPageConfig): void {
-    if (!window.confirm('Remove dark mode avatar?')) return;
+    if (!window.confirm('Remove dark mode photo?')) return;
     const path = this.avatarDarkStoragePath();
     const clear = () => {
       this.flush({ avatarUrlDark: undefined });

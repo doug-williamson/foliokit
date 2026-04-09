@@ -110,7 +110,10 @@ export class ImageUploadPairComponent {
   @ViewChild('darkInput') private darkInput!: ElementRef<HTMLInputElement>;
 
   readonly label = input.required<string>();
-  readonly subtitle = input('Dark variant is optional — shown when dark mode is active.');
+  /** Same copy on About and Links profile photo blocks. */
+  readonly subtitle = input(
+    'Dark photo is optional — shown when dark mode is active.',
+  );
   readonly lightUrl = input<string | undefined>(undefined);
   readonly darkUrl = input<string | undefined>(undefined);
   readonly lightUploading = input(false);

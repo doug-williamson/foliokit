@@ -106,22 +106,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             }
 
             <form [formGroup]="aboutForm" class="flex flex-col gap-5">
-              <mat-form-field appearance="outline">
-                <mat-label>Headline</mat-label>
-                <input matInput formControlName="headline" placeholder="Hi, I'm Jane" />
-                @if (aboutForm.get('headline')?.hasError('required') && aboutForm.get('headline')?.touched) {
-                  <mat-error>Headline is required</mat-error>
-                }
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Subheadline</mat-label>
-                <input matInput formControlName="subheadline" placeholder="Software engineer & writer" />
-              </mat-form-field>
-
               <admin-image-upload-pair
                 label="Profile Photo"
-                subtitle="Dark photo is optional — shown when dark mode is active."
                 [lightUrl]="aboutPhotoUrl()"
                 [darkUrl]="aboutPhotoDarkUrl()"
                 [lightUploading]="aboutPhotoUploading()"
@@ -139,6 +125,19 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <mat-form-field appearance="outline">
                 <mat-label>Photo Alt Text</mat-label>
                 <input matInput formControlName="photoAlt" placeholder="Jane Doe smiling" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Headline</mat-label>
+                <input matInput formControlName="headline" placeholder="Hi, I'm Jane" />
+                @if (aboutForm.get('headline')?.hasError('required') && aboutForm.get('headline')?.touched) {
+                  <mat-error>Headline is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Subheadline</mat-label>
+                <input matInput formControlName="subheadline" placeholder="Software engineer & writer" />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
