@@ -1,19 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  PLATFORM_ID,
-  ViewChild,
   inject,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ImageUploadPairComponent } from './image-upload-pair.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -49,11 +45,11 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
     MatSelectModule,
     MatSlideToggleModule,
     MatTooltipModule,
     DragDropModule,
+    ImageUploadPairComponent,
   ],
   styles: [
     `
@@ -94,85 +90,22 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
         </mat-form-field>
 
         <!-- Avatar upload (light + dark) -->
-        <div class="flex flex-col gap-2">
-          <span class="text-sm font-semibold">Avatar</span>
-          <p class="text-xs opacity-50 -mt-1">Dark avatar is optional — shown when dark mode is active.</p>
-          <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
-            <!-- Light mode -->
-            <div class="flex flex-col items-center gap-1">
-              @if (cfg.avatarUrl) {
-                <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
-                  <img [src]="cfg.avatarUrl" [alt]="cfg.avatarAlt || 'Avatar'" class="w-full h-full object-cover" />
-                  <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                       style="background: rgba(0,0,0,0.5)">
-                    <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarInput.click()">
-                      <mat-icon svgIcon="swap_horiz" />
-                    </button>
-                    <button mat-icon-button style="color:white" title="Remove" (click)="onDeleteAvatar(cfg)">
-                      <mat-icon svgIcon="delete" />
-                    </button>
-                  </div>
-                </div>
-              } @else {
-                <div
-                  class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
-                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                  role="button"
-                  tabindex="0"
-                  (click)="isBrowser && avatarInput.click()"
-                  (keydown.enter)="isBrowser && avatarInput.click()"
-                >
-                  <mat-icon class="opacity-40" svgIcon="upload" />
-                  <span class="text-xs opacity-40">Upload</span>
-                </div>
-              }
-              <span class="text-xs opacity-50 leading-none">Light</span>
-            </div>
-            <!-- Dark mode -->
-            <div class="flex flex-col items-center gap-1">
-              @if (cfg.avatarUrlDark) {
-                <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
-                  <img [src]="cfg.avatarUrlDark" [alt]="cfg.avatarAlt || 'Dark mode avatar'" class="w-full h-full object-cover" />
-                  <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                       style="background: rgba(0,0,0,0.5)">
-                    <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && avatarDarkInput.click()">
-                      <mat-icon svgIcon="swap_horiz" />
-                    </button>
-                    <button mat-icon-button style="color:white" title="Remove" (click)="onDeleteAvatarDark(cfg)">
-                      <mat-icon svgIcon="delete" />
-                    </button>
-                  </div>
-                </div>
-              } @else {
-                <div
-                  class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
-                  style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                  role="button"
-                  tabindex="0"
-                  (click)="isBrowser && avatarDarkInput.click()"
-                  (keydown.enter)="isBrowser && avatarDarkInput.click()"
-                >
-                  <mat-icon class="opacity-40" svgIcon="upload" />
-                  <span class="text-xs opacity-40">Upload</span>
-                </div>
-              }
-              <span class="text-xs opacity-50 leading-none">Dark</span>
-            </div>
-          </div>
-          <input #avatarInput type="file" accept="image/*" class="hidden"
-                 (change)="onAvatarSelected($any($event.target).files)" />
-          <input #avatarDarkInput type="file" accept="image/*" class="hidden"
-                 (change)="onAvatarDarkSelected($any($event.target).files)" />
-          @if (avatarUploading() || avatarDarkUploading()) {
-            <mat-progress-bar mode="determinate" [value]="avatarUploading() ? avatarProgress() : avatarDarkProgress()" class="max-w-[13rem]" />
-          }
-          @if (avatarError()) {
-            <p class="text-xs text-red-500">{{ avatarError() }}</p>
-          }
-          @if (avatarDarkError()) {
-            <p class="text-xs text-red-500">{{ avatarDarkError() }}</p>
-          }
-        </div>
+        <admin-image-upload-pair
+          label="Avatar"
+          subtitle="Dark avatar is optional — shown when dark mode is active."
+          [lightUrl]="cfg.avatarUrl"
+          [darkUrl]="cfg.avatarUrlDark"
+          [lightUploading]="avatarUploading()"
+          [darkUploading]="avatarDarkUploading()"
+          [lightProgress]="avatarProgress()"
+          [darkProgress]="avatarDarkProgress()"
+          [lightError]="avatarError()"
+          [darkError]="avatarDarkError()"
+          (lightFileSelected)="onAvatarSelected($event)"
+          (darkFileSelected)="onAvatarDarkSelected($event)"
+          (lightRemoved)="onDeleteAvatar(cfg)"
+          (darkRemoved)="onDeleteAvatarDark(cfg)"
+        />
 
         <!-- Headline -->
         <mat-form-field appearance="outline" class="w-full">
@@ -284,15 +217,10 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   `,
 })
 export class LinksEditorFormComponent {
-  @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('avatarDarkInput') avatarDarkInput!: ElementRef<HTMLInputElement>;
-
   readonly store = inject(SiteConfigEditorStore);
   private readonly storage = inject(FIREBASE_STORAGE)!;
   private readonly paths = inject(CollectionPaths);
-  private readonly platformId = inject(PLATFORM_ID);
 
-  readonly isBrowser = isPlatformBrowser(this.platformId);
   readonly platformOptions = PLATFORM_OPTIONS;
 
   readonly linksConfig = () => this.store.config()?.pages?.links;
@@ -317,12 +245,8 @@ export class LinksEditorFormComponent {
     this.flush({ [field]: value || undefined });
   }
 
-  onAvatarSelected(files: FileList | null): void {
-    if (!files?.length) return;
-    this.uploadAvatar(files[0]);
-    if (this.avatarInput?.nativeElement) {
-      this.avatarInput.nativeElement.value = '';
-    }
+  onAvatarSelected(file: File): void {
+    this.uploadAvatar(file);
   }
 
   onDeleteAvatar(cfg: LinksPageConfig): void {
@@ -339,12 +263,8 @@ export class LinksEditorFormComponent {
     }
   }
 
-  onAvatarDarkSelected(files: FileList | null): void {
-    if (!files?.length) return;
-    this.uploadAvatarDark(files[0]);
-    if (this.avatarDarkInput?.nativeElement) {
-      this.avatarDarkInput.nativeElement.value = '';
-    }
+  onAvatarDarkSelected(file: File): void {
+    this.uploadAvatarDark(file);
   }
 
   onDeleteAvatarDark(cfg: LinksPageConfig): void {
