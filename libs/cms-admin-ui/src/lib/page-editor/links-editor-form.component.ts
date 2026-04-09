@@ -58,11 +58,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   styles: [
     `
       :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
+        display: block;
       }
       .drag-handle {
         cursor: grab;
@@ -85,9 +81,9 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   ],
   template: `
     @if (linksConfig(); as cfg) {
-      <div class="flex flex-col gap-6 p-4">
+      <div class="flex flex-col gap-6">
         <!-- Title -->
-        <mat-form-field class="w-full">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Title</mat-label>
           <input
             matInput
@@ -179,7 +175,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
         </div>
 
         <!-- Headline -->
-        <mat-form-field class="w-full">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Headline</mat-label>
           <input
             matInput
@@ -190,7 +186,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
         </mat-form-field>
 
         <!-- Bio -->
-        <mat-form-field class="w-full">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Bio</mat-label>
           <textarea
             matInput
@@ -239,7 +235,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
 
                 <!-- Label + URL -->
                 <div class="flex gap-3">
-                  <mat-form-field class="flex-1">
+                  <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>Label</mat-label>
                     <input
                       matInput
@@ -248,7 +244,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                       placeholder="My Website"
                     />
                   </mat-form-field>
-                  <mat-form-field class="flex-1">
+                  <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>URL</mat-label>
                     <input
                       matInput
@@ -261,7 +257,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                 </div>
 
                 <!-- Platform -->
-                <mat-form-field class="w-full">
+                <mat-form-field appearance="outline" class="w-full">
                   <mat-label>Platform</mat-label>
                   <mat-select
                     [value]="link.platform ?? null"

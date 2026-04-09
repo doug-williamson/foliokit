@@ -57,7 +57,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <admin-links-editor-form class="flex-1 min-h-0" />
+        <div class="flex-1 overflow-y-auto">
+          <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <admin-links-editor-form />
+          </div>
+        </div>
       }
 
       <!-- Sticky footer -->

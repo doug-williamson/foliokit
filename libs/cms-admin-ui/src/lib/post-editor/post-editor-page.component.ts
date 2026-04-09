@@ -217,7 +217,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 
         @if (!isDesktop()) {
           <button mat-icon-button (click)="togglePreview()" matTooltip="Toggle preview">
-            <mat-icon svgIcon="preview" />
+            <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
           </button>
           <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
             <mat-icon svgIcon="save" />
