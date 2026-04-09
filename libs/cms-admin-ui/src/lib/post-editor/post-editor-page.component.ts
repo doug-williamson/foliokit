@@ -2,13 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   OnInit,
   signal,
 } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { PostService } from '@foliokit/cms-core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -148,6 +151,18 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       .save-dot--saved {
         background: var(--green-600);
       }
+
+      .save-retry-btn {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--red-600);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
     `,
   ],
   template: `
@@ -166,18 +181,24 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         </span>
 
         <!-- Autosave indicator -->
-        @if (store.isSaving()) {
-          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
-            <span class="save-dot save-dot--saving"></span>
-            Saving…
-          </span>
-        } @else if (store.saveError()) {
-          <span style="font-size: 11px; color: var(--red-600);">{{ store.saveError() }}</span>
-        } @else if (!store.isDirty() && store.post()) {
-          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
-            <span class="save-dot save-dot--saved"></span>
-            Saved
-          </span>
+        @if (!store.isNew()) {
+          <div style="min-width: 148px; display: flex; align-items: center; justify-content: flex-end;">
+            @if (store.saveStatus() === 'saving') {
+              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
+                <span class="save-dot save-dot--saving"></span>
+                Saving…
+              </span>
+            } @else if (store.saveStatus() === 'saved') {
+              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-600);">
+                <span class="save-dot save-dot--saved"></span>
+                {{ store.saveStatusLabel() }}
+              </span>
+            } @else if (store.saveStatus() === 'error') {
+              <button class="save-retry-btn" (click)="retryAutosave()">
+                {{ store.saveStatusLabel() }}
+              </button>
+            }
+          </div>
         }
 
         <!-- Status badge -->
@@ -276,9 +297,42 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 })
 export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
+  private readonly postService = inject(PostService);
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
+
+  private readonly saveSignal$ = new Subject<void>();
+
+  constructor() {
+    // Trigger autosave whenever an editable field changes on an existing post.
+    effect(() => {
+      const post = this.store.post();
+      if (!post?.id || !this.store.isDirty()) return;
+      this.saveSignal$.next();
+    });
+
+    this.saveSignal$
+      .pipe(debounceTime(1500), takeUntilDestroyed())
+      .subscribe(() => this.doAutosave());
+  }
+
+  private doAutosave(): void {
+    const post = this.store.post();
+    if (!post?.id) return;
+    this.store.setSaveStatus('saving');
+    this.postService.savePost(post).subscribe({
+      next: () => {
+        this.store.setSaveStatus('saved');
+        this.store.setLastSavedAt(new Date());
+      },
+      error: () => this.store.setSaveStatus('error'),
+    });
+  }
+
+  protected retryAutosave(): void {
+    this.doAutosave();
+  }
 
   readonly isDesktop = toSignal(
     inject(BreakpointObserver)
