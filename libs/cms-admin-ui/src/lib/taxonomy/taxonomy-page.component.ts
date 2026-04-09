@@ -31,8 +31,8 @@ import { TaxonomyStore } from './taxonomy.store';
     <cms-plan-gate
       feature="taxonomy"
       requiredPlan="pro"
-      featureLabel="Content Taxonomy"
-      featureDescription="Organise posts into pillars and series. Group related content and surface structured collections in your blog."
+      featureLabel="Series"
+      featureDescription="Group your posts into named series. Surface structured collections and reading paths on your blog."
     >
       <!-- Full taxonomy UI — loaded reactively once the Pro plan is confirmed -->
       <div class="flex flex-col h-full overflow-hidden">
