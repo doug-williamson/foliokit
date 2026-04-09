@@ -38,6 +38,7 @@ export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
 export * from './lib/settings/settings-page.component';
+export * from './lib/settings/domain-setup/domain-setup.component';
 
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
 export * from './lib/taxonomy/taxonomy-page.component';
