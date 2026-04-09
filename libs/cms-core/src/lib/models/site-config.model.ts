@@ -9,7 +9,9 @@ export interface NavItem {
   order?: number;
   external?: boolean;
   icon?: string;
-  /** Optional plan tier required to access this nav item. Used for badge display only — does not hide or disable the link. */
+  /** When true, the item is hidden from the public blog nav. */
+  hidden?: boolean;
+  /** Optional plan tier required to access this nav item. Used for badge display only. */
   requiredPlan?: 'pro' | 'agency';
 }
 
