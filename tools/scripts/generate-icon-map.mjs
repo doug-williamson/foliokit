@@ -17,15 +17,15 @@ const OUT = resolve(ROOT, 'libs/cms-admin-ui/src/lib/icons/icon-svg-map.ts');
 
 const ICONS = [
   'add', 'add_photo_alternate', 'arrow_back', 'arrow_forward', 'article',
-  'auto_stories', 'block', 'business', 'cancel', 'check_circle',
-  'check_circle_outline', 'chevron_right', 'cloud', 'code', 'dark_mode',
-  'delete', 'drag_indicator', 'edit', 'edit_note', 'expand_less',
-  'expand_more', 'home', 'info', 'language', 'light_mode', 'link',
-  'live_tv', 'logout', 'mail', 'menu', 'music_note', 'open_in_new',
-  'people', 'person', 'person_off', 'photo_camera', 'play_circle',
-  'preview', 'publish', 'radio_button_unchecked', 'save', 'schedule',
-  'settings', 'swap_horiz', 'tag', 'thumb_up', 'upload', 'upload_file',
-  'warning',
+  'auto_stories', 'block', 'business', 'cancel', 'category',
+  'check_circle', 'check_circle_outline', 'chevron_right', 'cloud', 'code',
+  'collections_bookmark', 'content_copy', 'dark_mode', 'delete', 'drag_indicator',
+  'edit', 'edit_note', 'expand_less', 'expand_more', 'home', 'info',
+  'language', 'light_mode', 'link', 'live_tv', 'lock', 'logout', 'mail',
+  'menu', 'music_note', 'open_in_new', 'palette', 'people', 'person',
+  'person_off', 'photo_camera', 'play_circle', 'preview', 'publish',
+  'radio_button_unchecked', 'save', 'schedule', 'settings', 'swap_horiz',
+  'tag', 'thumb_up', 'tune', 'upload', 'upload_file', 'warning', 'web',
 ].sort();
 
 const entries = ICONS.map((name) => {
