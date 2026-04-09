@@ -66,6 +66,8 @@ service cloud.firestore {
       match /tags/{tagId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
       match /site-config/{configId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
       match /authors/{authorId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
+      match /pillars/{pillarId} { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
+      match /series/{seriesId}  { allow read; allow write: if isAdmin() || isTenantOwner(tenantId); }
     }
 
     // ── Billing ───────────────────────────────────────────────────────────────

@@ -10,21 +10,8 @@ import { PRICE_IDS } from './stripe-constants';
 if (!getApps().length) initializeApp();
 
 export const createCheckoutSession = onRequest(
-  { secrets: [stripeSecretKey] },
+  { secrets: [stripeSecretKey], cors: ADMIN_ALLOWED_ORIGINS },
   async (req, res) => {
-    // CORS
-    const origin = req.headers.origin ?? '';
-    if (ADMIN_ALLOWED_ORIGINS.includes(origin)) {
-      res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-    if (req.method === 'OPTIONS') {
-      res.status(204).send('');
-      return;
-    }
-
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'method_not_allowed' });
       return;
