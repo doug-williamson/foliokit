@@ -14,7 +14,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
-import { ThemeService } from '../theme.service';
+import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'play_circle',
@@ -34,7 +34,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule],
+  imports: [MatIconModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -45,28 +45,6 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .avatar--xl {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: var(--logo-bg);
-      color: var(--logo-text);
-      font-family: var(--font-body);
-      font-weight: 600;
-      font-size: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
     }
 
     .links-name {
@@ -142,13 +120,12 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   template: `
     @if (page()) {
       <div class="links-container">
-        <div class="avatar--xl">
-          @if (avatarSrc()) {
-            <img [src]="avatarSrc()" [alt]="page()!.avatarAlt || page()!.title" />
-          } @else {
-            {{ initials() }}
-          }
-        </div>
+        <folio-profile-avatar
+          [photoUrl]="page()!.avatarUrl"
+          [photoUrlDark]="page()!.avatarUrlDark"
+          [alt]="page()!.avatarAlt || page()!.title || ''"
+          [initialsFrom]="page()!.headline ?? page()!.title ?? ''"
+        />
 
         @if (page()!.headline) {
           <h1 class="links-name">{{ page()!.headline }}</h1>
@@ -184,8 +161,6 @@ export class LinksPageComponent {
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
-  readonly theme = inject(ThemeService);
-
   readonly page = toSignal(
     this.route.data.pipe(map((data) => (data['page'] as LinksPageConfig) ?? null)),
     { initialValue: (this.route.snapshot.data['page'] as LinksPageConfig) ?? null },
@@ -194,22 +169,6 @@ export class LinksPageComponent {
   readonly sortedLinks = computed<LinksLink[]>(() =>
     [...(this.page()?.links ?? [])].sort((a, b) => a.order - b.order),
   );
-
-  protected readonly avatarSrc = computed(() =>
-    this.theme.isDark() && this.page()?.avatarUrlDark
-      ? this.page()!.avatarUrlDark!
-      : this.page()!.avatarUrl,
-  );
-
-  protected readonly initials = computed(() => {
-    const headline = this.page()?.headline ?? this.page()?.title ?? '';
-    return headline
-      .split(' ')
-      .slice(0, 2)
-      .map((w: string) => w[0])
-      .join('')
-      .toUpperCase();
-  });
 
   private upsertCanonical(href: string): void {
     let el = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   PLATFORM_ID,
@@ -14,13 +13,13 @@ import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 import type { AboutPageConfig } from '@foliokit/cms-core';
-import { ThemeService } from '../theme.service';
+import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 @Component({
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatIconModule],
+  imports: [MarkdownComponent, MatIconModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -31,28 +30,6 @@ import { ThemeService } from '../theme.service';
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .avatar--xl {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: var(--logo-bg);
-      color: var(--logo-text);
-      font-family: var(--font-body);
-      font-weight: 600;
-      font-size: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
     }
 
     .about-name {
@@ -123,13 +100,12 @@ import { ThemeService } from '../theme.service';
   template: `
     @if (about()) {
       <div class="about-container">
-        <div class="avatar--xl">
-          @if (avatarSrc()) {
-            <img [src]="avatarSrc()" [alt]="about()!.photoAlt || about()!.headline" />
-          } @else {
-            {{ initials() }}
-          }
-        </div>
+        <folio-profile-avatar
+          [photoUrl]="about()!.photoUrl"
+          [photoUrlDark]="about()!.photoUrlDark"
+          [alt]="about()!.photoAlt || about()!.headline"
+          [initialsFrom]="about()!.headline"
+        />
 
         <h1 class="about-name">{{ about()!.headline }}</h1>
 
@@ -169,28 +145,10 @@ export class AboutPageComponent {
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);
-  readonly theme = inject(ThemeService);
-
   readonly about = toSignal(
     this.route.data.pipe(map((data) => (data['about'] as AboutPageConfig) ?? null)),
     { initialValue: (this.route.snapshot.data['about'] as AboutPageConfig) ?? null },
   );
-
-  protected readonly avatarSrc = computed(() =>
-    this.theme.isDark() && this.about()?.photoUrlDark
-      ? this.about()!.photoUrlDark!
-      : this.about()!.photoUrl,
-  );
-
-  protected readonly initials = computed(() => {
-    const headline = this.about()?.headline ?? '';
-    return headline
-      .split(' ')
-      .slice(0, 2)
-      .map((w: string) => w[0])
-      .join('')
-      .toUpperCase();
-  });
 
   constructor() {
     effect(() => {

@@ -165,6 +165,21 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         cursor: pointer;
         padding: 0;
       }
+
+      .preview-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .preview-toggle-btn mat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        line-height: 0;
+      }
     `,
   ],
   template: `
@@ -216,8 +231,15 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         }
 
         @if (!isDesktop()) {
-          <button mat-icon-button (click)="togglePreview()" matTooltip="Toggle preview">
-            <mat-icon svgIcon="preview" />
+          <button
+            mat-icon-button
+            type="button"
+            class="preview-toggle-btn"
+            (click)="togglePreview()"
+            [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
+            [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
+          >
+            <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
           </button>
           <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
             <mat-icon svgIcon="save" />
