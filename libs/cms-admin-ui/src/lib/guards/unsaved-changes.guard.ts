@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanDeactivateFn } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -10,16 +10,18 @@ import {
 /**
  * Implement this interface on any component that uses `unsavedChangesGuard`
  * as a `canDeactivate` guard. The guard reads `store.isDirty()` to determine
- * whether to prompt the user before navigating away.
+ * whether to prompt the user before navigating away, and calls `store.discard()`
+ * when the user chooses to leave so the store is clean on the next visit.
  */
 export interface HasDirtyStore {
-  store: { isDirty: () => boolean };
+  store: { isDirty: () => boolean; discard?: () => void };
 }
 
 /**
  * Prevents accidental navigation away from editor pages that have unsaved
  * changes. Opens a Material dialog to confirm the navigation when
- * `store.isDirty()` returns `true`.
+ * `store.isDirty()` returns `true`. When the user confirms leaving,
+ * calls `store.discard()` to reset dirty state before the route is torn down.
  */
 export const unsavedChangesGuard: CanDeactivateFn<HasDirtyStore> = (
   component,
@@ -42,5 +44,8 @@ export const unsavedChangesGuard: CanDeactivateFn<HasDirtyStore> = (
       },
     )
     .afterClosed()
-    .pipe(map((result) => result === true));
+    .pipe(
+      tap((result) => { if (result === true) component.store.discard?.(); }),
+      map((result) => result === true),
+    );
 };
