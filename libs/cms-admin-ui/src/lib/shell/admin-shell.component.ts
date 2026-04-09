@@ -32,7 +32,7 @@ import { AuthService } from '@foliokit/cms-core';
 function adminShellConfigFactory(shell: AdminShellComponent) {
   return computed(() => ({
     appName: shell.appName(),
-    showNewPostButton: true,
+    showNewPostButton: false,
     showRouteTitle: true,
   }));
 }
@@ -71,14 +71,14 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <mat-icon class="nav-icon" svgIcon="article" />
           <span class="nav-label">Posts</span>
         </a>
+        <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="people" />
+          <span class="nav-label">Authors</span>
+        </a>
         <a class="nav-item" routerLink="/series" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="collections_bookmark" />
           <span class="nav-label">Series</span>
           <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
-        </a>
-        <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="people" />
-          <span class="nav-label">Authors</span>
         </a>
 
         <span class="nav-group-label">Publish</span>
