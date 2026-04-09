@@ -25,6 +25,9 @@ export * from './lib/provide-admin-kit';
 export * from './lib/provide-admin-markdown';
 export * from './lib/icons/provide-admin-mat-icons';
 
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+export * from './lib/dashboard/dashboard.component';
+
 // ── Editor page components (Phase 2 — stubs in Phase 1) ──────────────────────
 export * from './lib/post-editor/post-editor-page.component';
 export * from './lib/author-editor/authors-list.component';

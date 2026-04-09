@@ -1,0 +1,366 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { BlogPost, PostService, SiteConfigService } from '@foliokit/cms-core';
+import { PlanGatingService } from '@foliokit/cms-core';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+const PLAN_LABELS: Record<string, string> = {
+  starter: 'Free',
+  pro: 'Pro',
+  agency: 'Agency',
+};
+
+@Component({
+  selector: 'cms-dashboard',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [DatePipe, MatButtonModule, MatIconModule],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+      }
+
+      /* Section A — Quick actions */
+      .section-header {
+        padding: 32px 32px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .greeting {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      /* Section B — Recent posts */
+      .section-posts {
+        padding: 24px 32px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .section-title {
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0;
+      }
+      .view-all-link {
+        font-size: 13px;
+        color: var(--text-accent);
+        text-decoration: none;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: var(--font-body);
+        &:hover { text-decoration: underline; }
+      }
+
+      /* Post row */
+      .post-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition: background 0.12s;
+        margin: 0 -12px;
+        &:hover { background: var(--surface-2); }
+      }
+      .post-title {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+      }
+      .post-date {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Skeleton rows */
+      @keyframes folio-skeleton-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+      .skeleton-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+      }
+      .skeleton-bar {
+        height: 16px;
+        background: var(--surface-2);
+        border-radius: 4px;
+        animation: folio-skeleton-pulse 1.4s ease-in-out infinite;
+      }
+
+      /* Empty state */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 40px 0 24px;
+        text-align: center;
+      }
+      .empty-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: var(--text-muted);
+      }
+      .empty-heading {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+      .empty-sub {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      /* Section C — Health strip */
+      .section-health {
+        padding: 24px 32px;
+      }
+      .health-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .health-tile {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .tile-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .tile-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+      .tile-value--teal { color: var(--teal-400); }
+      .tile-value--muted { color: var(--text-muted); }
+      .tile-action {
+        font-size: 12px;
+        color: var(--text-accent);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-family: var(--font-body);
+        text-align: left;
+        &:hover { text-decoration: underline; }
+      }
+      .tile-clickable { cursor: pointer; }
+    `,
+  ],
+  template: `
+    <!-- Section A: Quick actions header -->
+    <div class="section-header">
+      <h1 class="greeting">{{ greeting }}</h1>
+      <button mat-flat-button (click)="navigateToNewPost()">
+        <mat-icon>add</mat-icon>
+        New post
+      </button>
+    </div>
+
+    <!-- Section B: Recent posts -->
+    <div class="section-posts">
+      <div class="section-title-row">
+        <h2 class="section-title">Recent posts</h2>
+        <button class="view-all-link" (click)="navigateToPosts()">View all →</button>
+      </div>
+
+      @if (allPosts() === undefined) {
+        <!-- Skeleton loading state -->
+        @for (i of skeletonRows; track i) {
+          <div class="skeleton-row">
+            <div class="skeleton-bar" style="flex:1;"></div>
+            <div class="skeleton-bar" style="width:48px;"></div>
+            <div class="skeleton-bar" style="width:36px;"></div>
+          </div>
+        }
+      } @else if (recentFive().length === 0) {
+        <!-- Empty state -->
+        <div class="empty-state">
+          <mat-icon class="empty-icon">edit</mat-icon>
+          <p class="empty-heading">No posts yet</p>
+          <p class="empty-sub">Start writing — your first post is one click away.</p>
+          <button mat-flat-button (click)="navigateToNewPost()">
+            <mat-icon>add</mat-icon>
+            New post
+          </button>
+        </div>
+      } @else {
+        @for (post of recentFive(); track post.id) {
+          <div class="post-row" (click)="navigateToPost(post.id)">
+            <span class="post-title">{{ post.title || '(Untitled)' }}</span>
+            <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
+            <span class="post-date">{{ post.updatedAt | date:'MMM d' }}</span>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Section C: Site health strip -->
+    <div class="section-health">
+      <div class="health-grid">
+
+        <!-- Tile 1: Plan -->
+        <div class="health-tile">
+          <span class="tile-label">Plan</span>
+          <span
+            class="tile-value"
+            [class.tile-value--teal]="planTier() !== 'starter'"
+            [class.tile-value--muted]="planTier() === 'starter'"
+          >{{ planLabel() }}</span>
+          @if (planTier() === 'starter') {
+            <button class="tile-action" (click)="navigateToSettings()">Upgrade →</button>
+          }
+        </div>
+
+        <!-- Tile 2: Custom domain -->
+        <div class="health-tile tile-clickable" (click)="navigateToSettings()">
+          <span class="tile-label">Domain</span>
+          @if (siteConfig()?.siteUrl) {
+            <span class="tile-value" style="font-size:14px; word-break:break-all;">
+              {{ siteConfig()!.siteUrl }}
+            </span>
+          } @else {
+            <span class="tile-value tile-value--muted" style="font-size:14px;">Not configured</span>
+          }
+        </div>
+
+        <!-- Tile 3: Published count -->
+        <div class="health-tile">
+          <span class="tile-label">Published</span>
+          <span class="tile-value">{{ postCounts().published }}</span>
+        </div>
+
+      </div>
+    </div>
+  `,
+})
+export class DashboardComponent {
+  private readonly postService = inject(PostService);
+  private readonly siteConfigService = inject(SiteConfigService);
+  private readonly planGatingService = inject(PlanGatingService);
+  private readonly router = inject(Router);
+
+  readonly greeting = getGreeting();
+
+  readonly skeletonRows = [0, 1, 2];
+
+  readonly allPosts = toSignal<BlogPost[]>(this.postService.getAllPosts());
+
+  readonly siteConfig = toSignal(this.siteConfigService.getDefaultSiteConfig());
+
+  readonly planTier = this.planGatingService.plan;
+
+  readonly planLabel = computed(() => PLAN_LABELS[this.planTier()] ?? this.planTier());
+
+  readonly recentFive = computed(() => (this.allPosts() ?? []).slice(0, 5));
+
+  readonly postCounts = computed(() => {
+    const posts = this.allPosts() ?? [];
+    return {
+      published: posts.filter((p) => p.status === 'published').length,
+      draft: posts.filter((p) => p.status === 'draft').length,
+      scheduled: posts.filter((p) => p.status === 'scheduled').length,
+      archived: posts.filter((p) => p.status === 'archived').length,
+    };
+  });
+
+  badgeClass(post: BlogPost): string {
+    switch (post.status) {
+      case 'published': return 'badge badge-pub';
+      case 'scheduled': return 'badge badge-sched';
+      case 'archived':  return 'badge badge-arch';
+      default:          return 'badge badge-draft';
+    }
+  }
+
+  badgeLabel(post: BlogPost): string {
+    switch (post.status) {
+      case 'published': return 'Published';
+      case 'scheduled': return 'Scheduled';
+      case 'archived':  return 'Archived';
+      default:          return 'Draft';
+    }
+  }
+
+  navigateToNewPost(): void {
+    this.router.navigate(['/posts/new']);
+  }
+
+  navigateToPost(postId: string): void {
+    this.router.navigate(['/posts', postId, 'edit']);
+  }
+
+  navigateToPosts(): void {
+    this.router.navigate(['/posts']);
+  }
+
+  navigateToSettings(): void {
+    this.router.navigate(['/settings']);
+  }
+}

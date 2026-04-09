@@ -72,7 +72,12 @@ export const adminRoutes: Route[] = [
     component: AdminShellComponent,
     canActivate: [authGuard, setupGuard],
     children: [
-      { path: '', redirectTo: 'posts', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('../dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      },
       {
         path: 'posts',
         loadComponent: () =>
@@ -176,7 +181,7 @@ export const adminRoutes: Route[] = [
       },
       { path: 'about-page', redirectTo: 'pages/about' },
       { path: 'links-page', redirectTo: 'pages/links' },
-      { path: '**', redirectTo: 'posts' },
+      { path: '**', redirectTo: 'dashboard' },
     ],
   },
 ];
