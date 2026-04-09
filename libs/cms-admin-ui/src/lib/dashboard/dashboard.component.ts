@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { BlogPost, PostService, SiteConfigService } from '@foliokit/cms-core';
-import { PlanGatingService } from '@foliokit/cms-core';
+import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -211,14 +210,31 @@ const PLAN_LABELS: Record<string, string> = {
         &:hover { text-decoration: underline; }
       }
       .tile-clickable { cursor: pointer; }
+
+      /* ── Tablet (768–1023) ── */
+      @media (max-width: 1023.98px) {
+        .section-header { padding: 24px 20px 20px; }
+        .section-posts  { padding: 20px; }
+        .section-health { padding: 20px; }
+      }
+
+      /* ── Mobile (<768) ── */
+      @media (max-width: 767.98px) {
+        .section-header         { padding: 16px 16px 14px; }
+        .section-header button  { width: 100%; }
+        .greeting               { font-size: 18px; }
+        .section-posts          { padding: 16px; }
+        .section-health         { padding: 16px; }
+        .health-grid            { grid-template-columns: 1fr; gap: 12px; }
+      }
     `,
   ],
   template: `
     <!-- Section A: Quick actions header -->
     <div class="section-header">
-      <h1 class="greeting">{{ greeting }}</h1>
+      <h1 class="greeting">{{ greeting() }}</h1>
       <button mat-flat-button (click)="navigateToNewPost()">
-        <mat-icon>add</mat-icon>
+        <mat-icon svgIcon="add" />
         New post
       </button>
     </div>
@@ -246,7 +262,7 @@ const PLAN_LABELS: Record<string, string> = {
           <p class="empty-heading">No posts yet</p>
           <p class="empty-sub">Start writing — your first post is one click away.</p>
           <button mat-flat-button (click)="navigateToNewPost()">
-            <mat-icon>add</mat-icon>
+            <mat-icon svgIcon="add" />
             New post
           </button>
         </div>
@@ -304,9 +320,13 @@ export class DashboardComponent {
   private readonly postService = inject(PostService);
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly planGatingService = inject(PlanGatingService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly greeting = getGreeting();
+  readonly greeting = computed(() => {
+    const name = this.auth.user()?.displayName;
+    return name ? `${getGreeting()}, ${name}` : getGreeting();
+  });
 
   readonly skeletonRows = [0, 1, 2];
 

@@ -92,7 +92,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
       <!-- Header -->
       <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="flex-1 text-xl font-semibold">Site Configuration</h1>
+        <h1 class="flex-1 text-xl font-semibold">Appearance</h1>
         @if (store.isSaving()) {
           <span class="text-xs opacity-40">Saving…</span>
         } @else if (store.saveError()) {
@@ -109,7 +109,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
         <mat-tab-group
           class="flex flex-col flex-1 overflow-hidden"
           animationDuration="0"
-          (selectedTabChange)="onTabChange()"
+
         >
           <!-- ── General ── -->
           <mat-tab label="General">
@@ -314,12 +314,6 @@ export class SiteConfigPageComponent implements OnInit {
       this.populateForms(config);
       this.watchForms();
     }, 50);
-  }
-
-  // ── Tab change: flush current form to store ─────────────────────────────
-
-  protected onTabChange(): void {
-    this.flushFormsToStore();
   }
 
   // ── Nav drag-drop ──────────────────────────────────────────────────────────

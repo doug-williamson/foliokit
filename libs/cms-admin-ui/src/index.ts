@@ -34,6 +34,7 @@ export * from './lib/author-editor/authors-list.component';
 export * from './lib/author-editor/author-form.component';
 export * from './lib/pages/admin-pages.component';
 export * from './lib/pages/admin-pages-section.component';
+export * from './lib/pages/pages.component';
 export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';

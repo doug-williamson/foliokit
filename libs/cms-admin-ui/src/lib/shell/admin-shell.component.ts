@@ -5,22 +5,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
 import { AuthService } from '@foliokit/cms-core';
-import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
  * Pre-built admin shell layout with opinionated navigation.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
- * - **Content** nav group: Posts, Authors
- * - **Site** nav group: Site Config, Pages, About (nested child, when enabled), Links (nested child, when enabled)
+ * - **Write** nav group: Posts, Series, Authors
+ * - **Publish** nav group: Pages
+ * - **Configure** nav group: Appearance, Settings
  * - Footer row with the signed-in user's email and a logout button
  *
  * `SHELL_CONFIG` is provided internally from the `appName` input — you do **not**
  * need to provide it separately in your route or app config.
- *
- * Conditionally shows the About and Links nav items (visually nested under Pages)
- * based on whether those pages are enabled in the site configuration
- * (read from `SiteConfigEditorStore`).
  *
  * @example
  * ```ts
@@ -36,7 +32,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
 function adminShellConfigFactory(shell: AdminShellComponent) {
   return computed(() => ({
     appName: shell.appName(),
-    showNewPostButton: true,
+    showNewPostButton: false,
     showRouteTitle: true,
   }));
 }
@@ -56,7 +52,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     ShellNavFooterDirective,
   ],
   providers: [
-    SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
       useFactory: adminShellConfigFactory,
@@ -68,10 +63,10 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
       <nav shellNav>
         <a class="nav-item" routerLink="/dashboard" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="home" />
-          <span class="nav-label">Dashboard</span>
+          <span class="nav-label">Home</span>
         </a>
 
-        <span class="nav-group-label">Content</span>
+        <span class="nav-group-label">Write</span>
         <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="article" />
           <span class="nav-label">Posts</span>
@@ -80,33 +75,22 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <mat-icon class="nav-icon" svgIcon="people" />
           <span class="nav-label">Authors</span>
         </a>
-        <a class="nav-item" routerLink="/taxonomy" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="category" />
-          <span class="nav-label">Taxonomy</span>
+        <a class="nav-item" routerLink="/series" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="collections_bookmark" />
+          <span class="nav-label">Series</span>
           <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
         </a>
 
-        <span class="nav-group-label">Site</span>
-        <a class="nav-item" routerLink="/site-config" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="settings" />
-          <span class="nav-label">Site Config</span>
-        </a>
-        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
-          <mat-icon class="nav-icon" svgIcon="auto_stories" />
+        <span class="nav-group-label">Publish</span>
+        <a class="nav-item" routerLink="/pages" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="web" />
           <span class="nav-label">Pages</span>
         </a>
-        @if (pages()?.about?.enabled) {
-          <a class="nav-item nav-child" routerLink="/pages/about" routerLinkActive="active-link">
-            <mat-icon class="nav-icon" svgIcon="person" />
-            <span class="nav-label">About</span>
-          </a>
-        }
-        @if (pages()?.links?.enabled) {
-          <a class="nav-item nav-child" routerLink="/pages/links" routerLinkActive="active-link">
-            <mat-icon class="nav-icon" svgIcon="link" />
-            <span class="nav-label">Links</span>
-          </a>
-        }
+        <span class="nav-group-label">Configure</span>
+        <a class="nav-item" routerLink="/appearance" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="palette" />
+          <span class="nav-label">Appearance</span>
+        </a>
         <a class="nav-item" routerLink="/settings" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="tune" />
           <span class="nav-label">Settings</span>
@@ -132,14 +116,8 @@ export class AdminShellComponent {
    */
   readonly appName = input<string>('FolioKit Admin');
 
-  protected readonly store = inject(SiteConfigEditorStore);
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  protected readonly pages = computed(() => this.store.config()?.pages);
-
-  constructor() {
-    this.store.load();
-  }
 
   protected async logout(): Promise<void> {
     await this.auth.signOut();

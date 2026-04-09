@@ -131,6 +131,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             </button>
           </section>
         }
+
       }
     </div>
   `,
