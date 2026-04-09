@@ -10,16 +10,22 @@ import {
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
+export type PostStatus = BlogPost['status'];
+
 export interface PostsListState {
   posts: BlogPost[];
   loading: boolean;
   error: string | null;
+  filterText: string;
+  filterStatus: PostStatus | 'all';
 }
 
 const initialState: PostsListState = {
   posts: [],
   loading: false,
   error: null,
+  filterText: '',
+  filterStatus: 'all',
 };
 
 export const PostsListStore = signalStore(
@@ -48,6 +54,22 @@ export const PostsListStore = signalStore(
     publishedCount: computed(
       () => store.posts().filter((p) => p.status === 'published').length,
     ),
+    filteredPosts: computed(() => {
+      let result = store.posts();
+      const text = store.filterText().trim().toLowerCase();
+      const status = store.filterStatus();
+      if (text) {
+        result = result.filter(
+          (p) =>
+            (p.title ?? '').toLowerCase().includes(text) ||
+            p.slug.toLowerCase().includes(text),
+        );
+      }
+      if (status !== 'all') {
+        result = result.filter((p) => p.status === status);
+      }
+      return result;
+    }),
   })),
 
   withMethods(
@@ -73,6 +95,14 @@ export const PostsListStore = signalStore(
         const nonScheduled = store.posts().filter((p) => p.status !== 'scheduled');
         patchState(store, { posts: [...nonScheduled, ...reordered] });
         // TODO: persist queueOrder to Firestore when ready
+      },
+
+      setFilterText(text: string): void {
+        patchState(store, { filterText: text });
+      },
+
+      setFilterStatus(status: PostStatus | 'all'): void {
+        patchState(store, { filterStatus: status });
       },
     }),
   ),

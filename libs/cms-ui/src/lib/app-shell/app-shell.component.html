@@ -1,9 +1,8 @@
 <div class="folio-shell-container">
   <mat-sidenav-container>
     <mat-sidenav
-      [mode]="isMobile() ? 'over' : 'side'"
+      [mode]="isMobile() || isIconRail() ? 'over' : 'side'"
       [opened]="sidenavOpen()"
-      [class.icon-rail]="isIconRail()"
       (openedChange)="sidenavOpen.set($event)"
     >
       <div class="folio-nav-wrapper">
@@ -20,7 +19,7 @@
 
     <mat-sidenav-content class="folio-content">
       <mat-toolbar class="folio-toolbar">
-        @if (isMobile()) {
+        @if (isMobile() || isIconRail()) {
           <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
             <mat-icon svgIcon="menu" />
           </button>

@@ -58,14 +58,14 @@ export class AppShellComponent implements OnInit, OnDestroy {
         const iconRail = state.breakpoints[ICON_RAIL_BP];
         this.isMobile.set(mobile);
         this.isIconRail.set(iconRail);
-        // Mobile: close sidenav (overlay); everything else: keep open
-        this.sidenavOpen.set(!mobile);
+        // Desktop: side mode, always open. Mobile/tablet: overlay, closed.
+        this.sidenavOpen.set(!mobile && !iconRail);
       });
 
     this.navSub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        if (this.isMobile()) {
+        if (this.isMobile() || this.isIconRail()) {
           this.sidenavOpen.set(false);
         }
       });
@@ -79,7 +79,7 @@ export class AppShellComponent implements OnInit, OnDestroy {
   }
 
   protected toggleSidenav(): void {
-    this.sidenavOpen.update((open) => !open);
+    this.sidenavOpen.update((v) => !v);
   }
 
   protected toggleTheme(): void {

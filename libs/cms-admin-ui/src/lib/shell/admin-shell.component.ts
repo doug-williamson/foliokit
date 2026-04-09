@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
-import { AuthService, PlanGatingService } from '@foliokit/cms-core';
+import { AuthService } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -74,15 +74,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         <a class="nav-item" routerLink="/taxonomy" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="category" />
           <span class="nav-label">Taxonomy</span>
-          @if (!hasTaxonomy()) {
-            <mat-icon
-              class="nav-icon"
-              svgIcon="lock"
-              style="font-size: 0.85rem; width: 0.85rem; height: 0.85rem; opacity: 0.55; margin-left: auto"
-              matTooltip="Available on Pro"
-              matTooltipPosition="right"
-            />
-          }
         </a>
 
         <span class="nav-group-label">Site</span>
@@ -134,9 +125,7 @@ export class AdminShellComponent {
   protected readonly store = inject(SiteConfigEditorStore);
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly planGating = inject(PlanGatingService);
   protected readonly pages = computed(() => this.store.config()?.pages);
-  protected readonly hasTaxonomy = this.planGating.hasPlatformFeature('taxonomy');
 
   constructor() {
     this.store.load();

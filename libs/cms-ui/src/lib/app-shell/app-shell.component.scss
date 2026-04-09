@@ -28,17 +28,30 @@ mat-sidenav.icon-rail {
   overflow-x: hidden;
 }
 
-mat-sidenav.icon-rail .nav-label {
+::ng-deep mat-sidenav.icon-rail .nav-label {
   display: none;
 }
 
-mat-sidenav.icon-rail .nav-group-label {
+::ng-deep mat-sidenav.icon-rail .nav-group-label {
   display: none;
 }
 
 ::ng-deep mat-sidenav.icon-rail .nav-item {
   padding: 0 !important;
   justify-content: center;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer {
+  padding: 4px 0;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer > div {
+  justify-content: center;
+  padding: 0;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer span {
+  display: none;
 }
 
 // ─── Nav wrapper layout ───────────────────────────────────────────────────────
@@ -183,6 +196,8 @@ mat-sidenav.icon-rail .nav-group-label {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.025em;
+  margin-left: 6px;
+  white-space: nowrap;
 
   em {
     font-style: italic;
