@@ -210,6 +210,23 @@ const PLAN_LABELS: Record<string, string> = {
         &:hover { text-decoration: underline; }
       }
       .tile-clickable { cursor: pointer; }
+
+      /* ── Tablet (768–1023) ── */
+      @media (max-width: 1023.98px) {
+        .section-header { padding: 24px 20px 20px; }
+        .section-posts  { padding: 20px; }
+        .section-health { padding: 20px; }
+      }
+
+      /* ── Mobile (<768) ── */
+      @media (max-width: 767.98px) {
+        .section-header         { padding: 16px 16px 14px; }
+        .section-header button  { width: 100%; }
+        .greeting               { font-size: 18px; }
+        .section-posts          { padding: 16px; }
+        .section-health         { padding: 16px; }
+        .health-grid            { grid-template-columns: 1fr; gap: 12px; }
+      }
     `,
   ],
   template: `
