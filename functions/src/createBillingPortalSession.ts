@@ -56,16 +56,24 @@ export const createBillingPortalSession = onRequest(
       }
 
       // --- Load billing record ---
-      const billingSnap = await db.doc(`billing/${tenantId}`).get();
+      const stripe = getStripeClient();
+      const billingRef = db.doc(`billing/${tenantId}`);
+      const billingSnap = await billingRef.get();
       const billingData = billingSnap.data() as { stripeCustomerId?: string } | undefined;
-      const stripeCustomerId = billingData?.stripeCustomerId ?? '';
+
+      let stripeCustomerId = billingData?.stripeCustomerId ?? '';
       if (!stripeCustomerId) {
-        res.status(400).json({ error: 'no_stripe_customer' });
-        return;
+        // Billing doc was provisioned without a Stripe customer (e.g. manually or via trial).
+        // Create one now and persist it so subsequent calls skip this step.
+        const customer = await stripe.customers.create({
+          email: ownerEmail,
+          metadata: { tenantId },
+        });
+        stripeCustomerId = customer.id;
+        await billingRef.set({ stripeCustomerId }, { merge: true });
       }
 
       // --- Create billing portal session ---
-      const stripe = getStripeClient();
       const session = await stripe.billingPortal.sessions.create({
         customer: stripeCustomerId,
         return_url: 'https://admin.foliokitcms.com/settings',
