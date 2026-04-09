@@ -11,13 +11,14 @@ import {
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { PostService } from '@foliokit/cms-core';
+import { BlogPost, PostService } from '@foliokit/cms-core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from './post-editor.store';
+import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
 import { ContentTabComponent } from './tabs/content-tab.component';
 import { MediaTabComponent } from './tabs/media-tab.component';
 import { MetadataTabComponent } from './tabs/metadata-tab.component';
@@ -55,6 +56,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatIconModule,
     MatSidenavModule,
     MatTooltipModule,
+    PostPublishButtonComponent,
     ContentTabComponent,
     MediaTabComponent,
     MetadataTabComponent,
@@ -202,8 +204,15 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         }
 
         <!-- Status badge -->
-        @if (store.post()?.status) {
-          <span [class]="'badge ' + statusBadgeClass()">{{ statusBadgeLabel() }}</span>
+        @if (store.post()?.status; as status) {
+          <span
+            class="badge"
+            [class.badge-pub]="status === 'published'"
+            [class.badge-sched]="status === 'scheduled'"
+            [class.badge-draft]="status === 'draft' || status === 'archived'"
+          >
+            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : '● DRAFT' }}
+          </span>
         }
 
         @if (!isDesktop()) {
@@ -213,25 +222,17 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
             <mat-icon svgIcon="save" />
           </button>
-          <button
-            mat-icon-button
-            (click)="onPrimaryAction()"
-            [disabled]="!canPrimaryAction() || store.isSaving()"
-            [matTooltip]="primaryLabel()"
-          >
-            <mat-icon [svgIcon]="store.post()?.status === 'scheduled' ? 'schedule' : 'publish'" />
-          </button>
         } @else {
           <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
             Save
           </button>
-          <button
-            mat-flat-button
-            (click)="onPrimaryAction()"
-            [disabled]="!canPrimaryAction() || store.isSaving()"
-          >
-            {{ primaryLabel() }}
-          </button>
+        }
+        @if (store.post(); as post) {
+          <cms-post-publish-button
+            [currentStatus]="post.status"
+            [isSaving]="store.saveStatus() === 'saving'"
+            (statusChange)="onStatusChange($event)"
+          />
         }
       </div>
 
@@ -349,48 +350,16 @@ export class PostEditorPageComponent implements OnInit {
   readonly leftTab = signal<LeftTab>('Content');
   readonly rightTab = signal<RightTab>('Article');
 
-  readonly primaryLabel = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'scheduled') return 'Schedule';
-    if (status === 'published') return 'Publish';
-    return 'Save Draft';
-  });
-
-  readonly canPrimaryAction = computed(() => {
-    const post = this.store.post();
-    if (!post) return false;
-    if (post.status === 'scheduled') {
-      return !!post.scheduledPublishAt && post.scheduledPublishAt > Date.now();
+  onStatusChange(status: BlogPost['status']): void {
+    if (status !== 'scheduled') {
+      this.store.updateField('scheduledPublishAt', undefined);
     }
-    return true;
-  });
-
-  readonly statusBadgeClass = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'published') return 'badge-pub';
-    if (status === 'scheduled') return 'badge-sched';
-    return 'badge-draft';
-  });
-
-  readonly statusBadgeLabel = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'published') return '● PUBLISHED';
-    if (status === 'scheduled') return '● SCHEDULED';
-    return '● DRAFT';
-  });
+    this.store.updateField('status', status);
+    this.doAutosave();
+  }
 
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
-  }
-
-  onPrimaryAction(): void {
-    const post = this.store.post();
-    if (!post) return;
-    if (post.status === 'published') {
-      this.store.publish();
-    } else {
-      this.store.save();
-    }
   }
 
   ngOnInit(): void {

@@ -49,6 +49,7 @@ export * from './lib/post-editor/post-editor-media-tab.component';
 export * from './lib/post-editor/post-editor-cover-image.component';
 export * from './lib/post-editor/post-editor-embedded-media.component';
 export * from './lib/post-editor/post-editor-embedded-media-item.component';
+export * from './lib/post-editor/post-publish-button/post-publish-button.component';
 
 // ── Posts list ────────────────────────────────────────────────────────────────
 export * from './lib/posts-list/posts-board.component';
