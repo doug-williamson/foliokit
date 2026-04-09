@@ -4,9 +4,15 @@ import {
   OnInit,
   PLATFORM_ID,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import type { NavItem } from '@foliokit/cms-core';
 import { isPlatformBrowser, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { doc, getDoc } from 'firebase/firestore';
@@ -19,7 +25,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
   selector: 'folio-settings-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, DatePipe, DomainSetupComponent],
+  imports: [MatButtonModule, DatePipe, DomainSetupComponent, DragDropModule, MatIconModule, MatSlideToggleModule],
   template: `
     <div class="settings-page">
       <header class="page-header">
@@ -131,7 +137,93 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             </button>
           </section>
         }
+
       }
+
+      <!-- ── Navigation ─────────────────────────────────────────────────────── -->
+      <section class="settings-section" id="navigation">
+        <h2 class="settings-section-title">Navigation</h2>
+        <p class="settings-section-body">
+          Drag to reorder your blog's public nav links. Toggle visibility without deleting items.
+        </p>
+
+        @if (configStore.config()) {
+          <div
+            cdkDropList
+            (cdkDropListDropped)="onNavDrop($event)"
+            class="nav-list"
+          >
+            @for (item of navItems(); track (item.url || $index); let i = $index) {
+              <div cdkDrag class="nav-row">
+                <mat-icon cdkDragHandle class="drag-handle" svgIcon="drag_indicator" />
+
+                <input
+                  class="nav-label-input"
+                  [value]="item.label"
+                  placeholder="Label"
+                  (input)="updateNavLabel(i, $any($event.target).value)"
+                  (blur)="updateNavLabel(i, $any($event.target).value)"
+                />
+
+                <input
+                  class="nav-url-input"
+                  [value]="item.url"
+                  placeholder="URL (e.g. /about or https://…)"
+                  (input)="updateNavUrl(i, $any($event.target).value)"
+                  (blur)="updateNavUrl(i, $any($event.target).value)"
+                />
+
+                <span class="nav-type-chip nav-type-chip--{{ navItemType(item) }}">
+                  {{ navItemType(item) }}
+                </span>
+
+                <mat-slide-toggle
+                  [checked]="!item.hidden"
+                  (change)="toggleNavHidden(i, !$event.checked)"
+                  aria-label="Visible in nav"
+                />
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeNavItem(i)"
+                  aria-label="Remove nav item"
+                >
+                  <mat-icon svgIcon="delete" />
+                </button>
+              </div>
+            }
+
+            @if (!navItems().length) {
+              <p class="settings-section-hint">No nav items yet. Add one below.</p>
+            }
+          </div>
+
+          <div class="nav-actions">
+            <button mat-stroked-button type="button" (click)="addNavItem()">
+              + Add custom link
+            </button>
+            @if (navDirty()) {
+              <button
+                mat-flat-button
+                type="button"
+                [disabled]="navSaving()"
+                (click)="saveNav()"
+              >
+                {{ navSaving() ? 'Saving…' : 'Save navigation' }}
+              </button>
+            }
+          </div>
+
+          @if (navError()) {
+            <p class="settings-section-hint" style="color: #d32f2f; margin-top: 8px;">
+              {{ navError() }}
+            </p>
+          }
+        } @else {
+          <p class="settings-section-hint">Loading…</p>
+        }
+      </section>
     </div>
   `,
   styles: [`
@@ -298,6 +390,91 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
       font-family: var(--font-mono);
     }
 
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .nav-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-1);
+    }
+
+    .drag-handle {
+      cursor: grab;
+      opacity: 0.4;
+      flex-shrink: 0;
+      touch-action: none;
+    }
+
+    .drag-handle:active { cursor: grabbing; }
+
+    .nav-label-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      min-width: 0;
+      outline: none;
+    }
+
+    .nav-label-input:focus {
+      outline: none;
+      border-bottom: 1px solid var(--mat-sys-primary, #1976d2);
+    }
+
+    .nav-url-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      min-width: 0;
+      outline: none;
+    }
+
+    .nav-url-input:focus {
+      outline: none;
+      border-bottom: 1px solid var(--mat-sys-primary, #1976d2);
+    }
+
+    .nav-type-chip {
+      font-family: var(--font-mono, monospace);
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      opacity: 0.6;
+      background: var(--surface-2);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    .cdk-drag-preview {
+      box-sizing: border-box;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .cdk-drag-placeholder { opacity: 0.3; }
+
+    .cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
   `],
 })
 export class SettingsPageComponent implements OnInit {
@@ -318,6 +495,37 @@ export class SettingsPageComponent implements OnInit {
   protected readonly features = computed(() =>
     getPlanFeatures(this.billingRecord()?.plan ?? 'starter'),
   );
+
+  protected readonly configStore = inject(SiteConfigEditorStore);
+
+  protected readonly navItems = signal<NavItem[]>([]);
+  protected readonly navDirty = signal(false);
+  protected readonly navSaving = signal(false);
+  protected readonly navError = signal<string | null>(null);
+
+  constructor() {
+    this.configStore.load();
+
+    // Populate local navItems once config loads; guard prevents overwriting user edits
+    effect(() => {
+      const config = this.configStore.config();
+      if (config && !this.navDirty()) {
+        this.navItems.set([...config.nav]);
+      }
+    }, { allowSignalWrites: true });
+
+    // React to save completion
+    effect(() => {
+      if (this.navSaving() && !this.configStore.isSaving()) {
+        this.navSaving.set(false);
+        if (this.configStore.saveError()) {
+          this.navError.set(this.configStore.saveError());
+        } else {
+          this.navDirty.set(false);
+        }
+      }
+    }, { allowSignalWrites: true });
+  }
 
   async ngOnInit(): Promise<void> {
     if (!isPlatformBrowser(this.platformId) || !this.firestore) return;
@@ -396,6 +604,59 @@ export class SettingsPageComponent implements OnInit {
     } catch {
       this.portalState.set('idle');
     }
+  }
+
+  protected onNavDrop(event: CdkDragDrop<NavItem[]>): void {
+    const items = [...this.navItems()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.navItems.set(items);
+    this.navDirty.set(true);
+  }
+
+  protected updateNavLabel(index: number, value: string): void {
+    const items = [...this.navItems()];
+    items[index] = { ...items[index], label: value };
+    this.navItems.set(items);
+    this.navDirty.set(true);
+  }
+
+  protected updateNavUrl(index: number, value: string): void {
+    const items = [...this.navItems()];
+    items[index] = { ...items[index], url: value };
+    this.navItems.set(items);
+    this.navDirty.set(true);
+  }
+
+  protected toggleNavHidden(index: number, hidden: boolean): void {
+    const items = [...this.navItems()];
+    items[index] = { ...items[index], hidden };
+    this.navItems.set(items);
+    this.navDirty.set(true);
+  }
+
+  protected addNavItem(): void {
+    this.navItems.update(items => [...items, { label: '', url: '' }]);
+    this.navDirty.set(true);
+  }
+
+  protected removeNavItem(index: number): void {
+    const items = [...this.navItems()];
+    items.splice(index, 1);
+    this.navItems.set(items);
+    this.navDirty.set(true);
+  }
+
+  protected saveNav(): void {
+    this.navSaving.set(true);
+    this.navError.set(null);
+    this.configStore.updateNav(this.navItems());
+    this.configStore.save();
+  }
+
+  protected navItemType(item: NavItem): 'page' | 'link' | 'custom' {
+    if (item.url.startsWith('/')) return 'page';
+    if (item.url.startsWith('http')) return 'link';
+    return 'custom';
   }
 
 }
