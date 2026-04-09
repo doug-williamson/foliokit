@@ -30,10 +30,6 @@ import { NotFoundComponent } from '../not-found/not-found.component';
         <!-- Breadcrumb -->
         <nav class="text-sm mb-4" style="color: var(--text-muted)">
           <a routerLink="/series" style="color: var(--text-accent); text-decoration: none">Series</a>
-          @if (series()!.pillarId) {
-            <span class="mx-1">/</span>
-            <a routerLink="/pillars" style="color: var(--text-accent); text-decoration: none">Pillars</a>
-          }
         </nav>
 
         <!-- Header -->

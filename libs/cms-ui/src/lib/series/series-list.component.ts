@@ -11,7 +11,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { take } from 'rxjs/operators';
 import { map } from 'rxjs';
-import type { Pillar, Series } from '@foliokit/cms-core';
+import type { Series } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE, SiteConfigService } from '@foliokit/cms-core';
 
 @Component({
@@ -28,44 +28,14 @@ import { BLOG_SEO_SERVICE, SiteConfigService } from '@foliokit/cms-core';
       @if (activeSeries().length === 0) {
         <p class="text-sm" style="color: var(--text-muted)">No series published yet.</p>
       } @else {
-        <!-- Pillar-grouped sections -->
-        @for (pillar of pillars(); track pillar.id) {
-          @let grouped = seriesByPillar()[pillar.id] ?? [];
-          @if (grouped.length > 0) {
-            <section class="mb-10">
-              <h2 class="text-lg font-semibold mb-4" style="color: var(--text-secondary)">
-                {{ pillar.name }}
-              </h2>
-              <div class="flex flex-col gap-3">
-                @for (s of grouped; track s.id) {
-                  <ng-container
-                    [ngTemplateOutlet]="seriesCard"
-                    [ngTemplateOutletContext]="{ $implicit: s }"
-                  />
-                }
-              </div>
-            </section>
+        <div class="flex flex-col gap-3">
+          @for (s of activeSeries(); track s.id) {
+            <ng-container
+              [ngTemplateOutlet]="seriesCard"
+              [ngTemplateOutletContext]="{ $implicit: s }"
+            />
           }
-        }
-
-        <!-- Standalone / pillar-free section -->
-        @if (pillarFreeSeries().length > 0) {
-          <section class="mb-10">
-            @if (pillars().length > 0) {
-              <h2 class="text-lg font-semibold mb-4" style="color: var(--text-secondary)">
-                Standalone Series
-              </h2>
-            }
-            <div class="flex flex-col gap-3">
-              @for (s of pillarFreeSeries(); track s.id) {
-                <ng-container
-                  [ngTemplateOutlet]="seriesCard"
-                  [ngTemplateOutletContext]="{ $implicit: s }"
-                />
-              }
-            </div>
-          </section>
-        }
+        </div>
       }
     </div>
 
@@ -102,28 +72,9 @@ export class SeriesListComponent {
     { initialValue: (this.route.snapshot.data['series'] as Series[]) ?? [] },
   );
 
-  readonly pillars = toSignal(
-    this.route.data.pipe(map((d) => (d['pillars'] as Pillar[]) ?? [])),
-    { initialValue: (this.route.snapshot.data['pillars'] as Pillar[]) ?? [] },
-  );
-
   protected readonly activeSeries = computed(() =>
     this.series().filter((s) => s.isActive),
   );
-
-  protected readonly pillarFreeSeries = computed(() =>
-    this.activeSeries().filter((s) => s.pillarId === null),
-  );
-
-  protected readonly seriesByPillar = computed((): Record<string, Series[]> => {
-    const result: Record<string, Series[]> = {};
-    for (const s of this.activeSeries()) {
-      if (s.pillarId !== null) {
-        (result[s.pillarId] ??= []).push(s);
-      }
-    }
-    return result;
-  });
 
   private readonly siteConfig = toSignal(
     this.siteConfigService.getDefaultSiteConfig().pipe(take(1)),

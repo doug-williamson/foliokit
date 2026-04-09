@@ -10,7 +10,6 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -43,13 +42,11 @@ function normalizeTimestamp(value: unknown): number {
 }
 
 function normalizeSeries(raw: Record<string, unknown>): Series {
-  const pillarId = raw['pillarId'];
   return {
     id: (raw['id'] as string) ?? '',
     slug: (raw['slug'] as string) ?? '',
     name: (raw['name'] as string) ?? '',
     description: raw['description'] as string | undefined,
-    pillarId: typeof pillarId === 'string' ? pillarId : null,
     postCount: typeof raw['postCount'] === 'number' ? raw['postCount'] : 0,
     isActive: raw['isActive'] === true,
     createdAt: normalizeTimestamp(raw['createdAt']),
@@ -73,40 +70,6 @@ export class SeriesService {
       ),
       catchError((err) => {
         console.error('[SeriesService.getAll]', err);
-        return of([]);
-      }),
-    );
-  }
-
-  getByPillar(pillarId: string): Observable<Series[]> {
-    const q = query(
-      collection(this.firestore, this.paths.collection('series')),
-      where('pillarId', '==', pillarId),
-      orderBy('name', 'asc'),
-    );
-    return from(getDocs(q)).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((d) => normalizeSeries({ id: d.id, ...d.data() })),
-      ),
-      catchError((err) => {
-        console.error('[SeriesService.getByPillar]', err);
-        return of([]);
-      }),
-    );
-  }
-
-  getPillarFree(): Observable<Series[]> {
-    const q = query(
-      collection(this.firestore, this.paths.collection('series')),
-      where('pillarId', '==', null),
-      orderBy('name', 'asc'),
-    );
-    return from(getDocs(q)).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((d) => normalizeSeries({ id: d.id, ...d.data() })),
-      ),
-      catchError((err) => {
-        console.error('[SeriesService.getPillarFree]', err);
         return of([]);
       }),
     );
@@ -159,10 +122,6 @@ export class SeriesService {
 
   setActive(id: string, isActive: boolean): Observable<void> {
     return this.update(id, { isActive });
-  }
-
-  reassignPillar(id: string, newPillarId: string | null): Observable<void> {
-    return this.update(id, { pillarId: newPillarId });
   }
 
   delete(id: string): Observable<void> {

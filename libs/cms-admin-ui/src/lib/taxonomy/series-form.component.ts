@@ -8,13 +8,11 @@ import {
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import type { Pillar, Series } from '@foliokit/cms-core';
+import type { Series } from '@foliokit/cms-core';
 
 export interface SeriesFormDialogData {
   series?: Series;
-  pillars: Pillar[];
 }
 
 function toSlug(name: string): string {
@@ -34,7 +32,6 @@ function toSlug(name: string): string {
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatSlideToggleModule,
   ],
   template: `
@@ -62,16 +59,6 @@ function toSlug(name: string): string {
           <textarea matInput formControlName="description" rows="2" placeholder="Optional"></textarea>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Pillar</mat-label>
-          <mat-select formControlName="pillarId">
-            <mat-option [value]="null">No pillar (standalone)</mat-option>
-            @for (p of data.pillars; track p.id) {
-              <mat-option [value]="p.id">{{ p.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
         <div class="flex items-center gap-3">
           <mat-slide-toggle formControlName="isActive">Active</mat-slide-toggle>
         </div>
@@ -94,7 +81,6 @@ export class SeriesFormComponent implements OnInit {
     name: ['', Validators.required],
     slug: ['', Validators.required],
     description: [''],
-    pillarId: [null as string | null],
     isActive: [true],
   });
 
@@ -104,7 +90,6 @@ export class SeriesFormComponent implements OnInit {
         name: this.data.series.name,
         slug: this.data.series.slug,
         description: this.data.series.description ?? '',
-        pillarId: this.data.series.pillarId,
         isActive: this.data.series.isActive,
       });
     }
@@ -118,12 +103,11 @@ export class SeriesFormComponent implements OnInit {
 
   protected submit(): void {
     if (this.form.invalid) return;
-    const { name, slug, description, pillarId, isActive } = this.form.getRawValue();
+    const { name, slug, description, isActive } = this.form.getRawValue();
     const result: Omit<Series, 'id' | 'createdAt' | 'updatedAt'> = {
       name: name!,
       slug: slug!,
       description: description || undefined,
-      pillarId: pillarId ?? null,
       postCount: this.data.series?.postCount ?? 0,
       isActive: isActive ?? true,
     };
