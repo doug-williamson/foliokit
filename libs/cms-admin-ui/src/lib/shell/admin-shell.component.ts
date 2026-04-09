@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
-import { AuthService, PlanGatingService } from '@foliokit/cms-core';
+import { AuthService } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -34,7 +34,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  * ```
  */
 function adminShellConfigFactory(shell: AdminShellComponent) {
-  return computed(() => ({ appName: shell.appName() }));
+  return computed(() => ({
+    appName: shell.appName(),
+    showNewPostButton: true,
+    showRouteTitle: true,
+  }));
 }
 
 @Component({
@@ -62,6 +66,11 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   template: `
     <folio-app-shell>
       <nav shellNav>
+        <a class="nav-item" routerLink="/dashboard" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="home" />
+          <span class="nav-label">Dashboard</span>
+        </a>
+
         <span class="nav-group-label">Content</span>
         <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="article" />
@@ -74,15 +83,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         <a class="nav-item" routerLink="/taxonomy" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="category" />
           <span class="nav-label">Taxonomy</span>
-          @if (!hasTaxonomy()) {
-            <mat-icon
-              class="nav-icon"
-              svgIcon="lock"
-              style="font-size: 0.85rem; width: 0.85rem; height: 0.85rem; opacity: 0.55; margin-left: auto"
-              matTooltip="Available on Pro"
-              matTooltipPosition="right"
-            />
-          }
+          <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
         </a>
 
         <span class="nav-group-label">Site</span>
@@ -134,9 +135,7 @@ export class AdminShellComponent {
   protected readonly store = inject(SiteConfigEditorStore);
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly planGating = inject(PlanGatingService);
   protected readonly pages = computed(() => this.store.config()?.pages);
-  protected readonly hasTaxonomy = this.planGating.hasPlatformFeature('taxonomy');
 
   constructor() {
     this.store.load();

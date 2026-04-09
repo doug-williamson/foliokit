@@ -91,20 +91,6 @@ function slugify(title: string): string {
           </mat-select>
         </mat-form-field>
 
-        <!-- Status -->
-        <mat-form-field class="w-full">
-          <mat-label>Status</mat-label>
-          <mat-select
-            [value]="post.status"
-            (valueChange)="onStatusChange($event)"
-          >
-            <mat-option value="draft">Draft</mat-option>
-            <mat-option value="scheduled">Scheduled</mat-option>
-            <mat-option value="published">Published</mat-option>
-            <mat-option value="archived">Archived</mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <!-- Published At — only when status is published -->
         @if (post.status === 'published') {
           <mat-form-field class="w-full">
@@ -242,14 +228,6 @@ export class MetadataTabComponent {
 
   toDate(ms: number | null | undefined): Date | null {
     return ms ? new Date(ms) : null;
-  }
-
-  onStatusChange(status: BlogPost['status']): void {
-    this.store.updateField('status', status);
-    if (status !== 'scheduled') {
-      this.store.updateField('scheduledPublishAt', undefined);
-      this.scheduleDateError.set(null);
-    }
   }
 
   onPublishedAtChange(date: Date | null, post: BlogPost): void {

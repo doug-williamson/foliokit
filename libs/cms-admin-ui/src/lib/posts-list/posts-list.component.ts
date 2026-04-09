@@ -1,24 +1,81 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PostsListStore } from './posts-list.store';
-import { PostsBoardComponent } from './posts-board.component';
+import { PostStatus, PostsListStore } from './posts-list.store';
+import { PostsTableComponent } from './posts-table.component';
 
 @Component({
   selector: 'folio-posts-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PostsListStore],
-  imports: [MatButtonModule, MatProgressSpinnerModule, PostsBoardComponent],
+  imports: [
+    MatButtonModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    PostsTableComponent,
+  ],
   host: { class: 'block h-full' },
   styles: [`
     :host { display: block; height: 100%; }
+
+    .filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 16px 6px;
+    }
+
+    .filter-search { width: 100%; }
+
+    .status-menu-btn { width: 100%; }
+
+    .chip-scroll { display: none; }
+
+    @media (min-width: 640px) {
+      .filter-bar {
+        flex-direction: row;
+        align-items: center;
+      }
+      .filter-search { flex: 0 0 260px; width: auto; }
+      .status-menu-btn { display: none; }
+      .chip-scroll {
+        display: block;
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .chip-scroll::-webkit-scrollbar { display: none; }
+    }
+
+    .empty-filter-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
   `],
   template: `
     <div class="flex flex-col h-full">
@@ -40,7 +97,54 @@ import { PostsBoardComponent } from './posts-board.component';
           Failed to load posts. Please try again.
         </div>
       } @else {
-        <folio-posts-board class="flex-1 min-h-0" (postSelected)="onPostSelected($event)" />
+        <div class="filter-bar">
+          <mat-form-field class="filter-search" appearance="outline" subscriptSizing="dynamic">
+            <input
+              matInput
+              [value]="inputValue()"
+              (input)="onSearchInput($any($event.target).value)"
+              placeholder="Search posts…"
+            />
+          </mat-form-field>
+
+          <!-- Mobile: dropdown -->
+          <button mat-stroked-button class="status-menu-btn" [matMenuTriggerFor]="statusMenu">
+            {{ filterStatusLabel() }}
+          </button>
+          <mat-menu #statusMenu>
+            <button mat-menu-item (click)="store.setFilterStatus('all')">All</button>
+            <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
+            <button mat-menu-item (click)="store.setFilterStatus('draft')">Draft</button>
+            <button mat-menu-item (click)="store.setFilterStatus('scheduled')">Scheduled</button>
+          </mat-menu>
+
+          <!-- Tablet+: chip strip -->
+          <div class="chip-scroll">
+            <mat-chip-listbox
+              hideSingleSelectionIndicator
+              [value]="store.filterStatus()"
+              (change)="store.setFilterStatus($event.value)"
+            >
+              <mat-chip-option value="all">All</mat-chip-option>
+              <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
+              <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
+              <mat-chip-option value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
+              <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </div>
+
+        @if (store.filteredPosts().length === 0 && (inputValue() || store.filterStatus() !== 'all')) {
+          <div class="empty-filter-state">
+            No posts match your filter.
+            <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
+          </div>
+        }
+
+        <folio-posts-table
+          class="flex-1 min-h-0"
+          (postSelected)="onPostSelected($event)"
+        />
       }
     </div>
   `,
@@ -49,8 +153,34 @@ export class PostsListComponent implements OnInit {
   protected readonly store = inject(PostsListStore);
   private readonly router = inject(Router);
 
+  protected readonly inputValue = signal('');
+  private readonly filterText$ = new Subject<string>();
+
+  protected readonly filterStatusLabel = computed(() => {
+    const s = this.store.filterStatus();
+    if (s === 'all') return 'Status: All';
+    return 'Status: ' + s.charAt(0).toUpperCase() + s.slice(1);
+  });
+
+  constructor() {
+    this.filterText$
+      .pipe(debounceTime(200), takeUntilDestroyed())
+      .subscribe((text) => this.store.setFilterText(text));
+  }
+
   ngOnInit(): void {
     this.store.loadPosts();
+  }
+
+  protected onSearchInput(value: string): void {
+    this.inputValue.set(value);
+    this.filterText$.next(value);
+  }
+
+  protected clearFilters(): void {
+    this.inputValue.set('');
+    this.store.setFilterText('');
+    this.store.setFilterStatus('all');
   }
 
   protected newPost(): void {

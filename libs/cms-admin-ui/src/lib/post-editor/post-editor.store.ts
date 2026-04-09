@@ -2,7 +2,6 @@ import { inject } from '@angular/core';
 import {
   patchState,
   signalStore,
-  watchState,
   withComputed,
   withHooks,
   withMethods,
@@ -13,6 +12,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, filter, switchMap } from 'rxjs/operators';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 export interface PostEditorState {
   post: BlogPost | null;
   isDirty: boolean;
@@ -21,6 +22,8 @@ export interface PostEditorState {
   mode: 'new' | 'edit';
   cursorPosition: number;
   tempPostId: string;
+  saveStatus: SaveStatus;
+  lastSavedAt: Date | null;
 }
 
 const initialState: PostEditorState = {
@@ -31,6 +34,8 @@ const initialState: PostEditorState = {
   mode: 'new',
   cursorPosition: 0,
   tempPostId: crypto.randomUUID(),
+  saveStatus: 'idle',
+  lastSavedAt: null,
 };
 
 function blankPost(): BlogPost {
@@ -64,6 +69,15 @@ export const PostEditorStore = signalStore(
         post.title.trim().length > 0 &&
         post.status !== 'published'
       );
+    }),
+    saveStatusLabel: computed(() => {
+      const status = store.saveStatus();
+      const lastSaved = store.lastSavedAt();
+      if (status === 'saving') return 'Saving…';
+      if (status === 'saved' && lastSaved)
+        return `Saved at ${lastSaved.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+      if (status === 'error') return 'Save failed — retry?';
+      return '';
     }),
   })),
 
@@ -101,10 +115,18 @@ export const PostEditorStore = signalStore(
         });
       },
 
+      setSaveStatus(status: SaveStatus): void {
+        patchState(store, { saveStatus: status });
+      },
+
+      setLastSavedAt(date: Date): void {
+        patchState(store, { lastSavedAt: date });
+      },
+
       updateField<K extends keyof BlogPost>(field: K, value: BlogPost[K]): void {
         const current = store.post();
         if (!current) return;
-        patchState(store, { post: { ...current, [field]: value }, isDirty: true });
+        patchState(store, { post: { ...current, [field]: value }, isDirty: true, saveStatus: 'idle' });
       },
 
       save(): void {
@@ -218,11 +240,8 @@ export const PostEditorStore = signalStore(
         )
         .subscribe(() => store.save());
 
-      watchState(store, (state) => {
-        if (state.isDirty && state.post?.status === 'draft' && !state.isSaving) {
-          trigger$.next('save');
-        }
-      });
+      // Note: watchState trigger removed — autosave is driven by the component
+      // via saveSignal$ (1500 ms debounce) to avoid duplicate Firestore writes.
 
       return () => {
         autosaveSub.unsubscribe();

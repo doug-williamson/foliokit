@@ -9,12 +9,14 @@ import {
 } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { NavigationEnd, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+import { ActivationEnd, NavigationEnd, Router } from '@angular/router';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { SHELL_CONFIG } from '../shell-config.token';
 import { ThemeService } from '../theme.service';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
@@ -33,6 +35,7 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    MatTooltipModule,
   ],
 })
 export class AppShellComponent implements OnInit, OnDestroy {
@@ -50,6 +53,17 @@ export class AppShellComponent implements OnInit, OnDestroy {
   private bpSub?: Subscription;
   private navSub?: Subscription;
 
+  /** Current route title, read from route data['title']. Updated on each navigation. */
+  protected readonly routeTitle = toSignal(
+    this.router.events.pipe(
+      filter((e): e is ActivationEnd => e instanceof ActivationEnd),
+      map((e) => e.snapshot.data['title'] as string | undefined),
+      filter((t): t is string => t !== undefined),
+      takeUntilDestroyed(),
+    ),
+    { initialValue: '' },
+  );
+
   ngOnInit(): void {
     this.bpSub = this.breakpointObserver
       .observe([MOBILE_BP, ICON_RAIL_BP])
@@ -58,14 +72,14 @@ export class AppShellComponent implements OnInit, OnDestroy {
         const iconRail = state.breakpoints[ICON_RAIL_BP];
         this.isMobile.set(mobile);
         this.isIconRail.set(iconRail);
-        // Mobile: close sidenav (overlay); everything else: keep open
-        this.sidenavOpen.set(!mobile);
+        // Desktop: side mode, always open. Mobile/tablet: overlay, closed.
+        this.sidenavOpen.set(!mobile && !iconRail);
       });
 
     this.navSub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        if (this.isMobile()) {
+        if (this.isMobile() || this.isIconRail()) {
           this.sidenavOpen.set(false);
         }
       });
@@ -79,10 +93,14 @@ export class AppShellComponent implements OnInit, OnDestroy {
   }
 
   protected toggleSidenav(): void {
-    this.sidenavOpen.update((open) => !open);
+    this.sidenavOpen.update((v) => !v);
   }
 
   protected toggleTheme(): void {
     this.theme.toggle();
+  }
+
+  protected navigateToNewPost(): void {
+    this.router.navigate(['/posts/new']);
   }
 }

@@ -25,6 +25,9 @@ export * from './lib/provide-admin-kit';
 export * from './lib/provide-admin-markdown';
 export * from './lib/icons/provide-admin-mat-icons';
 
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+export * from './lib/dashboard/dashboard.component';
+
 // ── Editor page components (Phase 2 — stubs in Phase 1) ──────────────────────
 export * from './lib/post-editor/post-editor-page.component';
 export * from './lib/author-editor/authors-list.component';
@@ -35,6 +38,11 @@ export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
 export * from './lib/settings/settings-page.component';
+export * from './lib/settings/domain-setup/domain-setup.component';
+
+// ── Plan gating ───────────────────────────────────────────────────────────────
+export * from './lib/plan-gate/plan-gate.component';
+export * from './lib/plan-gate/plan-comparison-dialog.component';
 
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
 export * from './lib/taxonomy/taxonomy-page.component';
@@ -49,6 +57,7 @@ export * from './lib/post-editor/post-editor-media-tab.component';
 export * from './lib/post-editor/post-editor-cover-image.component';
 export * from './lib/post-editor/post-editor-embedded-media.component';
 export * from './lib/post-editor/post-editor-embedded-media-item.component';
+export * from './lib/post-editor/post-publish-button/post-publish-button.component';
 
 // ── Posts list ────────────────────────────────────────────────────────────────
 export * from './lib/posts-list/posts-board.component';

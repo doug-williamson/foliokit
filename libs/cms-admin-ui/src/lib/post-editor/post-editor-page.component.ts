@@ -2,19 +2,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   OnInit,
   signal,
 } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { BlogPost, PostService } from '@foliokit/cms-core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from './post-editor.store';
+import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
 import { ContentTabComponent } from './tabs/content-tab.component';
 import { MediaTabComponent } from './tabs/media-tab.component';
 import { MetadataTabComponent } from './tabs/metadata-tab.component';
@@ -52,6 +56,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatIconModule,
     MatSidenavModule,
     MatTooltipModule,
+    PostPublishButtonComponent,
     ContentTabComponent,
     MediaTabComponent,
     MetadataTabComponent,
@@ -148,6 +153,18 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       .save-dot--saved {
         background: var(--green-600);
       }
+
+      .save-retry-btn {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--red-600);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
     `,
   ],
   template: `
@@ -166,23 +183,36 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         </span>
 
         <!-- Autosave indicator -->
-        @if (store.isSaving()) {
-          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
-            <span class="save-dot save-dot--saving"></span>
-            Saving…
-          </span>
-        } @else if (store.saveError()) {
-          <span style="font-size: 11px; color: var(--red-600);">{{ store.saveError() }}</span>
-        } @else if (!store.isDirty() && store.post()) {
-          <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
-            <span class="save-dot save-dot--saved"></span>
-            Saved
-          </span>
+        @if (!store.isNew()) {
+          <div style="min-width: 148px; display: flex; align-items: center; justify-content: flex-end;">
+            @if (store.saveStatus() === 'saving') {
+              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
+                <span class="save-dot save-dot--saving"></span>
+                Saving…
+              </span>
+            } @else if (store.saveStatus() === 'saved') {
+              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-600);">
+                <span class="save-dot save-dot--saved"></span>
+                {{ store.saveStatusLabel() }}
+              </span>
+            } @else if (store.saveStatus() === 'error') {
+              <button class="save-retry-btn" (click)="retryAutosave()">
+                {{ store.saveStatusLabel() }}
+              </button>
+            }
+          </div>
         }
 
         <!-- Status badge -->
-        @if (store.post()?.status) {
-          <span [class]="'badge ' + statusBadgeClass()">{{ statusBadgeLabel() }}</span>
+        @if (store.post()?.status; as status) {
+          <span
+            class="badge"
+            [class.badge-pub]="status === 'published'"
+            [class.badge-sched]="status === 'scheduled'"
+            [class.badge-draft]="status === 'draft' || status === 'archived'"
+          >
+            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : '● DRAFT' }}
+          </span>
         }
 
         @if (!isDesktop()) {
@@ -192,25 +222,17 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
             <mat-icon svgIcon="save" />
           </button>
-          <button
-            mat-icon-button
-            (click)="onPrimaryAction()"
-            [disabled]="!canPrimaryAction() || store.isSaving()"
-            [matTooltip]="primaryLabel()"
-          >
-            <mat-icon [svgIcon]="store.post()?.status === 'scheduled' ? 'schedule' : 'publish'" />
-          </button>
         } @else {
           <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
             Save
           </button>
-          <button
-            mat-flat-button
-            (click)="onPrimaryAction()"
-            [disabled]="!canPrimaryAction() || store.isSaving()"
-          >
-            {{ primaryLabel() }}
-          </button>
+        }
+        @if (store.post(); as post) {
+          <cms-post-publish-button
+            [currentStatus]="post.status"
+            [isSaving]="store.saveStatus() === 'saving'"
+            (statusChange)="onStatusChange($event)"
+          />
         }
       </div>
 
@@ -276,9 +298,42 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 })
 export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
+  private readonly postService = inject(PostService);
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
+
+  private readonly saveSignal$ = new Subject<void>();
+
+  constructor() {
+    // Trigger autosave whenever an editable field changes on an existing post.
+    effect(() => {
+      const post = this.store.post();
+      if (!post?.id || !this.store.isDirty()) return;
+      this.saveSignal$.next();
+    });
+
+    this.saveSignal$
+      .pipe(debounceTime(1500), takeUntilDestroyed())
+      .subscribe(() => this.doAutosave());
+  }
+
+  private doAutosave(): void {
+    const post = this.store.post();
+    if (!post?.id) return;
+    this.store.setSaveStatus('saving');
+    this.postService.savePost(post).subscribe({
+      next: () => {
+        this.store.setSaveStatus('saved');
+        this.store.setLastSavedAt(new Date());
+      },
+      error: () => this.store.setSaveStatus('error'),
+    });
+  }
+
+  protected retryAutosave(): void {
+    this.doAutosave();
+  }
 
   readonly isDesktop = toSignal(
     inject(BreakpointObserver)
@@ -295,48 +350,16 @@ export class PostEditorPageComponent implements OnInit {
   readonly leftTab = signal<LeftTab>('Content');
   readonly rightTab = signal<RightTab>('Article');
 
-  readonly primaryLabel = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'scheduled') return 'Schedule';
-    if (status === 'published') return 'Publish';
-    return 'Save Draft';
-  });
-
-  readonly canPrimaryAction = computed(() => {
-    const post = this.store.post();
-    if (!post) return false;
-    if (post.status === 'scheduled') {
-      return !!post.scheduledPublishAt && post.scheduledPublishAt > Date.now();
+  onStatusChange(status: BlogPost['status']): void {
+    if (status !== 'scheduled') {
+      this.store.updateField('scheduledPublishAt', undefined);
     }
-    return true;
-  });
-
-  readonly statusBadgeClass = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'published') return 'badge-pub';
-    if (status === 'scheduled') return 'badge-sched';
-    return 'badge-draft';
-  });
-
-  readonly statusBadgeLabel = computed(() => {
-    const status = this.store.post()?.status;
-    if (status === 'published') return '● PUBLISHED';
-    if (status === 'scheduled') return '● SCHEDULED';
-    return '● DRAFT';
-  });
+    this.store.updateField('status', status);
+    this.doAutosave();
+  }
 
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
-  }
-
-  onPrimaryAction(): void {
-    const post = this.store.post();
-    if (!post) return;
-    if (post.status === 'published') {
-      this.store.publish();
-    } else {
-      this.store.save();
-    }
   }
 
   ngOnInit(): void {

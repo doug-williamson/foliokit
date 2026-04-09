@@ -28,17 +28,30 @@ mat-sidenav.icon-rail {
   overflow-x: hidden;
 }
 
-mat-sidenav.icon-rail .nav-label {
+::ng-deep mat-sidenav.icon-rail .nav-label {
   display: none;
 }
 
-mat-sidenav.icon-rail .nav-group-label {
+::ng-deep mat-sidenav.icon-rail .nav-group-label {
   display: none;
 }
 
 ::ng-deep mat-sidenav.icon-rail .nav-item {
   padding: 0 !important;
   justify-content: center;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer {
+  padding: 4px 0;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer > div {
+  justify-content: center;
+  padding: 0;
+}
+
+::ng-deep mat-sidenav.icon-rail .folio-nav-footer span {
+  display: none;
 }
 
 // ─── Nav wrapper layout ───────────────────────────────────────────────────────
@@ -142,6 +155,45 @@ mat-sidenav.icon-rail .nav-group-label {
   background: var(--nav-active-bg);
 }
 
+// ─── Plan tier badges on nav items ───────────────────────────────────────────
+
+::ng-deep mat-sidenav .nav-plan-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 100px;
+  margin-left: auto;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+
+[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
+  background: var(--teal-100);
+  color: var(--teal-700);
+}
+
+[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
+  background: color-mix(in srgb, var(--teal-500) 20%, transparent);
+  color: var(--teal-200);
+}
+
+[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
+  background: var(--amber-100);
+  color: var(--amber-600);
+}
+
+[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
+  background: color-mix(in srgb, var(--amber-600) 20%, transparent);
+  color: var(--amber-400);
+}
+
+// Hide plan badges in icon-rail mode (no space for text)
+::ng-deep mat-sidenav.icon-rail .nav-plan-badge {
+  display: none;
+}
+
 // ─── Logo mark ────────────────────────────────────────────────────────────────
 
 .folio-logo-mark {
@@ -183,12 +235,27 @@ mat-sidenav.icon-rail .nav-group-label {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.025em;
+  margin-left: 6px;
+  white-space: nowrap;
 
   em {
     font-style: italic;
     color: var(--text-muted);
     font-weight: 400;
   }
+}
+
+// ─── Route title ─────────────────────────────────────────────────────────────
+
+.route-title {
+  flex: 1;
+  margin-left: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
