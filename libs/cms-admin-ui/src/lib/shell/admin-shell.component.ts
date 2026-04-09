@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -14,7 +12,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
  * - **Write** nav group: Posts, Series, Authors
- * - **Publish** nav group: Pages, Navigation
+ * - **Publish** nav group: Pages
  * - **Configure** nav group: Appearance, Settings
  * - Footer row with the signed-in user's email and a logout button
  *
@@ -90,11 +88,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <mat-icon class="nav-icon" svgIcon="web" />
           <span class="nav-label">Pages</span>
         </a>
-        <a class="nav-item" routerLink="/settings" fragment="navigation" [class.active-link]="isNavActive()">
-          <mat-icon class="nav-icon" svgIcon="menu" />
-          <span class="nav-label">Navigation</span>
-        </a>
-
         <span class="nav-group-label">Configure</span>
         <a class="nav-item" routerLink="/appearance" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="palette" />
@@ -127,14 +120,6 @@ export class AdminShellComponent {
 
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-
-  protected readonly isNavActive = toSignal(
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
-      map(() => this.router.url.includes('#navigation')),
-    ),
-    { initialValue: false },
-  );
 
   protected async logout(): Promise<void> {
     await this.auth.signOut();
