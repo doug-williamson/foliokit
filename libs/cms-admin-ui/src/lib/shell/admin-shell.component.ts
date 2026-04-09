@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
 import { AuthService } from '@foliokit/cms-core';
-import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
  * Pre-built admin shell layout with opinionated navigation.
@@ -53,7 +52,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     ShellNavFooterDirective,
   ],
   providers: [
-    SiteConfigEditorStore,
     {
       provide: SHELL_CONFIG,
       useFactory: adminShellConfigFactory,
