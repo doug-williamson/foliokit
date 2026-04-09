@@ -206,6 +206,19 @@ mat-sidenav.icon-rail {
   }
 }
 
+// ─── Route title ─────────────────────────────────────────────────────────────
+
+.route-title {
+  flex: 1;
+  margin-left: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 
 .folio-toolbar {

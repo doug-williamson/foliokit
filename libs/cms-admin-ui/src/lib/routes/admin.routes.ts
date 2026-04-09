@@ -75,16 +75,19 @@ export const adminRoutes: Route[] = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
+        data: { title: 'Dashboard' },
         loadComponent: () =>
           import('../dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'posts',
+        data: { title: 'Posts' },
         loadComponent: () =>
           import('../posts-list/posts-list.component').then((m) => m.PostsListComponent),
       },
       {
         path: 'posts/new',
+        data: { title: '' },
         loadComponent: () =>
           import('../post-editor/post-editor-page.component').then(
             (m) => m.PostEditorPageComponent,
@@ -94,6 +97,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'posts/:id/edit',
+        data: { title: '' },
         loadComponent: () =>
           import('../post-editor/post-editor-page.component').then(
             (m) => m.PostEditorPageComponent,
@@ -103,6 +107,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'authors',
+        data: { title: 'Authors' },
         loadComponent: () =>
           import('../author-editor/authors-list.component').then(
             (m) => m.AuthorsListComponent,
@@ -110,6 +115,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'authors/new',
+        data: { title: '' },
         loadComponent: () =>
           import('../author-editor/author-form.component').then(
             (m) => m.AuthorFormComponent,
@@ -119,6 +125,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'authors/:id/edit',
+        data: { title: '' },
         loadComponent: () =>
           import('../author-editor/author-form.component').then(
             (m) => m.AuthorFormComponent,
@@ -137,6 +144,7 @@ export const adminRoutes: Route[] = [
           },
           {
             path: 'about',
+            data: { title: 'About' },
             loadComponent: () =>
               import('../page-editor/about-page-editor.component').then(
                 (m) => m.AboutPageEditorComponent,
@@ -146,6 +154,7 @@ export const adminRoutes: Route[] = [
           },
           {
             path: 'links',
+            data: { title: 'Links' },
             loadComponent: () =>
               import('../page-editor/links-page-editor.component').then(
                 (m) => m.LinksPageEditorComponent,
@@ -157,6 +166,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'taxonomy',
+        data: { title: 'Taxonomy' },
         loadComponent: () =>
           import('../taxonomy/taxonomy-page.component').then(
             (m) => m.TaxonomyPageComponent,
@@ -165,6 +175,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'site-config',
+        data: { title: 'Site Config' },
         loadComponent: () =>
           import('../site-config-editor/site-config-page.component').then(
             (m) => m.SiteConfigPageComponent,
@@ -174,6 +185,7 @@ export const adminRoutes: Route[] = [
       },
       {
         path: 'settings',
+        data: { title: 'Settings' },
         loadComponent: () =>
           import('../settings/settings-page.component').then(
             (m) => m.SettingsPageComponent,

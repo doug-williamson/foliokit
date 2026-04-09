@@ -39,12 +39,28 @@
         }
         <span class="folio-app-name">{{ config().appName }}</span>
 
-        <span class="flex-1"></span>
+        @if (config().showRouteTitle) {
+          <span class="route-title">{{ routeTitle() }}</span>
+        } @else {
+          <span class="flex-1"></span>
+        }
 
         <ng-content select="[shellHeaderActions]" />
 
         @if (config().showAuth) {
           <ng-content select="[shellAuthSlot]" />
+        }
+
+        <!-- New post shortcut — admin only (showNewPostButton flag) -->
+        @if (config().showNewPostButton) {
+          <button
+            mat-icon-button
+            aria-label="New post"
+            matTooltip="New post"
+            (click)="navigateToNewPost()"
+          >
+            <mat-icon svgIcon="add" />
+          </button>
         }
 
         <button
@@ -60,7 +76,8 @@
         <ng-content />
       </main>
 
-      @if (!config().features?.removeBranding) {
+      <!-- showNewPostButton doubles as the "is admin shell" flag — suppresses branding in admin -->
+      @if (!config().features?.removeBranding && !config().showNewPostButton) {
         <footer class="folio-powered-footer">
           <span>Powered by </span>
           <a href="https://foliokitcms.com" target="_blank" rel="noopener noreferrer">FolioKit</a>

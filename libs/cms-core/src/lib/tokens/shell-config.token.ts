@@ -8,6 +8,10 @@ export interface ShellConfig {
   showAuth?: boolean;
   nav?: NavEntry[];
   features?: PlanFeatures;
+  /** Admin-only: shows a global "+ New post" icon button in the shell header. Defaults to false. */
+  showNewPostButton?: boolean;
+  /** Admin-only: displays the current route title in the shell header. Defaults to false. */
+  showRouteTitle?: boolean;
 }
 
 export const SHELL_CONFIG = new InjectionToken<Signal<ShellConfig>>('SHELL_CONFIG');

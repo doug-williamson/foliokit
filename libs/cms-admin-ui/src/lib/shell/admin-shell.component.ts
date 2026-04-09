@@ -34,7 +34,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
  * ```
  */
 function adminShellConfigFactory(shell: AdminShellComponent) {
-  return computed(() => ({ appName: shell.appName() }));
+  return computed(() => ({
+    appName: shell.appName(),
+    showNewPostButton: true,
+    showRouteTitle: true,
+  }));
 }
 
 @Component({
@@ -62,6 +66,11 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   template: `
     <folio-app-shell>
       <nav shellNav>
+        <a class="nav-item" routerLink="/dashboard" routerLinkActive="active-link">
+          <mat-icon class="nav-icon" svgIcon="home" />
+          <span class="nav-label">Dashboard</span>
+        </a>
+
         <span class="nav-group-label">Content</span>
         <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="article" />
