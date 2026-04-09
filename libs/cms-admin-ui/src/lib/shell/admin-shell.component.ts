@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -88,7 +90,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <mat-icon class="nav-icon" svgIcon="web" />
           <span class="nav-label">Pages</span>
         </a>
-        <a class="nav-item" routerLink="/settings" fragment="navigation" routerLinkActive="active-link">
+        <a class="nav-item" routerLink="/settings" fragment="navigation" [class.active-link]="isNavActive()">
           <mat-icon class="nav-icon" svgIcon="menu" />
           <span class="nav-label">Navigation</span>
         </a>
@@ -125,6 +127,14 @@ export class AdminShellComponent {
 
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  protected readonly isNavActive = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(() => this.router.url.includes('#navigation')),
+    ),
+    { initialValue: false },
+  );
 
   protected async logout(): Promise<void> {
     await this.auth.signOut();

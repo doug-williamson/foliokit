@@ -475,7 +475,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <p class="text-xs opacity-40">
                       Photos and social links can be added in the
-                      <a routerLink="/pages/about" class="underline">About Page editor</a>.
+                      <a routerLink="/pages" [queryParams]="{ tab: 'about' }" class="underline">About Page editor</a>.
                     </p>
                   }
                 </div>
@@ -555,7 +555,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
                     <p class="text-xs opacity-40">
                       Avatar and full link management available in the
-                      <a routerLink="/pages/links" class="underline">Links Page editor</a>.
+                      <a routerLink="/pages" [queryParams]="{ tab: 'links' }" class="underline">Links Page editor</a>.
                     </p>
                   }
                 </div>
