@@ -109,7 +109,7 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
         <mat-tab-group
           class="flex flex-col flex-1 overflow-hidden"
           animationDuration="0"
-          (selectedTabChange)="onTabChange()"
+
         >
           <!-- ── General ── -->
           <mat-tab label="General">
@@ -314,12 +314,6 @@ export class SiteConfigPageComponent implements OnInit {
       this.populateForms(config);
       this.watchForms();
     }, 50);
-  }
-
-  // ── Tab change: flush current form to store ─────────────────────────────
-
-  protected onTabChange(): void {
-    this.flushFormsToStore();
   }
 
   // ── Nav drag-drop ──────────────────────────────────────────────────────────
