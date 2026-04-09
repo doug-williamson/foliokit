@@ -153,8 +153,8 @@ export const adminRoutes: Route[] = [
       {
         path: 'taxonomy',
         loadComponent: () =>
-          import('../taxonomy/pillars-list.component').then(
-            (m) => m.PillarsListComponent,
+          import('../taxonomy/taxonomy-page.component').then(
+            (m) => m.TaxonomyPageComponent,
           ),
         providers: [TaxonomyStore],
       },

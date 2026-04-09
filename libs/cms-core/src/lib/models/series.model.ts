@@ -3,8 +3,6 @@ export interface Series {
   slug: string;
   name: string;
   description?: string;
-  /** null = pillar-free series; string = foreign key to Pillar.id */
-  pillarId: string | null;
   /** Denormalized count of posts in this series. */
   postCount: number;
   isActive: boolean;

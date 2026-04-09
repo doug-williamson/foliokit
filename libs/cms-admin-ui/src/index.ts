@@ -37,8 +37,7 @@ export * from './lib/page-editor/about-page-editor.component';
 export * from './lib/settings/settings-page.component';
 
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
-export * from './lib/taxonomy/pillars-list.component';
-export * from './lib/taxonomy/pillar-form.component';
+export * from './lib/taxonomy/taxonomy-page.component';
 export * from './lib/taxonomy/series-form.component';
 
 // ── Shared editor layout ──────────────────────────────────────────────────────
