@@ -83,6 +83,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         <a class="nav-item" routerLink="/taxonomy" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="category" />
           <span class="nav-label">Taxonomy</span>
+          <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
         </a>
 
         <span class="nav-group-label">Site</span>

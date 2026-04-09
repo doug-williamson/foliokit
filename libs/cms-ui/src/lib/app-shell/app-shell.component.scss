@@ -155,6 +155,45 @@ mat-sidenav.icon-rail {
   background: var(--nav-active-bg);
 }
 
+// ─── Plan tier badges on nav items ───────────────────────────────────────────
+
+::ng-deep mat-sidenav .nav-plan-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 100px;
+  margin-left: auto;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+
+[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
+  background: var(--teal-100);
+  color: var(--teal-700);
+}
+
+[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
+  background: color-mix(in srgb, var(--teal-500) 20%, transparent);
+  color: var(--teal-200);
+}
+
+[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
+  background: var(--amber-100);
+  color: var(--amber-600);
+}
+
+[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
+  background: color-mix(in srgb, var(--amber-600) 20%, transparent);
+  color: var(--amber-400);
+}
+
+// Hide plan badges in icon-rail mode (no space for text)
+::ng-deep mat-sidenav.icon-rail .nav-plan-badge {
+  display: none;
+}
+
 // ─── Logo mark ────────────────────────────────────────────────────────────────
 
 .folio-logo-mark {

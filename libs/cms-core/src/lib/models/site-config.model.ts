@@ -9,6 +9,8 @@ export interface NavItem {
   order?: number;
   external?: boolean;
   icon?: string;
+  /** Optional plan tier required to access this nav item. Used for badge display only — does not hide or disable the link. */
+  requiredPlan?: 'pro' | 'agency';
 }
 
 export interface NavGroup {

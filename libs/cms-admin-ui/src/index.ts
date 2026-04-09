@@ -40,6 +40,10 @@ export * from './lib/page-editor/about-page-editor.component';
 export * from './lib/settings/settings-page.component';
 export * from './lib/settings/domain-setup/domain-setup.component';
 
+// ── Plan gating ───────────────────────────────────────────────────────────────
+export * from './lib/plan-gate/plan-gate.component';
+export * from './lib/plan-gate/plan-comparison-dialog.component';
+
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
 export * from './lib/taxonomy/taxonomy-page.component';
 export * from './lib/taxonomy/series-form.component';

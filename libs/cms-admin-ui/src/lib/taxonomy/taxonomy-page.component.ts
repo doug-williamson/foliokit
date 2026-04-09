@@ -1,10 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
-  OnInit,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlanGatingService, Series } from '@foliokit/cms-core';
+import { PlanGateComponent } from '../plan-gate/plan-gate.component';
 import { SeriesFormComponent } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
@@ -20,40 +20,21 @@ import { TaxonomyStore } from './taxonomy.store';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    PlanGateComponent,
   ],
   template: `
-    @if (!hasTaxonomy()) {
-      <!-- Upgrade CTA for starter tenants -->
-      <div class="max-w-xl mx-auto p-8">
-        <div class="border rounded-xl p-6 flex flex-col gap-4" style="border-color: var(--border)">
-          <div class="flex items-center gap-3">
-            <mat-icon
-              svgIcon="category"
-              style="color: var(--text-accent); font-size: 2rem; width: 2rem; height: 2rem"
-            />
-            <div>
-              <h2 class="text-lg font-semibold">Content Taxonomy</h2>
-              <span class="text-xs font-bold" style="color: var(--text-accent)">PRO</span>
-            </div>
-          </div>
-          <p class="text-sm" style="color: var(--text-muted)">
-            Organise your posts into series and surface structured collections in your blog.
-          </p>
-          <div>
-            <button mat-flat-button routerLink="/settings">
-              Upgrade to Pro to unlock
-            </button>
-          </div>
-        </div>
-      </div>
-    } @else {
-      <!-- Full taxonomy UI -->
+    <cms-plan-gate
+      feature="taxonomy"
+      requiredPlan="pro"
+      featureLabel="Content Taxonomy"
+      featureDescription="Organise posts into pillars and series. Group related content and surface structured collections in your blog."
+    >
+      <!-- Full taxonomy UI — loaded reactively once the Pro plan is confirmed -->
       <div class="flex flex-col h-full overflow-hidden">
         <!-- Header -->
         <div
@@ -118,20 +99,22 @@ import { TaxonomyStore } from './taxonomy.store';
           }
         </div>
       </div>
-    }
+    </cms-plan-gate>
   `,
 })
-export class TaxonomyPageComponent implements OnInit {
+export class TaxonomyPageComponent {
   protected readonly store = inject(TaxonomyStore);
   private readonly planGating = inject(PlanGatingService);
   private readonly dialog = inject(MatDialog);
 
-  protected readonly hasTaxonomy = this.planGating.hasPlatformFeature('taxonomy');
-
-  ngOnInit(): void {
-    if (this.hasTaxonomy()) {
-      this.store.loadAll();
-    }
+  constructor() {
+    // Reactively load taxonomy data when the Pro plan is confirmed.
+    // Uses effect so it re-runs if the plan changes mid-session (e.g. after upgrade).
+    effect(() => {
+      if (this.planGating.features().platform.taxonomy) {
+        this.store.loadAll();
+      }
+    });
   }
 
   protected openNewSeries(): void {
