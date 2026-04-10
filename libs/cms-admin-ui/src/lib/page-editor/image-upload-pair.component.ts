@@ -2,13 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  PLATFORM_ID,
   ViewChild,
-  inject,
   input,
   output,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -31,7 +28,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                    style="background: rgba(0,0,0,0.5)">
                 <button mat-icon-button style="color:white" title="Replace" type="button"
-                        (click)="isBrowser && lightInput.click()">
+                        (click)="lightInput.click()">
                   <mat-icon svgIcon="swap_horiz" />
                 </button>
                 <button mat-icon-button style="color:white" title="Remove" type="button"
@@ -46,8 +43,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
               style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
               role="button"
               tabindex="0"
-              (click)="isBrowser && lightInput.click()"
-              (keydown.enter)="isBrowser && lightInput.click()"
+              (click)="lightInput.click()"
+              (keydown.enter)="lightInput.click()"
             >
               <mat-icon class="opacity-40" svgIcon="upload" />
               <span class="text-xs opacity-40">Upload</span>
@@ -64,7 +61,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                    style="background: rgba(0,0,0,0.5)">
                 <button mat-icon-button style="color:white" title="Replace" type="button"
-                        (click)="isBrowser && darkInput.click()">
+                        (click)="darkInput.click()">
                   <mat-icon svgIcon="swap_horiz" />
                 </button>
                 <button mat-icon-button style="color:white" title="Remove" type="button"
@@ -79,8 +76,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
               style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
               role="button"
               tabindex="0"
-              (click)="isBrowser && darkInput.click()"
-              (keydown.enter)="isBrowser && darkInput.click()"
+              (click)="darkInput.click()"
+              (keydown.enter)="darkInput.click()"
             >
               <mat-icon class="opacity-40" svgIcon="upload" />
               <span class="text-xs opacity-40">Upload</span>
@@ -93,12 +90,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
              (change)="onLightFileChange($event)" />
       <input #darkInput type="file" accept="image/*" class="hidden"
              (change)="onDarkFileChange($event)" />
-      @if (lightUploading() || darkUploading()) {
-        <mat-progress-bar
-          mode="determinate"
-          [value]="lightUploading() ? lightProgress() : darkProgress()"
-          class="max-w-[13rem]"
-        />
+      @if (lightUploading()) {
+        <mat-progress-bar mode="determinate" [value]="lightProgress()" class="max-w-[13rem]" />
+      }
+      @if (darkUploading()) {
+        <mat-progress-bar mode="determinate" [value]="darkProgress()" class="max-w-[13rem]" />
       }
       @if (lightError()) {
         <p class="text-xs text-red-500">{{ lightError() }}</p>
@@ -113,11 +109,11 @@ export class ImageUploadPairComponent {
   @ViewChild('lightInput') private lightInput!: ElementRef<HTMLInputElement>;
   @ViewChild('darkInput') private darkInput!: ElementRef<HTMLInputElement>;
 
-  private readonly platformId = inject(PLATFORM_ID);
-  protected readonly isBrowser = isPlatformBrowser(this.platformId);
-
   readonly label = input.required<string>();
-  readonly subtitle = input('Dark variant is optional — shown when dark mode is active.');
+  /** Same copy on About and Links profile photo blocks. */
+  readonly subtitle = input(
+    'Dark photo is optional — shown when dark mode is active.',
+  );
   readonly lightUrl = input<string | undefined>(undefined);
   readonly darkUrl = input<string | undefined>(undefined);
   readonly lightUploading = input(false);

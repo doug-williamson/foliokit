@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
 } from '@angular/core';
@@ -13,7 +12,7 @@ import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
-import { ThemeService } from '../theme.service';
+import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'play_circle',
@@ -33,7 +32,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'folio-blog-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatIconModule],
+  imports: [MarkdownComponent, MatIconModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -44,28 +43,6 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .avatar--xl {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: var(--logo-bg);
-      color: var(--logo-text);
-      font-family: var(--font-body);
-      font-weight: 600;
-      font-size: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
     }
 
     .about-name {
@@ -136,13 +113,12 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   template: `
     @if (about()) {
       <div class="about-container">
-        <div class="avatar--xl">
-          @if (avatarSrc()) {
-            <img [src]="avatarSrc()" [alt]="about()!.photoAlt || about()!.headline" />
-          } @else {
-            {{ initials() }}
-          }
-        </div>
+        <folio-profile-avatar
+          [photoUrl]="about()!.photoUrl"
+          [photoUrlDark]="about()!.photoUrlDark"
+          [alt]="about()!.photoAlt || about()!.headline"
+          [initialsFrom]="about()!.headline"
+        />
 
         <h1 class="about-name">{{ about()!.headline }}</h1>
 
@@ -181,33 +157,14 @@ export class BlogAboutPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
-  readonly theme = inject(ThemeService);
-
   readonly about = toSignal(
     this.route.data.pipe(map((data) => (data['about'] as AboutPageConfig) ?? null)),
     { initialValue: (this.route.snapshot.data['about'] as AboutPageConfig) ?? null },
   );
 
-  protected readonly avatarSrc = computed(() => {
-    const a = this.about();
-    if (!a) return null;
-    if (this.theme.isDark() && a.photoUrlDark) return a.photoUrlDark;
-    return a.photoUrl ?? null;
-  });
-
   protected platformIcon(platform?: SocialPlatform): string {
     return platform && PLATFORM_ICONS[platform] ? PLATFORM_ICONS[platform] : 'link';
   }
-
-  protected readonly initials = computed(() => {
-    const headline = this.about()?.headline ?? '';
-    return headline
-      .split(' ')
-      .slice(0, 2)
-      .map((w: string) => w[0])
-      .join('')
-      .toUpperCase();
-  });
 
   constructor() {
     effect(() => {

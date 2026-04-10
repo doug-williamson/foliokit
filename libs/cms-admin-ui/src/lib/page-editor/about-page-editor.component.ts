@@ -1,15 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   OnInit,
-  PLATFORM_ID,
-  ViewChild,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import {
   FormArray,
   FormBuilder,
@@ -22,12 +18,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CollectionPaths, FIREBASE_STORAGE, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { ImageUploadPairComponent } from './image-upload-pair.component';
 
 const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   { value: 'twitter', label: 'Twitter / X' },
@@ -60,10 +56,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTooltipModule,
+    ImageUploadPairComponent,
   ],
   styles: [
     `
@@ -110,6 +106,27 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             }
 
             <form [formGroup]="aboutForm" class="flex flex-col gap-5">
+              <admin-image-upload-pair
+                label="Profile Photo"
+                [lightUrl]="aboutPhotoUrl()"
+                [darkUrl]="aboutPhotoDarkUrl()"
+                [lightUploading]="aboutPhotoUploading()"
+                [darkUploading]="aboutPhotoDarkUploading()"
+                [lightProgress]="aboutPhotoProgress()"
+                [darkProgress]="aboutPhotoDarkProgress()"
+                [lightError]="aboutPhotoError()"
+                [darkError]="aboutPhotoDarkError()"
+                (lightFileSelected)="onPhotoSelected($event)"
+                (darkFileSelected)="onPhotoDarkSelected($event)"
+                (lightRemoved)="removeAboutPhoto()"
+                (darkRemoved)="removeAboutPhotoDark()"
+              />
+
+              <mat-form-field appearance="outline">
+                <mat-label>Photo Alt Text</mat-label>
+                <input matInput formControlName="photoAlt" placeholder="Jane Doe smiling" />
+              </mat-form-field>
+
               <mat-form-field appearance="outline">
                 <mat-label>Headline</mat-label>
                 <input matInput formControlName="headline" placeholder="Hi, I'm Jane" />
@@ -121,92 +138,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <mat-form-field appearance="outline">
                 <mat-label>Subheadline</mat-label>
                 <input matInput formControlName="subheadline" placeholder="Software engineer & writer" />
-              </mat-form-field>
-
-              <!-- Photo upload (light + dark) -->
-              <div class="flex flex-col gap-2">
-                <span class="text-sm font-semibold">Profile Photo</span>
-                <p class="text-xs opacity-50 -mt-1">Dark photo is optional — shown when dark mode is active.</p>
-                <div class="grid grid-cols-2 gap-6 justify-items-center items-start">
-                  <!-- Light mode -->
-                  <div class="flex flex-col items-center gap-1">
-                    @if (aboutPhotoUrl(); as url) {
-                      <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group">
-                        <img [src]="url" alt="Profile photo (light)" class="w-full h-full object-cover" />
-                        <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                             style="background: rgba(0,0,0,0.5)">
-                          <button mat-icon-button style="color:white" title="Replace" type="button" (click)="isBrowser && photoInput.click()">
-                            <mat-icon svgIcon="swap_horiz" />
-                          </button>
-                          <button mat-icon-button style="color:white" title="Remove" type="button" (click)="removeAboutPhoto()">
-                            <mat-icon svgIcon="delete" />
-                          </button>
-                        </div>
-                      </div>
-                    } @else {
-                      <div
-                        class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
-                        style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                        role="button"
-                        tabindex="0"
-                        (click)="isBrowser && photoInput.click()"
-                        (keydown.enter)="isBrowser && photoInput.click()"
-                      >
-                        <mat-icon class="opacity-40" svgIcon="upload" />
-                        <span class="text-xs opacity-40">Upload</span>
-                      </div>
-                    }
-                    <span class="text-xs opacity-50 leading-none">Light</span>
-                  </div>
-                  <!-- Dark mode -->
-                  <div class="flex flex-col items-center gap-1">
-                    @if (aboutPhotoDarkUrl(); as url) {
-                      <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
-                        <img [src]="url" alt="Profile photo (dark)" class="w-full h-full object-cover" />
-                        <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                             style="background: rgba(0,0,0,0.5)">
-                          <button mat-icon-button style="color:white" title="Replace" type="button" (click)="isBrowser && photoDarkInput.click()">
-                            <mat-icon svgIcon="swap_horiz" />
-                          </button>
-                          <button mat-icon-button style="color:white" title="Remove" type="button" (click)="removeAboutPhotoDark()">
-                            <mat-icon svgIcon="delete" />
-                          </button>
-                        </div>
-                      </div>
-                    } @else {
-                      <div
-                        class="w-24 h-24 shrink-0 rounded-full flex flex-col items-center justify-center cursor-pointer border-2 border-dashed gap-1"
-                        style="border-color: color-mix(in srgb, currentColor 25%, transparent)"
-                        role="button"
-                        tabindex="0"
-                        (click)="isBrowser && photoDarkInput.click()"
-                        (keydown.enter)="isBrowser && photoDarkInput.click()"
-                      >
-                        <mat-icon class="opacity-40" svgIcon="upload" />
-                        <span class="text-xs opacity-40">Upload</span>
-                      </div>
-                    }
-                    <span class="text-xs opacity-50 leading-none">Dark</span>
-                  </div>
-                </div>
-                <input #photoInput type="file" accept="image/*" class="hidden"
-                       (change)="onPhotoSelected($any($event.target).files)" />
-                <input #photoDarkInput type="file" accept="image/*" class="hidden"
-                       (change)="onPhotoDarkSelected($any($event.target).files)" />
-                @if (aboutPhotoUploading() || aboutPhotoDarkUploading()) {
-                  <mat-progress-bar mode="determinate" [value]="aboutPhotoUploading() ? aboutPhotoProgress() : aboutPhotoDarkProgress()" class="max-w-[13rem]" />
-                }
-                @if (aboutPhotoError()) {
-                  <p class="text-xs text-red-500">{{ aboutPhotoError() }}</p>
-                }
-                @if (aboutPhotoDarkError()) {
-                  <p class="text-xs text-red-500">{{ aboutPhotoDarkError() }}</p>
-                }
-              </div>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Photo Alt Text</mat-label>
-                <input matInput formControlName="photoAlt" placeholder="Jane Doe smiling" />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -339,9 +270,6 @@ export class AboutPageEditorComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly storage = inject(FIREBASE_STORAGE);
   private readonly paths = inject(CollectionPaths);
-  private readonly platformId = inject(PLATFORM_ID);
-
-  protected readonly isBrowser = isPlatformBrowser(this.platformId);
   protected readonly platforms = SOCIAL_PLATFORMS;
 
   protected readonly aboutPhotoUrl = signal<string | undefined>(undefined);
@@ -355,9 +283,6 @@ export class AboutPageEditorComponent implements OnInit {
   protected readonly aboutPhotoDarkError = signal<string | null>(null);
 
   protected readonly isAboutNew = computed(() => !this.store.config()?.pages?.about);
-
-  @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('photoDarkInput') photoDarkInput!: ElementRef<HTMLInputElement>;
 
   protected readonly aboutForm: FormGroup = this.fb.group({
     headline: ['', Validators.required],
@@ -404,9 +329,8 @@ export class AboutPageEditorComponent implements OnInit {
     this.flushAboutToStore();
   }
 
-  protected onPhotoSelected(files: FileList | null): void {
-    if (!files?.length) return;
-    this.uploadAboutPhoto(files[0]);
+  protected onPhotoSelected(file: File): void {
+    this.uploadAboutPhoto(file);
   }
 
   protected removeAboutPhoto(): void {
@@ -414,9 +338,8 @@ export class AboutPageEditorComponent implements OnInit {
     this.flushAboutToStore();
   }
 
-  protected onPhotoDarkSelected(files: FileList | null): void {
-    if (!files?.length) return;
-    this.uploadAboutPhotoDark(files[0]);
+  protected onPhotoDarkSelected(file: File): void {
+    this.uploadAboutPhotoDark(file);
   }
 
   protected removeAboutPhotoDark(): void {
