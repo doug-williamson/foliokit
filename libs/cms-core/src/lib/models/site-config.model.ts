@@ -83,6 +83,11 @@ export interface HomePageConfig {
   seo?: SeoMeta;
 }
 
+/** Public blog section and admin Blog nav; gate with `enabled` only in this pass. */
+export interface BlogPageConfig {
+  enabled: boolean;
+}
+
 /** Toggles extra items under the admin Configuration nav (sidebar shortcuts). */
 export interface AdminNavShortcuts {
   /** Show a “Home” link to the home page editor. */
@@ -103,6 +108,7 @@ export interface SiteConfig {
   defaultSeo?: SeoMeta;
   pages?: {
     home?: HomePageConfig;
+    blog?: BlogPageConfig;
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
@@ -113,4 +119,14 @@ export interface SiteConfig {
   setupAcknowledgedSteps?: string[];
   /** Unix milliseconds. */
   updatedAt: number;
+}
+
+/**
+ * Whether the blog page is considered on for admin nav (and legacy shortcut support).
+ * Prefer `pages.blog.enabled`; when absent, `adminNavShortcuts.blog === true` still enables until migrated.
+ */
+export function isBlogPageNavEnabled(config: SiteConfig | null | undefined): boolean {
+  if (!config) return false;
+  if (config.pages?.blog?.enabled === true) return true;
+  return config.adminNavShortcuts?.blog === true;
 }

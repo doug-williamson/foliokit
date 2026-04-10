@@ -180,16 +180,29 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      togglePageEnabled(page: 'home' | 'about' | 'links', value: boolean): void {
+      togglePageEnabled(page: 'home' | 'about' | 'links' | 'blog', value: boolean): void {
         const current = store.config();
         if (!current) return;
-        const updated: SiteConfig = {
+        const pagePatch =
+          page === 'blog'
+            ? { blog: { enabled: value } }
+            : { [page]: { ...current.pages?.[page], enabled: value } };
+        let updated: SiteConfig = {
           ...current,
           pages: {
             ...current.pages,
-            [page]: { ...current.pages?.[page], enabled: value },
+            ...pagePatch,
           },
         };
+        if (page === 'blog') {
+          updated = {
+            ...updated,
+            adminNavShortcuts: {
+              ...updated.adminNavShortcuts,
+              blog: value,
+            },
+          };
+        }
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>

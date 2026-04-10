@@ -2,6 +2,7 @@ export * from './lib/cms-admin-ui/cms-admin-ui';
 
 // ── Stores ────────────────────────────────────────────────────────────────────
 export * from './lib/author-editor/author-editor.store';
+export * from './lib/stores/site-config-nav.store';
 export * from './lib/site-config-editor/site-config-editor.store';
 export * from './lib/post-editor/post-editor.store';
 export * from './lib/posts-list/posts-list.store';
@@ -15,6 +16,8 @@ export * from './lib/guards/unsaved-changes.guard';
 // ── Shell & login ─────────────────────────────────────────────────────────────
 export * from './lib/login/admin-login.component';
 export * from './lib/shell/admin-shell.component';
+export * from './lib/shell/admin-nav.component';
+export * from './lib/shell/admin-nav.types';
 export * from './lib/setup/setup.component';
 
 // ── Routes ────────────────────────────────────────────────────────────────────

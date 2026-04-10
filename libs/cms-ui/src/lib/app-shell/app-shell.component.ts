@@ -2,13 +2,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
+  effect,
   inject,
-  OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ActivationEnd, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -21,7 +19,7 @@ import { SHELL_CONFIG } from '../shell-config.token';
 import { ThemeService } from '../theme.service';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
 
-const MOBILE_BP = '(max-width: 767.98px)';
+const DEFAULT_MOBILE_MAX_PX = 767;
 const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
 
 @Component({
@@ -39,7 +37,7 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
     RouterLink,
   ],
 })
-export class AppShellComponent implements OnInit, OnDestroy {
+export class AppShellComponent {
   protected readonly config = inject(SHELL_CONFIG);
   protected readonly theme = inject(ThemeService);
 
@@ -51,8 +49,6 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly router = inject(Router);
-  private bpSub?: Subscription;
-  private navSub?: Subscription;
 
   /** Current route title, read from route data['title']. Updated on each navigation. */
   protected readonly routeTitle = toSignal(
@@ -65,20 +61,27 @@ export class AppShellComponent implements OnInit, OnDestroy {
     { initialValue: '' },
   );
 
-  ngOnInit(): void {
-    this.bpSub = this.breakpointObserver
-      .observe([MOBILE_BP, ICON_RAIL_BP])
-      .subscribe((state) => {
-        const mobile = state.breakpoints[MOBILE_BP];
-        const iconRail = state.breakpoints[ICON_RAIL_BP];
+  constructor() {
+    effect((onCleanup) => {
+      const maxPx = this.config().sidenavMobileMaxPx ?? DEFAULT_MOBILE_MAX_PX;
+      const overlayBp = `(max-width: ${maxPx}.98px)`;
+      const useIconRail = maxPx <= DEFAULT_MOBILE_MAX_PX;
+      const queries = useIconRail ? [overlayBp, ICON_RAIL_BP] : [overlayBp];
+      const sub = this.breakpointObserver.observe(queries).subscribe((state) => {
+        const mobile = !!state.breakpoints[overlayBp];
+        const iconRail = useIconRail ? !!state.breakpoints[ICON_RAIL_BP] : false;
         this.isMobile.set(mobile);
         this.isIconRail.set(iconRail);
-        // Desktop: side mode, always open. Mobile/tablet: overlay, closed.
         this.sidenavOpen.set(!mobile && !iconRail);
       });
+      onCleanup(() => sub.unsubscribe());
+    });
 
-    this.navSub = this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
       .subscribe(() => {
         if (this.isMobile() || this.isIconRail()) {
           this.sidenavOpen.set(false);
@@ -86,11 +89,6 @@ export class AppShellComponent implements OnInit, OnDestroy {
       });
 
     this.theme.apply();
-  }
-
-  ngOnDestroy(): void {
-    this.bpSub?.unsubscribe();
-    this.navSub?.unsubscribe();
   }
 
   protected toggleSidenav(): void {

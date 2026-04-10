@@ -8,6 +8,7 @@ import type {
   AboutPageConfig,
   LinksPageConfig,
   HomePageConfig,
+  BlogPageConfig,
 } from '../models/site-config.model';
 import type { LinksLink } from '../models/page.model';
 
@@ -137,6 +138,14 @@ function normalizeLinksPageConfig(raw: unknown): LinksPageConfig {
   };
 }
 
+function normalizeBlogPageConfig(raw: unknown): BlogPageConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    enabled: (r['enabled'] as boolean) ?? false,
+  };
+}
+
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
   const pages = raw['pages'] as Record<string, unknown> | undefined;
 
@@ -152,6 +161,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
     pages: {
       home: normalizeHomePageConfig(pages?.['home']),
+      blog: normalizeBlogPageConfig(pages?.['blog']),
       about: normalizeAboutPageConfig(pages?.['about']),
       links: normalizeLinksPageConfig(pages?.['links']),
     },

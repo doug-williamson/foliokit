@@ -14,6 +14,16 @@ export interface ShellConfig {
   showRouteTitle?: boolean;
   /** When set, toolbar logo and app name navigate here (e.g. `/dashboard` or `/`). */
   toolbarHomeRoute?: string;
+  /**
+   * Viewport width (px) at or below which the navigation drawer uses overlay mode.
+   * Defaults to 767 when unset (legacy blog shell).
+   */
+  sidenavMobileMaxPx?: number;
+  /**
+   * When true with overlay drawer: use a floating action button to open the drawer when closed
+   * instead of only the toolbar menu button (admin shell).
+   */
+  sidenavFabTrigger?: boolean;
 }
 
 export const SHELL_CONFIG = new InjectionToken<Signal<ShellConfig>>('SHELL_CONFIG');

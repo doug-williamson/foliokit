@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { isBlogPageNavEnabled } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 @Component({
@@ -33,7 +34,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
       } @else {
         <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
           <p class="text-sm opacity-60 m-0">
-            Manage optional public pages and which shortcuts appear under <strong>Pages</strong> in the admin sidebar.
+            Manage optional public pages and what appears under <strong>Pages</strong> and <strong>Blog</strong> in the admin sidebar.
           </p>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
@@ -63,15 +64,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <h2 class="text-base font-semibold m-0">Blog (sidebar)</h2>
+                <h2 class="text-base font-semibold m-0">Blog</h2>
                 <p class="text-sm opacity-70 m-0 mt-1">
-                  Adds a <strong>Blog</strong> item under Pages that opens Posts.
+                  Turns on the blog section in the admin (Posts, Authors, Series) and the Blog entry under Pages.
                 </p>
               </div>
               <mat-slide-toggle
-                [checked]="navShortcutBlog()"
-                (change)="store.setAdminNavShortcut('blog', $event.checked)"
-                aria-label="Show Blog in admin sidebar"
+                [checked]="blogPageEnabled()"
+                (change)="store.togglePageEnabled('blog', $event.checked)"
+                aria-label="Enable Blog in admin navigation"
               />
             </div>
             <button mat-stroked-button type="button" class="self-start" (click)="router.navigate(['/posts'])">
@@ -147,8 +148,8 @@ export class PagesHubComponent implements OnInit {
   readonly navShortcutHome = computed(
     () => this.store.config()?.adminNavShortcuts?.home === true,
   );
-  readonly navShortcutBlog = computed(
-    () => this.store.config()?.adminNavShortcuts?.blog === true,
+  readonly blogPageEnabled = computed(() =>
+    isBlogPageNavEnabled(this.store.config() ?? undefined),
   );
 
   ngOnInit(): void {
