@@ -13,6 +13,8 @@ import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export interface PostEditorState {
   post: BlogPost | null;
+  /** Last persisted server state; used for discard and route-leave reset. */
+  persistedPost: BlogPost | null;
   isDirty: boolean;
   isSaving: boolean;
   saveError: string | null;
@@ -23,6 +25,7 @@ export interface PostEditorState {
 
 const initialState: PostEditorState = {
   post: null,
+  persistedPost: null,
   isDirty: false,
   isSaving: false,
   saveError: null,
@@ -30,6 +33,10 @@ const initialState: PostEditorState = {
   cursorPosition: 0,
   tempPostId: crypto.randomUUID(),
 };
+
+function clonePost(post: BlogPost): BlogPost {
+  return structuredClone(post);
+}
 
 function blankPost(): BlogPost {
   const now = Date.now();
@@ -65,7 +72,18 @@ export const PostEditorStore = signalStore(
     }),
   })),
 
-  withMethods((store, postService = inject(PostService), router = inject(Router)) => ({
+  withMethods((store, postService = inject(PostService), router = inject(Router)) => {
+    const discardChanges = (): void => {
+      const base = store.persistedPost();
+      if (!base) return;
+      patchState(store, {
+        post: clonePost(base),
+        isDirty: false,
+        saveError: null,
+      });
+    };
+
+    return {
       loadPost(id: string): void {
         postService.getPostById(id).subscribe((post) => {
           const coerced =
@@ -74,6 +92,7 @@ export const PostEditorStore = signalStore(
               : post;
           patchState(store, {
             post: coerced,
+            persistedPost: clonePost(coerced),
             isDirty: false,
             isSaving: false,
             saveError: null,
@@ -83,8 +102,10 @@ export const PostEditorStore = signalStore(
       },
 
       initNew(): void {
+        const p = blankPost();
         patchState(store, {
-          post: blankPost(),
+          post: p,
+          persistedPost: clonePost(p),
           isDirty: false,
           isSaving: false,
           saveError: null,
@@ -107,8 +128,10 @@ export const PostEditorStore = signalStore(
             next: (saved) => {
               patchState(store, {
                 post: saved,
+                persistedPost: clonePost(saved),
                 isDirty: false,
                 isSaving: false,
+                saveError: null,
                 mode: 'edit',
               });
             },
@@ -153,9 +176,9 @@ export const PostEditorStore = signalStore(
         }
       },
 
-      unpublish(): void {
+      unpublish(): Observable<BlogPost> {
         const post = store.post();
-        if (!post) return;
+        if (!post) return EMPTY as Observable<BlogPost>;
         const prevStatus = post.status;
         const prevPublishedAt = post.publishedAt;
         patchState(store, {
@@ -163,49 +186,55 @@ export const PostEditorStore = signalStore(
           isDirty: true,
         });
         patchState(store, { isSaving: true, saveError: null });
-        postService.savePost({ ...post, status: 'draft', publishedAt: 0 }).subscribe({
-          next: (saved) => {
-            patchState(store, {
-              post: saved,
-              isDirty: false,
-              isSaving: false,
-              mode: 'edit',
-            });
-          },
-          error: (err: unknown) => {
-            const message =
-              err instanceof Error ? err.message : 'Unpublish failed';
-            const current = store.post();
-            patchState(store, {
-              post: current
-                ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
-                : current,
-              isSaving: false,
-              saveError: message,
-            });
-          },
-        });
+        return postService.savePost({ ...post, status: 'draft', publishedAt: 0 }).pipe(
+          tap({
+            next: (saved) => {
+              patchState(store, {
+                post: saved,
+                persistedPost: clonePost(saved),
+                isDirty: false,
+                isSaving: false,
+                saveError: null,
+                mode: 'edit',
+              });
+            },
+            error: (err: unknown) => {
+              const message =
+                err instanceof Error ? err.message : 'Unpublish failed';
+              const current = store.post();
+              patchState(store, {
+                post: current
+                  ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
+                  : current,
+                isSaving: false,
+                saveError: message,
+              });
+            },
+          }),
+        );
       },
 
-      deletePost(): void {
+      deletePost(): Observable<void> {
         const post = store.post();
-        if (!post?.id) return;
+        if (!post?.id) return EMPTY as Observable<void>;
         patchState(store, { isSaving: true, saveError: null });
-        postService.deletePost(post.id).subscribe({
-          next: () => {
-            patchState(store, { isDirty: false, isSaving: false });
-            router.navigate(['/posts']);
-          },
-          error: (err: unknown) => {
-            const message = err instanceof Error ? err.message : 'Delete failed';
-            patchState(store, { isSaving: false, saveError: message });
-          },
-        });
+        return postService.deletePost(post.id).pipe(
+          tap({
+            next: () => {
+              patchState(store, { isDirty: false, isSaving: false, saveError: null });
+              router.navigate(['/posts']);
+            },
+            error: (err: unknown) => {
+              const message = err instanceof Error ? err.message : 'Delete failed';
+              patchState(store, { isSaving: false, saveError: message });
+            },
+          }),
+        );
       },
 
-      publish(): void {
+      publish(): Observable<BlogPost> {
         const post = store.post();
-        if (!post) return;
+        if (!post) return EMPTY as Observable<BlogPost>;
         const prevStatus = post.status;
         const prevPublishedAt = post.publishedAt;
         const now = Date.now();
@@ -214,28 +243,36 @@ export const PostEditorStore = signalStore(
           isDirty: true,
         });
         patchState(store, { isSaving: true, saveError: null });
-        postService.savePost({ ...post, status: 'published', publishedAt: now }).subscribe({
-          next: (saved) => {
-            patchState(store, {
-              post: saved,
-              isDirty: false,
-              isSaving: false,
-              mode: 'edit',
-            });
-          },
-          error: (err: unknown) => {
-            const message =
-              err instanceof Error ? err.message : 'Publish failed';
-            const current = store.post();
-            patchState(store, {
-              post: current
-                ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
-                : current,
-              isSaving: false,
-              saveError: message,
-            });
-          },
-        });
+        return postService.savePost({ ...post, status: 'published', publishedAt: now }).pipe(
+          tap({
+            next: (saved) => {
+              patchState(store, {
+                post: saved,
+                persistedPost: clonePost(saved),
+                isDirty: false,
+                isSaving: false,
+                saveError: null,
+                mode: 'edit',
+              });
+            },
+            error: (err: unknown) => {
+              const message =
+                err instanceof Error ? err.message : 'Publish failed';
+              const current = store.post();
+              patchState(store, {
+                post: current
+                  ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
+                  : current,
+                isSaving: false,
+                saveError: message,
+              });
+            },
+          }),
+        );
       },
-  })),
+
+      discardChanges,
+      discard: discardChanges,
+    };
+  }),
 );

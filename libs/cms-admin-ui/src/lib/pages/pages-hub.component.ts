@@ -3,24 +3,27 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
 import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settings.component';
 
 @Component({
   selector: 'cms-pages-hub',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatCardModule, MatSlideToggleModule, BlogPublishSettingsComponent],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    BlogPublishSettingsComponent,
+  ],
   template: `
     <div class="flex flex-col h-full min-h-0 overflow-y-auto">
       <header class="page-header flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
               style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
         <h1 class="page-heading flex-1">Configuration</h1>
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving…</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </header>
 
       @if (!store.config()) {
@@ -118,6 +121,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
 export class PagesHubComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   protected readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly aboutEnabled = computed(
     () => this.store.config()?.pages?.about?.enabled === true,
@@ -129,6 +133,10 @@ export class PagesHubComponent implements OnInit {
   readonly navShortcutHome = computed(
     () => this.store.config()?.adminNavShortcuts?.home === true,
   );
+
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
 
   ngOnInit(): void {
     this.store.load();

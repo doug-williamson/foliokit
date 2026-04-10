@@ -4,8 +4,10 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -18,7 +20,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import type { SiteConfig } from '@foliokit/cms-core';
+import {
+  SeoFieldsComponent,
+  type SeoFieldsFormGroup,
+} from '../components/seo-fields/seo-fields.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
 /**
  * Edits `pages.home` (hero, CTA, recent posts block). Uses the same
@@ -36,6 +44,9 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     MatInputModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    MatSnackBarModule,
+    SeoFieldsComponent,
+    SaveBarComponent,
   ],
   styles: [
     `
@@ -48,17 +59,12 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     `,
   ],
   template: `
-    <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden relative">
       <div
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
         <h1 class="page-heading flex-1">Home</h1>
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving...</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </div>
 
       @if (!store.config()) {
@@ -114,39 +120,34 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
               <mat-checkbox formControlName="showRecentPosts">
                 Show recent posts below the hero
               </mat-checkbox>
+
+              <div class="flex flex-col gap-2 pt-2">
+                <h2 class="text-sm font-medium m-0">SEO</h2>
+                <folio-seo-fields [group]="seoGroup" />
+              </div>
             </form>
           </div>
         </div>
       }
 
-      <div
-        class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)"
-      >
-        @if (store.isDirty()) {
-          <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
-        } @else {
-          <span class="hidden sm:block sm:flex-1"></span>
-        }
-        <div class="flex justify-end gap-2">
-          <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="onDiscard()">
-            Cancel
-          </button>
-          <button
-            mat-flat-button
-            [disabled]="!store.isDirty() || homeForm.invalid || store.isSaving()"
-            (click)="onSave()"
-          >
-            Save Changes
-          </button>
-        </div>
-      </div>
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        [saveDisabled]="homeForm.invalid"
+        (saved)="onSave()"
+        (discarded)="onDiscard()"
+      />
     </div>
   `,
 })
 export class HomePageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
+
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
 
   protected readonly homeForm: FormGroup = this.fb.group({
     enabled: [true],
@@ -155,7 +156,17 @@ export class HomePageEditorComponent implements OnInit {
     ctaLabel: [''],
     ctaUrl: [''],
     showRecentPosts: [false],
+    seo: this.fb.group({
+      metaTitle: new FormControl<string | null>(null),
+      metaDescription: new FormControl<string | null>(null),
+      ogImageUrl: new FormControl<string | null>(null),
+      canonicalUrl: new FormControl<string | null>(null),
+    }),
   });
+
+  protected get seoGroup(): SeoFieldsFormGroup {
+    return this.homeForm.get('seo') as SeoFieldsFormGroup;
+  }
 
   ngOnInit(): void {
     this.store.load();
@@ -195,6 +206,7 @@ export class HomePageEditorComponent implements OnInit {
 
   private populateFromConfig(config: SiteConfig): void {
     const home = config.pages?.home;
+    const seo = home?.seo;
     this.homeForm.patchValue(
       {
         enabled: home?.enabled ?? true,
@@ -203,6 +215,12 @@ export class HomePageEditorComponent implements OnInit {
         ctaLabel: home?.ctaLabel ?? '',
         ctaUrl: home?.ctaUrl ?? '',
         showRecentPosts: home?.showRecentPosts ?? false,
+        seo: {
+          metaTitle: seo?.title ?? null,
+          metaDescription: seo?.description ?? null,
+          ogImageUrl: seo?.ogImage ?? null,
+          canonicalUrl: seo?.canonicalUrl ?? null,
+        },
       },
       { emitEvent: false },
     );
@@ -217,6 +235,12 @@ export class HomePageEditorComponent implements OnInit {
       ctaLabel: string;
       ctaUrl: string;
       showRecentPosts: boolean;
+      seo: {
+        metaTitle: string | null;
+        metaDescription: string | null;
+        ogImageUrl: string | null;
+        canonicalUrl: string | null;
+      };
     };
     const prev = this.store.config()?.pages?.home;
     this.store.setHomePage({
@@ -226,7 +250,13 @@ export class HomePageEditorComponent implements OnInit {
       ctaLabel: v.ctaLabel?.trim() || undefined,
       ctaUrl: v.ctaUrl?.trim() || undefined,
       showRecentPosts: v.showRecentPosts || undefined,
-      seo: prev?.seo,
+      seo: {
+        ...prev?.seo,
+        title: v.seo.metaTitle ?? '',
+        description: v.seo.metaDescription ?? '',
+        ogImage: v.seo.ogImageUrl ?? '',
+        canonicalUrl: v.seo.canonicalUrl ?? '',
+      },
     });
   }
 }

@@ -4,6 +4,7 @@ export * from './lib/firebase/firebase.providers';
 export * from './lib/firebase/foliokit.providers';
 // firebase-admin.ts is intentionally excluded — server-only, import directly in SSR server files
 export * from './lib/models/post.model';
+export * from './lib/models/seo-fields.model';
 export * from './lib/models/series.model';
 export * from './lib/models/site-config.model';
 export * from './lib/models/page.model';

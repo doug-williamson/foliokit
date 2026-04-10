@@ -6,6 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormArray,
   FormBuilder,
@@ -23,6 +24,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CollectionPaths, FIREBASE_STORAGE, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 import { ImageUploadPairComponent } from './image-upload-pair.component';
 
 const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
@@ -59,7 +62,9 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTooltipModule,
+    MatSnackBarModule,
     ImageUploadPairComponent,
+    SaveBarComponent,
   ],
   styles: [
     `
@@ -77,11 +82,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
         <h1 class="page-heading flex-1">About Page</h1>
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving...</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </div>
 
       @if (!store.config()) {
@@ -243,34 +243,29 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
           </div>
         </div>
-
-        <!-- Sticky footer: save / discard -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-             style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-          @if (store.isDirty()) {
-            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
-          } @else {
-            <span class="hidden sm:block sm:flex-1"></span>
-          }
-          <div class="flex justify-end gap-2">
-            <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="onDiscard()">
-              Cancel
-            </button>
-            <button mat-flat-button [disabled]="!store.isDirty() || hasInvalidForms() || store.isSaving()" (click)="onSave()">
-              {{ isAboutNew() ? 'Create About page' : 'Save Changes' }}
-            </button>
-          </div>
-        </div>
       }
+
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        [saveDisabled]="hasInvalidForms()"
+        (saved)="onSave()"
+        (discarded)="onDiscard()"
+      />
     </div>
   `,
 })
 export class AboutPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
   private readonly storage = inject(FIREBASE_STORAGE);
   private readonly paths = inject(CollectionPaths);
   protected readonly platforms = SOCIAL_PLATFORMS;
+
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
 
   protected readonly aboutPhotoUrl = signal<string | undefined>(undefined);
   protected readonly aboutPhotoUploading = signal(false);

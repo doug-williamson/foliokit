@@ -143,6 +143,7 @@ function normalizeBlogPageConfig(raw: unknown): BlogPageConfig | undefined {
   const r = raw as Record<string, unknown>;
   return {
     enabled: (r['enabled'] as boolean) ?? false,
+    seo: normalizeSeoMeta(r['seo']),
   };
 }
 

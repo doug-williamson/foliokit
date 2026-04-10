@@ -1,5 +1,9 @@
 import type { Author } from './author.model';
 
+/**
+ * Persisted SEO block (Firestore: `title`, `description`, `ogImage`, …).
+ * Admin four-field reactive forms often use `SeoFields` (`seo-fields.model`) control names and map to this shape.
+ */
 export interface SeoMeta {
   title?: string;
   description?: string;

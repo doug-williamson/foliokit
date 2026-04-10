@@ -7,6 +7,7 @@ import {
 } from '@ngrx/signals';
 import {
   AboutPageConfig,
+  BlogPageConfig,
   HomePageConfig,
   LinksPageConfig,
   NavItem,
@@ -111,6 +112,19 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
+      /** Replace the full blog page config (including `enabled`). */
+      setBlogPage(blog: BlogPageConfig): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, blog },
+          },
+          isDirty: true,
+        });
+      },
+
       updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
@@ -148,6 +162,7 @@ export const SiteConfigEditorStore = signalStore(
               savedConfig: saved,
               isDirty: false,
               isSaving: false,
+              saveError: null,
             });
           },
           error: (err: unknown) => {
@@ -170,7 +185,13 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               config: current,
@@ -185,7 +206,7 @@ export const SiteConfigEditorStore = signalStore(
         if (!current) return;
         const pagePatch =
           page === 'blog'
-            ? { blog: { enabled: value } }
+            ? { blog: { ...current.pages?.blog, enabled: value } }
             : { [page]: { ...current.pages?.[page], enabled: value } };
         let updated: SiteConfig = {
           ...current,
@@ -206,7 +227,13 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               config: current,
@@ -237,7 +264,13 @@ export const SiteConfigEditorStore = signalStore(
         });
         siteConfigService.saveSiteConfig({ ...current, setupComplete: true }).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               isSaving: false,

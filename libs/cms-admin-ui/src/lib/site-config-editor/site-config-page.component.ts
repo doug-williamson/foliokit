@@ -20,8 +20,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService } from '@foliokit/cms-core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SettingsProTabComponent } from '../settings/settings-pro-tab.component';
 import { SiteConfigEditorStore } from './site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
 /**
  * Site settings: General, default SEO, and Pro (billing / domain).
@@ -43,7 +46,9 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTabsModule,
+    MatSnackBarModule,
     SettingsProTabComponent,
+    SaveBarComponent,
   ],
   styles: [
     `
@@ -70,11 +75,6 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
         <h1 class="page-heading flex-1">Settings</h1>
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving...</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </div>
 
       @if (!store.config()) {
@@ -156,34 +156,21 @@ import { SiteConfigEditorStore } from './site-config-editor.store';
             <folio-settings-pro-tab />
           </mat-tab>
         </mat-tab-group>
-
-        @if (store.isDirty()) {
-          <div
-            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-            style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)"
-          >
-            <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
-            <div class="flex justify-end gap-2">
-              <button mat-stroked-button type="button" [disabled]="store.isSaving()" (click)="onDiscard()">
-                Discard
-              </button>
-              <button
-                mat-flat-button
-                type="button"
-                [disabled]="hasInvalidForms() || store.isSaving()"
-                (click)="onSave()"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        }
       }
+
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        [saveDisabled]="hasInvalidForms()"
+        (saved)="onSave()"
+        (discarded)="onDiscard()"
+      />
     </div>
   `,
 })
 export class SiteConfigPageComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly authorService = inject(AuthorService);
   private readonly fb = inject(FormBuilder);
 
@@ -201,6 +188,10 @@ export class SiteConfigPageComponent implements OnInit {
     ogImage: [''],
     canonicalUrl: [''],
   });
+
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
 
   ngOnInit(): void {
     this.store.load();
