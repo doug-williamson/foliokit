@@ -30,6 +30,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
 type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
 type RightTab = 'Article' | 'Card' | 'SEO';
@@ -69,6 +70,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     ArticlePreviewComponent,
     CardPreviewComponent,
     SeoPreviewComponent,
+    SaveBarComponent,
   ],
   styles: [
     `
@@ -162,7 +164,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     `,
   ],
   template: `
-    <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Toolbar -->
       <div class="post-editor-toolbar">
         <span class="post-editor-toolbar-title truncate page-subheading">
@@ -319,6 +321,13 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           </div>
         </mat-sidenav-content>
       </mat-sidenav-container>
+
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        (saved)="onSaveBarSave()"
+        (discarded)="onSaveBarDiscard()"
+      />
     </div>
   `,
 })
@@ -326,6 +335,8 @@ export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+
+  private static readonly errorSnackbarPanelClass = ['save-error-snackbar'];
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
@@ -348,25 +359,46 @@ export class PostEditorPageComponent implements OnInit {
   onStatusChange(status: BlogPost['status']): void {
     this.store.updateField('scheduledPublishAt', undefined);
     this.store.updateField('status', status);
-    this.subscribeSaveOutcome(this.store.save());
+    const successMessage =
+      status === 'published'
+        ? 'Post published'
+        : status === 'draft'
+          ? 'Post unpublished'
+          : 'Changes saved';
+    this.subscribePostWrite(this.store.save(), { successMessage });
   }
 
   protected onManualSave(): void {
-    this.subscribeSaveOutcome(this.store.save());
+    this.subscribePostWrite(this.store.save(), { successMessage: 'Changes saved' });
   }
 
-  private subscribeSaveOutcome(save$: Observable<BlogPost>): void {
-    save$.subscribe({
+  protected onSaveBarSave(): void {
+    this.onManualSave();
+  }
+
+  protected onSaveBarDiscard(): void {
+    this.store.discardChanges();
+  }
+
+  /**
+   * Subscribes to save/publish/unpublish/delete streams and shows snackbars.
+   * Omit `successMessage` when no success toast is desired (e.g. delete navigates away).
+   */
+  private subscribePostWrite(
+    op$: Observable<BlogPost | void>,
+    options: { successMessage?: string } = {},
+  ): void {
+    op$.subscribe({
       next: () => {
-        const t = new Date().toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        this.snackBar.open(`Saved at ${t}`, undefined, { duration: 4000 });
+        if (options.successMessage) {
+          this.snackBar.open(options.successMessage, undefined, { duration: 3000 });
+        }
       },
       error: () => {
-        const msg = this.store.saveError() ?? 'Save failed';
-        this.snackBar.open(msg, 'Dismiss', { duration: 7000 });
+        this.snackBar.open('Failed to save — please try again', 'Dismiss', {
+          duration: 5000,
+          panelClass: PostEditorPageComponent.errorSnackbarPanelClass,
+        });
       },
     });
   }
@@ -396,7 +428,11 @@ export class PostEditorPageComponent implements OnInit {
       .afterClosed()
       .pipe(take(1))
       .subscribe((confirmed) => {
-        if (confirmed) this.store.unpublish();
+        if (confirmed) {
+          this.subscribePostWrite(this.store.unpublish(), {
+            successMessage: 'Post unpublished',
+          });
+        }
       });
   }
 
@@ -415,7 +451,9 @@ export class PostEditorPageComponent implements OnInit {
       .afterClosed()
       .pipe(take(1))
       .subscribe((confirmed) => {
-        if (confirmed) this.store.deletePost();
+        if (confirmed) {
+          this.subscribePostWrite(this.store.deletePost(), {});
+        }
       });
   }
 

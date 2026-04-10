@@ -162,6 +162,7 @@ export const SiteConfigEditorStore = signalStore(
               savedConfig: saved,
               isDirty: false,
               isSaving: false,
+              saveError: null,
             });
           },
           error: (err: unknown) => {
@@ -184,7 +185,13 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               config: current,
@@ -220,7 +227,13 @@ export const SiteConfigEditorStore = signalStore(
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               config: current,
@@ -251,7 +264,13 @@ export const SiteConfigEditorStore = signalStore(
         });
         siteConfigService.saveSiteConfig({ ...current, setupComplete: true }).subscribe({
           next: (saved) =>
-            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+            patchState(store, {
+              config: saved,
+              savedConfig: saved,
+              isDirty: false,
+              isSaving: false,
+              saveError: null,
+            }),
           error: (err: unknown) =>
             patchState(store, {
               isSaving: false,

@@ -4,18 +4,18 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LinksEditorFormComponent } from './links-editor-form.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
 /**
  * Links page editor — wraps `LinksEditorFormComponent` with a toolbar,
- * loading spinner, and sticky save/discard footer.
+ * loading spinner, and `folio-save-bar` for save/discard.
  *
  * `SiteConfigEditorStore` must be provided at the route level (already
  * wired in `adminRoutes`). The component calls `store.load()` on init.
@@ -24,7 +24,14 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
   selector: 'folio-links-page-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, LinksEditorFormComponent],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    LinksEditorFormComponent,
+    SaveBarComponent,
+  ],
   styles: [
     `
       :host {
@@ -36,19 +43,13 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     `,
   ],
   template: `
-    <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Toolbar -->
       <div
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
         <h1 class="page-heading flex-1">Links Page</h1>
-
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving...</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </div>
 
       <!-- Body -->
@@ -64,35 +65,26 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         </div>
       }
 
-      <!-- Sticky footer -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)">
-        @if (store.isDirty()) {
-          <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
-        } @else {
-          <span class="hidden sm:block sm:flex-1"></span>
-        }
-        <div class="flex justify-end gap-2">
-          <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="store.discard()">
-            Cancel
-          </button>
-          <button mat-flat-button [disabled]="!store.isDirty() || store.isSaving()" (click)="store.save()">
-            Save Changes
-          </button>
-        </div>
-      </div>
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        (saved)="store.save()"
+        (discarded)="onDiscard()"
+      />
     </div>
   `,
 })
 export class LinksPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  private readonly snackBar = inject(MatSnackBar);
 
-  readonly isDesktop = toSignal(
-    inject(BreakpointObserver)
-      .observe('(min-width: 1024px)')
-      .pipe(map((r) => r.matches)),
-    { initialValue: false }
-  );
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
+
+  protected onDiscard(): void {
+    this.store.discard();
+  }
 
   ngOnInit(): void {
     this.store.load();

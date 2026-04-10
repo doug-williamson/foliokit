@@ -4,6 +4,7 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   FormControl,
@@ -24,6 +25,8 @@ import {
   type SeoFieldsFormGroup,
 } from '../components/seo-fields/seo-fields.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
+import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
 /**
  * Edits `pages.home` (hero, CTA, recent posts block). Uses the same
@@ -41,7 +44,9 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     MatInputModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    MatSnackBarModule,
     SeoFieldsComponent,
+    SaveBarComponent,
   ],
   styles: [
     `
@@ -54,17 +59,12 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     `,
   ],
   template: `
-    <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden relative">
       <div
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
         <h1 class="page-heading flex-1">Home</h1>
-        @if (store.isSaving()) {
-          <span class="admin-meta opacity-40">Saving...</span>
-        } @else if (store.saveError()) {
-          <span class="text-xs text-red-500">{{ store.saveError() }}</span>
-        }
       </div>
 
       @if (!store.config()) {
@@ -130,34 +130,24 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         </div>
       }
 
-      <div
-        class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-6 py-3 border-t shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent); background: var(--mat-sys-surface)"
-      >
-        @if (store.isDirty()) {
-          <span class="text-sm opacity-60 sm:flex-1">You have unsaved changes.</span>
-        } @else {
-          <span class="hidden sm:block sm:flex-1"></span>
-        }
-        <div class="flex justify-end gap-2">
-          <button mat-stroked-button [disabled]="!store.isDirty() || store.isSaving()" (click)="onDiscard()">
-            Cancel
-          </button>
-          <button
-            mat-flat-button
-            [disabled]="!store.isDirty() || homeForm.invalid || store.isSaving()"
-            (click)="onSave()"
-          >
-            Save Changes
-          </button>
-        </div>
-      </div>
+      <folio-save-bar
+        [isDirty]="store.isDirty()"
+        [isSaving]="store.isSaving()"
+        [saveDisabled]="homeForm.invalid"
+        (saved)="onSave()"
+        (discarded)="onDiscard()"
+      />
     </div>
   `,
 })
 export class HomePageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
+
+  constructor() {
+    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+  }
 
   protected readonly homeForm: FormGroup = this.fb.group({
     enabled: [true],

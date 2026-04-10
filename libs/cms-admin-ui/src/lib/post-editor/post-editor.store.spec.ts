@@ -3,6 +3,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 import type { BlogPost } from '@foliokit/cms-core';
+import { Router } from '@angular/router';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -47,6 +48,7 @@ function setup() {
     providers: [
       PostEditorStore,
       { provide: PostService, useValue: postServiceStub },
+      { provide: Router, useValue: { navigate: vi.fn() } },
     ],
   });
 
@@ -88,6 +90,38 @@ describe('PostEditorStore.initNew()', () => {
     expect(post!.title).toBe('');
     expect(post!.status).toBe('draft');
     expect(post!.tags).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// discardChanges / discard
+// ---------------------------------------------------------------------------
+
+describe('PostEditorStore.discardChanges()', () => {
+  it('restores post from persisted baseline and clears dirty', () => {
+    const { store, postServiceStub } = setup();
+    const loaded = makePost({ title: 'Original' });
+    postServiceStub.getPostById.mockReturnValue(of(loaded));
+    store.loadPost('post-1');
+
+    store.updateField('title', 'Edited');
+    expect(store.isDirty()).toBe(true);
+
+    store.discardChanges();
+
+    expect(store.post()?.title).toBe('Original');
+    expect(store.isDirty()).toBe(false);
+    expect(store.saveError()).toBeNull();
+  });
+
+  it('discard() is an alias for discardChanges()', () => {
+    const { store, postServiceStub } = setup();
+    postServiceStub.getPostById.mockReturnValue(of(makePost({ title: 'A' })));
+    store.loadPost('post-1');
+    store.updateField('title', 'B');
+    store.discard();
+    expect(store.post()?.title).toBe('A');
+    expect(store.isDirty()).toBe(false);
   });
 });
 
@@ -245,7 +279,7 @@ describe('PostEditorStore.publish()', () => {
     const savedPost = makePost({ id: 'pub-1', status: 'published' });
     postServiceStub.savePost.mockReturnValue(of(savedPost));
 
-    store.publish();
+    store.publish().subscribe();
 
     expect(postServiceStub.savePost).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'published' }),
@@ -262,7 +296,7 @@ describe('PostEditorStore.publish()', () => {
     const saveSubject = new Subject<BlogPost>();
     postServiceStub.savePost.mockReturnValue(saveSubject.asObservable());
 
-    store.publish();
+    store.publish().subscribe();
 
     // At this point patchState has already been called with the 'published'
     // post but the subscription hasn't resolved yet — both the payload and
@@ -283,7 +317,7 @@ describe('PostEditorStore.publish()', () => {
     const savedPost = makePost({ id: 'pub-1', status: 'published' });
     postServiceStub.savePost.mockReturnValue(of(savedPost));
 
-    store.publish();
+    store.publish().subscribe();
 
     expect(store.post()).toEqual(savedPost);
     expect(store.isDirty()).toBe(false);
@@ -301,18 +335,20 @@ describe('PostEditorStore.publish()', () => {
       throwError(() => new Error('Publish failed')),
     );
 
-    store.publish();
-
-    expect(store.saveError()).toBe('Publish failed');
-    expect(store.isSaving()).toBe(false);
-    expect(store.post()!.status).toBe('draft');
-    expect(store.post()!.publishedAt).toBe(prevPublishedAt);
+    store.publish().subscribe({
+      error: () => {
+        expect(store.saveError()).toBe('Publish failed');
+        expect(store.isSaving()).toBe(false);
+        expect(store.post()!.status).toBe('draft');
+        expect(store.post()!.publishedAt).toBe(prevPublishedAt);
+      },
+    });
   });
 
   it('does nothing when post is null', () => {
     const { store, postServiceStub } = setup();
 
-    store.publish();
+    store.publish().subscribe();
 
     expect(postServiceStub.savePost).not.toHaveBeenCalled();
   });
@@ -376,7 +412,11 @@ describe('PostEditorStore (no internal autosave timer)', () => {
   it('does not call savePost when only updateField runs (no component debounce)', () => {
     const postServiceStub = { getPostById: vi.fn(), savePost: vi.fn() };
     TestBed.configureTestingModule({
-      providers: [PostEditorStore, { provide: PostService, useValue: postServiceStub }],
+      providers: [
+        PostEditorStore,
+        { provide: PostService, useValue: postServiceStub },
+        { provide: Router, useValue: { navigate: vi.fn() } },
+      ],
     });
     const store = TestBed.inject(PostEditorStore);
     store.initNew();
