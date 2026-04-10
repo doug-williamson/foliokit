@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   collection,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -148,6 +149,11 @@ export class PostService implements IBlogPostService {
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
 
+    if (post.status === 'scheduled') {
+      const { scheduledPublishAt: _, ...rest } = post;
+      post = { ...rest, status: 'draft' };
+    }
+
     if (post.id === '') {
       const newId = doc(collection(this.firestore, this.paths.collection('posts'))).id;
       const savedPost: BlogPost = { ...post, id: newId, createdAt: nowMs, updatedAt: nowMs };
@@ -170,11 +176,14 @@ export class PostService implements IBlogPostService {
     }
 
     const savedPost: BlogPost = { ...post, updatedAt: nowMs };
-    const firestorePayload = {
+    const firestorePayload: Record<string, unknown> = {
       ...savedPost,
       updatedAt: nowTs,
       ...blogPostFirestoreTimestampFields(savedPost),
     };
+    if (savedPost.scheduledPublishAt === undefined) {
+      firestorePayload['scheduledPublishAt'] = deleteField();
+    }
     return from(
       updateDoc(doc(this.firestore, this.paths.collection('posts'), post.id), firestorePayload),
     ).pipe(

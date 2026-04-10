@@ -24,7 +24,7 @@ import { PostEditorStore } from '../post-editor.store';
     @if (store.post(); as post) {
       <div class="flex flex-col gap-4 p-4">
         <!-- Meta Title -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
           <mat-label>Meta Title</mat-label>
           <input
             matInput
@@ -41,7 +41,7 @@ import { PostEditorStore } from '../post-editor.store';
         </mat-form-field>
 
         <!-- Meta Description -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
           <mat-label>Meta Description</mat-label>
           <textarea
             matInput
@@ -59,7 +59,7 @@ import { PostEditorStore } from '../post-editor.store';
         </mat-form-field>
 
         <!-- OG Image Override -->
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
           <mat-label>OG Image Override</mat-label>
           <input
             matInput
@@ -80,12 +80,14 @@ import { PostEditorStore } from '../post-editor.store';
         </mat-form-field>
 
         <!-- Advanced SEO -->
-        <mat-expansion-panel class="!shadow-none !rounded-lg border border-black/10 dark:border-white/10">
+        <mat-expansion-panel
+          class="!shadow-none !rounded-lg border border-black/10 dark:border-white/10 mt-2"
+        >
           <mat-expansion-panel-header>
             <mat-panel-title class="text-sm font-medium">Advanced SEO</mat-panel-title>
           </mat-expansion-panel-header>
 
-          <mat-form-field class="w-full mt-2">
+          <mat-form-field class="w-full mt-2" appearance="outline" subscriptSizing="dynamic">
             <mat-label>Canonical URL</mat-label>
             <input
               matInput

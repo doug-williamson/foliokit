@@ -355,140 +355,33 @@ describe('PostEditorStore canPublish computed', () => {
     expect(store.canPublish()).toBe(true);
   });
 
-  it('returns true when post has a title and status is "scheduled"', () => {
+  it('coerces legacy "scheduled" posts to draft on load; canPublish stays true', () => {
     const { store, postServiceStub } = setup();
     postServiceStub.getPostById.mockReturnValue(
       of(makePost({ title: 'Scheduled', status: 'scheduled' })),
     );
     store.loadPost('post-1');
+    expect(store.post()?.status).toBe('draft');
     expect(store.canPublish()).toBe(true);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Autosave pipeline
+// Autosave: debounced writes run in PostEditorPageComponent, not the store.
 // ---------------------------------------------------------------------------
 
-describe('PostEditorStore autosave pipeline', () => {
-  beforeAll(() => vi.useFakeTimers());
-  afterAll(() => vi.useRealTimers());
-
-  function autosaveSetup() {
-    const postServiceStub = {
-      getPostById: vi.fn(),
-      savePost: vi.fn(),
-    };
-
+describe('PostEditorStore (no internal autosave timer)', () => {
+  it('does not call savePost when only updateField runs (no component debounce)', () => {
+    const postServiceStub = { getPostById: vi.fn(), savePost: vi.fn() };
     TestBed.configureTestingModule({
-      providers: [
-        PostEditorStore,
-        { provide: PostService, useValue: postServiceStub },
-      ],
+      providers: [PostEditorStore, { provide: PostService, useValue: postServiceStub }],
     });
-
     const store = TestBed.inject(PostEditorStore);
-    // Provide a synchronous save response by default
-    postServiceStub.savePost.mockReturnValue(
-      of(makePost({ id: 'saved-auto', title: 'Draft' })),
-    );
-    return { store, postServiceStub };
-  }
-
-  afterEach(() => {
-    vi.clearAllTimers();
-    vi.clearAllMocks();
+    store.initNew();
+    store.updateField('title', 'x');
+    TestBed.flushEffects();
+    expect(postServiceStub.savePost).not.toHaveBeenCalled();
     TestBed.resetTestingModule();
-  });
-
-  it('does NOT trigger autosave when isDirty is false', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    store.initNew(); // isDirty stays false
-
-    vi.advanceTimersByTime(2000);
-
-    expect(postServiceStub.savePost).not.toHaveBeenCalled();
-  });
-
-  it('does NOT trigger autosave when post status is not "draft"', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    postServiceStub.getPostById.mockReturnValue(
-      of(makePost({ title: 'My Post', status: 'published' })),
-    );
-    store.loadPost('post-1');
-    // Manually dirty with a published post
-    store.updateField('title', 'Updated Published');
-    TestBed.flushEffects();
-
-    vi.advanceTimersByTime(2000);
-
-    expect(postServiceStub.savePost).not.toHaveBeenCalled();
-  });
-
-  it('does NOT fire before 2000 ms have elapsed', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    store.initNew();
-    store.updateField('title', 'Draft');
-    TestBed.flushEffects();
-
-    vi.advanceTimersByTime(1999);
-
-    expect(postServiceStub.savePost).not.toHaveBeenCalled();
-  });
-
-  it('DOES call save() after exactly 2000 ms when isDirty is true and status is "draft"', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    store.initNew();
-    store.updateField('title', 'Draft');
-    TestBed.flushEffects();
-
-    vi.advanceTimersByTime(2000);
-
-    expect(postServiceStub.savePost).toHaveBeenCalledTimes(1);
-    expect(store.isDirty()).toBe(false);
-  });
-
-  it('debounces rapid updates into a single save call', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    store.initNew();
-
-    store.updateField('title', 'v1');
-    TestBed.flushEffects();
-    vi.advanceTimersByTime(1000);
-
-    store.updateField('title', 'v2');
-    TestBed.flushEffects();
-    vi.advanceTimersByTime(1000);
-
-    store.updateField('title', 'v3');
-    TestBed.flushEffects();
-
-    // Override the mock so autosave returns the current post title
-    postServiceStub.savePost.mockReturnValue(
-      of(makePost({ id: 'saved-auto', title: 'v3' })),
-    );
-
-    vi.advanceTimersByTime(2000);
-
-    expect(postServiceStub.savePost).toHaveBeenCalledTimes(1);
-    expect(store.post()!.title).toBe('v3');
-  });
-
-  it('does NOT fire a second autosave after a successful manual save clears isDirty', () => {
-    const { store, postServiceStub } = autosaveSetup();
-    store.initNew();
-    store.updateField('title', 'Draft');
-    TestBed.flushEffects();
-
-    // Manual save fires before 2000 ms
-    vi.advanceTimersByTime(500);
-    store.save(); // resolves synchronously via of(...) → isDirty = false
-    vi.clearAllMocks();
-
-    // Timer from original trigger$ emission still fires at ~2000 ms mark;
-    // switchMap guards against saving when isDirty is already false
-    vi.advanceTimersByTime(1500);
-
-    expect(postServiceStub.savePost).not.toHaveBeenCalled();
   });
 });
 

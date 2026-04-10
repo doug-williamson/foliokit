@@ -12,6 +12,8 @@ export interface ShellConfig {
   showNewPostButton?: boolean;
   /** Admin-only: displays the current route title in the shell header. Defaults to false. */
   showRouteTitle?: boolean;
+  /** When set, toolbar logo and app name navigate here (e.g. `/dashboard` or `/`). */
+  toolbarHomeRoute?: string;
 }
 
 export const SHELL_CONFIG = new InjectionToken<Signal<ShellConfig>>('SHELL_CONFIG');

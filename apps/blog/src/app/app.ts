@@ -104,6 +104,7 @@ export class App implements OnInit {
       showAuth: false,
       nav: this.navItems(),
       features,
+      toolbarHomeRoute: '/',
     };
   });
 

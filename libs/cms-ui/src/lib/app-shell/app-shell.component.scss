@@ -192,6 +192,12 @@ mat-sidenav.icon-rail {
   }
 }
 
+::ng-deep mat-sidenav .nav-item.nav-item--disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  border-left-color: transparent !important;
+}
+
 [data-theme="dark"] ::ng-deep mat-sidenav .nav-item.active-link {
   background: var(--nav-active-bg);
 }
@@ -310,6 +316,24 @@ mat-sidenav.icon-rail {
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   gap: 4px;
+}
+
+.folio-toolbar-brand {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--r-sm, 4px);
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-border, var(--text-accent));
+    outline-offset: 2px;
+  }
+
+  &:hover .folio-app-name {
+    color: var(--text-accent);
+  }
 }
 
 // ─── Content area ─────────────────────────────────────────────────────────────

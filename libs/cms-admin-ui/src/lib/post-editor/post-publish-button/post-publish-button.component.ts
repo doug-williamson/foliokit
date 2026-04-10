@@ -17,14 +17,13 @@ import {
   ConfirmDialogData,
 } from '../../shared/confirm-dialog/confirm-dialog.component';
 
-type PublishActionStatus = Exclude<BlogPost['status'], 'archived'>;
+type PublishActionStatus = Exclude<BlogPost['status'], 'archived' | 'scheduled'>;
 
-const ALL_STATUSES: PublishActionStatus[] = ['published', 'draft', 'scheduled'];
+const ALL_STATUSES: PublishActionStatus[] = ['published', 'draft'];
 
 const STATUS_LABELS: Record<PublishActionStatus, string> = {
   published: 'Published',
   draft: 'Draft',
-  scheduled: 'Scheduled',
 };
 
 @Component({
@@ -40,7 +39,7 @@ const STATUS_LABELS: Record<PublishActionStatus, string> = {
       }
       .primary-btn {
         border-radius: 4px 0 0 4px !important;
-        min-width: 120px;
+        min-width: 88px;
       }
       .chevron-btn {
         min-width: 36px !important;
@@ -106,7 +105,9 @@ export class PostPublishButtonComponent {
   readonly requiresConfirmation = computed(() => this.primaryAction() === 'draft');
 
   readonly menuActions = computed<PublishActionStatus[]>(() => {
-    const current = this.currentStatus();
+    const raw = this.currentStatus();
+    const current: PublishActionStatus =
+      raw === 'published' ? 'published' : 'draft';
     const primary = this.primaryAction();
     return ALL_STATUSES.filter((s) => s !== current && s !== primary);
   });

@@ -144,80 +144,125 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         height: 24px;
         line-height: 0;
       }
+
+      .post-editor-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 12px;
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+
+      @media (min-width: 1024px) {
+        .post-editor-toolbar {
+          flex-direction: row;
+          align-items: center;
+          gap: 12px;
+          min-height: 48px;
+          padding: 0 20px;
+        }
+      }
+
+      .post-editor-toolbar-title {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .post-editor-toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      @media (min-width: 1024px) {
+        .post-editor-toolbar-actions {
+          flex-wrap: nowrap;
+          flex-shrink: 0;
+          margin-left: auto;
+        }
+      }
     `,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
-      <div
-        class="flex items-center gap-3 shrink-0"
-        style="height: 48px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
-      >
-        <!-- Post title (left) -->
-        <span class="flex-1 truncate page-subheading">
+      <div class="post-editor-toolbar">
+        <span class="post-editor-toolbar-title truncate page-subheading">
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
-        <!-- Autosave indicator -->
-        @if (!store.isNew()) {
-          <div style="min-width: 148px; display: flex; align-items: center; justify-content: flex-end;">
-            @if (store.saveStatus() === 'saving') {
-              <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
-                <span class="save-dot save-dot--saving"></span>
-                Saving...
-              </span>
-            } @else if (store.saveStatus() === 'saved') {
-              <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
-                <span class="save-dot save-dot--saved"></span>
-                {{ store.saveStatusLabel() }}
-              </span>
-            } @else if (store.saveStatus() === 'error') {
-              <button class="save-retry-btn" (click)="retryAutosave()">
-                {{ store.saveStatusLabel() }}
-              </button>
-            }
-          </div>
-        }
+        <div class="post-editor-toolbar-actions">
+          @if (!store.isNew()) {
+            <div class="flex items-center justify-end min-w-0 flex-1 sm:flex-initial sm:justify-end">
+              @if (store.saveStatus() === 'saving') {
+                <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
+                  <span class="save-dot save-dot--saving"></span>
+                  Saving...
+                </span>
+              } @else if (store.saveStatus() === 'saved') {
+                <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
+                  <span class="save-dot save-dot--saved"></span>
+                  {{ store.saveStatusLabel() }}
+                </span>
+              } @else if (store.saveStatus() === 'error') {
+                <button type="button" class="save-retry-btn" (click)="retryAutosave()">
+                  {{ store.saveStatusLabel() }}
+                </button>
+              }
+            </div>
+          }
 
-        <!-- Status badge -->
-        @if (store.post()?.status; as status) {
-          <span
-            class="badge admin-meta"
-            [class.badge-pub]="status === 'published'"
-            [class.badge-sched]="status === 'scheduled'"
-            [class.badge-draft]="status === 'draft'"
-            [class.badge-arch]="status === 'archived'"
-          >
-            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : status === 'archived' ? '● ARCHIVED' : '● DRAFT' }}
-          </span>
-        }
+          @if (store.post()?.status; as status) {
+            <span
+              class="badge admin-meta shrink-0"
+              [class.badge-pub]="status === 'published'"
+              [class.badge-draft]="status === 'draft' || status === 'scheduled'"
+              [class.badge-arch]="status === 'archived'"
+            >
+              {{ editorStatusLabel(status) }}
+            </span>
+          }
 
-        @if (!isDesktop()) {
-          <button
-            mat-icon-button
-            type="button"
-            class="preview-toggle-btn"
-            (click)="togglePreview()"
-            [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
-            [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
-          >
-            <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
-          </button>
-          <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
-            <mat-icon svgIcon="save" />
-          </button>
-        } @else {
-          <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
-            Save
-          </button>
-        }
-        @if (store.post(); as post) {
-          <cms-post-publish-button
-            [currentStatus]="post.status"
-            [isSaving]="store.saveStatus() === 'saving'"
-            (statusChange)="onStatusChange($event)"
-          />
-        }
+          @if (!isDesktop()) {
+            <button
+              mat-icon-button
+              type="button"
+              class="preview-toggle-btn shrink-0"
+              (click)="togglePreview()"
+              [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
+              [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
+            >
+              <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              class="shrink-0"
+              (click)="store.save()"
+              [disabled]="store.isSaving()"
+              matTooltip="Save"
+            >
+              <mat-icon svgIcon="save" />
+            </button>
+          } @else {
+            <button mat-stroked-button type="button" (click)="store.save()" [disabled]="store.isSaving()">
+              Save
+            </button>
+          }
+          @if (store.post(); as post) {
+            <span class="shrink-0 min-w-0 post-editor-publish-wrap">
+              <cms-post-publish-button
+                [currentStatus]="post.status"
+                [isSaving]="store.saveStatus() === 'saving'"
+                (statusChange)="onStatusChange($event)"
+              />
+            </span>
+          }
+        </div>
       </div>
 
       <!-- Editor + Preview sidenav -->
@@ -256,9 +301,10 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <mat-sidenav-content>
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Left tab strip -->
-            <div class="tab-strip">
+            <div class="tab-strip tab-strip--equal">
               @for (tab of leftTabs; track tab) {
                 <button
+                  type="button"
                   class="tab-btn"
                   [class.active]="leftTab() === tab"
                   (click)="leftTab.set(tab)"
@@ -335,11 +381,15 @@ export class PostEditorPageComponent implements OnInit {
   readonly rightTab = signal<RightTab>('Article');
 
   onStatusChange(status: BlogPost['status']): void {
-    if (status !== 'scheduled') {
-      this.store.updateField('scheduledPublishAt', undefined);
-    }
+    this.store.updateField('scheduledPublishAt', undefined);
     this.store.updateField('status', status);
     this.doAutosave();
+  }
+
+  protected editorStatusLabel(status: BlogPost['status']): string {
+    if (status === 'published') return '● PUBLISHED';
+    if (status === 'archived') return '● ARCHIVED';
+    return '● DRAFT';
   }
 
   togglePreview(): void {

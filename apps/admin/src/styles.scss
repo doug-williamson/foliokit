@@ -72,6 +72,17 @@
   }
 }
 
+.tab-strip--equal {
+  width: 100%;
+}
+
+.tab-strip--equal .tab-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  padding-inline: 4px;
+}
+
 /* ── Kanban column body ─────────────────────────────────────────────────────── */
 
 .kanban-column-body {
@@ -304,12 +315,16 @@ html[data-theme='dark'] .folio-admin {
 
 /* Admin-only badge treatment so blog keeps existing visuals. */
 .folio-admin .badge {
-  border-radius: 1px;
+  border-radius: 999px;
   border: 1px solid var(--border-strong);
   font-family: var(--admin-ui-font);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
+  padding-inline: 10px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
 }
 
 .folio-admin .badge-pub {

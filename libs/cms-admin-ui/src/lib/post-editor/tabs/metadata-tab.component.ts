@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   signal,
@@ -12,7 +11,6 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -38,7 +36,6 @@ function slugify(title: string): string {
     MatButtonModule,
     MatChipsModule,
     MatDatepickerModule,
-    MatTimepickerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -106,39 +103,6 @@ function slugify(title: string): string {
           </mat-form-field>
         }
 
-        <!-- Scheduled Publish At — only when status is scheduled -->
-        @if (post.status === 'scheduled') {
-          <div class="flex gap-3">
-            <mat-form-field class="flex-1">
-              <mat-label>Publish Date</mat-label>
-              <input
-                matInput
-                [matDatepicker]="scheduledDatePicker"
-                [value]="scheduledDateValue()"
-                (dateChange)="onScheduledDateChange($event.value)"
-              />
-              <mat-datepicker-toggle matIconSuffix [for]="scheduledDatePicker" />
-              <mat-datepicker #scheduledDatePicker />
-            </mat-form-field>
-
-            <mat-form-field class="flex-1">
-              <mat-label>Publish Time</mat-label>
-              <input
-                matInput
-                [matTimepicker]="scheduledTimePicker"
-                [value]="scheduledDateValue()"
-                (valueChange)="onScheduledTimeChange($event)"
-              />
-              <mat-timepicker-toggle matIconSuffix [for]="scheduledTimePicker" />
-              <mat-timepicker #scheduledTimePicker [interval]="'15 min'" />
-              @if (scheduleDateError()) {
-                <mat-error>{{ scheduleDateError() }}</mat-error>
-              }
-              <mat-hint>Publishes within 5 min of scheduled time.</mat-hint>
-            </mat-form-field>
-          </div>
-        }
-
         <!-- Slug -->
         <mat-form-field class="w-full">
           <mat-label>Slug</mat-label>
@@ -174,7 +138,6 @@ export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
   readonly separatorKeys = [ENTER, COMMA];
   readonly internalNotes = signal('');
-  readonly scheduleDateError = signal<string | null>(null);
 
   readonly authors = toSignal(inject(AuthorService).getAll(), {
     initialValue: [] as Author[],
@@ -221,11 +184,6 @@ export class MetadataTabComponent {
     );
   }
 
-  readonly scheduledDateValue = computed<Date | null>(() => {
-    const ms = this.store.post()?.scheduledPublishAt;
-    return ms ? new Date(ms) : null;
-  });
-
   toDate(ms: number | null | undefined): Date | null {
     return ms ? new Date(ms) : null;
   }
@@ -233,31 +191,5 @@ export class MetadataTabComponent {
   onPublishedAtChange(date: Date | null, post: BlogPost): void {
     if (!date) return;
     this.store.updateField('publishedAt', date.getTime());
-  }
-
-  onScheduledDateChange(date: Date | null): void {
-    if (!date) return;
-    const existing = this.scheduledDateValue() ?? new Date();
-    const combined = new Date(date);
-    combined.setHours(existing.getHours(), existing.getMinutes(), 0, 0);
-    this._applyScheduledAt(combined);
-  }
-
-  onScheduledTimeChange(date: Date | null): void {
-    if (!date) return;
-    const existingDate = this.scheduledDateValue() ?? new Date();
-    const combined = new Date(existingDate);
-    combined.setHours(date.getHours(), date.getMinutes(), 0, 0);
-    this._applyScheduledAt(combined);
-  }
-
-  private _applyScheduledAt(date: Date): void {
-    const ms = date.getTime();
-    if (ms <= Date.now()) {
-      this.scheduleDateError.set('Scheduled time must be in the future.');
-      return;
-    }
-    this.scheduleDateError.set(null);
-    this.store.updateField('scheduledPublishAt', ms);
   }
 }

@@ -64,15 +64,26 @@ import { PostsListStore } from './posts-list.store';
     }
 
     .cell-title-meta {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 400;
       color: var(--text-secondary);
-      margin-top: 2px;
+      margin-top: 4px;
+      min-width: 0;
+    }
+
+    .cell-title-meta-slug {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .cell-title-meta-date {
+      font-size: 10px;
+      color: var(--text-muted);
     }
 
     .cell-meta {
@@ -93,11 +104,21 @@ import { PostsListStore } from './posts-list.store';
 
     .cell-meta-date {
       display: block;
-      margin-top: 2px;
+      margin-top: 4px;
+      font-size: 10px;
     }
 
     /* Give the status column a fixed width so title gets the rest */
-    .col-status { width: 110px; }
+    .col-status {
+      width: 120px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .col-status .badge {
+      display: inline-flex;
+      justify-content: center;
+    }
 
     /* Slug/Date column: hidden on mobile */
     .col-slug { display: none; }
@@ -126,7 +147,10 @@ import { PostsListStore } from './posts-list.store';
           <tr (click)="postSelected.emit(post.id)">
             <td>
               <div class="cell-title">{{ post.title || 'Untitled' }}</div>
-              <span class="cell-title-meta">/{{ post.slug }} · {{ post.updatedAt | date: 'MMM d, yyyy' }}</span>
+              <span class="cell-title-meta">
+                <span class="cell-title-meta-slug">/{{ post.slug }}</span>
+                <span class="cell-title-meta-date">{{ post.updatedAt | date: 'MMM d, yyyy' }}</span>
+              </span>
             </td>
             <td class="col-slug">
               <span class="cell-meta">
@@ -161,15 +185,13 @@ export class PostsTableComponent {
 
   badgeClass(status: BlogPost['status']): string {
     if (status === 'published') return 'badge-pub';
-    if (status === 'scheduled') return 'badge-sched';
     if (status === 'archived') return 'badge-arch';
     return 'badge-draft';
   }
 
   badgeLabel(status: BlogPost['status']): string {
-    if (status === 'published') return '● PUBLISHED';
-    if (status === 'scheduled') return '● SCHEDULED';
-    if (status === 'archived') return '● ARCHIVED';
-    return '● DRAFT';
+    if (status === 'published') return 'PUBLISHED';
+    if (status === 'archived') return 'ARCHIVED';
+    return 'DRAFT';
   }
 }

@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
 import { AuthService, SiteConfigService } from '@foliokit/cms-core';
 
@@ -18,7 +19,7 @@ import { AuthService, SiteConfigService } from '@foliokit/cms-core';
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
  * - **Write** nav group: Posts, Series, Authors
  * - **Publish** nav group: Pages
- * - **Configure** nav group: Appearance, Settings
+ * - **Configure** nav group: Settings
  * - Footer row with the signed-in user's email and a logout button
  *
  * `SHELL_CONFIG` is provided internally: toolbar **appName** prefers a non-empty
@@ -50,6 +51,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
       ...(logoUrl ? { logoUrl } : {}),
       showNewPostButton: false,
       showRouteTitle: true,
+      toolbarHomeRoute: '/dashboard',
     };
   });
 }
@@ -64,6 +66,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     RouterLink,
     RouterLinkActive,
     MatIconModule,
+    MatTooltipModule,
     ShellNavFooterDirective,
   ],
   providers: [
@@ -101,11 +104,47 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <mat-icon class="nav-icon" svgIcon="web" />
           <span class="nav-label">Pages</span>
         </a>
+        @if (aboutPageEnabled()) {
+          <a
+            class="nav-item nav-child"
+            routerLink="/pages/about"
+            routerLinkActive="active-link"
+          >
+            <mat-icon class="nav-icon" svgIcon="info" />
+            <span class="nav-label">About</span>
+          </a>
+        } @else {
+          <span
+            class="nav-item nav-child nav-item--disabled"
+            tabindex="0"
+            matTooltip="Enable the About page under Pages"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="info" />
+            <span class="nav-label">About</span>
+          </span>
+        }
+        @if (linksPageEnabled()) {
+          <a
+            class="nav-item nav-child"
+            routerLink="/pages/links"
+            routerLinkActive="active-link"
+          >
+            <mat-icon class="nav-icon" svgIcon="link" />
+            <span class="nav-label">Links</span>
+          </a>
+        } @else {
+          <span
+            class="nav-item nav-child nav-item--disabled"
+            tabindex="0"
+            matTooltip="Enable the Links page under Pages"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="link" />
+            <span class="nav-label">Links</span>
+          </span>
+        }
         <span class="nav-group-label">Configure</span>
-        <a class="nav-item" routerLink="/appearance" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="palette" />
-          <span class="nav-label">Appearance</span>
-        </a>
         <a class="nav-item" routerLink="/settings" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="tune" />
           <span class="nav-label">Settings</span>
@@ -140,16 +179,23 @@ export class AdminShellComponent {
     logoUrl?: string;
   } | null>(null);
 
+  /** About page enabled in site config (default false when unknown). */
+  readonly aboutPageEnabled = signal(false);
+  /** Links page enabled in site config (default false when unknown). */
+  readonly linksPageEnabled = signal(false);
+
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   constructor() {
     inject(SiteConfigService)
-      .getDefaultSiteConfig()
+      .watchDefaultSiteConfig()
       .pipe(takeUntilDestroyed())
       .subscribe((config) => {
         if (!config) {
           this.siteToolbarBranding.set(null);
+          this.aboutPageEnabled.set(false);
+          this.linksPageEnabled.set(false);
           return;
         }
         const siteName = config.siteName?.trim();
@@ -158,6 +204,8 @@ export class AdminShellComponent {
           ...(siteName ? { siteName } : {}),
           ...(logoUrl ? { logoUrl } : {}),
         });
+        this.aboutPageEnabled.set(config.pages?.about?.enabled === true);
+        this.linksPageEnabled.set(config.pages?.links?.enabled === true);
       });
   }
 

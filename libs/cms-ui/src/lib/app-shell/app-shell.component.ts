@@ -10,7 +10,7 @@ import {
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { ActivationEnd, NavigationEnd, Router } from '@angular/router';
+import { ActivationEnd, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -36,6 +36,7 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    RouterLink,
   ],
 })
 export class AppShellComponent implements OnInit, OnDestroy {

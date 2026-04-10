@@ -3,13 +3,10 @@ import {
   patchState,
   signalStore,
   withComputed,
-  withHooks,
   withMethods,
   withState,
 } from '@ngrx/signals';
 import { computed } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime, filter, switchMap } from 'rxjs/operators';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -81,22 +78,15 @@ export const PostEditorStore = signalStore(
     }),
   })),
 
-  withMethods((store, postService = inject(PostService)) => {
-    let autosaveTrigger$: Subject<'save' | 'cancel'> | null = null;
-
-    function cancelAutosave() {
-      autosaveTrigger$?.next('cancel');
-    }
-
-    return {
-      _setAutosaveTrigger(trigger: Subject<'save' | 'cancel'>) {
-        autosaveTrigger$ = trigger;
-      },
-
+  withMethods((store, postService = inject(PostService)) => ({
       loadPost(id: string): void {
         postService.getPostById(id).subscribe((post) => {
+          const coerced =
+            post.status === 'scheduled'
+              ? { ...post, status: 'draft' as const, scheduledPublishAt: undefined }
+              : post;
           patchState(store, {
-            post,
+            post: coerced,
             isDirty: false,
             isSaving: false,
             saveError: null,
@@ -132,7 +122,6 @@ export const PostEditorStore = signalStore(
       save(): void {
         const post = store.post();
         if (!post) return;
-        cancelAutosave();
         patchState(store, { isSaving: true, saveError: null });
         postService.savePost(post).subscribe({
           next: (saved) => {
@@ -193,7 +182,6 @@ export const PostEditorStore = signalStore(
           post: { ...post, status: 'published', publishedAt: now },
           isDirty: true,
         });
-        cancelAutosave();
         patchState(store, { isSaving: true, saveError: null });
         postService.savePost({ ...post, status: 'published', publishedAt: now }).subscribe({
           next: (saved) => {
@@ -218,35 +206,5 @@ export const PostEditorStore = signalStore(
           },
         });
       },
-    };
-  }),
-
-  withHooks({
-    onInit(store) {
-      const trigger$ = new Subject<'save' | 'cancel'>();
-      store._setAutosaveTrigger(trigger$);
-
-      const autosaveSub = trigger$
-        .pipe(
-          filter((v) => v === 'save'),
-          debounceTime(2000),
-          switchMap(() => {
-            const post = store.post();
-            if (!post || !store.isDirty() || post.status !== 'draft') {
-              return [];
-            }
-            return [true];
-          }),
-        )
-        .subscribe(() => store.save());
-
-      // Note: watchState trigger removed — autosave is driven by the component
-      // via saveSignal$ (1500 ms debounce) to avoid duplicate Firestore writes.
-
-      return () => {
-        autosaveSub.unsubscribe();
-        trigger$.complete();
-      };
-    },
-  }),
+  })),
 );

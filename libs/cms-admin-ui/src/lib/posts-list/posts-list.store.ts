@@ -7,11 +7,10 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export type PostStatus = BlogPost['status'];
-export type PostFilterStatus = Exclude<PostStatus, 'archived'>;
+export type PostFilterStatus = 'draft' | 'published';
 
 export interface PostsListState {
   posts: BlogPost[];
@@ -34,10 +33,7 @@ export const PostsListStore = signalStore(
 
   withComputed((store) => ({
     draftPosts: computed(() =>
-      store.posts().filter((p) => p.status === 'draft'),
-    ),
-    scheduledPosts: computed(() =>
-      store.posts().filter((p) => p.status === 'scheduled'),
+      store.posts().filter((p) => p.status === 'draft' || p.status === 'scheduled'),
     ),
     publishedPosts: computed(() =>
       store.posts().filter((p) => p.status === 'published'),
@@ -47,10 +43,10 @@ export const PostsListStore = signalStore(
     ),
     // Kept for backward compatibility
     draftCount: computed(
-      () => store.posts().filter((p) => p.status === 'draft').length,
-    ),
-    scheduledCount: computed(
-      () => store.posts().filter((p) => p.status === 'scheduled').length,
+      () =>
+        store.posts().filter(
+          (p) => p.status === 'draft' || p.status === 'scheduled',
+        ).length,
     ),
     publishedCount: computed(
       () => store.posts().filter((p) => p.status === 'published').length,
@@ -67,7 +63,13 @@ export const PostsListStore = signalStore(
         );
       }
       if (status !== 'all') {
-        result = result.filter((p) => p.status === status);
+        if (status === 'draft') {
+          result = result.filter(
+            (p) => p.status === 'draft' || p.status === 'scheduled',
+          );
+        } else {
+          result = result.filter((p) => p.status === status);
+        }
       }
       return result;
     }),
@@ -88,14 +90,6 @@ export const PostsListStore = signalStore(
             patchState(store, { loading: false, error: message });
           },
         });
-      },
-
-      reorderQueue(previousIndex: number, currentIndex: number): void {
-        const reordered = [...store.scheduledPosts()];
-        moveItemInArray(reordered, previousIndex, currentIndex);
-        const nonScheduled = store.posts().filter((p) => p.status !== 'scheduled');
-        patchState(store, { posts: [...nonScheduled, ...reordered] });
-        // TODO: persist queueOrder to Firestore when ready
       },
 
       setFilterText(text: string): void {

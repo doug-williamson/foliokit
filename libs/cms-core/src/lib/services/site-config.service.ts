@@ -1,5 +1,5 @@
 import { inject, Injectable, makeStateKey } from '@angular/core';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, DocumentReference, getDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
 import { defer, from, Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { CollectionPaths } from '../firebase/collection-paths';
@@ -47,6 +47,38 @@ export class SiteConfigService implements ISiteConfigService {
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
     return this.getSiteConfig(this.paths.tenantId ?? 'default');
+  }
+
+  /**
+   * Live updates when the default site-config document changes (browser only).
+   * Use in admin UI; prefer {@link getDefaultSiteConfig} for one-shot reads (SSR, resolvers).
+   */
+  watchDefaultSiteConfig(): Observable<SiteConfig | null> {
+    const ref = this.defaultSiteConfigDocRef();
+    if (!ref) return of(null);
+    return new Observable<SiteConfig | null>((subscriber) => {
+      const unsub = onSnapshot(
+        ref,
+        (snap) => {
+          if (!snap.exists()) {
+            subscriber.next(null);
+            return;
+          }
+          subscriber.next(
+            normalizeSiteConfig({ id: snap.id, ...(snap.data() as object) }),
+          );
+        },
+        (err) => subscriber.error(err),
+      );
+      return () => unsub();
+    });
+  }
+
+  private defaultSiteConfigDocRef(): DocumentReference | null {
+    if (!this.firestore) return null;
+    const docPath = this.paths.siteConfigDocPath(this.paths.tenantId ?? 'default');
+    const segments = docPath.split('/');
+    return doc(this.firestore, segments[0], ...segments.slice(1));
   }
 
   /** Returns the default SiteConfig, filtering out null (no-document) results. */
