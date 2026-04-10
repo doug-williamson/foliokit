@@ -8,9 +8,8 @@ import {
 } from '@ngrx/signals';
 import { computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { EMPTY, Observable, tap } from 'rxjs';
 import { BlogPost, PostService } from '@foliokit/cms-core';
-
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export interface PostEditorState {
   post: BlogPost | null;
@@ -20,8 +19,6 @@ export interface PostEditorState {
   mode: 'new' | 'edit';
   cursorPosition: number;
   tempPostId: string;
-  saveStatus: SaveStatus;
-  lastSavedAt: Date | null;
 }
 
 const initialState: PostEditorState = {
@@ -32,8 +29,6 @@ const initialState: PostEditorState = {
   mode: 'new',
   cursorPosition: 0,
   tempPostId: crypto.randomUUID(),
-  saveStatus: 'idle',
-  lastSavedAt: null,
 };
 
 function blankPost(): BlogPost {
@@ -68,15 +63,6 @@ export const PostEditorStore = signalStore(
         post.status !== 'published'
       );
     }),
-    saveStatusLabel: computed(() => {
-      const status = store.saveStatus();
-      const lastSaved = store.lastSavedAt();
-      if (status === 'saving') return 'Saving…';
-      if (status === 'saved' && lastSaved)
-        return `Saved at ${lastSaved.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-      if (status === 'error') return 'Save failed — retry?';
-      return '';
-    }),
   })),
 
   withMethods((store, postService = inject(PostService), router = inject(Router)) => ({
@@ -106,39 +92,33 @@ export const PostEditorStore = signalStore(
         });
       },
 
-      setSaveStatus(status: SaveStatus): void {
-        patchState(store, { saveStatus: status });
-      },
-
-      setLastSavedAt(date: Date): void {
-        patchState(store, { lastSavedAt: date });
-      },
-
       updateField<K extends keyof BlogPost>(field: K, value: BlogPost[K]): void {
         const current = store.post();
         if (!current) return;
-        patchState(store, { post: { ...current, [field]: value }, isDirty: true, saveStatus: 'idle' });
+        patchState(store, { post: { ...current, [field]: value }, isDirty: true });
       },
 
-      save(): void {
+      save(): Observable<BlogPost> {
         const post = store.post();
-        if (!post) return;
+        if (!post) return EMPTY as Observable<BlogPost>;
         patchState(store, { isSaving: true, saveError: null });
-        postService.savePost(post).subscribe({
-          next: (saved) => {
-            patchState(store, {
-              post: saved,
-              isDirty: false,
-              isSaving: false,
-              mode: 'edit',
-            });
-          },
-          error: (err: unknown) => {
-            const message =
-              err instanceof Error ? err.message : 'Save failed';
-            patchState(store, { isSaving: false, saveError: message });
-          },
-        });
+        return postService.savePost(post).pipe(
+          tap({
+            next: (saved) => {
+              patchState(store, {
+                post: saved,
+                isDirty: false,
+                isSaving: false,
+                mode: 'edit',
+              });
+            },
+            error: (err: unknown) => {
+              const message =
+                err instanceof Error ? err.message : 'Save failed';
+              patchState(store, { isSaving: false, saveError: message });
+            },
+          }),
+        );
       },
 
       setCursorPosition(position: number): void {
@@ -213,6 +193,7 @@ export const PostEditorStore = signalStore(
         patchState(store, { isSaving: true, saveError: null });
         postService.deletePost(post.id).subscribe({
           next: () => {
+            patchState(store, { isDirty: false, isSaving: false });
             router.navigate(['/posts']);
           },
           error: (err: unknown) => {

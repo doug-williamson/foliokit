@@ -17,9 +17,18 @@ import { PostsListStore } from './posts-list.store';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, MatButtonModule, MatIconModule, MatMenuModule],
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
   styles: [`
-    :host { display: block; }
+    :host {
+      display: block;
+      min-width: 0;
+    }
+
+    .posts-table th.col-title,
+    .posts-table td.col-title {
+      max-width: 0;
+      width: auto;
+    }
 
     .posts-table {
       width: 100%;
@@ -148,7 +157,7 @@ import { PostsListStore } from './posts-list.store';
     <table class="posts-table">
       <thead>
         <tr>
-          <th>Title</th>
+          <th class="col-title">Title</th>
           <th class="col-slug">Slug / Date</th>
           <th class="col-status">Status</th>
           <th class="col-actions"></th>
@@ -157,7 +166,7 @@ import { PostsListStore } from './posts-list.store';
       <tbody>
         @for (post of allPosts(); track post.id) {
           <tr (click)="postSelected.emit(post.id)">
-            <td>
+            <td class="col-title">
               <div class="cell-title">{{ post.title || 'Untitled' }}</div>
               <span class="cell-title-meta">
                 <span class="cell-title-meta-slug">/{{ post.slug }}</span>
@@ -174,25 +183,26 @@ import { PostsListStore } from './posts-list.store';
               <span [class]="'badge ' + badgeClass(post.status)">{{ badgeLabel(post.status) }}</span>
             </td>
             <td class="col-actions">
-              @if (post.status === 'published') {
-                <button
-                  mat-icon-button
-                  [matMenuTriggerFor]="rowMenu"
-                  aria-label="Post actions"
-                  (click)="$event.stopPropagation()"
-                >
-                  <mat-icon svgIcon="more_vert" />
-                </button>
-                <mat-menu #rowMenu>
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="rowMenu"
+                aria-label="Post actions"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-icon svgIcon="more_vert" />
+              </button>
+              <mat-menu #rowMenu>
+                <button mat-menu-item (click)="postSelected.emit(post.id)">Edit</button>
+                @if (post.status === 'published') {
                   <button mat-menu-item (click)="store.unpublishPost(post.id)">Unpublish</button>
-                </mat-menu>
-              }
+                }
+              </mat-menu>
             </td>
           </tr>
         }
         @if (allPosts().length === 0) {
           <tr>
-            <td colspan="4" style="text-align: center; padding: 32px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">
+            <td colspan="4" class="posts-table-empty" style="text-align: center; padding: 32px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">
               No posts yet
             </td>
           </tr>

@@ -182,7 +182,7 @@ describe('PostEditorStore.save()', () => {
     const saveSubject = new Subject<BlogPost>();
     postServiceStub.savePost.mockReturnValue(saveSubject.asObservable());
 
-    store.save();
+    store.save().subscribe();
 
     expect(store.isSaving()).toBe(true);
 
@@ -198,7 +198,7 @@ describe('PostEditorStore.save()', () => {
     const savedPost = makePost({ id: 'saved-1', title: 'Draft' });
     postServiceStub.savePost.mockReturnValue(of(savedPost));
 
-    store.save();
+    store.save().subscribe();
 
     expect(store.post()).toEqual(savedPost);
     expect(store.isDirty()).toBe(false);
@@ -215,16 +215,18 @@ describe('PostEditorStore.save()', () => {
       throwError(() => new Error('Network failure')),
     );
 
-    store.save();
-
-    expect(store.isSaving()).toBe(false);
-    expect(store.saveError()).toBe('Network failure');
+    store.save().subscribe({
+      error: () => {
+        expect(store.isSaving()).toBe(false);
+        expect(store.saveError()).toBe('Network failure');
+      },
+    });
   });
 
   it('does nothing when post is null', () => {
     const { store, postServiceStub } = setup();
 
-    store.save();
+    store.save().subscribe();
 
     expect(postServiceStub.savePost).not.toHaveBeenCalled();
   });
@@ -367,7 +369,7 @@ describe('PostEditorStore canPublish computed', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Autosave: debounced writes run in PostEditorPageComponent, not the store.
+// Manual save only: updateField does not persist until save() is called.
 // ---------------------------------------------------------------------------
 
 describe('PostEditorStore (no internal autosave timer)', () => {

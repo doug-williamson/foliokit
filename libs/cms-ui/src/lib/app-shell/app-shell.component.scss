@@ -316,6 +316,11 @@ mat-sidenav.icon-rail {
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   gap: 4px;
+
+  /* Extra air between sidenav toggle and brand (menu is only first child when shown). */
+  > button.mat-mdc-icon-button:first-child {
+    margin-inline-end: 8px;
+  }
 }
 
 .folio-toolbar-brand {

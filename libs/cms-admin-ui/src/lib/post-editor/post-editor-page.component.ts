@@ -1,21 +1,21 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
-  effect,
   inject,
   input,
   OnInit,
   signal,
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BlogPost, PostService } from '@foliokit/cms-core';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BlogPost } from '@foliokit/cms-core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from './post-editor.store';
 import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
@@ -26,6 +26,10 @@ import { SeoTabComponent } from './tabs/seo-tab.component';
 import { ArticlePreviewComponent } from './preview/article-preview.component';
 import { CardPreviewComponent } from './preview/card-preview.component';
 import { SeoPreviewComponent } from './preview/seo-preview.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
 
 type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
 type RightTab = 'Article' | 'Card' | 'SEO';
@@ -55,6 +59,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
+    MatSnackBarModule,
     MatTooltipModule,
     PostPublishButtonComponent,
     ContentTabComponent,
@@ -97,39 +102,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         min-height: 0;
       }
 
-      /* Autosave pulse dot */
-      @keyframes folio-pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.25; }
-      }
-
-      .save-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .save-dot--saving {
-        background: var(--teal-400);
-        animation: folio-pulse 0.8s infinite;
-      }
-      .save-dot--saved {
-        background: var(--green-600);
-      }
-
-      .save-retry-btn {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--red-600);
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-      }
-
       .toolbar-icon-btn {
         display: inline-flex;
         align-items: center;
@@ -170,20 +142,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         flex: 1 1 auto;
       }
 
-      /* Save status: own centred row on mobile, inline on desktop */
-      .save-status-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 0;
-      }
-
-      @media (min-width: 1024px) {
-        .save-status-row {
-          justify-content: flex-end;
-        }
-      }
-
       .post-editor-toolbar-actions {
         display: flex;
         flex-wrap: wrap;
@@ -210,26 +168,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <span class="post-editor-toolbar-title truncate page-subheading">
           {{ store.post()?.title || 'Untitled post' }}
         </span>
-
-        @if (!store.isNew()) {
-          <div class="save-status-row">
-            @if (store.saveStatus() === 'saving') {
-              <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
-                <span class="save-dot save-dot--saving"></span>
-                Saving...
-              </span>
-            } @else if (store.saveStatus() === 'saved') {
-              <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
-                <span class="save-dot save-dot--saved"></span>
-                {{ store.saveStatusLabel() }}
-              </span>
-            } @else if (store.saveStatus() === 'error') {
-              <button type="button" class="save-retry-btn" (click)="retryAutosave()">
-                {{ store.saveStatusLabel() }}
-              </button>
-            }
-          </div>
-        }
 
         <div class="post-editor-toolbar-actions">
           @if (store.post()?.status; as status) {
@@ -258,14 +196,21 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               mat-icon-button
               type="button"
               class="toolbar-icon-btn shrink-0"
-              (click)="store.save()"
-              [disabled]="store.isSaving()"
-              matTooltip="Save"
+              (click)="onManualSave()"
+              [disabled]="store.isSaving() || !store.isDirty()"
+              [matTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
+              matTooltipPosition="below"
             >
               <mat-icon svgIcon="save" />
             </button>
           } @else {
-            <button mat-stroked-button type="button" (click)="store.save()" [disabled]="store.isSaving()">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="onManualSave()"
+              [disabled]="store.isSaving() || !store.isDirty()"
+              [matTooltip]="store.isDirty() ? 'Save changes' : 'No changes to save'"
+            >
               Save
             </button>
           }
@@ -286,7 +231,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
                   type="button"
                   class="toolbar-icon-btn shrink-0"
                   [disabled]="store.isSaving()"
-                  (click)="store.deletePost()"
+                  (click)="confirmDeletePost()"
                   aria-label="Delete post"
                 >
                   <mat-icon svgIcon="delete" />
@@ -298,7 +243,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
                   type="button"
                   class="shrink-0"
                   [disabled]="store.isSaving()"
-                  (click)="store.deletePost()"
+                  (click)="confirmDeletePost()"
                 >
                   Delete
                 </button>
@@ -307,7 +252,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               <span class="shrink-0 min-w-0 post-editor-publish-wrap">
                 <cms-post-publish-button
                   [currentStatus]="post.status"
-                  [isSaving]="store.saveStatus() === 'saving'"
+                  [isSaving]="store.isSaving()"
                   (statusChange)="onStatusChange($event)"
                 />
               </span>
@@ -379,42 +324,11 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 })
 export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
-  private readonly postService = inject(PostService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
-
-  private readonly saveSignal$ = new Subject<void>();
-
-  constructor() {
-    // Trigger autosave whenever an editable field changes on an existing post.
-    effect(() => {
-      const post = this.store.post();
-      if (!post?.id || !this.store.isDirty()) return;
-      this.saveSignal$.next();
-    });
-
-    this.saveSignal$
-      .pipe(debounceTime(1500), takeUntilDestroyed())
-      .subscribe(() => this.doAutosave());
-  }
-
-  private doAutosave(): void {
-    const post = this.store.post();
-    if (!post?.id) return;
-    this.store.setSaveStatus('saving');
-    this.postService.savePost(post).subscribe({
-      next: () => {
-        this.store.setSaveStatus('saved');
-        this.store.setLastSavedAt(new Date());
-      },
-      error: () => this.store.setSaveStatus('error'),
-    });
-  }
-
-  protected retryAutosave(): void {
-    this.doAutosave();
-  }
 
   readonly isDesktop = toSignal(
     inject(BreakpointObserver)
@@ -434,7 +348,27 @@ export class PostEditorPageComponent implements OnInit {
   onStatusChange(status: BlogPost['status']): void {
     this.store.updateField('scheduledPublishAt', undefined);
     this.store.updateField('status', status);
-    this.doAutosave();
+    this.subscribeSaveOutcome(this.store.save());
+  }
+
+  protected onManualSave(): void {
+    this.subscribeSaveOutcome(this.store.save());
+  }
+
+  private subscribeSaveOutcome(save$: Observable<BlogPost>): void {
+    save$.subscribe({
+      next: () => {
+        const t = new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        this.snackBar.open(`Saved at ${t}`, undefined, { duration: 4000 });
+      },
+      error: () => {
+        const msg = this.store.saveError() ?? 'Save failed';
+        this.snackBar.open(msg, 'Dismiss', { duration: 7000 });
+      },
+    });
   }
 
   protected editorStatusLabel(status: BlogPost['status']): string {
@@ -445,6 +379,25 @@ export class PostEditorPageComponent implements OnInit {
 
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
+  }
+
+  protected confirmDeletePost(): void {
+    const title = this.store.post()?.title?.trim() || 'Untitled post';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete post?',
+          message: `Permanently delete “${title}”? This cannot be undone.`,
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.deletePost();
+      });
   }
 
   ngOnInit(): void {
