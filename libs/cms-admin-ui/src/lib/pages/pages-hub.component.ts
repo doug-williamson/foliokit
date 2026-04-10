@@ -32,6 +32,9 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         </div>
       } @else {
         <div class="flex flex-col gap-4 max-w-lg mx-auto w-full px-4 sm:px-6 py-6">
+          <p class="text-sm opacity-60 m-0">
+            Optional pages appear alongside your blog on your public site. Enable a page to make it live, then click Edit to customise its content.
+          </p>
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">

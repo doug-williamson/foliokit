@@ -247,7 +247,7 @@ const PLAN_LABELS: Record<string, string> = {
     <!-- Section A: Quick actions header -->
     <div class="section-header">
       <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
-      <button mat-flat-button color="primary" (click)="navigateToNewPost()">New post</button>
+      <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
     </div>
 
     <!-- Section B: Recent posts -->
@@ -272,7 +272,7 @@ const PLAN_LABELS: Record<string, string> = {
           <mat-icon class="empty-icon">edit</mat-icon>
           <p class="empty-heading">No posts yet</p>
           <p class="empty-sub">Start writing — your first post is one click away.</p>
-          <button mat-flat-button color="primary" (click)="navigateToNewPost()">New post</button>
+          <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
         </div>
       } @else {
         @for (post of recentFive(); track post.id) {

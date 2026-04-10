@@ -75,13 +75,18 @@ const UPGRADE_FRAGMENT = 'billing';
   `,
   styles: [`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+      min-height: 0;
     }
 
     /* ── Outer container — relative so the absolute overlay doesn't escape ── */
 
     .plan-gate-container {
       position: relative;
+      flex: 1;
       min-height: 320px;
       overflow: hidden;
       border-radius: var(--r-lg);
