@@ -11,13 +11,14 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export type PostStatus = BlogPost['status'];
+export type PostFilterStatus = Exclude<PostStatus, 'archived'>;
 
 export interface PostsListState {
   posts: BlogPost[];
   loading: boolean;
   error: string | null;
   filterText: string;
-  filterStatus: PostStatus | 'all';
+  filterStatus: PostFilterStatus | 'all';
 }
 
 const initialState: PostsListState = {
@@ -101,7 +102,7 @@ export const PostsListStore = signalStore(
         patchState(store, { filterText: text });
       },
 
-      setFilterStatus(status: PostStatus | 'all'): void {
+      setFilterStatus(status: PostFilterStatus | 'all'): void {
         patchState(store, { filterStatus: status });
       },
     }),

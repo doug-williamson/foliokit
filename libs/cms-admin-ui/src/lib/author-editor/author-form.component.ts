@@ -73,6 +73,49 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         height: 100%;
         overflow: hidden;
       }
+
+      /* Plain button avoids MDC mat-icon-button vertical offset on svgIcon. */
+      .author-toolbar-back {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: background-color 0.15s ease;
+      }
+
+      .author-toolbar-back:hover {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+      }
+
+      .author-toolbar-back:focus-visible {
+        outline: 2px solid var(--mat-sys-primary);
+        outline-offset: 2px;
+      }
+
+      .author-toolbar-back mat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        line-height: 0;
+      }
+
+      .author-toolbar-back mat-icon svg {
+        width: 24px;
+        height: 24px;
+        display: block;
+      }
     `,
   ],
   template: `
@@ -80,7 +123,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       <!-- Toolbar -->
       <div class="flex items-center gap-3 px-6 py-3 border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <button mat-icon-button matTooltip="Back to authors" (click)="router.navigate(['/authors'])">
+        <button
+          type="button"
+          class="author-toolbar-back"
+          matTooltip="Back to authors"
+          aria-label="Back to authors"
+          (click)="router.navigate(['/authors'])"
+        >
           <mat-icon svgIcon="arrow_back" />
         </button>
         <h1 class="flex-1 text-lg font-semibold">

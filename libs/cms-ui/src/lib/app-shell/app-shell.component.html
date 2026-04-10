@@ -39,11 +39,7 @@
         }
         <span class="folio-app-name">{{ config().appName }}</span>
 
-        @if (config().showRouteTitle) {
-          <span class="route-title">{{ routeTitle() }}</span>
-        } @else {
-          <span class="flex-1"></span>
-        }
+        <span class="flex-1"></span>
 
         <ng-content select="[shellHeaderActions]" />
 

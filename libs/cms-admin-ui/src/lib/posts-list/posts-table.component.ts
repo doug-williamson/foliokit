@@ -80,10 +80,15 @@ import { PostsListStore } from './posts-list.store';
       font-size: 10px;
       color: var(--text-muted);
       white-space: nowrap;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .cell-meta-slug {
       display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .cell-meta-date {
@@ -98,7 +103,12 @@ import { PostsListStore } from './posts-list.store';
     .col-slug { display: none; }
 
     @media (min-width: 640px) {
-      .col-slug { display: table-cell; width: 200px; }
+      .col-slug {
+        display: table-cell;
+        width: 200px;
+        min-width: 0;
+        overflow: hidden;
+      }
       .cell-title-meta { display: none; }
     }
   `],

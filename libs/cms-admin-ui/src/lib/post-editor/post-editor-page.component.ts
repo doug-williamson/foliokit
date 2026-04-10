@@ -224,9 +224,10 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             class="badge"
             [class.badge-pub]="status === 'published'"
             [class.badge-sched]="status === 'scheduled'"
-            [class.badge-draft]="status === 'draft' || status === 'archived'"
+            [class.badge-draft]="status === 'draft'"
+            [class.badge-arch]="status === 'archived'"
           >
-            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : '● DRAFT' }}
+            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : status === 'archived' ? '● ARCHIVED' : '● DRAFT' }}
           </span>
         }
 

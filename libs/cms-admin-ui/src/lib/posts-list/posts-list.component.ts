@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PostStatus, PostsListStore } from './posts-list.store';
+import { PostsListStore } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
 
 @Component({
@@ -129,7 +129,6 @@ import { PostsTableComponent } from './posts-table.component';
               <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
               <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
               <mat-chip-option value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
-              <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
             </mat-chip-listbox>
           </div>
         </div>

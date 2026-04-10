@@ -1,10 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
-import { AuthService } from '@foliokit/cms-core';
+import { AuthService, SiteConfigService } from '@foliokit/cms-core';
 
 /**
  * Pre-built admin shell layout with opinionated navigation.
@@ -15,8 +21,10 @@ import { AuthService } from '@foliokit/cms-core';
  * - **Configure** nav group: Appearance, Settings
  * - Footer row with the signed-in user's email and a logout button
  *
- * `SHELL_CONFIG` is provided internally from the `appName` input — you do **not**
- * need to provide it separately in your route or app config.
+ * `SHELL_CONFIG` is provided internally: toolbar **appName** prefers a non-empty
+ * **siteName** from the tenant's Firestore site-config document (via
+ * {@link SiteConfigService}), then falls back to the `appName` input. Optional
+ * **logo** from site config maps to `logoUrl` in the shell.
  *
  * @example
  * ```ts
@@ -30,11 +38,20 @@ import { AuthService } from '@foliokit/cms-core';
  * ```
  */
 function adminShellConfigFactory(shell: AdminShellComponent) {
-  return computed(() => ({
-    appName: shell.appName(),
-    showNewPostButton: false,
-    showRouteTitle: true,
-  }));
+  return computed(() => {
+    const branding = shell.siteToolbarBranding();
+    const fallback = shell.appName();
+    const fromSite = branding?.siteName?.trim();
+    const appName =
+      fromSite && fromSite.length > 0 ? fromSite : fallback;
+    const logoUrl = branding?.logoUrl?.trim();
+    return {
+      appName,
+      ...(logoUrl ? { logoUrl } : {}),
+      showNewPostButton: false,
+      showRouteTitle: true,
+    };
+  });
 }
 
 @Component({
@@ -47,8 +64,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     RouterLink,
     RouterLinkActive,
     MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
     ShellNavFooterDirective,
   ],
   providers: [
@@ -97,10 +112,10 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         </a>
       </nav>
       <ng-container shellNavFooter>
-        <div class="flex items-center justify-between pl-4 pr-2 py-2">
+        <div class="flex items-center justify-between pl-3 pr-1 py-1">
           <span class="text-xs truncate" style="color: var(--text-muted)">{{ auth.user()?.email }}</span>
-          <button mat-icon-button (click)="logout()" aria-label="Sign out">
-            <mat-icon svgIcon="logout" />
+          <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out">
+            <mat-icon class="nav-icon" svgIcon="logout" />
           </button>
         </div>
       </ng-container>
@@ -110,14 +125,41 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
 })
 export class AdminShellComponent {
   /**
-   * Application name shown in the shell toolbar.
-   * Forwarded to `SHELL_CONFIG.appName`.
+   * Application name shown in the shell toolbar when Firestore `siteName` is
+   * missing or empty.
    * @default 'FolioKit Admin'
    */
   readonly appName = input<string>('FolioKit Admin');
 
+  /**
+   * Populated from the default site-config document for the current `SITE_ID`.
+   * Consumed by the `SHELL_CONFIG` factory for this component.
+   */
+  readonly siteToolbarBranding = signal<{
+    siteName?: string;
+    logoUrl?: string;
+  } | null>(null);
+
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  constructor() {
+    inject(SiteConfigService)
+      .getDefaultSiteConfig()
+      .pipe(takeUntilDestroyed())
+      .subscribe((config) => {
+        if (!config) {
+          this.siteToolbarBranding.set(null);
+          return;
+        }
+        const siteName = config.siteName?.trim();
+        const logoUrl = config.logo?.trim();
+        this.siteToolbarBranding.set({
+          ...(siteName ? { siteName } : {}),
+          ...(logoUrl ? { logoUrl } : {}),
+        });
+      });
+  }
 
   protected async logout(): Promise<void> {
     await this.auth.signOut();
