@@ -5,7 +5,15 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { AboutPageConfig, HomePageConfig, LinksPageConfig, NavItem, SITE_ID, SiteConfig, SiteConfigService } from '@foliokit/cms-core';
+import {
+  AboutPageConfig,
+  HomePageConfig,
+  LinksPageConfig,
+  NavItem,
+  SITE_ID,
+  SiteConfig,
+  SiteConfigService,
+} from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
   config: SiteConfig | null;
@@ -25,6 +33,7 @@ function createEmptyConfig(tenantId: string): SiteConfig {
       home: { enabled: true, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
       // about and links intentionally omitted — absence signals "not yet acknowledged"
     },
+    adminNavShortcuts: {},
     updatedAt: 0,
   };
 }
@@ -89,6 +98,19 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
+      /** Replace the full home page config (including `enabled`). */
+      setHomePage(home: HomePageConfig): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, home },
+          },
+          isDirty: true,
+        });
+      },
+
       updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
@@ -132,6 +154,29 @@ export const SiteConfigEditorStore = signalStore(
             const message = err instanceof Error ? err.message : 'Save failed';
             patchState(store, { isSaving: false, saveError: message });
           },
+        });
+      },
+
+      setAdminNavShortcut(shortcut: 'home' | 'blog', value: boolean): void {
+        const current = store.config();
+        if (!current) return;
+        const updated: SiteConfig = {
+          ...current,
+          adminNavShortcuts: {
+            ...current.adminNavShortcuts,
+            [shortcut]: value,
+          },
+        };
+        patchState(store, { config: updated, isSaving: true, saveError: null });
+        siteConfigService.saveSiteConfig(updated).subscribe({
+          next: (saved) =>
+            patchState(store, { config: saved, savedConfig: saved, isDirty: false, isSaving: false }),
+          error: (err: unknown) =>
+            patchState(store, {
+              config: current,
+              isSaving: false,
+              saveError: err instanceof Error ? err.message : 'Save failed',
+            }),
         });
       },
 

@@ -7,9 +7,15 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { take } from 'rxjs/operators';
 import type { BlogPost } from '@foliokit/cms-core';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
 import { PostsListStore } from './posts-list.store';
 
 @Component({
@@ -194,7 +200,7 @@ import { PostsListStore } from './posts-list.store';
               <mat-menu #rowMenu>
                 <button mat-menu-item (click)="postSelected.emit(post.id)">Edit</button>
                 @if (post.status === 'published') {
-                  <button mat-menu-item (click)="store.unpublishPost(post.id)">Unpublish</button>
+                  <button mat-menu-item (click)="confirmUnpublish(post)">Unpublish</button>
                 }
               </mat-menu>
             </td>
@@ -213,6 +219,7 @@ import { PostsListStore } from './posts-list.store';
 })
 export class PostsTableComponent {
   protected readonly store = inject(PostsListStore);
+  private readonly dialog = inject(MatDialog);
 
   postSelected = output<string>();
 
@@ -230,5 +237,24 @@ export class PostsTableComponent {
     if (status === 'published') return 'PUBLISHED';
     if (status === 'archived') return 'ARCHIVED';
     return 'DRAFT';
+  }
+
+  protected confirmUnpublish(post: BlogPost): void {
+    const title = post.title?.trim() || 'Untitled';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Unpublish post?',
+          message: `“${title}” will return to draft and will no longer be visible on the live site.`,
+          confirmLabel: 'Unpublish',
+          cancelLabel: 'Keep published',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.unpublishPost(post.id);
+      });
   }
 }

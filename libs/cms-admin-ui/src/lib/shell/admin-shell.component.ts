@@ -17,8 +17,8 @@ import { AuthService, SiteConfigService } from '@foliokit/cms-core';
  * Pre-built admin shell layout with opinionated navigation.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
- * - **Write** nav group: Posts, Series, Authors
- * - **Publish** nav group: Pages
+ * - **Pages** nav group: Configuration hub, Home / Blog shortcuts, About / Links
+ * - **Write** nav group: Posts, Authors, Series (disabled until Blog shortcut is on)
  * - **Configure** nav group: Settings
  * - Footer row with the signed-in user's email and a logout button
  *
@@ -69,6 +69,13 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     MatTooltipModule,
     ShellNavFooterDirective,
   ],
+  styles: [
+    `
+      :host ::ng-deep mat-sidenav .nav-group-label.nav-group-label--disabled {
+        opacity: 0.45;
+      }
+    `,
+  ],
   providers: [
     {
       provide: SHELL_CONFIG,
@@ -81,29 +88,60 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
       <nav shellNav>
         <a class="nav-item" routerLink="/dashboard" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="home" />
-          <span class="nav-label">Home</span>
+          <span class="nav-label">Dashboard</span>
         </a>
 
-        <span class="nav-group-label">Write</span>
-        <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="article" />
-          <span class="nav-label">Posts</span>
-        </a>
-        <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="people" />
-          <span class="nav-label">Authors</span>
-        </a>
-        <a class="nav-item" routerLink="/series" routerLinkActive="active-link">
-          <mat-icon class="nav-icon" svgIcon="collections_bookmark" />
-          <span class="nav-label">Series</span>
-          <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
-        </a>
-
-        <span class="nav-group-label">Publish</span>
+        <span class="nav-group-label">Pages</span>
         <a class="nav-item" routerLink="/pages" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="web" />
-          <span class="nav-label">Pages</span>
+          <span class="nav-label">Configuration</span>
         </a>
+        @if (navShortcutHome() && homePageEnabled()) {
+          <a
+            class="nav-item nav-child"
+            routerLink="/pages/home"
+            routerLinkActive="active-link"
+          >
+            <mat-icon class="nav-icon" svgIcon="home" />
+            <span class="nav-label">Home</span>
+          </a>
+        } @else if (!navShortcutHome()) {
+          <span
+            class="nav-item nav-child nav-item--disabled"
+            tabindex="0"
+            matTooltip="Turn on Home (sidebar) under Configuration"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="home" />
+            <span class="nav-label">Home</span>
+          </span>
+        } @else {
+          <span
+            class="nav-item nav-child nav-item--disabled"
+            tabindex="0"
+            matTooltip="Enable the home hero in Configuration → Home"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="home" />
+            <span class="nav-label">Home</span>
+          </span>
+        }
+        @if (navShortcutBlog()) {
+          <a class="nav-item nav-child" routerLink="/posts" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="article" />
+            <span class="nav-label">Blog</span>
+          </a>
+        } @else {
+          <span
+            class="nav-item nav-child nav-item--disabled"
+            tabindex="0"
+            matTooltip="Turn on Blog (sidebar) under Configuration"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="article" />
+            <span class="nav-label">Blog</span>
+          </span>
+        }
         @if (aboutPageEnabled()) {
           <a
             class="nav-item nav-child"
@@ -117,7 +155,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <span
             class="nav-item nav-child nav-item--disabled"
             tabindex="0"
-            matTooltip="Enable the About page under Pages"
+            matTooltip="Enable the About page under Configuration"
             matTooltipPosition="right"
           >
             <mat-icon class="nav-icon" svgIcon="info" />
@@ -137,13 +175,63 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <span
             class="nav-item nav-child nav-item--disabled"
             tabindex="0"
-            matTooltip="Enable the Links page under Pages"
+            matTooltip="Enable the Links page under Configuration"
             matTooltipPosition="right"
           >
             <mat-icon class="nav-icon" svgIcon="link" />
             <span class="nav-label">Links</span>
           </span>
         }
+
+        <span
+          class="nav-group-label"
+          [class.nav-group-label--disabled]="!writeNavEnabled()"
+        >Write</span>
+        @if (writeNavEnabled()) {
+          <a class="nav-item" routerLink="/posts" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="article" />
+            <span class="nav-label">Posts</span>
+          </a>
+          <a class="nav-item" routerLink="/authors" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="people" />
+            <span class="nav-label">Authors</span>
+          </a>
+          <a class="nav-item" routerLink="/series" routerLinkActive="active-link">
+            <mat-icon class="nav-icon" svgIcon="collections_bookmark" />
+            <span class="nav-label">Series</span>
+            <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
+          </a>
+        } @else {
+          <span
+            class="nav-item nav-item--disabled"
+            tabindex="0"
+            matTooltip="Turn on Blog (sidebar) under Configuration"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="article" />
+            <span class="nav-label">Posts</span>
+          </span>
+          <span
+            class="nav-item nav-item--disabled"
+            tabindex="0"
+            matTooltip="Turn on Blog (sidebar) under Configuration"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="people" />
+            <span class="nav-label">Authors</span>
+          </span>
+          <span
+            class="nav-item nav-item--disabled"
+            tabindex="0"
+            matTooltip="Turn on Blog (sidebar) under Configuration"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon" svgIcon="collections_bookmark" />
+            <span class="nav-label">Series</span>
+            <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
+          </span>
+        }
+
         <span class="nav-group-label">Configure</span>
         <a class="nav-item" routerLink="/settings" routerLinkActive="active-link">
           <mat-icon class="nav-icon" svgIcon="tune" />
@@ -183,6 +271,15 @@ export class AdminShellComponent {
   readonly aboutPageEnabled = signal(false);
   /** Links page enabled in site config (default false when unknown). */
   readonly linksPageEnabled = signal(false);
+  /** Configuration → sidebar shortcut to home hero editor. */
+  readonly navShortcutHome = signal(false);
+  /** Configuration → sidebar shortcut to Posts. */
+  readonly navShortcutBlog = signal(false);
+  /** Public home hero enabled (`pages.home.enabled`). */
+  readonly homePageEnabled = signal(false);
+
+  /** Posts / Authors / Series available when the Blog sidebar shortcut is on. */
+  readonly writeNavEnabled = computed(() => this.navShortcutBlog());
 
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -196,6 +293,9 @@ export class AdminShellComponent {
           this.siteToolbarBranding.set(null);
           this.aboutPageEnabled.set(false);
           this.linksPageEnabled.set(false);
+          this.navShortcutHome.set(false);
+          this.navShortcutBlog.set(false);
+          this.homePageEnabled.set(false);
           return;
         }
         const siteName = config.siteName?.trim();
@@ -206,6 +306,9 @@ export class AdminShellComponent {
         });
         this.aboutPageEnabled.set(config.pages?.about?.enabled === true);
         this.linksPageEnabled.set(config.pages?.links?.enabled === true);
+        this.navShortcutHome.set(config.adminNavShortcuts?.home === true);
+        this.navShortcutBlog.set(config.adminNavShortcuts?.blog === true);
+        this.homePageEnabled.set(config.pages?.home?.enabled !== false);
       });
   }
 

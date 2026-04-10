@@ -96,9 +96,18 @@ export const adminRoutes: Route[] = [
         children: [
           {
             path: '',
-            data: { title: 'Pages' },
+            data: { title: 'Configuration' },
             loadComponent: () =>
               import('../pages/pages-hub.component').then((m) => m.PagesHubComponent),
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'home',
+            data: { title: 'Home' },
+            loadComponent: () =>
+              import('../page-editor/home-page-editor.component').then(
+                (m) => m.HomePageEditorComponent,
+              ),
             canDeactivate: [unsavedChangesGuard],
           },
           {

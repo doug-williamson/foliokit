@@ -18,7 +18,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     <div class="flex flex-col h-full min-h-0 overflow-y-auto">
       <header class="page-header flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
               style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="page-heading flex-1">Pages</h1>
+        <h1 class="page-heading flex-1">Configuration</h1>
         @if (store.isSaving()) {
           <span class="admin-meta opacity-40">Saving…</span>
         } @else if (store.saveError()) {
@@ -31,10 +31,54 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           <span class="text-sm opacity-50">Loading…</span>
         </div>
       } @else {
-        <div class="flex flex-col gap-4 max-w-lg mx-auto w-full px-4 sm:px-6 py-6">
+        <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
           <p class="text-sm opacity-60 m-0">
-            Optional pages appear alongside your blog on your public site. Enable a page to make it live, then click Edit to customise its content.
+            Manage optional public pages and which shortcuts appear under <strong>Pages</strong> in the admin sidebar.
           </p>
+
+          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-base font-semibold m-0">Home (sidebar)</h2>
+                <p class="text-sm opacity-70 m-0 mt-1">
+                  Adds a <strong>Home</strong> item under Pages that opens the home hero editor.
+                </p>
+              </div>
+              <mat-slide-toggle
+                [checked]="navShortcutHome()"
+                (change)="store.setAdminNavShortcut('home', $event.checked)"
+                aria-label="Show Home in admin sidebar"
+              />
+            </div>
+            <button
+              mat-stroked-button
+              type="button"
+              class="self-start"
+              (click)="router.navigate(['/pages/home'])"
+            >
+              Edit home hero
+            </button>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-base font-semibold m-0">Blog (sidebar)</h2>
+                <p class="text-sm opacity-70 m-0 mt-1">
+                  Adds a <strong>Blog</strong> item under Pages that opens Posts.
+                </p>
+              </div>
+              <mat-slide-toggle
+                [checked]="navShortcutBlog()"
+                (change)="store.setAdminNavShortcut('blog', $event.checked)"
+                aria-label="Show Blog in admin sidebar"
+              />
+            </div>
+            <button mat-stroked-button type="button" class="self-start" (click)="router.navigate(['/posts'])">
+              Open posts
+            </button>
+          </mat-card>
+
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
@@ -46,7 +90,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
               <mat-slide-toggle
                 [checked]="aboutEnabled()"
                 (change)="store.togglePageEnabled('about', $event.checked)"
-                aria-label="Enable About page"
+                aria-label="Enable About page on the public site"
               />
             </div>
             <button
@@ -71,7 +115,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
               <mat-slide-toggle
                 [checked]="linksEnabled()"
                 (change)="store.togglePageEnabled('links', $event.checked)"
-                aria-label="Enable Links page"
+                aria-label="Enable Links page on the public site"
               />
             </div>
             <button
@@ -98,6 +142,13 @@ export class PagesHubComponent implements OnInit {
   );
   readonly linksEnabled = computed(
     () => this.store.config()?.pages?.links?.enabled === true,
+  );
+
+  readonly navShortcutHome = computed(
+    () => this.store.config()?.adminNavShortcuts?.home === true,
+  );
+  readonly navShortcutBlog = computed(
+    () => this.store.config()?.adminNavShortcuts?.blog === true,
   );
 
   ngOnInit(): void {

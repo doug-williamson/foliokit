@@ -221,7 +221,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
                 type="button"
                 class="shrink-0"
                 [disabled]="store.isSaving()"
-                (click)="store.unpublish()"
+                (click)="confirmUnpublish()"
               >
                 Unpublish
               </button>
@@ -379,6 +379,25 @@ export class PostEditorPageComponent implements OnInit {
 
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
+  }
+
+  protected confirmUnpublish(): void {
+    const title = this.store.post()?.title?.trim() || 'Untitled post';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Unpublish post?',
+          message: `“${title}” will return to draft and will no longer be visible on the live site.`,
+          confirmLabel: 'Unpublish',
+          cancelLabel: 'Keep published',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.unpublish();
+      });
   }
 
   protected confirmDeletePost(): void {
