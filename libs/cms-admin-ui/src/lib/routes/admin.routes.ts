@@ -128,6 +128,15 @@ export const adminRoutes: Route[] = [
               ),
             canDeactivate: [unsavedChangesGuard],
           },
+          {
+            path: 'blog',
+            data: { title: 'Publish' },
+            loadComponent: () =>
+              import('../page-editor/blog-page-editor.component').then(
+                (m) => m.BlogPageEditorComponent,
+              ),
+            canDeactivate: [unsavedChangesGuard],
+          },
         ],
       },
       // ── Series (was: /taxonomy) ───────────────────────────────────────────

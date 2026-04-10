@@ -24,8 +24,9 @@ const ENABLE_PAGE_COPY: Record<
     description: 'Your public landing page with hero, calls to action, and optional recent posts.',
   },
   blog: {
-    title: 'Blog',
-    description: 'Posts, authors, and series for your site — turn this on to manage blog content in the admin.',
+    title: 'Publish',
+    description:
+      'Posts, authors, and series for your site — turn this on to manage publishing in the admin.',
   },
   about: {
     title: 'About',
@@ -106,7 +107,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
                 <mat-icon
                   class="folio-admin-nav__hint-icon"
                   svgIcon="info"
-                  matTooltip="Enable the Blog page first — plan upgrade alone will not unlock this until the page is on."
+                  matTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
                   matTooltipPosition="right"
                 />
               }
@@ -128,7 +129,7 @@ export class AdminNavComponent {
   private readonly planGating = inject(PlanGatingService);
   private readonly bottomSheet = inject(MatBottomSheet);
 
-  /** Rows for dashboard, Pages + children, Blog + children (Configure appended in template). */
+  /** Rows for dashboard, Pages + children, Publish + children (Configure appended in template). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {
     const c = this.navStore.config();
     const taxonomy = this.planGating.features().platform.taxonomy;
@@ -178,7 +179,7 @@ export class AdminNavComponent {
         kind: 'item',
         id: 'page-blog',
         label: 'Blog',
-        route: '/posts',
+        route: '/pages/blog',
         icon: 'article',
         enabled: blogOn,
         pageLocked: !blogOn,
@@ -207,7 +208,7 @@ export class AdminNavComponent {
         planLocked: false,
         pageKey: 'links',
       },
-      { kind: 'header', id: 'hdr-blog', label: 'Blog', muted: !blogOn },
+      { kind: 'header', id: 'hdr-blog', label: 'Publish', muted: !blogOn },
       {
         kind: 'item',
         id: 'blog-posts',

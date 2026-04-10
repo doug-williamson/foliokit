@@ -83,7 +83,7 @@ export interface HomePageConfig {
   seo?: SeoMeta;
 }
 
-/** Public blog section and admin Blog nav; gate with `enabled` only in this pass. */
+/** Public blog section and admin Publish nav; gate with `enabled` only in this pass. */
 export interface BlogPageConfig {
   enabled: boolean;
 }
@@ -92,7 +92,7 @@ export interface BlogPageConfig {
 export interface AdminNavShortcuts {
   /** Show a “Home” link to the home page editor. */
   home?: boolean;
-  /** Show a “Blog” link to Posts. */
+  /** Show a “Publish” shortcut under Pages (opens `/pages/blog`). */
   blog?: boolean;
 }
 

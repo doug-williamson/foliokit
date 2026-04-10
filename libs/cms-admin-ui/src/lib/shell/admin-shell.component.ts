@@ -17,7 +17,7 @@ import { SiteConfigNavStore } from '../stores/site-config-nav.store';
  * Pre-built admin shell layout with opinionated navigation.
  *
  * Wraps `AppShellComponent` (the FolioKit responsive shell) and provides:
- * - **Pages-first** nav via {@link AdminNavComponent} (Pages, Blog, Configure)
+ * - **Pages-first** nav via {@link AdminNavComponent} (Pages, Publish, Configure)
  * - Footer row with the signed-in user's email and a logout button
  *
  * `SHELL_CONFIG` is provided internally: toolbar **appName** prefers a non-empty

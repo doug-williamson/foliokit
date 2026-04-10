@@ -127,10 +127,14 @@ import { PostsListStore } from './posts-list.store';
     }
 
     /* Give the status column a fixed width so title gets the rest */
+    th.col-status {
+      text-align: center;
+    }
+
     .col-status {
       width: 120px;
-      text-align: right;
-      vertical-align: top;
+      text-align: center;
+      vertical-align: middle;
     }
 
     .col-status .badge {

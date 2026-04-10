@@ -3,18 +3,14 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { isBlogPageNavEnabled } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
+import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settings.component';
 
 @Component({
   selector: 'cms-pages-hub',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatButtonModule,
-    MatCardModule,
-    MatSlideToggleModule,
-  ],
+  imports: [MatButtonModule, MatCardModule, MatSlideToggleModule, BlogPublishSettingsComponent],
   template: `
     <div class="flex flex-col h-full min-h-0 overflow-y-auto">
       <header class="page-header flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
@@ -34,7 +30,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
       } @else {
         <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
           <p class="text-sm opacity-60 m-0">
-            Manage optional public pages and what appears under <strong>Pages</strong> and <strong>Blog</strong> in the admin sidebar.
+            Manage optional public pages and what appears under <strong>Pages</strong> and <strong>Publish</strong> in the admin sidebar.
           </p>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
@@ -62,22 +58,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           </mat-card>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <h2 class="text-base font-semibold m-0">Blog</h2>
-                <p class="text-sm opacity-70 m-0 mt-1">
-                  Turns on the blog section in the admin (Posts, Authors, Series) and the Blog entry under Pages.
-                </p>
-              </div>
-              <mat-slide-toggle
-                [checked]="blogPageEnabled()"
-                (change)="store.togglePageEnabled('blog', $event.checked)"
-                aria-label="Enable Blog in admin navigation"
-              />
-            </div>
-            <button mat-stroked-button type="button" class="self-start" (click)="router.navigate(['/posts'])">
-              Open posts
-            </button>
+            <folio-blog-publish-settings layout="hub" />
           </mat-card>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
@@ -147,9 +128,6 @@ export class PagesHubComponent implements OnInit {
 
   readonly navShortcutHome = computed(
     () => this.store.config()?.adminNavShortcuts?.home === true,
-  );
-  readonly blogPageEnabled = computed(() =>
-    isBlogPageNavEnabled(this.store.config() ?? undefined),
   );
 
   ngOnInit(): void {

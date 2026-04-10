@@ -21,7 +21,7 @@ export interface NavSectionHeaderState {
   kind: 'header';
   id: string;
   label: string;
-  /** Dim label when the whole section is unavailable (e.g. Blog off). */
+  /** Dim label when the whole section is unavailable (e.g. Publish off). */
   muted?: boolean;
 }
 
