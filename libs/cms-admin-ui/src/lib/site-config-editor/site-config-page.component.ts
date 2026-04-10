@@ -82,7 +82,11 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <mat-tab-group class="flex flex-col flex-1 overflow-hidden" animationDuration="0">
+        <mat-tab-group
+          class="flex flex-col flex-1 overflow-hidden"
+          [mat-stretch-tabs]="true"
+          animationDuration="0"
+        >
           <mat-tab label="General">
             <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <form [formGroup]="generalForm" class="flex flex-col gap-5">
