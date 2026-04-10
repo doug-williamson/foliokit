@@ -2,10 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ImageUploadPairComponent } from './image-upload-pair.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,8 +16,6 @@ import {
   DragDropModule,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { CollectionPaths, FIREBASE_STORAGE } from '@foliokit/cms-core';
 import type { LinksLink, LinksPageConfig } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
@@ -49,7 +45,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
     MatSlideToggleModule,
     MatTooltipModule,
     DragDropModule,
-    ImageUploadPairComponent,
   ],
   styles: [
     `
@@ -78,33 +73,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
   template: `
     @if (linksConfig(); as cfg) {
       <div class="flex flex-col gap-6">
-        <!-- Profile photo (light + dark) — same order as About page -->
-        <admin-image-upload-pair
-          label="Profile Photo"
-          [lightUrl]="cfg.avatarUrl"
-          [darkUrl]="cfg.avatarUrlDark"
-          [lightUploading]="avatarUploading()"
-          [darkUploading]="avatarDarkUploading()"
-          [lightProgress]="avatarProgress()"
-          [darkProgress]="avatarDarkProgress()"
-          [lightError]="avatarError()"
-          [darkError]="avatarDarkError()"
-          (lightFileSelected)="onAvatarSelected($event)"
-          (darkFileSelected)="onAvatarDarkSelected($event)"
-          (lightRemoved)="onDeleteAvatar(cfg)"
-          (darkRemoved)="onDeleteAvatarDark(cfg)"
-        />
-
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Photo Alt Text</mat-label>
-          <input
-            matInput
-            [value]="cfg.avatarAlt ?? ''"
-            (input)="updateField('avatarAlt', $any($event.target).value)"
-            placeholder="Describe the image for screen readers"
-          />
-        </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Title</mat-label>
           <input
@@ -115,7 +83,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
           />
         </mat-form-field>
 
-        <!-- Headline -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Headline</mat-label>
           <input
@@ -126,19 +93,17 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
           />
         </mat-form-field>
 
-        <!-- Bio -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Bio</mat-label>
           <textarea
             matInput
-            rows="3"
+            rows="4"
             [value]="cfg.bio ?? ''"
             (input)="updateField('bio', $any($event.target).value)"
             placeholder="Short bio shown below your headline"
           ></textarea>
         </mat-form-field>
 
-        <!-- Link list -->
         <div class="flex flex-col gap-3">
           <div class="flex items-center justify-between">
             <span class="text-sm font-semibold">Links</span>
@@ -159,7 +124,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                 class="flex flex-col gap-3 p-3 rounded-lg"
                 style="background: color-mix(in srgb, currentColor 5%, transparent); border: 1px solid color-mix(in srgb, currentColor 10%, transparent)"
               >
-                <!-- Drag handle row -->
                 <div class="flex items-center gap-2">
                   <mat-icon cdkDragHandle class="drag-handle opacity-40 shrink-0" style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem" svgIcon="drag_indicator" />
                   <span class="flex-1 text-sm font-medium truncate">{{ link.label || '(untitled)' }}</span>
@@ -174,7 +138,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                   </button>
                 </div>
 
-                <!-- Label + URL -->
                 <div class="flex gap-3">
                   <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>Label</mat-label>
@@ -197,7 +160,6 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                   </mat-form-field>
                 </div>
 
-                <!-- Platform -->
                 <mat-form-field appearance="outline" class="w-full">
                   <mat-label>Platform</mat-label>
                   <mat-select
@@ -226,22 +188,10 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
 })
 export class LinksEditorFormComponent {
   readonly store = inject(SiteConfigEditorStore);
-  private readonly storage = inject(FIREBASE_STORAGE)!;
-  private readonly paths = inject(CollectionPaths);
 
   readonly platformOptions = PLATFORM_OPTIONS;
 
   readonly linksConfig = () => this.store.config()?.pages?.links;
-
-  readonly avatarUploading = signal(false);
-  readonly avatarProgress = signal(0);
-  readonly avatarError = signal<string | null>(null);
-  private avatarStoragePath = signal<string | null>(null);
-
-  readonly avatarDarkUploading = signal(false);
-  readonly avatarDarkProgress = signal(0);
-  readonly avatarDarkError = signal<string | null>(null);
-  private avatarDarkStoragePath = signal<string | null>(null);
 
   private flush(partial: Partial<Omit<LinksPageConfig, 'enabled'>>): void {
     const current = this.store.config()?.pages?.links;
@@ -251,42 +201,6 @@ export class LinksEditorFormComponent {
 
   updateField(field: keyof Omit<LinksPageConfig, 'enabled' | 'links'>, value: string | undefined): void {
     this.flush({ [field]: value || undefined });
-  }
-
-  onAvatarSelected(file: File): void {
-    this.uploadAvatar(file);
-  }
-
-  onDeleteAvatar(cfg: LinksPageConfig): void {
-    if (!window.confirm('Remove profile photo?')) return;
-    const path = this.avatarStoragePath();
-    const clear = () => {
-      this.flush({ avatarUrl: undefined, avatarAlt: undefined });
-      this.avatarStoragePath.set(null);
-    };
-    if (path) {
-      deleteObject(ref(this.storage, path)).then(clear, clear);
-    } else {
-      clear();
-    }
-  }
-
-  onAvatarDarkSelected(file: File): void {
-    this.uploadAvatarDark(file);
-  }
-
-  onDeleteAvatarDark(cfg: LinksPageConfig): void {
-    if (!window.confirm('Remove dark mode photo?')) return;
-    const path = this.avatarDarkStoragePath();
-    const clear = () => {
-      this.flush({ avatarUrlDark: undefined });
-      this.avatarDarkStoragePath.set(null);
-    };
-    if (path) {
-      deleteObject(ref(this.storage, path)).then(clear, clear);
-    } else {
-      clear();
-    }
   }
 
   addLink(links: LinksLink[]): void {
@@ -323,75 +237,5 @@ export class LinksEditorFormComponent {
     moveItemInArray(reordered, event.previousIndex, event.currentIndex);
     const withOrder = reordered.map((l, i) => ({ ...l, order: i }));
     this.flush({ links: withOrder });
-  }
-
-  private uploadAvatar(file: File): void {
-    const previous = this.avatarStoragePath();
-    const storagePath = this.paths.storagePath(`site-config/links/avatar/${file.name}`);
-
-    if (previous) {
-      deleteObject(ref(this.storage, previous)).catch(() => undefined);
-    }
-
-    const fileRef = ref(this.storage, storagePath);
-    this.avatarUploading.set(true);
-    this.avatarProgress.set(0);
-    this.avatarError.set(null);
-
-    const task = uploadBytesResumable(fileRef, file);
-    task.on(
-      'state_changed',
-      (snapshot) => {
-        this.avatarProgress.set(
-          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-        );
-      },
-      (error) => {
-        this.avatarUploading.set(false);
-        this.avatarError.set(error.message);
-      },
-      () => {
-        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          this.flush({ avatarUrl: downloadUrl, avatarAlt: file.name });
-          this.avatarStoragePath.set(storagePath);
-          this.avatarUploading.set(false);
-        });
-      },
-    );
-  }
-
-  private uploadAvatarDark(file: File): void {
-    const previous = this.avatarDarkStoragePath();
-    const storagePath = this.paths.storagePath(`site-config/links/avatar-dark/${file.name}`);
-
-    if (previous) {
-      deleteObject(ref(this.storage, previous)).catch(() => undefined);
-    }
-
-    const fileRef = ref(this.storage, storagePath);
-    this.avatarDarkUploading.set(true);
-    this.avatarDarkProgress.set(0);
-    this.avatarDarkError.set(null);
-
-    const task = uploadBytesResumable(fileRef, file);
-    task.on(
-      'state_changed',
-      (snapshot) => {
-        this.avatarDarkProgress.set(
-          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-        );
-      },
-      (error) => {
-        this.avatarDarkUploading.set(false);
-        this.avatarDarkError.set(error.message);
-      },
-      () => {
-        getDownloadURL(task.snapshot.ref).then((downloadUrl) => {
-          this.flush({ avatarUrlDark: downloadUrl });
-          this.avatarDarkStoragePath.set(storagePath);
-          this.avatarDarkUploading.set(false);
-        });
-      },
-    );
   }
 }
