@@ -88,42 +88,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         border-radius: 0;
       }
 
-      /* Tab strip */
-      .tab-strip {
-        display: flex;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-2);
-        gap: 1px;
-        flex-shrink: 0;
-      }
-
-      .tab-btn {
-        font-family: var(--font-body);
-        font-size: 13px;
-        letter-spacing: 0.02em;
-        color: var(--text-muted);
-        padding: 12px 16px;
-        border-radius: var(--r-sm) var(--r-sm) 0 0;
-        cursor: pointer;
-        border: none;
-        background: none;
-        transition: background 0.12s, color 0.12s;
-        flex: 1;
-        text-align: center;
-
-        &:hover {
-          background: var(--surface-3);
-          color: var(--text-primary);
-        }
-
-        &.active {
-          background: var(--surface-0);
-          color: var(--text-accent);
-          font-weight: 500;
-          border-bottom: 2px solid var(--text-accent);
-        }
-      }
-
       /* Tab content area */
       .tab-content {
         display: flex;
@@ -190,10 +154,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         style="height: 48px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
       >
         <!-- Post title (left) -->
-        <span
-          class="flex-1 truncate"
-          style="font-family: var(--font-display); font-size: 14px; color: var(--text-primary);"
-        >
+        <span class="flex-1 truncate page-subheading">
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
@@ -201,12 +162,12 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         @if (!store.isNew()) {
           <div style="min-width: 148px; display: flex; align-items: center; justify-content: flex-end;">
             @if (store.saveStatus() === 'saving') {
-              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
+              <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
                 <span class="save-dot save-dot--saving"></span>
-                Saving…
+                Saving...
               </span>
             } @else if (store.saveStatus() === 'saved') {
-              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-600);">
+              <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
                 <span class="save-dot save-dot--saved"></span>
                 {{ store.saveStatusLabel() }}
               </span>
@@ -221,7 +182,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <!-- Status badge -->
         @if (store.post()?.status; as status) {
           <span
-            class="badge"
+            class="badge admin-meta"
             [class.badge-pub]="status === 'published'"
             [class.badge-sched]="status === 'scheduled'"
             [class.badge-draft]="status === 'draft'"

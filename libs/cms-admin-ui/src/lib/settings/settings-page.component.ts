@@ -23,7 +23,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
   template: `
     <div class="settings-page">
       <header class="page-header">
-        <h1 class="page-title">Settings</h1>
+        <h1 class="page-title page-heading">Settings</h1>
       </header>
 
       @if (loadState() === 'loading') {
@@ -37,10 +37,10 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
 
           <div class="plan-summary">
             <div class="badge-row">
-              <span class="badge badge--plan badge--{{ record?.plan }}">
+              <span class="badge admin-meta badge--plan badge--{{ record?.plan }}">
                 {{ planLabel(record?.plan) }}
               </span>
-              <span class="badge badge--status badge--{{ record?.status }}">
+              <span class="badge admin-meta badge--status badge--{{ record?.status }}">
                 {{ statusLabel(record?.status) }}
               </span>
             </div>
@@ -147,9 +147,6 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
     }
 
     .page-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text-primary);
       margin: 0;
     }
 
@@ -190,22 +187,48 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 0.2rem 0.65rem;
-      border-radius: 9999px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 1px;
+      border: 1px solid var(--border-strong);
       font-size: 0.75rem;
       font-weight: 600;
-      font-family: var(--font-body);
-      letter-spacing: 0.01em;
+      letter-spacing: 0.08em;
     }
 
-    .badge--plan.badge--starter { background: var(--surface-2); color: var(--text-muted); }
-    .badge--plan.badge--pro     { background: #e8f0fe; color: #1a56db; }
-    .badge--plan.badge--agency  { background: #fef3c7; color: #92400e; }
+    .badge--plan.badge--starter {
+      background: color-mix(in srgb, var(--surface-2) 88%, transparent);
+      color: var(--text-muted);
+    }
+    .badge--plan.badge--pro {
+      background: color-mix(in srgb, var(--teal-100) 80%, transparent);
+      color: var(--teal-700);
+      border-color: color-mix(in srgb, var(--teal-500) 45%, var(--border-strong));
+    }
+    .badge--plan.badge--agency {
+      background: color-mix(in srgb, var(--violet-100) 80%, transparent);
+      color: var(--violet-600);
+      border-color: color-mix(in srgb, var(--violet-600) 45%, var(--border-strong));
+    }
 
-    .badge--status.badge--trialing  { background: #fef3c7; color: #92400e; }
-    .badge--status.badge--active    { background: #dcfce7; color: #166534; }
-    .badge--status.badge--past_due  { background: #fee2e2; color: #991b1b; }
-    .badge--status.badge--canceled  { background: var(--surface-2); color: var(--text-muted); }
+    .badge--status.badge--trialing {
+      background: color-mix(in srgb, var(--violet-100) 80%, transparent);
+      color: var(--violet-600);
+      border-color: color-mix(in srgb, var(--violet-600) 45%, var(--border-strong));
+    }
+    .badge--status.badge--active {
+      background: color-mix(in srgb, var(--green-100) 84%, transparent);
+      color: var(--green-700);
+      border-color: color-mix(in srgb, var(--green-700) 45%, var(--border-strong));
+    }
+    .badge--status.badge--past_due {
+      background: color-mix(in srgb, var(--red-100) 84%, transparent);
+      color: var(--red-700);
+      border-color: color-mix(in srgb, var(--red-700) 45%, var(--border-strong));
+    }
+    .badge--status.badge--canceled {
+      background: color-mix(in srgb, var(--surface-2) 88%, transparent);
+      color: var(--text-muted);
+    }
 
     .billing-note {
       font-size: 0.875rem;
@@ -214,12 +237,12 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
     }
 
     .warning-banner {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 6px;
+      background: color-mix(in srgb, var(--red-100) 68%, transparent);
+      border: 1px solid color-mix(in srgb, var(--red-600) 35%, var(--border-strong));
+      border-radius: var(--r-md);
       padding: 0.75rem 1rem;
       font-size: 0.875rem;
-      color: #664d03;
+      color: var(--red-700);
     }
 
     .upgrade-card {

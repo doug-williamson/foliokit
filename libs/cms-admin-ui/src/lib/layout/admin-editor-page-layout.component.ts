@@ -52,9 +52,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
         style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
       >
-        <h1 class="flex-1 text-xl font-semibold">{{ title() }}</h1>
+        <h1 class="page-heading flex-1">{{ title() }}</h1>
         @if (isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="admin-meta opacity-40">Saving...</span>
         } @else if (saveError()) {
           <span class="text-xs text-red-500">{{ saveError() }}</span>
         }

@@ -66,9 +66,9 @@ import { PostsListStore } from './posts-list.store';
     .cell-title-meta {
       display: block;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 400;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;

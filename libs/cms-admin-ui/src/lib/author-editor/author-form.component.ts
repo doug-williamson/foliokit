@@ -132,16 +132,16 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         >
           <mat-icon svgIcon="arrow_back" />
         </button>
-        <h1 class="flex-1 text-lg font-semibold">
+        <h1 class="page-heading flex-1">
           {{ store.isNew() ? 'New Author' : 'Edit Author' }}
         </h1>
 
         @if (store.isSaving()) {
-          <span class="text-xs opacity-40">Saving…</span>
+          <span class="admin-meta opacity-40">Saving...</span>
         } @else if (store.saveError()) {
           <span class="text-xs text-red-500">{{ store.saveError() }}</span>
         } @else if (!store.isDirty() && !store.isNew()) {
-          <span class="text-xs opacity-40">Saved</span>
+          <span class="admin-meta opacity-40">Saved</span>
         }
 
         <button

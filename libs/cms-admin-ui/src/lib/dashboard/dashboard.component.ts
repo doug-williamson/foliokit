@@ -232,7 +232,7 @@ const PLAN_LABELS: Record<string, string> = {
   template: `
     <!-- Section A: Quick actions header -->
     <div class="section-header">
-      <h1 class="greeting">{{ greeting() }}</h1>
+      <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
       <button mat-flat-button (click)="navigateToNewPost()">
         <mat-icon svgIcon="add" />
         New post
@@ -242,7 +242,7 @@ const PLAN_LABELS: Record<string, string> = {
     <!-- Section B: Recent posts -->
     <div class="section-posts">
       <div class="section-title-row">
-        <h2 class="section-title">Recent posts</h2>
+        <h2 class="section-title admin-section-label">Recent posts</h2>
         <button class="view-all-link" (click)="navigateToPosts()">View all →</button>
       </div>
 
@@ -271,7 +271,7 @@ const PLAN_LABELS: Record<string, string> = {
           <div class="post-row" (click)="navigateToPost(post.id)">
             <span class="post-title">{{ post.title || '(Untitled)' }}</span>
             <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
-            <span class="post-date">{{ post.updatedAt | date:'MMM d' }}</span>
+            <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>
           </div>
         }
       }

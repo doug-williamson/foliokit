@@ -19,25 +19,6 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 
-    .tab-bar {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-      padding: 0 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .tab-btn {
-      border-bottom: 2px solid transparent;
-      border-radius: 0;
-      margin-bottom: -1px;
-    }
-
-    .tab-btn.active {
-      border-bottom-color: var(--mat-sys-primary, currentColor);
-      color: var(--mat-sys-primary, currentColor);
-    }
-
     .tab-content {
       flex: 1;
       overflow: hidden;
@@ -46,7 +27,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     }
   `],
   template: `
-    <div class="tab-bar">
+    <div class="tab-strip">
       <button
         mat-button
         class="tab-btn"
