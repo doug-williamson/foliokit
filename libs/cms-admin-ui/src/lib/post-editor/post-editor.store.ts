@@ -7,6 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -78,7 +79,7 @@ export const PostEditorStore = signalStore(
     }),
   })),
 
-  withMethods((store, postService = inject(PostService)) => ({
+  withMethods((store, postService = inject(PostService), router = inject(Router)) => ({
       loadPost(id: string): void {
         postService.getPostById(id).subscribe((post) => {
           const coerced =
@@ -170,6 +171,55 @@ export const PostEditorStore = signalStore(
         if (entry) {
           postService.deleteStorageFile(entry.storagePath).subscribe();
         }
+      },
+
+      unpublish(): void {
+        const post = store.post();
+        if (!post) return;
+        const prevStatus = post.status;
+        const prevPublishedAt = post.publishedAt;
+        patchState(store, {
+          post: { ...post, status: 'draft', publishedAt: 0 },
+          isDirty: true,
+        });
+        patchState(store, { isSaving: true, saveError: null });
+        postService.savePost({ ...post, status: 'draft', publishedAt: 0 }).subscribe({
+          next: (saved) => {
+            patchState(store, {
+              post: saved,
+              isDirty: false,
+              isSaving: false,
+              mode: 'edit',
+            });
+          },
+          error: (err: unknown) => {
+            const message =
+              err instanceof Error ? err.message : 'Unpublish failed';
+            const current = store.post();
+            patchState(store, {
+              post: current
+                ? { ...current, status: prevStatus, publishedAt: prevPublishedAt }
+                : current,
+              isSaving: false,
+              saveError: message,
+            });
+          },
+        });
+      },
+
+      deletePost(): void {
+        const post = store.post();
+        if (!post?.id) return;
+        patchState(store, { isSaving: true, saveError: null });
+        postService.deletePost(post.id).subscribe({
+          next: () => {
+            router.navigate(['/posts']);
+          },
+          error: (err: unknown) => {
+            const message = err instanceof Error ? err.message : 'Delete failed';
+            patchState(store, { isSaving: false, saveError: message });
+          },
+        });
       },
 
       publish(): void {

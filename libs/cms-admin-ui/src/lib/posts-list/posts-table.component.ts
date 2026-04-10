@@ -6,6 +6,9 @@ import {
   output,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import type { BlogPost } from '@foliokit/cms-core';
 import { PostsListStore } from './posts-list.store';
 
@@ -13,7 +16,7 @@ import { PostsListStore } from './posts-list.store';
   selector: 'folio-posts-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe],
+  imports: [DatePipe, MatButtonModule, MatIconModule, MatMenuModule],
   host: { class: 'block' },
   styles: [`
     :host { display: block; }
@@ -132,6 +135,14 @@ import { PostsListStore } from './posts-list.store';
       }
       .cell-title-meta { display: none; }
     }
+
+    /* Actions column: always visible, mobile-first */
+    .col-actions {
+      width: 40px;
+      padding: 0 4px;
+      text-align: center;
+      vertical-align: middle;
+    }
   `],
   template: `
     <table class="posts-table">
@@ -140,6 +151,7 @@ import { PostsListStore } from './posts-list.store';
           <th>Title</th>
           <th class="col-slug">Slug / Date</th>
           <th class="col-status">Status</th>
+          <th class="col-actions"></th>
         </tr>
       </thead>
       <tbody>
@@ -161,11 +173,26 @@ import { PostsListStore } from './posts-list.store';
             <td class="col-status">
               <span [class]="'badge ' + badgeClass(post.status)">{{ badgeLabel(post.status) }}</span>
             </td>
+            <td class="col-actions">
+              @if (post.status === 'published') {
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="rowMenu"
+                  aria-label="Post actions"
+                  (click)="$event.stopPropagation()"
+                >
+                  <mat-icon svgIcon="more_vert" />
+                </button>
+                <mat-menu #rowMenu>
+                  <button mat-menu-item (click)="store.unpublishPost(post.id)">Unpublish</button>
+                </mat-menu>
+              }
+            </td>
           </tr>
         }
         @if (allPosts().length === 0) {
           <tr>
-            <td colspan="3" style="text-align: center; padding: 32px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">
+            <td colspan="4" style="text-align: center; padding: 32px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">
               No posts yet
             </td>
           </tr>

@@ -9,13 +9,14 @@ import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { BlogPost } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-posts-published-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [DatePipe, MatCardModule, MatButtonModule, MatIconModule, MatMenuModule],
   host: { class: 'contents' },
   styles: [`
     .column-header {
@@ -44,14 +45,30 @@ import { BlogPost } from '@foliokit/cms-core';
 
       <div class="kanban-column-body flex-1 divide-y divide-[var(--mat-sys-outline-variant)]">
         @for (post of posts(); track post.id) {
-          <button
-            type="button"
-            class="post-item w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--mat-sys-surface-container-high)]"
-            (click)="postSelected.emit(post.id)"
+          <div
+            class="post-item flex items-center hover:bg-[var(--mat-sys-surface-container-high)]"
           >
-            <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
-            <span class="shrink-0 text-xs opacity-50">{{ post.publishedAt | date: 'mediumDate' }}</span>
-          </button>
+            <button
+              type="button"
+              class="flex-1 flex items-center justify-between gap-3 px-4 py-3 text-left min-w-0"
+              (click)="postSelected.emit(post.id)"
+            >
+              <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
+              <span class="shrink-0 text-xs opacity-50">{{ post.publishedAt | date: 'mediumDate' }}</span>
+            </button>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="cardMenu"
+              aria-label="Post actions"
+              class="shrink-0 mr-1"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon svgIcon="more_vert" />
+            </button>
+            <mat-menu #cardMenu>
+              <button mat-menu-item (click)="unpublishPost.emit(post.id)">Unpublish</button>
+            </mat-menu>
+          </div>
         } @empty {
           <div class="empty-state">
             <mat-icon class="empty-state-icon" svgIcon="check_circle_outline" />
@@ -93,6 +110,7 @@ export class PostsPublishedColumnComponent {
   posts = input.required<BlogPost[]>();
   archivedPosts = input.required<BlogPost[]>();
   postSelected = output<string>();
+  unpublishPost = output<string>();
 
   protected readonly showArchived = signal(false);
 }

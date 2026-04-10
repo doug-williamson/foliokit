@@ -130,13 +130,13 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         padding: 0;
       }
 
-      .preview-toggle-btn {
+      .toolbar-icon-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
       }
 
-      .preview-toggle-btn mat-icon {
+      .toolbar-icon-btn mat-icon {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -170,10 +170,25 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         flex: 1 1 auto;
       }
 
+      /* Save status: own centred row on mobile, inline on desktop */
+      .save-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+      }
+
+      @media (min-width: 1024px) {
+        .save-status-row {
+          justify-content: flex-end;
+        }
+      }
+
       .post-editor-toolbar-actions {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         min-width: 0;
       }
@@ -183,6 +198,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           flex-wrap: nowrap;
           flex-shrink: 0;
           margin-left: auto;
+          justify-content: flex-end;
         }
       }
     `,
@@ -195,27 +211,27 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
-        <div class="post-editor-toolbar-actions">
-          @if (!store.isNew()) {
-            <div class="flex items-center justify-end min-w-0 flex-1 sm:flex-initial sm:justify-end">
-              @if (store.saveStatus() === 'saving') {
-                <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
-                  <span class="save-dot save-dot--saving"></span>
-                  Saving...
-                </span>
-              } @else if (store.saveStatus() === 'saved') {
-                <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
-                  <span class="save-dot save-dot--saved"></span>
-                  {{ store.saveStatusLabel() }}
-                </span>
-              } @else if (store.saveStatus() === 'error') {
-                <button type="button" class="save-retry-btn" (click)="retryAutosave()">
-                  {{ store.saveStatusLabel() }}
-                </button>
-              }
-            </div>
-          }
+        @if (!store.isNew()) {
+          <div class="save-status-row">
+            @if (store.saveStatus() === 'saving') {
+              <span class="admin-meta flex items-center gap-1.5" style="color: var(--text-muted);">
+                <span class="save-dot save-dot--saving"></span>
+                Saving...
+              </span>
+            } @else if (store.saveStatus() === 'saved') {
+              <span class="admin-meta flex items-center gap-1.5" style="color: var(--green-600);">
+                <span class="save-dot save-dot--saved"></span>
+                {{ store.saveStatusLabel() }}
+              </span>
+            } @else if (store.saveStatus() === 'error') {
+              <button type="button" class="save-retry-btn" (click)="retryAutosave()">
+                {{ store.saveStatusLabel() }}
+              </button>
+            }
+          </div>
+        }
 
+        <div class="post-editor-toolbar-actions">
           @if (store.post()?.status; as status) {
             <span
               class="badge admin-meta shrink-0"
@@ -231,7 +247,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             <button
               mat-icon-button
               type="button"
-              class="preview-toggle-btn shrink-0"
+              class="toolbar-icon-btn shrink-0"
               (click)="togglePreview()"
               [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
               [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
@@ -241,7 +257,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             <button
               mat-icon-button
               type="button"
-              class="shrink-0"
+              class="toolbar-icon-btn shrink-0"
               (click)="store.save()"
               [disabled]="store.isSaving()"
               matTooltip="Save"
@@ -254,13 +270,48 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             </button>
           }
           @if (store.post(); as post) {
-            <span class="shrink-0 min-w-0 post-editor-publish-wrap">
-              <cms-post-publish-button
-                [currentStatus]="post.status"
-                [isSaving]="store.saveStatus() === 'saving'"
-                (statusChange)="onStatusChange($event)"
-              />
-            </span>
+            @if (post.status === 'published') {
+              <button
+                mat-stroked-button
+                type="button"
+                class="shrink-0"
+                [disabled]="store.isSaving()"
+                (click)="store.unpublish()"
+              >
+                Unpublish
+              </button>
+              @if (!isDesktop()) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="toolbar-icon-btn shrink-0"
+                  [disabled]="store.isSaving()"
+                  (click)="store.deletePost()"
+                  aria-label="Delete post"
+                >
+                  <mat-icon svgIcon="delete" />
+                </button>
+              } @else {
+                <button
+                  mat-flat-button
+                  color="warn"
+                  type="button"
+                  class="shrink-0"
+                  [disabled]="store.isSaving()"
+                  (click)="store.deletePost()"
+                >
+                  Delete
+                </button>
+              }
+            } @else {
+              <span class="shrink-0 min-w-0 post-editor-publish-wrap">
+                <cms-post-publish-button
+                  [currentStatus]="post.status"
+                  [isSaving]="store.saveStatus() === 'saving'"
+                  (statusChange)="onStatusChange($event)"
+                />
+              </span>
+            }
           }
         </div>
       </div>
@@ -277,7 +328,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         >
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Right tab strip -->
-            <div class="tab-strip">
+            <div class="tab-strip tab-strip--equal">
               @for (tab of rightTabs; track tab) {
                 <button
                   class="tab-btn"

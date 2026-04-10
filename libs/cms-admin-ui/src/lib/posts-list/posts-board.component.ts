@@ -25,6 +25,7 @@ import { PostsPublishedColumnComponent } from './posts-published-column.componen
         [posts]="store.publishedPosts()"
         [archivedPosts]="store.archivedPosts()"
         (postSelected)="postSelected.emit($event)"
+        (unpublishPost)="store.unpublishPost($event)"
       />
     </div>
   `,

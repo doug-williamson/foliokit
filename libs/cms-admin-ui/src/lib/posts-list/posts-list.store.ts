@@ -99,6 +99,22 @@ export const PostsListStore = signalStore(
       setFilterStatus(status: PostFilterStatus | 'all'): void {
         patchState(store, { filterStatus: status });
       },
+
+      unpublishPost(id: string): void {
+        const post = store.posts().find((p) => p.id === id);
+        if (!post) return;
+        const updated: BlogPost = { ...post, status: 'draft', publishedAt: 0 };
+        postService.savePost(updated).subscribe({
+          next: () => {
+            patchState(store, {
+              posts: store.posts().map((p) => (p.id === id ? updated : p)),
+            });
+          },
+          error: (err: unknown) => {
+            console.error('[PostsListStore.unpublishPost]', err);
+          },
+        });
+      },
     }),
   ),
 );

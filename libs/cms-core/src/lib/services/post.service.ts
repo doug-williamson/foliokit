@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   collection,
+  deleteDoc,
   deleteField,
   doc,
   getDoc,
@@ -14,8 +15,8 @@ import {
   where,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
-import { from, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { CollectionPaths } from '../firebase/collection-paths';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
@@ -143,6 +144,27 @@ export class PostService implements IBlogPostService {
   deleteStorageFile(storagePath: string): Observable<void> {
     const fileRef = ref(this.storage, storagePath);
     return from(deleteObject(fileRef));
+  }
+
+  deletePost(id: string): Observable<void> {
+    return this.getPostById(id).pipe(
+      switchMap((post) => {
+        const entries = Object.values(post.embeddedMedia);
+        const firestoreDelete = from(
+          deleteDoc(doc(this.firestore, this.paths.collection('posts'), id)),
+        );
+        if (entries.length === 0) return firestoreDelete;
+        return forkJoin(
+          entries.map((e) =>
+            this.deleteStorageFile(e.storagePath).pipe(catchError(() => of(void 0))),
+          ),
+        ).pipe(switchMap(() => firestoreDelete));
+      }),
+      catchError((err) => {
+        console.error('[PostService.deletePost]', err);
+        throw err;
+      }),
+    );
   }
 
   savePost(post: BlogPost): Observable<BlogPost> {
