@@ -86,6 +86,7 @@ export interface HomePageConfig {
 /** Public blog section and admin Publish nav; gate with `enabled` only in this pass. */
 export interface BlogPageConfig {
   enabled: boolean;
+  seo?: SeoMeta;
 }
 
 /** Toggles extra items under the admin Configuration nav (sidebar shortcuts). */

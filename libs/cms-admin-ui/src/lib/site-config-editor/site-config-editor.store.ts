@@ -7,6 +7,7 @@ import {
 } from '@ngrx/signals';
 import {
   AboutPageConfig,
+  BlogPageConfig,
   HomePageConfig,
   LinksPageConfig,
   NavItem,
@@ -111,6 +112,19 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
+      /** Replace the full blog page config (including `enabled`). */
+      setBlogPage(blog: BlogPageConfig): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: {
+            ...current,
+            pages: { ...current.pages, blog },
+          },
+          isDirty: true,
+        });
+      },
+
       updateAbout(about: Omit<AboutPageConfig, 'enabled'>): void {
         const current = store.config();
         if (!current) return;
@@ -185,7 +199,7 @@ export const SiteConfigEditorStore = signalStore(
         if (!current) return;
         const pagePatch =
           page === 'blog'
-            ? { blog: { enabled: value } }
+            ? { blog: { ...current.pages?.blog, enabled: value } }
             : { [page]: { ...current.pages?.[page], enabled: value } };
         let updated: SiteConfig = {
           ...current,

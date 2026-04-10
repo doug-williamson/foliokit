@@ -1,15 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { PostEditorStore } from '../post-editor.store';
+import {
+  SeoFieldsComponent,
+  type SeoFieldsFormGroup,
+} from '../../components/seo-fields/seo-fields.component';
 
 @Component({
   selector: 'folio-seo-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatExpansionModule, MatFormFieldModule, MatInputModule],
+  imports: [ReactiveFormsModule, SeoFieldsComponent],
   styles: [
     `
       :host {
@@ -21,97 +28,57 @@ import { PostEditorStore } from '../post-editor.store';
     `,
   ],
   template: `
-    @if (store.post(); as post) {
-      <div class="flex flex-col gap-4 p-4">
-        <!-- Meta Title -->
-        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Meta Title</mat-label>
-          <input
-            matInput
-            [value]="post.seo.title ?? ''"
-            (input)="
-              store.updateField('seo', {
-                ...post.seo,
-                title: $any($event.target).value,
-              })
-            "
-            placeholder="Defaults to post title"
-          />
-          <mat-hint>Recommended: 50–60 characters</mat-hint>
-        </mat-form-field>
-
-        <!-- Meta Description -->
-        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Meta Description</mat-label>
-          <textarea
-            matInput
-            rows="3"
-            [value]="post.seo.description ?? ''"
-            (input)="
-              store.updateField('seo', {
-                ...post.seo,
-                description: $any($event.target).value,
-              })
-            "
-            placeholder="Defaults to excerpt"
-          ></textarea>
-          <mat-hint>Recommended: 150–160 characters</mat-hint>
-        </mat-form-field>
-
-        <!-- OG Image Override -->
-        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>OG Image Override</mat-label>
-          <input
-            matInput
-            type="url"
-            [value]="post.seo.ogImage ?? ''"
-            (input)="
-              store.updateField('seo', {
-                ...post.seo,
-                ogImage: $any($event.target).value,
-              })
-            "
-            placeholder="https://example.com/og-image.png"
-          />
-          <mat-hint>
-            Leave blank to use the post thumbnail. Firebase <code>gs://</code> URLs are converted for
-            sharing; the preview matches public meta tags.
-          </mat-hint>
-        </mat-form-field>
-
-        <!-- Advanced SEO -->
-        <mat-expansion-panel
-          class="!shadow-none !rounded-lg border border-black/10 dark:border-white/10 mt-2"
-        >
-          <mat-expansion-panel-header>
-            <mat-panel-title class="text-sm font-medium">Advanced SEO</mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <mat-form-field class="w-full mt-2" appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Canonical URL</mat-label>
-            <input
-              matInput
-              type="url"
-              [value]="post.seo.canonicalUrl ?? ''"
-              (input)="
-                store.updateField('seo', {
-                  ...post.seo,
-                  canonicalUrl: $any($event.target).value,
-                })
-              "
-              placeholder="https://example.com/blog/my-post"
-            />
-            <mat-hint>
-              Leave blank — canonical is set automatically to
-              &#123;siteUrl&#125;/posts/&#123;slug&#125;. Only set this if republishing
-              content from another URL.
-            </mat-hint>
-          </mat-form-field>
-        </mat-expansion-panel>
+    @if (store.post()) {
+      <div class="p-4">
+        <folio-seo-fields [group]="seoGroup" />
       </div>
     }
   `,
 })
 export class SeoTabComponent {
   readonly store = inject(PostEditorStore);
+
+  readonly seoGroup: SeoFieldsFormGroup = new FormGroup({
+    metaTitle: new FormControl<string | null>(null),
+    metaDescription: new FormControl<string | null>(null),
+    ogImageUrl: new FormControl<string | null>(null),
+    canonicalUrl: new FormControl<string | null>(null),
+  });
+
+  private lastHydratedSeoKey: string | null = null;
+
+  constructor() {
+    effect(() => {
+      const mode = this.store.mode();
+      const post = this.store.post();
+      const key = post
+        ? `${mode}:${post.id}:${post.updatedAt}`
+        : `${mode}:nopost`;
+      if (this.lastHydratedSeoKey === key) return;
+      this.lastHydratedSeoKey = key;
+      if (!post) return;
+      this.seoGroup.patchValue(
+        {
+          metaTitle: post.seo.title ?? null,
+          metaDescription: post.seo.description ?? null,
+          ogImageUrl: post.seo.ogImage ?? null,
+          canonicalUrl: post.seo.canonicalUrl ?? null,
+        },
+        { emitEvent: false },
+      );
+    });
+
+    this.seoGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      const post = this.store.post();
+      if (!post) return;
+      const v = this.seoGroup.getRawValue();
+      this.store.updateField('seo', {
+        ...post.seo,
+        title: v.metaTitle ?? '',
+        description: v.metaDescription ?? '',
+        ogImage: v.ogImageUrl ?? '',
+        canonicalUrl: v.canonicalUrl ?? '',
+      });
+    });
+  }
 }

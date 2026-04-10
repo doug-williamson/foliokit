@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -18,6 +19,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import type { SiteConfig } from '@foliokit/cms-core';
+import {
+  SeoFieldsComponent,
+  type SeoFieldsFormGroup,
+} from '../components/seo-fields/seo-fields.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -36,6 +41,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     MatInputModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    SeoFieldsComponent,
   ],
   styles: [
     `
@@ -114,6 +120,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
               <mat-checkbox formControlName="showRecentPosts">
                 Show recent posts below the hero
               </mat-checkbox>
+
+              <div class="flex flex-col gap-2 pt-2">
+                <h2 class="text-sm font-medium m-0">SEO</h2>
+                <folio-seo-fields [group]="seoGroup" />
+              </div>
             </form>
           </div>
         </div>
@@ -155,7 +166,17 @@ export class HomePageEditorComponent implements OnInit {
     ctaLabel: [''],
     ctaUrl: [''],
     showRecentPosts: [false],
+    seo: this.fb.group({
+      metaTitle: new FormControl<string | null>(null),
+      metaDescription: new FormControl<string | null>(null),
+      ogImageUrl: new FormControl<string | null>(null),
+      canonicalUrl: new FormControl<string | null>(null),
+    }),
   });
+
+  protected get seoGroup(): SeoFieldsFormGroup {
+    return this.homeForm.get('seo') as SeoFieldsFormGroup;
+  }
 
   ngOnInit(): void {
     this.store.load();
@@ -195,6 +216,7 @@ export class HomePageEditorComponent implements OnInit {
 
   private populateFromConfig(config: SiteConfig): void {
     const home = config.pages?.home;
+    const seo = home?.seo;
     this.homeForm.patchValue(
       {
         enabled: home?.enabled ?? true,
@@ -203,6 +225,12 @@ export class HomePageEditorComponent implements OnInit {
         ctaLabel: home?.ctaLabel ?? '',
         ctaUrl: home?.ctaUrl ?? '',
         showRecentPosts: home?.showRecentPosts ?? false,
+        seo: {
+          metaTitle: seo?.title ?? null,
+          metaDescription: seo?.description ?? null,
+          ogImageUrl: seo?.ogImage ?? null,
+          canonicalUrl: seo?.canonicalUrl ?? null,
+        },
       },
       { emitEvent: false },
     );
@@ -217,6 +245,12 @@ export class HomePageEditorComponent implements OnInit {
       ctaLabel: string;
       ctaUrl: string;
       showRecentPosts: boolean;
+      seo: {
+        metaTitle: string | null;
+        metaDescription: string | null;
+        ogImageUrl: string | null;
+        canonicalUrl: string | null;
+      };
     };
     const prev = this.store.config()?.pages?.home;
     this.store.setHomePage({
@@ -226,7 +260,13 @@ export class HomePageEditorComponent implements OnInit {
       ctaLabel: v.ctaLabel?.trim() || undefined,
       ctaUrl: v.ctaUrl?.trim() || undefined,
       showRecentPosts: v.showRecentPosts || undefined,
-      seo: prev?.seo,
+      seo: {
+        ...prev?.seo,
+        title: v.seo.metaTitle ?? '',
+        description: v.seo.metaDescription ?? '',
+        ogImage: v.seo.ogImageUrl ?? '',
+        canonicalUrl: v.seo.canonicalUrl ?? '',
+      },
     });
   }
 }
