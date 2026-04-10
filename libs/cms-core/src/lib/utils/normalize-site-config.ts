@@ -1,4 +1,15 @@
-import type { SiteConfig, NavItem, SocialLink, SocialPlatform, SeoMeta, AboutPageConfig, LinksPageConfig, HomePageConfig } from '../models/site-config.model';
+import type {
+  AdminNavShortcuts,
+  SiteConfig,
+  NavItem,
+  SocialLink,
+  SocialPlatform,
+  SeoMeta,
+  AboutPageConfig,
+  LinksPageConfig,
+  HomePageConfig,
+  BlogPageConfig,
+} from '../models/site-config.model';
 import type { LinksLink } from '../models/page.model';
 
 function normalizeTimestamp(value: unknown): number {
@@ -72,6 +83,15 @@ function normalizeLinksLinks(raw: unknown): LinksLink[] {
   }));
 }
 
+function normalizeAdminNavShortcuts(raw: unknown): AdminNavShortcuts | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  const out: AdminNavShortcuts = {};
+  if (typeof r['home'] === 'boolean') out.home = r['home'];
+  if (typeof r['blog'] === 'boolean') out.blog = r['blog'];
+  return Object.keys(out).length ? out : undefined;
+}
+
 function normalizeHomePageConfig(raw: unknown): HomePageConfig | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const r = raw as Record<string, unknown>;
@@ -118,6 +138,14 @@ function normalizeLinksPageConfig(raw: unknown): LinksPageConfig {
   };
 }
 
+function normalizeBlogPageConfig(raw: unknown): BlogPageConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    enabled: (r['enabled'] as boolean) ?? false,
+  };
+}
+
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
   const pages = raw['pages'] as Record<string, unknown> | undefined;
 
@@ -133,6 +161,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
     pages: {
       home: normalizeHomePageConfig(pages?.['home']),
+      blog: normalizeBlogPageConfig(pages?.['blog']),
       about: normalizeAboutPageConfig(pages?.['about']),
       links: normalizeLinksPageConfig(pages?.['links']),
     },
@@ -140,6 +169,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     setupAcknowledgedSteps: Array.isArray(raw['setupAcknowledgedSteps'])
       ? (raw['setupAcknowledgedSteps'] as string[])
       : undefined,
+    adminNavShortcuts: normalizeAdminNavShortcuts(raw['adminNavShortcuts']),
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

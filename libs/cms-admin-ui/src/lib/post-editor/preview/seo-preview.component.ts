@@ -27,7 +27,7 @@ import { PostEditorStore } from '../post-editor.store';
         padding: 20px;
       }
       .snippet {
-        font-family: arial, sans-serif;
+        font-family: var(--font-body);
         max-width: 600px;
       }
       /* platform-faithful: Google SERP */
@@ -58,7 +58,7 @@ import { PostEditorStore } from '../post-editor.store';
         border-radius: 8px;
         overflow: hidden;
         max-width: 500px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-family: var(--font-body);
       }
       .og-card-image {
         width: 100%;

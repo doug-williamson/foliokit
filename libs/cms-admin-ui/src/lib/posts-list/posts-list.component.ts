@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PostStatus, PostsListStore } from './posts-list.store';
+import { PostsListStore } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
 
 @Component({
@@ -33,9 +33,14 @@ import { PostsTableComponent } from './posts-table.component';
     MatProgressSpinnerModule,
     PostsTableComponent,
   ],
-  host: { class: 'block h-full' },
+  host: { class: 'block h-full min-w-0 overflow-hidden' },
   styles: [`
-    :host { display: block; height: 100%; }
+    :host {
+      display: block;
+      height: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
 
     .filter-bar {
       display: flex;
@@ -78,8 +83,8 @@ import { PostsTableComponent } from './posts-table.component';
     }
   `],
   template: `
-    <div class="flex flex-col h-full">
-      <div class="page-header">
+    <div class="flex flex-col h-full min-w-0 overflow-hidden">
+      <div class="page-header shrink-0">
         <div class="page-header-title">
           <h1 class="page-heading">Posts</h1>
         </div>
@@ -89,16 +94,18 @@ import { PostsTableComponent } from './posts-table.component';
       </div>
 
       @if (store.loading()) {
-        <div class="flex-1 flex items-center justify-center">
+        <div class="flex-1 min-h-0 flex items-center justify-center">
           <mat-spinner diameter="40" />
         </div>
       } @else if (store.error()) {
-        <div class="flex-1 flex items-center justify-center opacity-60 text-sm">
+        <div class="flex-1 min-h-0 flex items-center justify-center opacity-60 text-sm">
           Failed to load posts. Please try again.
         </div>
       } @else {
-        <div class="filter-bar">
+        <div class="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
+        <div class="filter-bar shrink-0">
           <mat-form-field class="filter-search" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Search</mat-label>
             <input
               matInput
               [value]="inputValue()"
@@ -113,9 +120,8 @@ import { PostsTableComponent } from './posts-table.component';
           </button>
           <mat-menu #statusMenu>
             <button mat-menu-item (click)="store.setFilterStatus('all')">All</button>
-            <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
             <button mat-menu-item (click)="store.setFilterStatus('draft')">Draft</button>
-            <button mat-menu-item (click)="store.setFilterStatus('scheduled')">Scheduled</button>
+            <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
           </mat-menu>
 
           <!-- Tablet+: chip strip -->
@@ -126,25 +132,26 @@ import { PostsTableComponent } from './posts-table.component';
               (change)="store.setFilterStatus($event.value)"
             >
               <mat-chip-option value="all">All</mat-chip-option>
-              <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
               <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
-              <mat-chip-option value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
-              <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
+              <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
             </mat-chip-listbox>
           </div>
         </div>
 
+        <div class="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden flex flex-col">
         @if (store.filteredPosts().length === 0 && (inputValue() || store.filterStatus() !== 'all')) {
-          <div class="empty-filter-state">
+          <div class="empty-filter-state shrink-0">
             No posts match your filter.
             <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
           </div>
         }
 
         <folio-posts-table
-          class="flex-1 min-h-0"
+          class="flex-1 min-h-0 min-w-0 block"
           (postSelected)="onPostSelected($event)"
         />
+        </div>
+        </div>
       }
     </div>
   `,

@@ -25,25 +25,43 @@
           </button>
         }
 
-        @if (config().logoUrl) {
-          <img
-            class="folio-custom-logo"
-            [src]="config().logoUrl"
-            [alt]="config().appName"
-          />
+        @if (config().toolbarHomeRoute; as home) {
+          <a
+            class="folio-toolbar-brand"
+            [routerLink]="home"
+            [attr.aria-label]="'Go to home — ' + config().appName"
+          >
+            @if (config().logoUrl) {
+              <img
+                class="folio-custom-logo"
+                [src]="config().logoUrl"
+                [alt]="config().appName"
+              />
+            } @else {
+              <div class="folio-logo-mark">
+                <span class="folio-logo-mark-f">F</span>
+                <div class="folio-logo-dot"></div>
+              </div>
+            }
+            <span class="folio-app-name">{{ config().appName }}</span>
+          </a>
         } @else {
-          <div class="folio-logo-mark">
-            <span class="folio-logo-mark-f">F</span>
-            <div class="folio-logo-dot"></div>
-          </div>
+          @if (config().logoUrl) {
+            <img
+              class="folio-custom-logo"
+              [src]="config().logoUrl"
+              [alt]="config().appName"
+            />
+          } @else {
+            <div class="folio-logo-mark">
+              <span class="folio-logo-mark-f">F</span>
+              <div class="folio-logo-dot"></div>
+            </div>
+          }
+          <span class="folio-app-name">{{ config().appName }}</span>
         }
-        <span class="folio-app-name">{{ config().appName }}</span>
 
-        @if (config().showRouteTitle) {
-          <span class="route-title">{{ routeTitle() }}</span>
-        } @else {
-          <span class="flex-1"></span>
-        }
+        <span class="flex-1"></span>
 
         <ng-content select="[shellHeaderActions]" />
 

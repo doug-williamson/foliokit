@@ -26,8 +26,7 @@ import { PostEditorStore } from '../post-editor.store';
         overflow: hidden;
       }
       .markdown-textarea {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          monospace;
+        font-family: var(--font-body);
         font-size: 0.875rem;
         line-height: 1.5;
         resize: none;

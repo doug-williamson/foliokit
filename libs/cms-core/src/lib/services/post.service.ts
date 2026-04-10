@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import {
   collection,
+  deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -13,8 +15,8 @@ import {
   where,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
-import { from, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { CollectionPaths } from '../firebase/collection-paths';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
@@ -144,9 +146,35 @@ export class PostService implements IBlogPostService {
     return from(deleteObject(fileRef));
   }
 
+  deletePost(id: string): Observable<void> {
+    return this.getPostById(id).pipe(
+      switchMap((post) => {
+        const entries = Object.values(post.embeddedMedia);
+        const firestoreDelete = from(
+          deleteDoc(doc(this.firestore, this.paths.collection('posts'), id)),
+        );
+        if (entries.length === 0) return firestoreDelete;
+        return forkJoin(
+          entries.map((e) =>
+            this.deleteStorageFile(e.storagePath).pipe(catchError(() => of(void 0))),
+          ),
+        ).pipe(switchMap(() => firestoreDelete));
+      }),
+      catchError((err) => {
+        console.error('[PostService.deletePost]', err);
+        throw err;
+      }),
+    );
+  }
+
   savePost(post: BlogPost): Observable<BlogPost> {
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
+
+    if (post.status === 'scheduled') {
+      const { scheduledPublishAt: _, ...rest } = post;
+      post = { ...rest, status: 'draft' };
+    }
 
     if (post.id === '') {
       const newId = doc(collection(this.firestore, this.paths.collection('posts'))).id;
@@ -170,11 +198,14 @@ export class PostService implements IBlogPostService {
     }
 
     const savedPost: BlogPost = { ...post, updatedAt: nowMs };
-    const firestorePayload = {
+    const firestorePayload: Record<string, unknown> = {
       ...savedPost,
       updatedAt: nowTs,
       ...blogPostFirestoreTimestampFields(savedPost),
     };
+    if (savedPost.scheduledPublishAt === undefined) {
+      firestorePayload['scheduledPublishAt'] = deleteField();
+    }
     return from(
       updateDoc(doc(this.firestore, this.paths.collection('posts'), post.id), firestorePayload),
     ).pipe(

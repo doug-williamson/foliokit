@@ -1,21 +1,21 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
-  effect,
   inject,
   input,
   OnInit,
   signal,
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BlogPost, PostService } from '@foliokit/cms-core';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BlogPost } from '@foliokit/cms-core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from './post-editor.store';
 import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
@@ -26,6 +26,10 @@ import { SeoTabComponent } from './tabs/seo-tab.component';
 import { ArticlePreviewComponent } from './preview/article-preview.component';
 import { CardPreviewComponent } from './preview/card-preview.component';
 import { SeoPreviewComponent } from './preview/seo-preview.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
 
 type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
 type RightTab = 'Article' | 'Card' | 'SEO';
@@ -55,6 +59,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
+    MatSnackBarModule,
     MatTooltipModule,
     PostPublishButtonComponent,
     ContentTabComponent,
@@ -88,42 +93,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         border-radius: 0;
       }
 
-      /* Tab strip */
-      .tab-strip {
-        display: flex;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-2);
-        gap: 1px;
-        flex-shrink: 0;
-      }
-
-      .tab-btn {
-        font-family: var(--font-body);
-        font-size: 13px;
-        letter-spacing: 0.02em;
-        color: var(--text-muted);
-        padding: 12px 16px;
-        border-radius: var(--r-sm) var(--r-sm) 0 0;
-        cursor: pointer;
-        border: none;
-        background: none;
-        transition: background 0.12s, color 0.12s;
-        flex: 1;
-        text-align: center;
-
-        &:hover {
-          background: var(--surface-3);
-          color: var(--text-primary);
-        }
-
-        &.active {
-          background: var(--surface-0);
-          color: var(--text-accent);
-          font-weight: 500;
-          border-bottom: 2px solid var(--text-accent);
-        }
-      }
-
       /* Tab content area */
       .tab-content {
         display: flex;
@@ -133,46 +102,13 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         min-height: 0;
       }
 
-      /* Autosave pulse dot */
-      @keyframes folio-pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.25; }
-      }
-
-      .save-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .save-dot--saving {
-        background: var(--teal-400);
-        animation: folio-pulse 0.8s infinite;
-      }
-      .save-dot--saved {
-        background: var(--green-600);
-      }
-
-      .save-retry-btn {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--red-600);
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-      }
-
-      .preview-toggle-btn {
+      .toolbar-icon-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
       }
 
-      .preview-toggle-btn mat-icon {
+      .toolbar-icon-btn mat-icon {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -180,82 +116,149 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         height: 24px;
         line-height: 0;
       }
+
+      .post-editor-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 12px;
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+
+      @media (min-width: 1024px) {
+        .post-editor-toolbar {
+          flex-direction: row;
+          align-items: center;
+          gap: 12px;
+          min-height: 48px;
+          padding: 0 20px;
+        }
+      }
+
+      .post-editor-toolbar-title {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .post-editor-toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      @media (min-width: 1024px) {
+        .post-editor-toolbar-actions {
+          flex-wrap: nowrap;
+          flex-shrink: 0;
+          margin-left: auto;
+          justify-content: flex-end;
+        }
+      }
     `,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- Toolbar -->
-      <div
-        class="flex items-center gap-3 shrink-0"
-        style="height: 48px; padding: 0 20px; background: var(--surface-2); border-bottom: 1px solid var(--border);"
-      >
-        <!-- Post title (left) -->
-        <span
-          class="flex-1 truncate"
-          style="font-family: var(--font-display); font-size: 14px; color: var(--text-primary);"
-        >
+      <div class="post-editor-toolbar">
+        <span class="post-editor-toolbar-title truncate page-subheading">
           {{ store.post()?.title || 'Untitled post' }}
         </span>
 
-        <!-- Autosave indicator -->
-        @if (!store.isNew()) {
-          <div style="min-width: 148px; display: flex; align-items: center; justify-content: flex-end;">
-            @if (store.saveStatus() === 'saving') {
-              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);">
-                <span class="save-dot save-dot--saving"></span>
-                Saving…
-              </span>
-            } @else if (store.saveStatus() === 'saved') {
-              <span class="flex items-center gap-1.5" style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-600);">
-                <span class="save-dot save-dot--saved"></span>
-                {{ store.saveStatusLabel() }}
-              </span>
-            } @else if (store.saveStatus() === 'error') {
-              <button class="save-retry-btn" (click)="retryAutosave()">
-                {{ store.saveStatusLabel() }}
+        <div class="post-editor-toolbar-actions">
+          @if (store.post()?.status; as status) {
+            <span
+              class="badge admin-meta shrink-0"
+              [class.badge-pub]="status === 'published'"
+              [class.badge-draft]="status === 'draft' || status === 'scheduled'"
+              [class.badge-arch]="status === 'archived'"
+            >
+              {{ editorStatusLabel(status) }}
+            </span>
+          }
+
+          @if (!isDesktop()) {
+            <button
+              mat-icon-button
+              type="button"
+              class="toolbar-icon-btn shrink-0"
+              (click)="togglePreview()"
+              [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
+              [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
+            >
+              <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              class="toolbar-icon-btn shrink-0"
+              (click)="onManualSave()"
+              [disabled]="store.isSaving() || !store.isDirty()"
+              [matTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
+              matTooltipPosition="below"
+            >
+              <mat-icon svgIcon="save" />
+            </button>
+          } @else {
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="onManualSave()"
+              [disabled]="store.isSaving() || !store.isDirty()"
+              [matTooltip]="store.isDirty() ? 'Save changes' : 'No changes to save'"
+            >
+              Save
+            </button>
+          }
+          @if (store.post(); as post) {
+            @if (post.status === 'published') {
+              <button
+                mat-stroked-button
+                type="button"
+                class="shrink-0"
+                [disabled]="store.isSaving()"
+                (click)="confirmUnpublish()"
+              >
+                Unpublish
               </button>
+              @if (!isDesktop()) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="toolbar-icon-btn shrink-0"
+                  [disabled]="store.isSaving()"
+                  (click)="confirmDeletePost()"
+                  aria-label="Delete post"
+                >
+                  <mat-icon svgIcon="delete" />
+                </button>
+              } @else {
+                <button
+                  mat-flat-button
+                  color="warn"
+                  type="button"
+                  class="shrink-0"
+                  [disabled]="store.isSaving()"
+                  (click)="confirmDeletePost()"
+                >
+                  Delete
+                </button>
+              }
+            } @else {
+              <span class="shrink-0 min-w-0 post-editor-publish-wrap">
+                <cms-post-publish-button
+                  [currentStatus]="post.status"
+                  [isSaving]="store.isSaving()"
+                  (statusChange)="onStatusChange($event)"
+                />
+              </span>
             }
-          </div>
-        }
-
-        <!-- Status badge -->
-        @if (store.post()?.status; as status) {
-          <span
-            class="badge"
-            [class.badge-pub]="status === 'published'"
-            [class.badge-sched]="status === 'scheduled'"
-            [class.badge-draft]="status === 'draft' || status === 'archived'"
-          >
-            {{ status === 'published' ? '● PUBLISHED' : status === 'scheduled' ? '● SCHEDULED' : '● DRAFT' }}
-          </span>
-        }
-
-        @if (!isDesktop()) {
-          <button
-            mat-icon-button
-            type="button"
-            class="preview-toggle-btn"
-            (click)="togglePreview()"
-            [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
-            [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
-          >
-            <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
-          </button>
-          <button mat-icon-button (click)="store.save()" [disabled]="store.isSaving()" matTooltip="Save">
-            <mat-icon svgIcon="save" />
-          </button>
-        } @else {
-          <button mat-stroked-button (click)="store.save()" [disabled]="store.isSaving()">
-            Save
-          </button>
-        }
-        @if (store.post(); as post) {
-          <cms-post-publish-button
-            [currentStatus]="post.status"
-            [isSaving]="store.saveStatus() === 'saving'"
-            (statusChange)="onStatusChange($event)"
-          />
-        }
+          }
+        </div>
       </div>
 
       <!-- Editor + Preview sidenav -->
@@ -270,7 +273,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         >
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Right tab strip -->
-            <div class="tab-strip">
+            <div class="tab-strip tab-strip--equal">
               @for (tab of rightTabs; track tab) {
                 <button
                   class="tab-btn"
@@ -294,9 +297,10 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         <mat-sidenav-content>
           <div class="flex flex-col h-full overflow-hidden">
             <!-- Left tab strip -->
-            <div class="tab-strip">
+            <div class="tab-strip tab-strip--equal">
               @for (tab of leftTabs; track tab) {
                 <button
+                  type="button"
                   class="tab-btn"
                   [class.active]="leftTab() === tab"
                   (click)="leftTab.set(tab)"
@@ -320,42 +324,11 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 })
 export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
-  private readonly postService = inject(PostService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
-
-  private readonly saveSignal$ = new Subject<void>();
-
-  constructor() {
-    // Trigger autosave whenever an editable field changes on an existing post.
-    effect(() => {
-      const post = this.store.post();
-      if (!post?.id || !this.store.isDirty()) return;
-      this.saveSignal$.next();
-    });
-
-    this.saveSignal$
-      .pipe(debounceTime(1500), takeUntilDestroyed())
-      .subscribe(() => this.doAutosave());
-  }
-
-  private doAutosave(): void {
-    const post = this.store.post();
-    if (!post?.id) return;
-    this.store.setSaveStatus('saving');
-    this.postService.savePost(post).subscribe({
-      next: () => {
-        this.store.setSaveStatus('saved');
-        this.store.setLastSavedAt(new Date());
-      },
-      error: () => this.store.setSaveStatus('error'),
-    });
-  }
-
-  protected retryAutosave(): void {
-    this.doAutosave();
-  }
 
   readonly isDesktop = toSignal(
     inject(BreakpointObserver)
@@ -373,15 +346,77 @@ export class PostEditorPageComponent implements OnInit {
   readonly rightTab = signal<RightTab>('Article');
 
   onStatusChange(status: BlogPost['status']): void {
-    if (status !== 'scheduled') {
-      this.store.updateField('scheduledPublishAt', undefined);
-    }
+    this.store.updateField('scheduledPublishAt', undefined);
     this.store.updateField('status', status);
-    this.doAutosave();
+    this.subscribeSaveOutcome(this.store.save());
+  }
+
+  protected onManualSave(): void {
+    this.subscribeSaveOutcome(this.store.save());
+  }
+
+  private subscribeSaveOutcome(save$: Observable<BlogPost>): void {
+    save$.subscribe({
+      next: () => {
+        const t = new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        this.snackBar.open(`Saved at ${t}`, undefined, { duration: 4000 });
+      },
+      error: () => {
+        const msg = this.store.saveError() ?? 'Save failed';
+        this.snackBar.open(msg, 'Dismiss', { duration: 7000 });
+      },
+    });
+  }
+
+  protected editorStatusLabel(status: BlogPost['status']): string {
+    if (status === 'published') return '● PUBLISHED';
+    if (status === 'archived') return '● ARCHIVED';
+    return '● DRAFT';
   }
 
   togglePreview(): void {
     this.previewOpen.update((v) => !v);
+  }
+
+  protected confirmUnpublish(): void {
+    const title = this.store.post()?.title?.trim() || 'Untitled post';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Unpublish post?',
+          message: `“${title}” will return to draft and will no longer be visible on the live site.`,
+          confirmLabel: 'Unpublish',
+          cancelLabel: 'Keep published',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.unpublish();
+      });
+  }
+
+  protected confirmDeletePost(): void {
+    const title = this.store.post()?.title?.trim() || 'Untitled post';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete post?',
+          message: `Permanently delete “${title}”? This cannot be undone.`,
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.deletePost();
+      });
   }
 
   ngOnInit(): void {

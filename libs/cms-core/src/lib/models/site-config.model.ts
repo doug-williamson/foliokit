@@ -83,6 +83,19 @@ export interface HomePageConfig {
   seo?: SeoMeta;
 }
 
+/** Public blog section and admin Publish nav; gate with `enabled` only in this pass. */
+export interface BlogPageConfig {
+  enabled: boolean;
+}
+
+/** Toggles extra items under the admin Configuration nav (sidebar shortcuts). */
+export interface AdminNavShortcuts {
+  /** Show a “Home” link to the home page editor. */
+  home?: boolean;
+  /** Show a “Publish” shortcut under Pages (opens `/pages/blog`). */
+  blog?: boolean;
+}
+
 export interface SiteConfig {
   id: string;
   siteName: string;
@@ -95,13 +108,25 @@ export interface SiteConfig {
   defaultSeo?: SeoMeta;
   pages?: {
     home?: HomePageConfig;
+    blog?: BlogPageConfig;
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
+  adminNavShortcuts?: AdminNavShortcuts;
   /** Set to true once the admin has completed the setup wizard. Never reset. */
   setupComplete?: boolean;
   /** Step IDs the admin has explicitly saved in the setup wizard (tracks optional step acknowledgment). */
   setupAcknowledgedSteps?: string[];
   /** Unix milliseconds. */
   updatedAt: number;
+}
+
+/**
+ * Whether the blog page is considered on for admin nav (and legacy shortcut support).
+ * Prefer `pages.blog.enabled`; when absent, `adminNavShortcuts.blog === true` still enables until migrated.
+ */
+export function isBlogPageNavEnabled(config: SiteConfig | null | undefined): boolean {
+  if (!config) return false;
+  if (config.pages?.blog?.enabled === true) return true;
+  return config.adminNavShortcuts?.blog === true;
 }

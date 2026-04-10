@@ -65,8 +65,9 @@ const PLAN_LABELS: Record<string, string> = {
       }
       .section-title-row {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         justify-content: space-between;
+        gap: 12px;
         margin-bottom: 16px;
       }
       .section-title {
@@ -80,20 +81,23 @@ const PLAN_LABELS: Record<string, string> = {
       }
       .view-all-link {
         font-size: 13px;
+        font-weight: 600;
         color: var(--text-accent);
         text-decoration: none;
         cursor: pointer;
         background: none;
         border: none;
-        padding: 0;
+        padding: 4px 0;
         font-family: var(--font-body);
+        flex-shrink: 0;
         &:hover { text-decoration: underline; }
       }
 
       /* Post row */
       .post-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        justify-content: space-between;
         gap: 12px;
         padding: 10px 12px;
         border-radius: var(--r-sm);
@@ -102,22 +106,25 @@ const PLAN_LABELS: Record<string, string> = {
         margin: 0 -12px;
         &:hover { background: var(--surface-2); }
       }
-      .post-title {
+      .post-row-main {
         flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .post-title {
         font-size: 14px;
         font-weight: 500;
         color: var(--text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-width: 0;
       }
       .post-date {
         font-family: var(--font-mono);
         font-size: 11px;
         color: var(--text-muted);
-        white-space: nowrap;
-        flex-shrink: 0;
       }
 
       /* Skeleton rows */
@@ -199,15 +206,22 @@ const PLAN_LABELS: Record<string, string> = {
       .tile-value--teal { color: var(--teal-400); }
       .tile-value--muted { color: var(--text-muted); }
       .tile-action {
+        margin-top: 4px;
+        align-self: flex-start;
         font-size: 12px;
-        color: var(--text-accent);
-        background: none;
+        font-weight: 600;
+        color: var(--mat-sys-on-primary);
+        background: var(--text-accent);
         border: none;
-        padding: 0;
+        border-radius: 999px;
+        padding: 8px 14px;
         cursor: pointer;
         font-family: var(--font-body);
-        text-align: left;
-        &:hover { text-decoration: underline; }
+        text-align: center;
+        transition: filter 0.12s, transform 0.12s;
+        &:hover {
+          filter: brightness(1.05);
+        }
       }
       .tile-clickable { cursor: pointer; }
 
@@ -232,18 +246,15 @@ const PLAN_LABELS: Record<string, string> = {
   template: `
     <!-- Section A: Quick actions header -->
     <div class="section-header">
-      <h1 class="greeting">{{ greeting() }}</h1>
-      <button mat-flat-button (click)="navigateToNewPost()">
-        <mat-icon svgIcon="add" />
-        New post
-      </button>
+      <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
+      <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
     </div>
 
     <!-- Section B: Recent posts -->
     <div class="section-posts">
       <div class="section-title-row">
-        <h2 class="section-title">Recent posts</h2>
-        <button class="view-all-link" (click)="navigateToPosts()">View all →</button>
+        <h2 class="section-title admin-section-label">Recent posts</h2>
+        <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
       </div>
 
       @if (allPosts() === undefined) {
@@ -261,17 +272,16 @@ const PLAN_LABELS: Record<string, string> = {
           <mat-icon class="empty-icon">edit</mat-icon>
           <p class="empty-heading">No posts yet</p>
           <p class="empty-sub">Start writing — your first post is one click away.</p>
-          <button mat-flat-button (click)="navigateToNewPost()">
-            <mat-icon svgIcon="add" />
-            New post
-          </button>
+          <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
         </div>
       } @else {
         @for (post of recentFive(); track post.id) {
           <div class="post-row" (click)="navigateToPost(post.id)">
-            <span class="post-title">{{ post.title || '(Untitled)' }}</span>
+            <div class="post-row-main">
+              <span class="post-title">{{ post.title || '(Untitled)' }}</span>
+              <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>
+            </div>
             <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
-            <span class="post-date">{{ post.updatedAt | date:'MMM d' }}</span>
           </div>
         }
       }
@@ -290,7 +300,7 @@ const PLAN_LABELS: Record<string, string> = {
             [class.tile-value--muted]="planTier() === 'starter'"
           >{{ planLabel() }}</span>
           @if (planTier() === 'starter') {
-            <button class="tile-action" (click)="navigateToSettings()">Upgrade →</button>
+            <button type="button" class="tile-action" (click)="navigateToSettings()">Upgrade</button>
           }
         </div>
 
@@ -344,8 +354,7 @@ export class DashboardComponent {
     const posts = this.allPosts() ?? [];
     return {
       published: posts.filter((p) => p.status === 'published').length,
-      draft: posts.filter((p) => p.status === 'draft').length,
-      scheduled: posts.filter((p) => p.status === 'scheduled').length,
+      draft: posts.filter((p) => p.status === 'draft' || p.status === 'scheduled').length,
       archived: posts.filter((p) => p.status === 'archived').length,
     };
   });
@@ -353,18 +362,16 @@ export class DashboardComponent {
   badgeClass(post: BlogPost): string {
     switch (post.status) {
       case 'published': return 'badge badge-pub';
-      case 'scheduled': return 'badge badge-sched';
-      case 'archived':  return 'badge badge-arch';
-      default:          return 'badge badge-draft';
+      case 'archived': return 'badge badge-arch';
+      default: return 'badge badge-draft';
     }
   }
 
   badgeLabel(post: BlogPost): string {
     switch (post.status) {
       case 'published': return 'Published';
-      case 'scheduled': return 'Scheduled';
-      case 'archived':  return 'Archived';
-      default:          return 'Draft';
+      case 'archived': return 'Archived';
+      default: return 'Draft';
     }
   }
 

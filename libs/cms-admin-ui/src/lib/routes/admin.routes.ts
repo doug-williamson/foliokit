@@ -87,14 +87,57 @@ export const adminRoutes: Route[] = [
         providers: [AuthorEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
-      // ── Pages (tabbed About + Links surface) ──────────────────────────────
+      // ── Pages hub + About / Links editors ─────────────────────────────────
       {
         path: 'pages',
-        data: { title: 'Pages' },
         providers: [SiteConfigEditorStore],
-        canDeactivate: [unsavedChangesGuard],
         loadComponent: () =>
-          import('../pages/pages.component').then((m) => m.PagesComponent),
+          import('../pages/pages-shell.component').then((m) => m.PagesShellComponent),
+        children: [
+          {
+            path: '',
+            data: { title: 'Configuration' },
+            loadComponent: () =>
+              import('../pages/pages-hub.component').then((m) => m.PagesHubComponent),
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'home',
+            data: { title: 'Home' },
+            loadComponent: () =>
+              import('../page-editor/home-page-editor.component').then(
+                (m) => m.HomePageEditorComponent,
+              ),
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'about',
+            data: { title: 'About Page' },
+            loadComponent: () =>
+              import('../page-editor/about-page-editor.component').then(
+                (m) => m.AboutPageEditorComponent,
+              ),
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'links',
+            data: { title: 'Links Page' },
+            loadComponent: () =>
+              import('../page-editor/links-page-editor.component').then(
+                (m) => m.LinksPageEditorComponent,
+              ),
+            canDeactivate: [unsavedChangesGuard],
+          },
+          {
+            path: 'blog',
+            data: { title: 'Publish' },
+            loadComponent: () =>
+              import('../page-editor/blog-page-editor.component').then(
+                (m) => m.BlogPageEditorComponent,
+              ),
+            canDeactivate: [unsavedChangesGuard],
+          },
+        ],
       },
       // ── Series (was: /taxonomy) ───────────────────────────────────────────
       { path: 'taxonomy', redirectTo: 'series', pathMatch: 'full' },
@@ -107,11 +150,12 @@ export const adminRoutes: Route[] = [
           ),
         providers: [TaxonomyStore],
       },
-      // ── Appearance (was: /site-config) ────────────────────────────────────
-      { path: 'site-config', redirectTo: 'appearance', pathMatch: 'full' },
+      // ── Settings (site + Pro); legacy paths redirect here ─────────────────
+      { path: 'site-config', redirectTo: 'settings', pathMatch: 'full' },
+      { path: 'appearance', redirectTo: 'settings', pathMatch: 'full' },
       {
-        path: 'appearance',
-        data: { title: 'Appearance' },
+        path: 'settings',
+        data: { title: 'Settings' },
         loadComponent: () =>
           import('../site-config-editor/site-config-page.component').then(
             (m) => m.SiteConfigPageComponent,
@@ -119,19 +163,11 @@ export const adminRoutes: Route[] = [
         providers: [SiteConfigEditorStore],
         canDeactivate: [unsavedChangesGuard],
       },
-      {
-        path: 'settings',
-        data: { title: 'Settings' },
-        loadComponent: () =>
-          import('../settings/settings-page.component').then(
-            (m) => m.SettingsPageComponent,
-          ),
-      },
       // ── Legacy redirects ──────────────────────────────────────────────────
-      { path: 'about', redirectTo: 'pages', pathMatch: 'full' },
-      { path: 'links', redirectTo: 'pages', pathMatch: 'full' },
-      { path: 'about-page', redirectTo: 'pages', pathMatch: 'full' },
-      { path: 'links-page', redirectTo: 'pages', pathMatch: 'full' },
+      { path: 'about', redirectTo: 'pages/about', pathMatch: 'full' },
+      { path: 'links', redirectTo: 'pages/links', pathMatch: 'full' },
+      { path: 'about-page', redirectTo: 'pages/about', pathMatch: 'full' },
+      { path: 'links-page', redirectTo: 'pages/links', pathMatch: 'full' },
       { path: 'navigation', redirectTo: 'settings', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' },
     ],
