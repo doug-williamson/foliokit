@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -10,7 +10,6 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatSlideToggleModule,
@@ -47,9 +46,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
                 aria-label="Enable About page"
               />
             </div>
-            <a mat-stroked-button routerLink="/pages/about" class="self-start">
+            <button
+              mat-stroked-button
+              type="button"
+              class="self-start"
+              [disabled]="!aboutEnabled()"
+              (click)="router.navigate(['/pages/about'])"
+            >
               Edit About
-            </a>
+            </button>
           </mat-card>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
@@ -66,9 +71,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
                 aria-label="Enable Links page"
               />
             </div>
-            <a mat-stroked-button routerLink="/pages/links" class="self-start">
+            <button
+              mat-stroked-button
+              type="button"
+              class="self-start"
+              [disabled]="!linksEnabled()"
+              (click)="router.navigate(['/pages/links'])"
+            >
               Edit Links
-            </a>
+            </button>
           </mat-card>
         </div>
       }
@@ -77,6 +88,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
 })
 export class PagesHubComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
+  protected readonly router = inject(Router);
 
   readonly aboutEnabled = computed(
     () => this.store.config()?.pages?.about?.enabled === true,

@@ -82,7 +82,14 @@ export class App implements OnInit {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    const base = config?.nav ?? DEFAULT_NAV;
+    const rawBase = config?.nav ?? DEFAULT_NAV;
+    const aboutOn = config?.pages?.about?.enabled === true;
+    const linksOn = config?.pages?.links?.enabled === true;
+    const base = rawBase.filter((item) => {
+      if (item.url === '/about' && !aboutOn) return false;
+      if (item.url === '/links' && !linksOn) return false;
+      return true;
+    });
     const extra: NavItem[] = [];
     if (config?.pages?.about?.enabled) {
       extra.push({ label: 'About', url: '/about' });
