@@ -27,9 +27,9 @@ export const environment: Environment = {
     appId: import.meta.env['NG_APP_FIREBASE_APP_ID'],
   },
   stripe: {
-    publishableKey: 'pk_live_51THQgWFzZbJgjuvrLBvDUKsm1wXGLqMeaw8Z7WvjT8U6TNTMoV0UeBtRWzZ955YvVxovadOs08K5JqZi9JZe8UxA00SJdN5kWz',
-    proPriceId: 'price_1THQxnFzZbJgjuvrT4HVE0ui',
-    agencyPriceId: 'price_1THQyEFzZbJgjuvr328S5y0n',
+    publishableKey: 'pk_test_51THQgWFzZbJgjuvr4Vg1UbryEYrAlpPNb2T8KiXRa3DkQjFxdXBbor1dIleLNRA2ufeg3glthzZm3wOevWEcvzYC00GxvgcJFK',
+    proPriceId: 'price_1TL8t7FzZbJgjuvrSyjDcElg',
+    agencyPriceId: 'price_1TL8tLFzZbJgjuvrUC3w7g3M',
   },
   cloudFunctionsBaseUrl: 'http://localhost:5001/foliokit-6f974/us-central1',
 };
