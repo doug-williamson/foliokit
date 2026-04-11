@@ -65,6 +65,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
           </mat-card>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+            <!-- GATE_TODO: about -->
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <h2 class="text-base font-semibold m-0">About</h2>
@@ -90,6 +91,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
           </mat-card>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+            <!-- GATE_TODO: links -->
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <h2 class="text-base font-semibold m-0">Links</h2>
@@ -113,6 +115,12 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               Edit Links
             </button>
           </mat-card>
+
+          <!-- GATE_TODO: videoWalkthrough -->
+          <!-- GATE_TODO: donate -->
+          <!-- GATE_TODO: survey -->
+          <!-- GATE_TODO: ranking -->
+          <!-- GATE_TODO: stream -->
         </div>
       }
     </div>

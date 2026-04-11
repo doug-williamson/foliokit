@@ -13,6 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID, getPlanFeatures } from '@foliokit/cms-core';
 import type { BillingRecord, BillingStatus } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
+import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { DomainSetupComponent } from './domain-setup/domain-setup.component';
 
 @Component({
@@ -87,6 +88,8 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             </div>
           }
         </section>
+
+        <!-- GATE_TODO: customCss -->
 
         @if (features().customDomain) {
           <section class="settings-section">
@@ -316,6 +319,7 @@ export class SettingsProTabComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly functionsBaseUrl = inject(FUNCTIONS_BASE_URL);
+  private readonly billingCheckout = inject(BillingCheckoutService);
 
   readonly billingRecord = signal<BillingRecord | null>(null);
   readonly loadState = signal<'loading' | 'loaded' | 'error'>('loading');
@@ -366,21 +370,12 @@ export class SettingsProTabComponent implements OnInit {
   }
 
   protected async upgradeToPro(): Promise<void> {
-    const idToken = await this.auth.user()?.getIdToken();
-    if (!idToken) return;
     this.checkoutState.set('redirecting');
     try {
-      const res = await fetch(`${this.functionsBaseUrl}/createCheckoutSession`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ tenantId: this.siteId, plan: 'pro' }),
-      });
-      const data = (await res.json()) as { url?: string };
-      if (data.url) window.location.href = data.url;
-      else this.checkoutState.set('idle');
+      const url = await this.billingCheckout.createCheckoutSession('pro');
+      if (isPlatformBrowser(this.platformId)) {
+        window.location.href = url;
+      }
     } catch {
       this.checkoutState.set('idle');
     }

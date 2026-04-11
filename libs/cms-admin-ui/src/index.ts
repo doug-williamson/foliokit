@@ -25,6 +25,7 @@ export * from './lib/routes/admin.routes';
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 export * from './lib/provide-admin-kit';
+export * from './lib/services/billing-checkout.service';
 export * from './lib/provide-admin-markdown';
 export * from './lib/icons/provide-admin-mat-icons';
 

@@ -287,6 +287,8 @@ const PLAN_LABELS: Record<string, string> = {
       }
     </div>
 
+    <!-- GATE_TODO: analytics -->
+
     <!-- Section C: Site health strip -->
     <div class="section-health">
       <div class="health-grid">
