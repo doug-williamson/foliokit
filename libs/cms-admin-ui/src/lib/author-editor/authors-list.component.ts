@@ -53,6 +53,7 @@ import { Author, AuthorService } from '@foliokit/cms-core';
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
+      <!-- GATE_TODO: multipleAuthors -->
       <!-- Header -->
       <div class="page-header flex items-center justify-between border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">

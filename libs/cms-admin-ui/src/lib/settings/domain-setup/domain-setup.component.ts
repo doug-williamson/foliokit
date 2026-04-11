@@ -32,6 +32,7 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule],
   template: `
+    <!-- GATE_TODO: customDomain -->
     @if (!loaded()) {
       <div class="ds-skeleton">
         <div class="skeleton-line skeleton-line--wide"></div>

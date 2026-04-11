@@ -1,18 +1,21 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   input,
+  PLATFORM_ID,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PlanGatingService } from '@foliokit/cms-core';
 import type { PlatformFeatures } from '@foliokit/cms-core';
+import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { PlanComparisonDialogComponent } from './plan-comparison-dialog.component';
 
-/** TODO: deep-link to Stripe checkout URL once billing UI is wired. */
 const UPGRADE_URL = '/settings';
 const UPGRADE_FRAGMENT = 'billing';
 
@@ -57,13 +60,25 @@ const UPGRADE_FRAGMENT = 'billing';
           <p class="pg-price-note">
             Included in FolioKit {{ planLabel() }} — {{ planPrice() }}
           </p>
-          <a
+          @if (checkoutError()) {
+            <p class="pg-error" role="alert">{{ checkoutError() }}</p>
+          }
+          <button
             mat-flat-button
             color="primary"
+            type="button"
+            [disabled]="checkoutLoading()"
+            (click)="startCheckout()"
+          >
+            {{ checkoutLoading() ? 'Starting checkout…' : ('Upgrade to ' + planLabel()) }}
+          </button>
+          <a
+            mat-button
+            class="pg-settings-link"
             [routerLink]="upgradeUrl"
             [fragment]="upgradeFragment"
           >
-            Upgrade to {{ planLabel() }}
+            Open Settings
           </a>
           <button class="pg-compare-link" type="button" (click)="openComparison()">
             See what's included →
@@ -215,6 +230,19 @@ const UPGRADE_FRAGMENT = 'billing';
       margin: 0 0 20px;
     }
 
+    .pg-error {
+      font-size: 12px;
+      color: var(--mat-sys-error, #b00020);
+      margin: 0 0 12px;
+      line-height: 1.4;
+      max-width: 100%;
+    }
+
+    .pg-settings-link {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
     .pg-compare-link {
       margin-top: 12px;
       background: none;
@@ -249,6 +277,8 @@ export class PlanGateComponent {
 
   private readonly planGatingService = inject(PlanGatingService);
   private readonly dialog = inject(MatDialog);
+  private readonly billingCheckout = inject(BillingCheckoutService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly isEnabled = computed(
     () => this.planGatingService.features().platform[this.feature()],
@@ -263,8 +293,27 @@ export class PlanGateComponent {
   protected readonly upgradeUrl = UPGRADE_URL;
   protected readonly upgradeFragment = UPGRADE_FRAGMENT;
 
+  protected readonly checkoutLoading = signal(false);
+  protected readonly checkoutError = signal<string | null>(null);
+
   /** Three placeholder rows — enough to imply a real list UI behind the overlay. */
   protected readonly placeholderRows = [0, 1, 2] as const;
+
+  protected async startCheckout(): Promise<void> {
+    this.checkoutError.set(null);
+    this.checkoutLoading.set(true);
+    try {
+      const url = await this.billingCheckout.createCheckoutSession(this.requiredPlan());
+      if (isPlatformBrowser(this.platformId)) {
+        window.location.href = url;
+      }
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Checkout failed. Please try again.';
+      this.checkoutError.set(message);
+    } finally {
+      this.checkoutLoading.set(false);
+    }
+  }
 
   protected openComparison(): void {
     this.dialog.open(PlanComparisonDialogComponent, {
