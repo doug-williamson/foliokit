@@ -13,7 +13,7 @@ export interface NavItemState {
   /** When set, enable-page bottom sheet can turn this page on. */
   pageKey?: EnablePageKey;
   proTier?: PlanTier;
-  /** Series: both blog and plan block — prefer page-enable messaging in UI. */
+  /** When both page and plan gate apply, nudge enable-page before upgrade (reserved). */
   showPageBeforePlanHint?: boolean;
 }
 

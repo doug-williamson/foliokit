@@ -9,7 +9,15 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
+import {
+  AuthService,
+  BlogPost,
+  isBlogPageNavEnabled,
+  PlanGatingService,
+  PostService,
+  SiteConfig,
+  SiteConfigService,
+} from '@foliokit/cms-core';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -40,15 +48,12 @@ const PLAN_LABELS: Record<string, string> = {
         min-height: 0;
       }
 
-      /* Section A — Quick actions */
+      /* Section A — Greeting header */
       .section-header {
         padding: 32px 32px 24px;
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
       }
       .greeting {
         font-family: var(--font-display);
@@ -181,6 +186,9 @@ const PLAN_LABELS: Record<string, string> = {
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
       }
+      .health-grid--cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
       .health-tile {
         background: var(--surface-1);
         border: 1px solid var(--border);
@@ -204,26 +212,25 @@ const PLAN_LABELS: Record<string, string> = {
         line-height: 1.2;
       }
       .tile-value--teal { color: var(--teal-400); }
-      .tile-value--muted { color: var(--text-muted); }
-      .tile-action {
-        margin-top: 4px;
-        align-self: flex-start;
-        font-size: 12px;
+      .tile-value--secondary { color: var(--text-secondary); }
+      .tile-value--nav {
+        color: var(--text-accent);
         font-weight: 600;
-        color: var(--mat-sys-on-primary);
-        background: var(--text-accent);
-        border: none;
-        border-radius: 999px;
-        padding: 8px 14px;
-        cursor: pointer;
-        font-family: var(--font-body);
-        text-align: center;
-        transition: filter 0.12s, transform 0.12s;
-        &:hover {
-          filter: brightness(1.05);
-        }
+      }
+      .tile-upgrade {
+        margin-top: 2px;
+        align-self: flex-start;
+        padding: 0;
+        min-width: 0;
+        line-height: 1.3;
+        font-size: 13px;
+        font-weight: 600;
       }
       .tile-clickable { cursor: pointer; }
+      .health-tile.tile-clickable:hover {
+        border-color: var(--text-accent);
+        background: var(--surface-2);
+      }
 
       /* ── Tablet (768–1023) ── */
       @media (max-width: 1023.98px) {
@@ -235,29 +242,43 @@ const PLAN_LABELS: Record<string, string> = {
       /* ── Mobile (<768) ── */
       @media (max-width: 767.98px) {
         .section-header         { padding: 16px 16px 14px; }
-        .section-header button  { width: 100%; }
         .greeting               { font-size: 18px; }
         .section-posts          { padding: 16px; }
         .section-health         { padding: 16px; }
-        .health-grid            { grid-template-columns: 1fr; gap: 12px; }
+        /* Stack tiles: Plan → Domain → Published so primary rows share one vertical rhythm */
+        .health-grid,
+        .health-grid--cols-2 {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        .health-tile            { padding: 12px; }
+        .tile-value             { font-size: 16px; }
       }
     `,
   ],
   template: `
-    <!-- Section A: Quick actions header -->
+    <!-- Section A: Greeting header -->
     <div class="section-header">
       <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
-      <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
     </div>
 
     <!-- Section B: Recent posts -->
     <div class="section-posts">
-      <div class="section-title-row">
-        <h2 class="section-title admin-section-label">Recent posts</h2>
-        <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
-      </div>
+      @if (publishNavEnabled()) {
+        <div class="section-title-row">
+          <h2 class="section-title admin-section-label">Recent posts</h2>
+          <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
+        </div>
+      }
 
-      @if (allPosts() === undefined) {
+      @if (!publishNavEnabled()) {
+        <div class="empty-state">
+          <mat-icon class="empty-icon" svgIcon="rocket_launch" />
+          <p class="empty-heading">Your site is ready</p>
+          <p class="empty-sub">Enable a page to go live, then start writing.</p>
+          <button mat-flat-button color="primary" (click)="navigateToPages()">Enable Pages</button>
+        </div>
+      } @else if (allPosts() === undefined) {
         <!-- Skeleton loading state -->
         @for (i of skeletonRows; track i) {
           <div class="skeleton-row">
@@ -269,7 +290,7 @@ const PLAN_LABELS: Record<string, string> = {
       } @else if (recentFive().length === 0) {
         <!-- Empty state -->
         <div class="empty-state">
-          <mat-icon class="empty-icon">edit</mat-icon>
+          <mat-icon class="empty-icon" svgIcon="edit" />
           <p class="empty-heading">No posts yet</p>
           <p class="empty-sub">Start writing — your first post is one click away.</p>
           <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
@@ -291,7 +312,10 @@ const PLAN_LABELS: Record<string, string> = {
 
     <!-- Section C: Site health strip -->
     <div class="section-health">
-      <div class="health-grid">
+      <div
+        class="health-grid"
+        [class.health-grid--cols-2]="!publishNavEnabled()"
+      >
 
         <!-- Tile 1: Plan -->
         <div class="health-tile">
@@ -299,10 +323,15 @@ const PLAN_LABELS: Record<string, string> = {
           <span
             class="tile-value"
             [class.tile-value--teal]="planTier() !== 'starter'"
-            [class.tile-value--muted]="planTier() === 'starter'"
+            [class.tile-value--secondary]="planTier() === 'starter'"
           >{{ planLabel() }}</span>
           @if (planTier() === 'starter') {
-            <button type="button" class="tile-action" (click)="navigateToSettings()">Upgrade</button>
+            <a
+              mat-button
+              class="tile-upgrade"
+              href="#"
+              (click)="$event.preventDefault(); navigateToSettings()"
+            >Upgrade →</a>
           }
         </div>
 
@@ -314,15 +343,17 @@ const PLAN_LABELS: Record<string, string> = {
               {{ siteConfig()!.siteUrl }}
             </span>
           } @else {
-            <span class="tile-value tile-value--muted" style="font-size:14px;">Not configured</span>
+            <span class="tile-value tile-value--nav" style="font-size:14px;">Add custom domain →</span>
           }
         </div>
 
-        <!-- Tile 3: Published count -->
-        <div class="health-tile">
-          <span class="tile-label">Published</span>
-          <span class="tile-value">{{ postCounts().published }}</span>
-        </div>
+        @if (publishNavEnabled()) {
+          <!-- Tile 3: Published count -->
+          <div class="health-tile">
+            <span class="tile-label">Published</span>
+            <span class="tile-value">{{ postCounts().published }}</span>
+          </div>
+        }
 
       </div>
     </div>
@@ -344,7 +375,11 @@ export class DashboardComponent {
 
   readonly allPosts = toSignal<BlogPost[]>(this.postService.getAllPosts());
 
-  readonly siteConfig = toSignal(this.siteConfigService.getDefaultSiteConfig());
+  readonly siteConfig = toSignal(this.siteConfigService.watchDefaultSiteConfig(), {
+    initialValue: null as SiteConfig | null,
+  });
+
+  readonly publishNavEnabled = computed(() => isBlogPageNavEnabled(this.siteConfig()));
 
   readonly planTier = this.planGatingService.plan;
 
@@ -391,5 +426,9 @@ export class DashboardComponent {
 
   navigateToSettings(): void {
     this.router.navigate(['/settings']);
+  }
+
+  navigateToPages(): void {
+    this.router.navigate(['/pages']);
   }
 }

@@ -70,8 +70,8 @@ setup('authenticate as admin', async ({ page }) => {
     );
   }
 
-  // Wait for the redirect to /posts that happens after successful sign-in.
-  await page.waitForURL('**/posts', { timeout: 20_000 });
+  // Wait for the redirect to /dashboard after successful sign-in.
+  await page.waitForURL('**/dashboard', { timeout: 20_000 });
 
   // Persist the authenticated browser state for all downstream test projects.
   await page.context().storageState({ path: ADMIN_STORAGE_STATE });

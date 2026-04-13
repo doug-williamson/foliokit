@@ -24,7 +24,7 @@ const ICONS = [
   'language', 'light_mode', 'link', 'live_tv', 'lock', 'logout', 'mail',
   'menu', 'music_note', 'open_in_new', 'palette', 'people', 'person',
   'person_off', 'photo_camera', 'play_circle', 'preview', 'publish',
-  'radio_button_unchecked', 'save', 'schedule', 'settings', 'swap_horiz',
+  'radio_button_unchecked', 'rocket_launch', 'save', 'schedule', 'settings', 'swap_horiz',
   'tag', 'thumb_up', 'tune', 'upload', 'upload_file', 'warning', 'web',
 ].sort();
 

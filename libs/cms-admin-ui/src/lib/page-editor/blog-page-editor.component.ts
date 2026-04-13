@@ -23,7 +23,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 import { BlogPublishSettingsComponent } from './blog-publish-settings.component';
 
 const PAGE_DESCRIPTION =
-  'Configure the Publish section: enable posts, authors, and series in the admin, and open the posts list.';
+  'Configure the Publish section: enable posts and authors in the admin, and open the posts list.';
 
 @Component({
   selector: 'folio-blog-page-editor',
