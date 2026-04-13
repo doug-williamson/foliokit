@@ -30,7 +30,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
  * Site settings: General, default SEO, and Pro (billing / domain).
  *
  * `SiteConfigEditorStore` must be provided at the route level. Header nav links
- * are configured during setup; there is no Navigation tab here.
+ * are edited under Pages; there is no Navigation tab here.
  */
 @Component({
   selector: 'folio-site-config-page',

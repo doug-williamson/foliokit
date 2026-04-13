@@ -52,9 +52,9 @@ export class AdminLoginComponent implements OnInit {
 
   /**
    * Route to navigate to after a successful sign-in.
-   * @default '/posts'
+   * @default '/dashboard'
    */
-  readonly redirectTo = input<string>('/posts');
+  readonly redirectTo = input<string>('/dashboard');
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);

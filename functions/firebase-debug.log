@@ -1,0 +1,114 @@
+[debug] [2026-04-13T14:36:11.777Z] ----------------------------------------------------------------------
+[debug] [2026-04-13T14:36:11.778Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\dougl\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only auth,firestore,storage,functions
+[debug] [2026-04-13T14:36:11.779Z] CLI Version:   15.10.1
+[debug] [2026-04-13T14:36:11.779Z] Platform:      win32
+[debug] [2026-04-13T14:36:11.779Z] Node Version:  v22.19.0
+[debug] [2026-04-13T14:36:11.779Z] Time:          Mon Apr 13 2026 10:36:11 GMT-0400 (Eastern Daylight Time)
+[debug] [2026-04-13T14:36:11.779Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-13T14:36:12.568Z] Field "/apphosting" in "firebase.json" is possibly invalid: must be object
+[debug] [2026-04-13T14:36:12.568Z] Object "/apphosting/0" in "firebase.json" is missing required property: {"missingProperty":"ignore"}
+[debug] [2026-04-13T14:36:12.568Z] Field "/apphosting" in "firebase.json" is possibly invalid: must match a schema in anyOf
+[debug] [2026-04-13T14:36:12.571Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-13T14:36:12.572Z] > authorizing via signed-in user (dev.foliokit@gmail.com)
+[debug] [2026-04-13T14:36:12.638Z] java version "23.0.1" 2024-10-15
+
+[debug] [2026-04-13T14:36:12.638Z] Java(TM) SE Runtime Environment (build 23.0.1+11-39)
+Java HotSpot(TM) 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)
+
+[debug] [2026-04-13T14:36:12.650Z] Parsed Java major version: 23
+[info] i  emulators: Starting emulators: auth, functions, firestore, storage {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, storage"}}
+[debug] [2026-04-13T14:36:12.659Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.659Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.659Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.659Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.659Z] [storage] Storage Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.659Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-04-13T14:36:12.662Z] Write emulator hub locator at C:\Users\dougl\AppData\Local\Temp\hub-foliokit-6f974.json
+[debug] [2026-04-13T14:36:12.670Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.670Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.670Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-04-13T14:36:12.670Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, database, hosting, pubsub, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, database, hosting, pubsub, dataconnect\u001b[22m"}}
+[debug] [2026-04-13T14:36:12.702Z] defaultcredentials: writing to file C:\Users\dougl\AppData\Roaming\firebase\dev_foliokit_gmail.com_application_default_credentials.json
+[debug] [2026-04-13T14:36:12.703Z] Setting GAC to C:\Users\dougl\AppData\Roaming\firebase\dev_foliokit_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\dougl\\AppData\\Roaming\\firebase\\dev_foliokit_gmail.com_application_default_credentials.json"}}
+[debug] [2026-04-13T14:36:12.704Z] Checked if tokens are valid: true, expires at: 1776093981390
+[debug] [2026-04-13T14:36:12.704Z] Checked if tokens are valid: true, expires at: 1776093981390
+[debug] [2026-04-13T14:36:12.704Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/foliokit-6f974/adminSdkConfig [none]
+[debug] [2026-04-13T14:36:13.162Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/foliokit-6f974/adminSdkConfig 200
+[debug] [2026-04-13T14:36:13.162Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/foliokit-6f974/adminSdkConfig {"projectId":"foliokit-6f974","storageBucket":"foliokit-6f974.firebasestorage.app"}
+[debug] [2026-04-13T14:36:13.171Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-04-13T14:36:13.172Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-04-13T14:36:13.172Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\dougl\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.20.2.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","foliokit-6f974","--rules","C:\\GitHub\\foliokit\\firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\dougl\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.20.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"foliokit-6f974\",\"--rules\",\"C:\\\\GitHub\\\\foliokit\\\\firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-04-13T14:36:17.937Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2026-04-13T14:36:18.445Z] Temp file directory for storage emulator: C:\Users\dougl\AppData\Local\Temp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: C:\\Users\\dougl\\AppData\\Local\\Temp/firebase/storage/blobs"}}
+[info] i  functions: Watching "C:\GitHub\foliokit\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\GitHub\\foliokit\\functions\" for Cloud Functions..."}}
+[debug] [2026-04-13T14:36:18.452Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-04-13T14:36:19.006Z] > [functions] package.json contents: {
+  "name": "foliokit-functions",
+  "private": true,
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.7.0",
+    "firebase-functions": "^6.0.0",
+    "stripe": "^17.0.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.0"
+  }
+}
+[debug] [2026-04-13T14:36:19.006Z] Building nodejs source
+[debug] [2026-04-13T14:36:19.006Z] Failed to find version of module node: reached end of search path C:\GitHub\foliokit\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[debug] [2026-04-13T14:36:19.007Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-04-13T14:36:19.017Z] Found firebase-functions binary at 'C:\GitHub\foliokit\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8108
+
+[debug] [2026-04-13T14:36:19.411Z] Got response from /__/functions.yaml {"endpoints":{"publishScheduledPosts":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"publishScheduledPosts"},"provisionTenant":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"provisionTenant"},"checkSubdomain":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"checkSubdomain"},"createCheckoutSession":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"stripe-secret-key"}],"labels":{},"httpsTrigger":{},"entryPoint":"createCheckoutSession"},"stripeWebhook":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"stripe-secret-key"},{"key":"stripe-webhook-secret"}],"labels":{},"httpsTrigger":{},"entryPoint":"stripeWebhook"},"createBillingPortalSession":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"stripe-secret-key"}],"labels":{},"httpsTrigger":{},"entryPoint":"createBillingPortalSession"},"setCustomDomain":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"setCustomDomain"},"verifyCustomDomain":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"verifyCustomDomain"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{},"params":[{"type":"secret","name":"stripe-secret-key"},{"type":"secret","name":"stripe-webhook-secret"}]}
+[info] +  functions: Loaded functions definitions from source: publishScheduledPosts, provisionTenant, checkSubdomain, createCheckoutSession, stripeWebhook, createBillingPortalSession, setCustomDomain, verifyCustomDomain. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: publishScheduledPosts, provisionTenant, checkSubdomain, createCheckoutSession, stripeWebhook, createBillingPortalSession, setCustomDomain, verifyCustomDomain."}}
+[info] i  functions[us-central1-publishScheduledPosts]: function ignored because the pubsub emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the pubsub emulator does not exist or is not running."}}
+[info] +  functions[us-central1-provisionTenant]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/provisionTenant). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/provisionTenant)."}}
+[info] +  functions[us-central1-checkSubdomain]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/checkSubdomain). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/checkSubdomain)."}}
+[info] +  functions[us-central1-createCheckoutSession]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/createCheckoutSession). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/createCheckoutSession)."}}
+[info] +  functions[us-central1-stripeWebhook]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/stripeWebhook). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/stripeWebhook)."}}
+[info] +  functions[us-central1-createBillingPortalSession]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/createBillingPortalSession). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/createBillingPortalSession)."}}
+[info] +  functions[us-central1-setCustomDomain]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/setCustomDomain). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/setCustomDomain)."}}
+[info] +  functions[us-central1-verifyCustomDomain]: http function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/verifyCustomDomain). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/foliokit-6f974/us-central1/verifyCustomDomain)."}}
+[debug] [2026-04-13T14:36:23.447Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Storage        │ 127.0.0.1:9199 │ http://127.0.0.1:4000/storage   │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 

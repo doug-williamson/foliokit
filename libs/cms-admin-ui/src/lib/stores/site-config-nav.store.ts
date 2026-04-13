@@ -28,7 +28,14 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
         ...(pages.home ?? { heroHeadline: '', enabled: true }),
         enabled: true,
       } as HomePageConfig;
-      break;
+      return {
+        ...current,
+        pages,
+        adminNavShortcuts: {
+          ...current.adminNavShortcuts,
+          home: true,
+        },
+      };
     case 'blog':
       pages.blog = { enabled: true };
       break;

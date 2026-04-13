@@ -31,6 +31,21 @@
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }
     },
+    "emulator-e2e": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-emulator-e2e",
+        "watch": false
+      }
+    },
+    "build-emulator-e2e": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-emulator-e2e.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
+    },
     "tenant": {
       "executor": "@nx/js:node",
       "options": {

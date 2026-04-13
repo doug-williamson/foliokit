@@ -30,7 +30,7 @@ import { SiteConfigNavStore } from '../stores/site-config-nav.store';
  * {
  *   path: '',
  *   component: AdminShellComponent,
- *   canActivate: [authGuard, setupGuard],
+ *   canActivate: [authGuard],
  *   children: [ ... ],
  * }
  * ```

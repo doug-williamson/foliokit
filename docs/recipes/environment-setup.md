@@ -57,7 +57,7 @@ This email must match **all four** authorization surfaces:
 1. The Firebase Authentication user (sign in with Google using this account)
 2. The `ADMIN_EMAIL` injection token read by `authGuard`
 3. Your Firestore security rules (the `isAdmin()` function)
-4. The seed data (the author document created by the seed script)
+4. Any author profile in Firestore you want tied to the admin (optional with bare `npm run seed`; use `npm run seed:e2e` or create `tenants/.../authors/...` manually)
 
 > See `docs/security/admin-authorization.md` for the full authorization model (Phase 4).
 

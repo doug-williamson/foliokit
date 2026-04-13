@@ -24,7 +24,7 @@ npm run dev:all
 This starts four processes in parallel and coordinates their startup order:
 
 1. **Emulator** — Firebase Auth (9099), Firestore (8080), Storage (9199), Emulator UI (4000)
-2. **Seed** — waits for Firestore on port 8080, seeds test data once, then exits
+2. **Seed** — waits for Firestore on port 8080, creates the dev Auth user only, then exits (no Firestore docs)
 3. **Blog dev server** — waits for Firestore on port 8080, then starts on port 4201
 4. **Admin dev server** — waits for Firestore on port 8080, then starts on port 4203
 
@@ -52,7 +52,8 @@ All four processes share the same terminal session with colour-coded output (`cy
 |---|---|
 | `npm run emulator` | Start Firebase emulators (fresh state each run) |
 | `npm run emulator:data` | Start emulators, import `.firebase/emulator-data`, export on exit |
-| `npm run seed` | Seed test data into the running emulator |
+| `npm run seed` | Seed Auth only (`dev.foliokit@gmail.com`) into the running emulator |
+| `npm run seed:e2e` | Full Firestore + Auth baseline (for Playwright; not used by `dev:all`) |
 | `npm run start:blog` | Start blog dev server (requires emulator already running) |
 | `npm run start:admin` | Start admin dev server (requires emulator already running) |
 | `npm run start:docs` | Start docs dev server (no emulator dependency) |

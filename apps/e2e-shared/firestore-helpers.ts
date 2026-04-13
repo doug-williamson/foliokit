@@ -49,11 +49,12 @@ export async function resetFirestore(): Promise<void> {
 }
 
 /**
- * Resets Firestore and re-runs the seed script to restore baseline test data.
+ * Resets Firestore and re-runs the e2e baseline seed (auth + tenant fixtures).
+ * Local `npm run seed` is auth-only; Playwright uses this target.
  */
 export async function reseedFirestore(): Promise<void> {
   await resetFirestore();
-  execSync('npx nx run seed:emulator', {
+  execSync('npx nx run seed:emulator-e2e', {
     cwd: WORKSPACE_ROOT,
     stdio: 'pipe',
   });

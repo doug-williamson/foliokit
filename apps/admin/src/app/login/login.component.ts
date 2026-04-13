@@ -150,7 +150,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.theme.apply();
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/posts']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -162,7 +162,7 @@ export class LoginComponent implements OnInit {
         this.error.set('Access denied. This account is not authorized.');
         return;
       }
-      await this.router.navigate(['/posts']);
+      await this.router.navigate(['/dashboard']);
     } catch (err) {
       console.error('[Auth] signInWithGoogle failed:', err);
       this.error.set('Sign-in failed. Please try again.');

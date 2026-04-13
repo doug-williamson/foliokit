@@ -65,7 +65,7 @@ npm run start:blog               # Blog only (port 4201)
 npm run start:admin              # Admin only (port 4203)
 npm run start:docs               # Docs only (port 4202)
 npm run emulator                 # Firebase emulators only
-npm run seed                     # Seed Firestore
+npm run seed                     # Seed Auth (dev user); `npm run seed:e2e` for Playwright baseline
 npm run build:all                # Build everything
 npm run build:libs               # Build all 5 libraries
 npm run verify:publish-artifacts # Verify dist packages

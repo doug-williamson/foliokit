@@ -184,7 +184,6 @@ This is a nice-to-have improvement, not a Phase 8 blocker.
 
 - Authenticated routes use `AdminShellComponent`, which wraps `AppShellComponent` → `theme.apply()` fires in `ngOnInit`.
 - **Issue:** The `/login` route loads `LoginComponent` *outside* the shell. `LoginComponent` does not inject `ThemeService` or call `apply()`. A user with `folio-theme: dark` in localStorage will see the login page in light mode until they navigate past login.
-- `SetupComponent` (also outside the shell) injects `ThemeService` but only calls `toggle()`, never `apply()`.
 
 **Suggested fix:** Add `inject(ThemeService).apply()` to `LoginComponent.ngOnInit()`, or use an `APP_INITIALIZER` in the admin app config to apply theme before any route renders.
 

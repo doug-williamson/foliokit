@@ -243,42 +243,6 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      acknowledgeStep(stepId: string): void {
-        const current = store.config();
-        if (!current) return;
-        const acked = current.setupAcknowledgedSteps ?? [];
-        if (acked.includes(stepId)) return;
-        patchState(store, {
-          config: { ...current, setupAcknowledgedSteps: [...acked, stepId] },
-          isDirty: true,
-        });
-      },
-
-      completeSetup(): void {
-        const current = store.config();
-        if (!current) return;
-        patchState(store, {
-          config: { ...current, setupComplete: true },
-          isSaving: true,
-          saveError: null,
-        });
-        siteConfigService.saveSiteConfig({ ...current, setupComplete: true }).subscribe({
-          next: (saved) =>
-            patchState(store, {
-              config: saved,
-              savedConfig: saved,
-              isDirty: false,
-              isSaving: false,
-              saveError: null,
-            }),
-          error: (err: unknown) =>
-            patchState(store, {
-              isSaving: false,
-              saveError: err instanceof Error ? err.message : 'Save failed',
-            }),
-        });
-      },
-
       discard(): void {
         const saved = store.savedConfig();
         if (!saved) return;

@@ -68,13 +68,13 @@ firebase deploy --only firestore:rules --project <your-project-id>
 
 ---
 
-### 4. Seed data (author document)
+### 4. Author document (optional locally)
 
-**File:** `tools/seed/` (specific file varies)
+**Files:** `tools/seed/seed-emulator.ts` (Auth only), `tools/seed/seed-emulator-e2e.ts` (Playwright baseline includes an author)
 
-The seed script creates an initial author document in Firestore. The email on this document should match the admin email so the admin has an author profile linked to their account when they first sign in.
+Default `npm run seed` only creates the Auth user. If you need an author row in Firestore (for bylines, post ownership, etc.), add `tenants/{tenantId}/authors/...` yourself, use tenant provisioning, or run `npm run seed:e2e` when you want the full fixture set.
 
-If the emails don't match, the admin can sign in and manage content, but posts created by the admin won't be associated with a valid author profile until the author document is updated.
+If the author document email or linkage does not match the admin, the admin can still sign in and manage content, but posts may not associate with a valid author profile until the author document is updated.
 
 ---
 

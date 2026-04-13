@@ -10,7 +10,6 @@ export * from './lib/taxonomy/taxonomy.store';
 
 // ── Guards ────────────────────────────────────────────────────────────────────
 export * from './lib/guards/auth.guard';
-export * from './lib/guards/setup.guard';
 export * from './lib/guards/unsaved-changes.guard';
 
 // ── Shell & login ─────────────────────────────────────────────────────────────
@@ -18,7 +17,6 @@ export * from './lib/login/admin-login.component';
 export * from './lib/shell/admin-shell.component';
 export * from './lib/shell/admin-nav.component';
 export * from './lib/shell/admin-nav.types';
-export * from './lib/setup/setup.component';
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 export * from './lib/routes/admin.routes';
