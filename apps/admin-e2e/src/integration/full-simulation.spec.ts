@@ -82,7 +82,7 @@ test.describe('full simulation', () => {
           `Popup HTML:\n${(await popup.content()).slice(0, 2000)}`,
       );
     }
-    await page.waitForURL('**/posts', { timeout: 20_000 });
+    await page.waitForURL('**/dashboard', { timeout: 20_000 });
 
     // ── 1. Site Config ──────────────────────────────────────────────────────
     await page.goto('/site-config');

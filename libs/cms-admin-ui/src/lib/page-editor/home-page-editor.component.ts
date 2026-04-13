@@ -215,7 +215,7 @@ export class HomePageEditorComponent implements OnInit {
     const seo = home?.seo;
     this.homeForm.patchValue(
       {
-        enabled: home?.enabled ?? true,
+        enabled: home?.enabled ?? false,
         heroHeadline: home?.heroHeadline ?? '',
         heroSubheadline: home?.heroSubheadline ?? '',
         ctaLabel: home?.ctaLabel ?? '',

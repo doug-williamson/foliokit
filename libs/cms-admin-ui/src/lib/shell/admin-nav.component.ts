@@ -8,7 +8,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { isBlogPageNavEnabled, PlanGatingService, type SiteConfig } from '@foliokit/cms-core';
+import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
 import { PlanUpgradeNavSheetComponent } from './plan-upgrade-nav-sheet.component';
@@ -26,7 +26,7 @@ const ENABLE_PAGE_COPY: Record<
   blog: {
     title: 'Publish',
     description:
-      'Posts, authors, and series for your site — turn this on to manage publishing in the admin.',
+      'Posts and authors for your site — turn this on to manage publishing in the admin.',
   },
   about: {
     title: 'About',
@@ -39,7 +39,7 @@ const ENABLE_PAGE_COPY: Record<
 };
 
 function isHomePageEnabled(config: SiteConfig | null): boolean {
-  return config?.pages?.home?.enabled !== false;
+  return config?.pages?.home?.enabled === true;
 }
 
 @Component({
@@ -126,21 +126,15 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 })
 export class AdminNavComponent {
   private readonly navStore = inject(SiteConfigNavStore);
-  private readonly planGating = inject(PlanGatingService);
   private readonly bottomSheet = inject(MatBottomSheet);
 
   /** Rows for dashboard, Pages + children, Publish + children (Configure appended in template). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {
     const c = this.navStore.config();
-    const taxonomy = this.planGating.features().platform.taxonomy;
     const homeOn = isHomePageEnabled(c);
     const aboutOn = c?.pages?.about?.enabled === true;
     const linksOn = c?.pages?.links?.enabled === true;
     const blogOn = isBlogPageNavEnabled(c);
-
-    const seriesEnabled = blogOn && taxonomy;
-    const seriesPageLocked = !blogOn;
-    const seriesPlanLocked = !taxonomy;
 
     const rows: AdminNavRow[] = [
       {
@@ -231,19 +225,6 @@ export class AdminNavComponent {
         planLocked: false,
         pageKey: 'blog',
       },
-      {
-        kind: 'item',
-        id: 'series',
-        label: 'Series',
-        route: '/series',
-        icon: 'collections_bookmark',
-        enabled: seriesEnabled,
-        pageLocked: seriesPageLocked,
-        planLocked: seriesPlanLocked,
-        pageKey: 'blog',
-        proTier: 'pro',
-        showPageBeforePlanHint: seriesPageLocked && seriesPlanLocked,
-      },
     ];
     return rows;
   });
@@ -254,8 +235,7 @@ export class AdminNavComponent {
 
   protected onDisabledTap(item: NavItemState): void {
     if (item.enabled) return;
-    const preferPage =
-      item.pageLocked && (!item.planLocked || item.id === 'series');
+    const preferPage = item.pageLocked && !item.planLocked;
     if (preferPage && item.pageKey) {
       const copy = ENABLE_PAGE_COPY[item.pageKey];
       const data: EnablePageSheetData = {

@@ -166,10 +166,6 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
       about: normalizeAboutPageConfig(pages?.['about']),
       links: normalizeLinksPageConfig(pages?.['links']),
     },
-    setupComplete: raw['setupComplete'] as boolean | undefined,
-    setupAcknowledgedSteps: Array.isArray(raw['setupAcknowledgedSteps'])
-      ? (raw['setupAcknowledgedSteps'] as string[])
-      : undefined,
     adminNavShortcuts: normalizeAdminNavShortcuts(raw['adminNavShortcuts']),
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };

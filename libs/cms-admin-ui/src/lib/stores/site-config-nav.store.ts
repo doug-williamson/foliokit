@@ -25,7 +25,7 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
   switch (page) {
     case 'home':
       pages.home = {
-        ...(pages.home ?? { heroHeadline: '', enabled: true }),
+        ...(pages.home ?? { heroHeadline: '', enabled: false }),
         enabled: true,
       } as HomePageConfig;
       break;

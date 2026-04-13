@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   inject,
-  input,
 } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -20,9 +19,8 @@ import { SiteConfigNavStore } from '../stores/site-config-nav.store';
  * - **Pages-first** nav via {@link AdminNavComponent} (Pages, Publish, Configure)
  * - Footer row with the signed-in user's email and a logout button
  *
- * `SHELL_CONFIG` is provided internally: toolbar **appName** prefers a non-empty
- * **siteName** from the tenant's Firestore site-config document, then falls back
- * to the `appName` input. Optional **logo** from site config maps to `logoUrl`.
+ * `SHELL_CONFIG` is provided internally: toolbar **appName** is always
+ * `"FolioKit Admin"`. Optional **logo** from site config maps to `logoUrl`.
  *
  * @example
  * ```ts
@@ -30,21 +28,19 @@ import { SiteConfigNavStore } from '../stores/site-config-nav.store';
  * {
  *   path: '',
  *   component: AdminShellComponent,
- *   canActivate: [authGuard, setupGuard],
+ *   canActivate: [authGuard],
  *   children: [ ... ],
  * }
  * ```
  */
+const ADMIN_TOOLBAR_APP_NAME = 'FolioKit Admin';
+
 function adminShellConfigFactory(shell: AdminShellComponent) {
   return computed(() => {
     const c = shell.navStore.config();
-    const fallback = shell.appName();
-    const fromSite = c?.siteName?.trim();
-    const appName =
-      fromSite && fromSite.length > 0 ? fromSite : fallback;
     const logoUrl = c?.logo?.trim();
     return {
-      appName,
+      appName: ADMIN_TOOLBAR_APP_NAME,
       ...(logoUrl ? { logoUrl } : {}),
       showNewPostButton: false,
       showRouteTitle: true,
@@ -99,13 +95,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   `,
 })
 export class AdminShellComponent {
-  /**
-   * Application name shown in the shell toolbar when Firestore `siteName` is
-   * missing or empty.
-   * @default 'FolioKit Admin'
-   */
-  readonly appName = input<string>('FolioKit Admin');
-
   readonly navStore = inject(SiteConfigNavStore);
 
   protected readonly auth = inject(AuthService);

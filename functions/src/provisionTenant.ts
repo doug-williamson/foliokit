@@ -94,8 +94,6 @@ export const provisionTenant = onRequest(async (req, res) => {
         about: { enabled: false, headline: displayName, bio: '' },
         links: { enabled: false },
       },
-      setupComplete: false,
-      setupAcknowledgedSteps: [],
       updatedAt: Date.now(),
     });
 
