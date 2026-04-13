@@ -24,6 +24,7 @@
     "verify:publish-artifacts": "npm run build:libs && node tools/scripts/verify-dist-packs.mjs",
     "emulator": "(cd functions && npm run build) && firebase emulators:start --only auth,firestore,storage,functions",
     "emulator:data": "(cd functions && npm run build) && firebase emulators:start --only auth,firestore,storage,functions --import .firebase/emulator-data --export-on-exit",
+    "stripe:listen": "stripe listen --forward-to localhost:5001/foliokit-6f974/us-central1/stripeWebhook",
     "seed": "nx run seed:emulator",
     "deploy:admin": "nx build admin --configuration=production && firebase deploy --only hosting:foliokit-admin --project foliokit-6f974",
     "deploy:docs": "nx build docs --configuration=production && firebase deploy --only hosting:foliokit-docs --project foliokit-6f974",
