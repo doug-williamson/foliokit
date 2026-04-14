@@ -1,7 +1,7 @@
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { AboutPageConfig, HomePageConfig, LinksPageConfig, SiteConfig } from '@foliokit/cms-core';
-import { SiteConfigService } from '@foliokit/cms-core';
+import { CollectionPaths, SiteConfigService } from '@foliokit/cms-core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { type Observable, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -57,7 +57,7 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
 export const SiteConfigNavStore = signalStore(
   withState(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService), destroyRef = inject(DestroyRef)) => {
+  withMethods((store, siteConfigService = inject(SiteConfigService), paths = inject(CollectionPaths), destroyRef = inject(DestroyRef)) => {
     siteConfigService
       .watchDefaultSiteConfig()
       .pipe(takeUntilDestroyed(destroyRef))
@@ -72,7 +72,7 @@ export const SiteConfigNavStore = signalStore(
        */
       enablePage(page: EnablePageKey): Observable<void> {
         const current: SiteConfig = store.config() ?? {
-          id: '',
+          id: paths.tenantId ?? 'default',
           siteName: '',
           siteUrl: '',
           nav: [],
