@@ -10,6 +10,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
+import { SetupPromptComponent } from './setup-prompt.component';
+import { SiteConfigNavStore } from '../stores/site-config-nav.store';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -28,7 +30,7 @@ const PLAN_LABELS: Record<string, string> = {
   selector: 'cms-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule],
+  imports: [DatePipe, MatButtonModule, MatIconModule, SetupPromptComponent],
   styles: [
     `
       :host {
@@ -244,88 +246,92 @@ const PLAN_LABELS: Record<string, string> = {
     `,
   ],
   template: `
-    <!-- Section A: Quick actions header -->
-    <div class="section-header">
-      <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
-      <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
-    </div>
-
-    <!-- Section B: Recent posts -->
-    <div class="section-posts">
-      <div class="section-title-row">
-        <h2 class="section-title admin-section-label">Recent posts</h2>
-        <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
+    @if (showOnboarding()) {
+      <admin-setup-prompt />
+    } @else {
+      <!-- Section A: Quick actions header -->
+      <div class="section-header">
+        <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
+        <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
       </div>
 
-      @if (allPosts() === undefined) {
-        <!-- Skeleton loading state -->
-        @for (i of skeletonRows; track i) {
-          <div class="skeleton-row">
-            <div class="skeleton-bar" style="flex:1;"></div>
-            <div class="skeleton-bar" style="width:48px;"></div>
-            <div class="skeleton-bar" style="width:36px;"></div>
-          </div>
-        }
-      } @else if (recentFive().length === 0) {
-        <!-- Empty state -->
-        <div class="empty-state">
-          <mat-icon class="empty-icon">edit</mat-icon>
-          <p class="empty-heading">No posts yet</p>
-          <p class="empty-sub">Start writing — your first post is one click away.</p>
-          <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
+      <!-- Section B: Recent posts -->
+      <div class="section-posts">
+        <div class="section-title-row">
+          <h2 class="section-title admin-section-label">Recent posts</h2>
+          <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
         </div>
-      } @else {
-        @for (post of recentFive(); track post.id) {
-          <div class="post-row" (click)="navigateToPost(post.id)">
-            <div class="post-row-main">
-              <span class="post-title">{{ post.title || '(Untitled)' }}</span>
-              <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>
+
+        @if (allPosts() === undefined) {
+          <!-- Skeleton loading state -->
+          @for (i of skeletonRows; track i) {
+            <div class="skeleton-row">
+              <div class="skeleton-bar" style="flex:1;"></div>
+              <div class="skeleton-bar" style="width:48px;"></div>
+              <div class="skeleton-bar" style="width:36px;"></div>
             </div>
-            <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
+          }
+        } @else if (recentFive().length === 0) {
+          <!-- Empty state -->
+          <div class="empty-state">
+            <mat-icon class="empty-icon">edit</mat-icon>
+            <p class="empty-heading">No posts yet</p>
+            <p class="empty-sub">Start writing — your first post is one click away.</p>
+            <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
           </div>
+        } @else {
+          @for (post of recentFive(); track post.id) {
+            <div class="post-row" (click)="navigateToPost(post.id)">
+              <div class="post-row-main">
+                <span class="post-title">{{ post.title || '(Untitled)' }}</span>
+                <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>
+              </div>
+              <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
+            </div>
+          }
         }
-      }
-    </div>
-
-    <!-- GATE_TODO: analytics -->
-
-    <!-- Section C: Site health strip -->
-    <div class="section-health">
-      <div class="health-grid">
-
-        <!-- Tile 1: Plan -->
-        <div class="health-tile">
-          <span class="tile-label">Plan</span>
-          <span
-            class="tile-value"
-            [class.tile-value--teal]="planTier() !== 'starter'"
-            [class.tile-value--muted]="planTier() === 'starter'"
-          >{{ planLabel() }}</span>
-          @if (planTier() === 'starter') {
-            <button type="button" class="tile-action" (click)="navigateToSettings()">Upgrade</button>
-          }
-        </div>
-
-        <!-- Tile 2: Custom domain -->
-        <div class="health-tile tile-clickable" (click)="navigateToSettings()">
-          <span class="tile-label">Domain</span>
-          @if (siteConfig()?.siteUrl) {
-            <span class="tile-value" style="font-size:14px; word-break:break-all;">
-              {{ siteConfig()!.siteUrl }}
-            </span>
-          } @else {
-            <span class="tile-value tile-value--muted" style="font-size:14px;">Not configured</span>
-          }
-        </div>
-
-        <!-- Tile 3: Published count -->
-        <div class="health-tile">
-          <span class="tile-label">Published</span>
-          <span class="tile-value">{{ postCounts().published }}</span>
-        </div>
-
       </div>
-    </div>
+
+      <!-- GATE_TODO: analytics -->
+
+      <!-- Section C: Site health strip -->
+      <div class="section-health">
+        <div class="health-grid">
+
+          <!-- Tile 1: Plan -->
+          <div class="health-tile">
+            <span class="tile-label">Plan</span>
+            <span
+              class="tile-value"
+              [class.tile-value--teal]="planTier() !== 'starter'"
+              [class.tile-value--muted]="planTier() === 'starter'"
+            >{{ planLabel() }}</span>
+            @if (planTier() === 'starter') {
+              <button type="button" class="tile-action" (click)="navigateToSettings()">Upgrade</button>
+            }
+          </div>
+
+          <!-- Tile 2: Custom domain -->
+          <div class="health-tile tile-clickable" (click)="navigateToSettings()">
+            <span class="tile-label">Domain</span>
+            @if (siteConfig()?.siteUrl) {
+              <span class="tile-value" style="font-size:14px; word-break:break-all;">
+                {{ siteConfig()!.siteUrl }}
+              </span>
+            } @else {
+              <span class="tile-value tile-value--muted" style="font-size:14px;">Not configured</span>
+            }
+          </div>
+
+          <!-- Tile 3: Published count -->
+          <div class="health-tile">
+            <span class="tile-label">Published</span>
+            <span class="tile-value">{{ postCounts().published }}</span>
+          </div>
+
+        </div>
+      </div>
+    }
   `,
 })
 export class DashboardComponent {
@@ -334,6 +340,18 @@ export class DashboardComponent {
   private readonly planGatingService = inject(PlanGatingService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly siteConfigNavStore = inject(SiteConfigNavStore);
+
+  readonly showOnboarding = computed(() => {
+    if (!this.siteConfigNavStore.isLoaded()) return false;
+    const pages = this.siteConfigNavStore.config()?.pages;
+    return !(
+      pages?.home?.enabled &&
+      pages?.blog?.enabled &&
+      pages?.about?.enabled &&
+      pages?.links?.enabled
+    );
+  });
 
   readonly greeting = computed(() => {
     const name = this.auth.user()?.displayName;

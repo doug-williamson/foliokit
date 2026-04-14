@@ -10,12 +10,14 @@ export type EnablePageKey = 'home' | 'blog' | 'about' | 'links';
 
 export interface SiteConfigNavState {
   config: SiteConfig | null;
+  isLoaded: boolean;
   isSaving: boolean;
   saveError: string | null;
 }
 
 const initialState: SiteConfigNavState = {
   config: null,
+  isLoaded: false,
   isSaving: false,
   saveError: null,
 };
@@ -60,7 +62,7 @@ export const SiteConfigNavStore = signalStore(
       .watchDefaultSiteConfig()
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((config) => {
-        patchState(store, { config, saveError: null });
+        patchState(store, { config, isLoaded: true, saveError: null });
       });
 
     return {
