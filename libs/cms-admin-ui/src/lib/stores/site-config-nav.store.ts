@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { AboutPageConfig, HomePageConfig, LinksPageConfig, SiteConfig } from '@foliokit/cms-core';
 import { SiteConfigService } from '@foliokit/cms-core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { EMPTY, type Observable, tap } from 'rxjs';
+import { type Observable, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export type EnablePageKey = 'home' | 'blog' | 'about' | 'links';
@@ -71,8 +71,14 @@ export const SiteConfigNavStore = signalStore(
        * Used by {@link EnablePageSheetComponent} to dismiss when save completes.
        */
       enablePage(page: EnablePageKey): Observable<void> {
-        const current = store.config();
-        if (!current) return EMPTY;
+        const current: SiteConfig = store.config() ?? {
+          id: '',
+          siteName: '',
+          siteUrl: '',
+          nav: [],
+          pages: {},
+          updatedAt: 0,
+        };
         const updated = mergeEnabledPage(current, page);
         patchState(store, { isSaving: true, saveError: null });
         return siteConfigService.saveSiteConfig(updated).pipe(
