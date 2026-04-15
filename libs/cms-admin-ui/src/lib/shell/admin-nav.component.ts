@@ -225,6 +225,17 @@ export class AdminNavComponent {
         planLocked: false,
         pageKey: 'blog',
       },
+      {
+        kind: 'item',
+        id: 'series',
+        label: 'Series',
+        route: '/series',
+        icon: 'collections_bookmark',
+        enabled: blogOn,
+        pageLocked: !blogOn,
+        planLocked: false,
+        pageKey: 'blog',
+      },
     ];
     return rows;
   });

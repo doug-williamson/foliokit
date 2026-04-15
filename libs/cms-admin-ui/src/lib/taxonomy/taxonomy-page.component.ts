@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,8 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlanGatingService, Series } from '@foliokit/cms-core';
-import { PlanGateComponent } from '../plan-gate/plan-gate.component';
+import { Series } from '@foliokit/cms-core';
 import { SeriesFormComponent } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
@@ -25,17 +23,9 @@ import { TaxonomyStore } from './taxonomy.store';
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    PlanGateComponent,
   ],
   template: `
-    <cms-plan-gate
-      feature="taxonomy"
-      requiredPlan="pro"
-      featureLabel="Series"
-      featureDescription="Group your posts into named series. Surface structured collections and reading paths on your blog."
-    >
-      <!-- Full taxonomy UI — loaded reactively once the Pro plan is confirmed -->
-      <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden">
         <!-- Header -->
         <div
           class="flex items-center justify-between px-6 py-4 border-b shrink-0"
@@ -98,23 +88,15 @@ import { TaxonomyStore } from './taxonomy.store';
             </div>
           }
         </div>
-      </div>
-    </cms-plan-gate>
+    </div>
   `,
 })
 export class TaxonomyPageComponent {
   protected readonly store = inject(TaxonomyStore);
-  private readonly planGating = inject(PlanGatingService);
   private readonly dialog = inject(MatDialog);
 
   constructor() {
-    // Reactively load taxonomy data when the Pro plan is confirmed.
-    // Uses effect so it re-runs if the plan changes mid-session (e.g. after upgrade).
-    effect(() => {
-      if (this.planGating.features().platform.taxonomy) {
-        this.store.loadAll();
-      }
-    });
+    this.store.loadAll();
   }
 
   protected openNewSeries(): void {

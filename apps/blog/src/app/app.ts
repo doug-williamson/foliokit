@@ -21,6 +21,7 @@ import {
   SITE_ID,
   SiteConfigService,
   getPlanFeatures,
+  isBlogPageNavEnabled,
 } from '@foliokit/cms-core';
 import type { BillingRecord } from '@foliokit/cms-core';
 import { AppShellComponent, FolioSkeletonComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
@@ -82,21 +83,24 @@ export class App implements OnInit {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    const rawBase = config?.nav ?? DEFAULT_NAV;
+    const homeOn  = config?.pages?.home?.enabled === true;
+    const blogOn  = isBlogPageNavEnabled(config);
     const aboutOn = config?.pages?.about?.enabled === true;
     const linksOn = config?.pages?.links?.enabled === true;
+
+    const rawBase = config?.nav ?? DEFAULT_NAV;
     const base = rawBase.filter((item) => {
+      if (item.url === '/'      && !homeOn)  return false;
+      if (item.url === '/posts' && !blogOn)  return false;
       if (item.url === '/about' && !aboutOn) return false;
       if (item.url === '/links' && !linksOn) return false;
       return true;
     });
     const extra: NavItem[] = [];
-    if (config?.pages?.about?.enabled) {
-      extra.push({ label: 'About', url: '/about' });
-    }
-    if (config?.pages?.links?.enabled) {
-      extra.push({ label: 'Links', url: '/links' });
-    }
+    if (homeOn)  extra.push({ label: 'Home',  url: '/'      });
+    if (blogOn)  extra.push({ label: 'Blog',  url: '/posts' });
+    if (aboutOn) extra.push({ label: 'About', url: '/about' });
+    if (linksOn) extra.push({ label: 'Links', url: '/links' });
     const existingUrls = new Set(base.map((i) => i.url));
     return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });

@@ -180,7 +180,8 @@ const PLAN_LABELS: Record<string, string> = {
       }
       .health-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
+        max-width: 240px;
         gap: 16px;
       }
       .health-tile {
@@ -241,7 +242,7 @@ const PLAN_LABELS: Record<string, string> = {
         .greeting               { font-size: 18px; }
         .section-posts          { padding: 16px; }
         .section-health         { padding: 16px; }
-        .health-grid            { grid-template-columns: 1fr; gap: 12px; }
+        .health-grid            { gap: 12px; }
       }
     `,
   ],
@@ -274,7 +275,7 @@ const PLAN_LABELS: Record<string, string> = {
         } @else if (recentFive().length === 0) {
           <!-- Empty state -->
           <div class="empty-state">
-            <mat-icon class="empty-icon">edit</mat-icon>
+            <mat-icon class="empty-icon" svgIcon="edit" />
             <p class="empty-heading">No posts yet</p>
             <p class="empty-sub">Start writing — your first post is one click away.</p>
             <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
@@ -298,32 +299,7 @@ const PLAN_LABELS: Record<string, string> = {
       <div class="section-health">
         <div class="health-grid">
 
-          <!-- Tile 1: Plan -->
-          <div class="health-tile">
-            <span class="tile-label">Plan</span>
-            <span
-              class="tile-value"
-              [class.tile-value--teal]="planTier() !== 'starter'"
-              [class.tile-value--muted]="planTier() === 'starter'"
-            >{{ planLabel() }}</span>
-            @if (planTier() === 'starter') {
-              <button type="button" class="tile-action" (click)="navigateToSettings()">Upgrade</button>
-            }
-          </div>
-
-          <!-- Tile 2: Custom domain -->
-          <div class="health-tile tile-clickable" (click)="navigateToSettings()">
-            <span class="tile-label">Domain</span>
-            @if (siteConfig()?.siteUrl) {
-              <span class="tile-value" style="font-size:14px; word-break:break-all;">
-                {{ siteConfig()!.siteUrl }}
-              </span>
-            } @else {
-              <span class="tile-value tile-value--muted" style="font-size:14px;">Not configured</span>
-            }
-          </div>
-
-          <!-- Tile 3: Published count -->
+          <!-- Published count -->
           <div class="health-tile">
             <span class="tile-label">Published</span>
             <span class="tile-value">{{ postCounts().published }}</span>
