@@ -10,7 +10,6 @@ import {
   BlogPageConfig,
   HomePageConfig,
   LinksPageConfig,
-  NavItem,
   SITE_ID,
   SiteConfig,
   SiteConfigService,
@@ -29,12 +28,10 @@ function createEmptyConfig(tenantId: string): SiteConfig {
     id: tenantId,
     siteName: '',
     siteUrl: '',
-    nav: [],
     pages: {
       home: { enabled: false, heroHeadline: '', ctaLabel: 'Read Posts', ctaUrl: '/posts' },
       // about and links intentionally omitted — absence signals "not enabled"
     },
-    adminNavShortcuts: {},
     updatedAt: 0,
   };
 }
@@ -78,12 +75,6 @@ export const SiteConfigEditorStore = signalStore(
         const current = store.config();
         if (!current) return;
         patchState(store, { config: { ...current, [field]: value }, isDirty: true });
-      },
-
-      updateNav(items: NavItem[]): void {
-        const current = store.config();
-        if (!current) return;
-        patchState(store, { config: { ...current, nav: items }, isDirty: true });
       },
 
       updateHome(home: Omit<HomePageConfig, 'enabled'>): void {
@@ -172,35 +163,6 @@ export const SiteConfigEditorStore = signalStore(
         });
       },
 
-      setAdminNavShortcut(shortcut: 'home' | 'blog', value: boolean): void {
-        const current = store.config();
-        if (!current) return;
-        const updated: SiteConfig = {
-          ...current,
-          adminNavShortcuts: {
-            ...current.adminNavShortcuts,
-            [shortcut]: value,
-          },
-        };
-        patchState(store, { config: updated, isSaving: true, saveError: null });
-        siteConfigService.saveSiteConfig(updated).subscribe({
-          next: (saved) =>
-            patchState(store, {
-              config: saved,
-              savedConfig: saved,
-              isDirty: false,
-              isSaving: false,
-              saveError: null,
-            }),
-          error: (err: unknown) =>
-            patchState(store, {
-              config: current,
-              isSaving: false,
-              saveError: err instanceof Error ? err.message : 'Save failed',
-            }),
-        });
-      },
-
       togglePageEnabled(page: 'home' | 'about' | 'links' | 'blog', value: boolean): void {
         const current = store.config();
         if (!current) return;
@@ -208,22 +170,13 @@ export const SiteConfigEditorStore = signalStore(
           page === 'blog'
             ? { blog: { ...current.pages?.blog, enabled: value } }
             : { [page]: { ...current.pages?.[page], enabled: value } };
-        let updated: SiteConfig = {
+        const updated: SiteConfig = {
           ...current,
           pages: {
             ...current.pages,
             ...pagePatch,
           },
         };
-        if (page === 'blog') {
-          updated = {
-            ...updated,
-            adminNavShortcuts: {
-              ...updated.adminNavShortcuts,
-              blog: value,
-            },
-          };
-        }
         patchState(store, { config: updated, isSaving: true, saveError: null });
         siteConfigService.saveSiteConfig(updated).subscribe({
           next: (saved) =>

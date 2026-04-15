@@ -166,12 +166,7 @@ export class SetupPromptComponent {
 
   readonly hasIncompleteItems = computed(() => {
     if (!this.store.isLoaded()) return false;
-    return !(
-      this.store.config()?.pages?.home?.enabled &&
-      this.store.config()?.pages?.blog?.enabled &&
-      this.store.config()?.pages?.about?.enabled &&
-      this.store.config()?.pages?.links?.enabled
-    );
+    return !this.store.config()?.onboardingComplete;
   });
 
   onAboutChange(event: MatCheckboxChange): void {

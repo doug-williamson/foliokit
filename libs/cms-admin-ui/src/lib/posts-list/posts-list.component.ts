@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,6 +29,7 @@ import { PostsTableComponent } from './posts-table.component';
     MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatMenuModule,
     MatProgressSpinnerModule,
@@ -100,6 +102,11 @@ import { PostsTableComponent } from './posts-table.component';
       } @else if (store.error()) {
         <div class="flex-1 min-h-0 flex items-center justify-center opacity-60 text-sm">
           Failed to load posts. Please try again.
+        </div>
+      } @else if (store.posts().length === 0) {
+        <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
+          <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="edit_note" />
+          <p>No posts yet. Create one to get started.</p>
         </div>
       } @else {
         <div class="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">

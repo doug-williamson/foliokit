@@ -1,7 +1,5 @@
 import type {
-  AdminNavShortcuts,
   SiteConfig,
-  NavItem,
   SocialLink,
   SocialPlatform,
   SeoMeta,
@@ -34,17 +32,6 @@ function normalizeTimestamp(value: unknown): number {
     }
   }
   return 0;
-}
-
-function normalizeNavItems(raw: unknown): NavItem[] {
-  if (!Array.isArray(raw)) return [];
-  return (raw as Record<string, unknown>[]).map((item) => ({
-    label: (item['label'] as string) ?? '',
-    url: (item['url'] as string) ?? '',
-    order: item['order'] as number | undefined,
-    external: item['external'] as boolean | undefined,
-    icon: item['icon'] as string | undefined,
-  }));
 }
 
 function normalizeSocialLinks(raw: unknown): SocialLink[] {
@@ -81,15 +68,6 @@ function normalizeLinksLinks(raw: unknown): LinksLink[] {
     highlighted: item['highlighted'] as boolean | undefined,
     order: (item['order'] as number) ?? 0,
   }));
-}
-
-function normalizeAdminNavShortcuts(raw: unknown): AdminNavShortcuts | undefined {
-  if (!raw || typeof raw !== 'object') return undefined;
-  const r = raw as Record<string, unknown>;
-  const out: AdminNavShortcuts = {};
-  if (typeof r['home'] === 'boolean') out.home = r['home'];
-  if (typeof r['blog'] === 'boolean') out.blog = r['blog'];
-  return Object.keys(out).length ? out : undefined;
 }
 
 function normalizeHomePageConfig(raw: unknown): HomePageConfig | undefined {
@@ -150,6 +128,23 @@ function normalizeBlogPageConfig(raw: unknown): BlogPageConfig | undefined {
 export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
   const pages = raw['pages'] as Record<string, unknown> | undefined;
 
+  const normalizedPages = {
+    home: normalizeHomePageConfig(pages?.['home']),
+    blog: normalizeBlogPageConfig(pages?.['blog']),
+    about: normalizeAboutPageConfig(pages?.['about']),
+    links: normalizeLinksPageConfig(pages?.['links']),
+  };
+
+  // Backfill for tenants that completed onboarding before this flag existed:
+  // if the doc doesn't have the flag but all four pages are currently enabled,
+  // treat onboarding as complete so the full shell is shown.
+  const onboardingComplete: boolean =
+    raw['onboardingComplete'] === true ||
+    (normalizedPages.home?.enabled === true &&
+      normalizedPages.blog?.enabled === true &&
+      normalizedPages.about?.enabled === true &&
+      normalizedPages.links?.enabled === true);
+
   return {
     id: (raw['id'] as string) ?? '',
     siteName: (raw['siteName'] as string) ?? '',
@@ -157,16 +152,10 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     description: raw['description'] as string | undefined,
     logo: raw['logo'] as string | undefined,
     favicon: raw['favicon'] as string | undefined,
-    nav: normalizeNavItems(raw['nav']),
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
-    pages: {
-      home: normalizeHomePageConfig(pages?.['home']),
-      blog: normalizeBlogPageConfig(pages?.['blog']),
-      about: normalizeAboutPageConfig(pages?.['about']),
-      links: normalizeLinksPageConfig(pages?.['links']),
-    },
-    adminNavShortcuts: normalizeAdminNavShortcuts(raw['adminNavShortcuts']),
+    pages: normalizedPages,
+    onboardingComplete,
     updatedAt: normalizeTimestamp(raw['updatedAt']),
   };
 }

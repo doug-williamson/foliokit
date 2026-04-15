@@ -1,9 +1,9 @@
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { AboutPageConfig, HomePageConfig, LinksPageConfig, SiteConfig } from '@foliokit/cms-core';
-import { CollectionPaths, SiteConfigService } from '@foliokit/cms-core';
+import { AuthService, CollectionPaths, SiteConfigService } from '@foliokit/cms-core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { type Observable, tap } from 'rxjs';
+import { type Observable, switchMap, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export type EnablePageKey = 'home' | 'blog' | 'about' | 'links';
@@ -57,7 +57,7 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
 export const SiteConfigNavStore = signalStore(
   withState(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService), paths = inject(CollectionPaths), destroyRef = inject(DestroyRef)) => {
+  withMethods((store, siteConfigService = inject(SiteConfigService), paths = inject(CollectionPaths), auth = inject(AuthService), destroyRef = inject(DestroyRef)) => {
     siteConfigService
       .watchDefaultSiteConfig()
       .pipe(takeUntilDestroyed(destroyRef))
@@ -75,13 +75,31 @@ export const SiteConfigNavStore = signalStore(
           id: paths.tenantId ?? 'default',
           siteName: '',
           siteUrl: '',
-          nav: [],
           pages: {},
           updatedAt: 0,
         };
-        const updated = mergeEnabledPage(current, page);
+        let updated = mergeEnabledPage(current, page);
+
+        // Once all four pages have been enabled at least once, permanently
+        // mark onboarding as complete so the full shell is shown even if
+        // individual pages are later toggled off.
+        if (!updated.onboardingComplete) {
+          const p = updated.pages;
+          const allEnabled =
+            p?.home?.enabled === true &&
+            p?.blog?.enabled === true &&
+            p?.about?.enabled === true &&
+            p?.links?.enabled === true;
+          if (allEnabled) {
+            updated = { ...updated, onboardingComplete: true };
+          }
+        }
+
         patchState(store, { isSaving: true, saveError: null });
-        return siteConfigService.saveSiteConfig(updated).pipe(
+        const email = auth.user()?.email ?? '';
+        return siteConfigService.ensureTenantDoc(email).pipe(
+          switchMap(() => siteConfigService.saveSiteConfig(updated)),
+        ).pipe(
           tap({
             next: (saved) =>
               patchState(store, {

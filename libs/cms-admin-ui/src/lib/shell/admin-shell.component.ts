@@ -208,13 +208,7 @@ export class AdminShellComponent {
 
   readonly isOnboarding = computed(() => {
     if (!this.navStore.isLoaded()) return false;
-    const pages = this.navStore.config()?.pages;
-    return !(
-      pages?.home?.enabled &&
-      pages?.blog?.enabled &&
-      pages?.about?.enabled &&
-      pages?.links?.enabled
-    );
+    return !this.navStore.config()?.onboardingComplete;
   });
 
   protected async logout(): Promise<void> {

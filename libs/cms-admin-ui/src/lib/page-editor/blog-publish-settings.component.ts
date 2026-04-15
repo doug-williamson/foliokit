@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { isBlogPageNavEnabled } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -62,6 +61,6 @@ export class BlogPublishSettingsComponent {
   readonly layout = input<'hub' | 'page'>('hub');
 
   protected readonly blogPageEnabled = computed(() =>
-    isBlogPageNavEnabled(this.store.config() ?? undefined),
+    this.store.config()?.pages?.blog?.enabled === true,
   );
 }

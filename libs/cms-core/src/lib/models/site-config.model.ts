@@ -3,29 +3,6 @@ import type { LinksLink } from './page.model';
 
 export type { SeoMeta };
 
-export interface NavItem {
-  label: string;
-  url: string;
-  order?: number;
-  external?: boolean;
-  icon?: string;
-  /** When true, the item is hidden from the public blog nav. */
-  hidden?: boolean;
-  /** Optional plan tier required to access this nav item. Used for badge display only. */
-  requiredPlan?: 'pro' | 'agency';
-}
-
-export interface NavGroup {
-  group: string;
-  items: NavItem[];
-}
-
-export type NavEntry = NavItem | NavGroup;
-
-export function isNavGroup(entry: NavEntry): entry is NavGroup {
-  return 'group' in entry && 'items' in entry;
-}
-
 export type SocialPlatform =
   | 'twitter'
   | 'instagram'
@@ -89,14 +66,6 @@ export interface BlogPageConfig {
   seo?: SeoMeta;
 }
 
-/** Toggles extra items under the admin Configuration nav (sidebar shortcuts). */
-export interface AdminNavShortcuts {
-  /** Show a “Home” link to the home page editor. */
-  home?: boolean;
-  /** Show a “Publish” shortcut under Pages (opens `/pages/blog`). */
-  blog?: boolean;
-}
-
 export interface SiteConfig {
   id: string;
   siteName: string;
@@ -104,7 +73,6 @@ export interface SiteConfig {
   description?: string;
   logo?: string;
   favicon?: string;
-  nav: NavItem[];
   defaultAuthorId?: string;
   defaultSeo?: SeoMeta;
   pages?: {
@@ -113,17 +81,18 @@ export interface SiteConfig {
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
-  adminNavShortcuts?: AdminNavShortcuts;
+  /**
+   * Set to `true` once the user has enabled all four pages at least once.
+   * After this point the full admin shell is always shown, even if pages are
+   * later individually disabled. Prevents toggling a page off post-setup from
+   * reverting the UI to the onboarding layout.
+   */
+  onboardingComplete?: boolean;
   /** Unix milliseconds. */
   updatedAt: number;
 }
 
-/**
- * Whether the blog page is considered on for admin nav (and legacy shortcut support).
- * Prefer `pages.blog.enabled`; when absent, `adminNavShortcuts.blog === true` still enables until migrated.
- */
+/** Whether the blog page section is enabled. */
 export function isBlogPageNavEnabled(config: SiteConfig | null | undefined): boolean {
-  if (!config) return false;
-  if (config.pages?.blog?.enabled === true) return true;
-  return config.adminNavShortcuts?.blog === true;
+  return config?.pages?.blog?.enabled === true;
 }

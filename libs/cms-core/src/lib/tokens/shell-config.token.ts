@@ -1,12 +1,10 @@
 import { InjectionToken, Signal, WritableSignal } from '@angular/core';
 import type { PlanFeatures } from '../models/plan-features.model';
-import type { NavEntry } from '../models/site-config.model';
 
 export interface ShellConfig {
   appName: string;
   logoUrl?: string;
   showAuth?: boolean;
-  nav?: NavEntry[];
   features?: PlanFeatures;
   /** Admin-only: shows a global "+ New post" icon button in the shell header. Defaults to false. */
   showNewPostButton?: boolean;

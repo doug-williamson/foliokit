@@ -1,21 +1,6 @@
 {
   "name": "seed",
   "targets": {
-    "firestore": {
-      "executor": "@nx/js:node",
-      "options": {
-        "buildTarget": "seed:build",
-        "watch": false
-      }
-    },
-    "build": {
-      "executor": "@nx/js:tsc",
-      "options": {
-        "main": "tools/seed/seed-firestore.ts",
-        "outputPath": "dist/tools/seed",
-        "tsConfig": "tools/seed/tsconfig.seed.json"
-      }
-    },
     "emulator": {
       "executor": "@nx/js:node",
       "options": {
@@ -27,51 +12,6 @@
       "executor": "@nx/js:tsc",
       "options": {
         "main": "tools/seed/seed-emulator.ts",
-        "outputPath": "dist/tools/seed",
-        "tsConfig": "tools/seed/tsconfig.seed.json"
-      }
-    },
-    "tenant": {
-      "executor": "@nx/js:node",
-      "options": {
-        "buildTarget": "seed:build-tenant",
-        "watch": false
-      }
-    },
-    "build-tenant": {
-      "executor": "@nx/js:tsc",
-      "options": {
-        "main": "tools/seed/seed-tenant-dougwilliamson.ts",
-        "outputPath": "dist/tools/seed",
-        "tsConfig": "tools/seed/tsconfig.seed.json"
-      }
-    },
-    "tenant-foliokit": {
-      "executor": "@nx/js:node",
-      "options": {
-        "buildTarget": "seed:build-tenant-foliokit",
-        "watch": false
-      }
-    },
-    "build-tenant-foliokit": {
-      "executor": "@nx/js:tsc",
-      "options": {
-        "main": "tools/seed/seed-tenant-foliokit.ts",
-        "outputPath": "dist/tools/seed",
-        "tsConfig": "tools/seed/tsconfig.seed.json"
-      }
-    },
-    "set-foliokit-blog-custom-domain": {
-      "executor": "@nx/js:node",
-      "options": {
-        "buildTarget": "seed:build-set-foliokit-blog-custom-domain",
-        "watch": false
-      }
-    },
-    "build-set-foliokit-blog-custom-domain": {
-      "executor": "@nx/js:tsc",
-      "options": {
-        "main": "tools/seed/set-foliokit-blog-custom-domain.ts",
         "outputPath": "dist/tools/seed",
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }

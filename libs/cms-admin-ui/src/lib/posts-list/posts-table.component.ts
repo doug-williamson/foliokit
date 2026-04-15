@@ -210,13 +210,6 @@ import { PostsListStore } from './posts-list.store';
             </td>
           </tr>
         }
-        @if (allPosts().length === 0) {
-          <tr>
-            <td colspan="4" class="posts-table-empty" style="text-align: center; padding: 32px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">
-              No posts yet
-            </td>
-          </tr>
-        }
       </tbody>
     </table>
   `,

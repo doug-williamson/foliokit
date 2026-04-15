@@ -320,13 +320,7 @@ export class DashboardComponent {
 
   readonly showOnboarding = computed(() => {
     if (!this.siteConfigNavStore.isLoaded()) return false;
-    const pages = this.siteConfigNavStore.config()?.pages;
-    return !(
-      pages?.home?.enabled &&
-      pages?.blog?.enabled &&
-      pages?.about?.enabled &&
-      pages?.links?.enabled
-    );
+    return !this.siteConfigNavStore.config()?.onboardingComplete;
   });
 
   readonly greeting = computed(() => {
