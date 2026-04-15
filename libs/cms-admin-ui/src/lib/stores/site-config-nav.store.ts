@@ -1,21 +1,23 @@
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { AboutPageConfig, HomePageConfig, LinksPageConfig, SiteConfig } from '@foliokit/cms-core';
-import { SiteConfigService } from '@foliokit/cms-core';
+import { AuthService, CollectionPaths, SiteConfigService } from '@foliokit/cms-core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { EMPTY, type Observable, tap } from 'rxjs';
+import { type Observable, switchMap, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export type EnablePageKey = 'home' | 'blog' | 'about' | 'links';
 
 export interface SiteConfigNavState {
   config: SiteConfig | null;
+  isLoaded: boolean;
   isSaving: boolean;
   saveError: string | null;
 }
 
 const initialState: SiteConfigNavState = {
   config: null,
+  isLoaded: false,
   isSaving: false,
   saveError: null,
 };
@@ -25,7 +27,7 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
   switch (page) {
     case 'home':
       pages.home = {
-        ...(pages.home ?? { heroHeadline: '', enabled: true }),
+        ...(pages.home ?? { heroHeadline: '', enabled: false }),
         enabled: true,
       } as HomePageConfig;
       break;
@@ -55,12 +57,12 @@ function mergeEnabledPage(current: SiteConfig, page: EnablePageKey): SiteConfig 
 export const SiteConfigNavStore = signalStore(
   withState(initialState),
 
-  withMethods((store, siteConfigService = inject(SiteConfigService), destroyRef = inject(DestroyRef)) => {
+  withMethods((store, siteConfigService = inject(SiteConfigService), paths = inject(CollectionPaths), auth = inject(AuthService), destroyRef = inject(DestroyRef)) => {
     siteConfigService
       .watchDefaultSiteConfig()
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((config) => {
-        patchState(store, { config, saveError: null });
+        patchState(store, { config, isLoaded: true, saveError: null });
       });
 
     return {
@@ -69,11 +71,35 @@ export const SiteConfigNavStore = signalStore(
        * Used by {@link EnablePageSheetComponent} to dismiss when save completes.
        */
       enablePage(page: EnablePageKey): Observable<void> {
-        const current = store.config();
-        if (!current) return EMPTY;
-        const updated = mergeEnabledPage(current, page);
+        const current: SiteConfig = store.config() ?? {
+          id: paths.tenantId ?? 'default',
+          siteName: '',
+          siteUrl: '',
+          pages: {},
+          updatedAt: 0,
+        };
+        let updated = mergeEnabledPage(current, page);
+
+        // Once all four pages have been enabled at least once, permanently
+        // mark onboarding as complete so the full shell is shown even if
+        // individual pages are later toggled off.
+        if (!updated.onboardingComplete) {
+          const p = updated.pages;
+          const allEnabled =
+            p?.home?.enabled === true &&
+            p?.blog?.enabled === true &&
+            p?.about?.enabled === true &&
+            p?.links?.enabled === true;
+          if (allEnabled) {
+            updated = { ...updated, onboardingComplete: true };
+          }
+        }
+
         patchState(store, { isSaving: true, saveError: null });
-        return siteConfigService.saveSiteConfig(updated).pipe(
+        const email = auth.user()?.email ?? '';
+        return siteConfigService.ensureTenantDoc(email).pipe(
+          switchMap(() => siteConfigService.saveSiteConfig(updated)),
+        ).pipe(
           tap({
             next: (saved) =>
               patchState(store, {

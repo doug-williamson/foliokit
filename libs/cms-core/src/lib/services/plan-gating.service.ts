@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { doc, DocumentData, DocumentSnapshot, onSnapshot } from 'firebase/firestore';
-import { distinctUntilChanged, Observable, of, shareReplay } from 'rxjs';
+import { catchError, distinctUntilChanged, Observable, of, shareReplay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FIRESTORE } from '../firebase/firebase.config';
 import { SITE_ID } from '../firebase/foliokit.providers';
@@ -23,6 +23,7 @@ export class PlanGatingService {
         )
       ).pipe(
         map(snap => (snap.data() as { plan?: PlanTier } | undefined)?.plan ?? 'starter'),
+        catchError(() => of<PlanTier>('starter')),
         distinctUntilChanged(),
         shareReplay(1),
       )

@@ -44,7 +44,7 @@ test.describe('authenticated navigation', () => {
   // We only override it back for sign-out which clears state.
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('authenticated user visiting /login is redirected to /posts', async ({ page }) => {
+  test('authenticated user visiting /login is redirected to /dashboard', async ({ page }) => {
     // Sign in first by using auth.setup state — we need a separate authenticated context.
     // This test simulates the ngOnInit guard in LoginComponent that redirects when already authed.
     // We verify the login page itself redirects rather than testing the full auth flow.

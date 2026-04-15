@@ -4,7 +4,6 @@ import { PostEditorStore } from '../post-editor/post-editor.store';
 import { TaxonomyStore } from '../taxonomy/taxonomy.store';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { authGuard } from '../guards/auth.guard';
-import { setupGuard, setupCompleteGuard } from '../guards/setup.guard';
 import { unsavedChangesGuard } from '../guards/unsaved-changes.guard';
 import { AdminShellComponent } from '../shell/admin-shell.component';
 
@@ -15,16 +14,9 @@ export const adminRoutes: Route[] = [
       import('../login/admin-login.component').then((m) => m.AdminLoginComponent),
   },
   {
-    path: 'setup',
-    loadComponent: () =>
-      import('../setup/setup.component').then((m) => m.SetupComponent),
-    providers: [SiteConfigEditorStore],
-    canActivate: [authGuard, setupCompleteGuard],
-  },
-  {
     path: '',
     component: AdminShellComponent,
-    canActivate: [authGuard, setupGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {

@@ -12,7 +12,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
+import type { SiteConfig } from '@foliokit/cms-core';
 import {
   SeoFieldsComponent,
   type SeoFieldsFormGroup,
@@ -157,7 +157,7 @@ export class BlogPageEditorComponent implements OnInit {
     if (!current) return;
     const v = this.blogSeoForm.getRawValue();
     const prevBlog = current.pages?.blog;
-    const enabled = prevBlog?.enabled ?? isBlogPageNavEnabled(current);
+    const enabled = prevBlog?.enabled ?? false;
     this.store.setBlogPage({
       ...prevBlog,
       enabled,

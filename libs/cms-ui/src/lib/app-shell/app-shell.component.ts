@@ -47,6 +47,8 @@ export class AppShellComponent {
   protected readonly isIconRail = signal(false);
   protected readonly sidenavOpen = signal(false);
 
+  private _isMobileInitialized = false;
+
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly router = inject(Router);
 
@@ -70,9 +72,14 @@ export class AppShellComponent {
       const sub = this.breakpointObserver.observe(queries).subscribe((state) => {
         const mobile = !!state.breakpoints[overlayBp];
         const iconRail = useIconRail ? !!state.breakpoints[ICON_RAIL_BP] : false;
+        const mobileChanged = mobile !== this.isMobile();
+        const iconRailChanged = iconRail !== this.isIconRail();
         this.isMobile.set(mobile);
         this.isIconRail.set(iconRail);
-        this.sidenavOpen.set(!mobile && !iconRail);
+        if (!this._isMobileInitialized || mobileChanged || iconRailChanged) {
+          this._isMobileInitialized = true;
+          this.sidenavOpen.set(!mobile && !iconRail);
+        }
       });
       onCleanup(() => sub.unsubscribe());
     });

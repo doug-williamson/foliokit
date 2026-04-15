@@ -10,7 +10,7 @@ import { SiteConfig } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 interface FeatureCardConfig {
-  flag: 'about' | 'links';
+  flag: 'home' | 'blog' | 'about' | 'links';
   label: string;
   description: string;
   editRoute: string;
@@ -48,7 +48,7 @@ type CardState = 'disabled' | 'empty' | 'published';
     @if (store.config()) {
       <div class="p-4 sm:p-6">
         <h1 class="text-2xl font-semibold mb-2">Pages</h1>
-        <p class="text-sm text-gray-500 mb-6">Enable or disable optional pages for your blog. Toggling saves immediately.</p>
+        <p class="text-sm text-gray-500 mb-6">Enable or disable pages for your blog. Toggling saves immediately.</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (card of cards; track card.flag) {
@@ -134,6 +134,22 @@ export class AdminPagesComponent {
 
   readonly cards: FeatureCardConfig[] = [
     {
+      flag: 'home',
+      label: 'Home',
+      description: 'Your landing page with hero section, calls to action, and site overview.',
+      editRoute: '/pages/home',
+      liveUrl: (siteUrl) => siteUrl,
+      hasContent: (cfg) => !!(cfg.pages?.home?.heroHeadline?.trim().length),
+    },
+    {
+      flag: 'blog',
+      label: 'Blog',
+      description: 'Your posts feed — the main blog listing page for readers.',
+      editRoute: '/pages/blog',
+      liveUrl: (siteUrl) => `${siteUrl}/posts`,
+      hasContent: () => true,
+    },
+    {
       flag: 'about',
       label: 'About',
       description: 'A page introducing you or your brand to readers.',
@@ -161,7 +177,7 @@ export class AdminPagesComponent {
     return card.hasContent(config) ? 'published' : 'empty';
   }
 
-  protected toggle(flag: 'about' | 'links', value: boolean): void {
+  protected toggle(flag: 'home' | 'blog' | 'about' | 'links', value: boolean): void {
     this.store.togglePageEnabled(flag, value);
   }
 

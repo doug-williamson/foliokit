@@ -33,30 +33,31 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
       } @else {
         <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
           <p class="text-sm opacity-60 m-0">
-            Manage optional public pages and what appears under <strong>Pages</strong> and <strong>Publish</strong> in the admin sidebar.
+            Enable or disable your site's pages. Changes take effect immediately on both the public site and the admin sidebar.
           </p>
 
           <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <h2 class="text-base font-semibold m-0">Home (sidebar)</h2>
+                <h2 class="text-base font-semibold m-0">Home</h2>
                 <p class="text-sm opacity-70 m-0 mt-1">
-                  Adds a <strong>Home</strong> item under Pages that opens the home hero editor.
+                  Your public landing page with hero section and calls to action.
                 </p>
               </div>
               <mat-slide-toggle
-                [checked]="navShortcutHome()"
-                (change)="store.setAdminNavShortcut('home', $event.checked)"
-                aria-label="Show Home in admin sidebar"
+                [checked]="homeEnabled()"
+                (change)="store.togglePageEnabled('home', $event.checked)"
+                aria-label="Enable Home page on the public site"
               />
             </div>
             <button
               mat-stroked-button
               type="button"
               class="self-start"
+              [disabled]="!homeEnabled()"
               (click)="router.navigate(['/pages/home'])"
             >
-              Edit home hero
+              Edit Home
             </button>
           </mat-card>
 
@@ -70,7 +71,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               <div class="min-w-0">
                 <h2 class="text-base font-semibold m-0">About</h2>
                 <p class="text-sm opacity-70 m-0 mt-1">
-                  Profile and bio page on your public site.
+                  A dedicated about page with your bio, photo, and social links.
                 </p>
               </div>
               <mat-slide-toggle
@@ -96,7 +97,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               <div class="min-w-0">
                 <h2 class="text-base font-semibold m-0">Links</h2>
                 <p class="text-sm opacity-70 m-0 mt-1">
-                  Link-in-bio style page on your public site.
+                  A link-in-bio style page to highlight destinations for your visitors.
                 </p>
               </div>
               <mat-slide-toggle
@@ -138,8 +139,8 @@ export class PagesHubComponent implements OnInit {
     () => this.store.config()?.pages?.links?.enabled === true,
   );
 
-  readonly navShortcutHome = computed(
-    () => this.store.config()?.adminNavShortcuts?.home === true,
+  readonly homeEnabled = computed(
+    () => this.store.config()?.pages?.home?.enabled === true,
   );
 
   constructor() {

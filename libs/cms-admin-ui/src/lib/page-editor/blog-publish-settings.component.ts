@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { isBlogPageNavEnabled } from '@foliokit/cms-core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -19,15 +18,15 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     @if (layout() === 'hub') {
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <h2 class="text-base font-semibold m-0">Publish</h2>
+          <h2 class="text-base font-semibold m-0">Blog</h2>
           <p class="text-sm opacity-70 m-0 mt-1">
-            Turns on the publish section in the admin (Posts, Authors, Series) and the Publish entry under Pages.
+            Your posts feed — enables Posts, Authors, and Series in the admin sidebar.
           </p>
         </div>
         <mat-slide-toggle
           [checked]="blogPageEnabled()"
           (change)="store.togglePageEnabled('blog', $event.checked)"
-          aria-label="Enable Publish in admin navigation"
+          aria-label="Enable Blog on the public site"
         />
       </div>
     } @else {
@@ -39,14 +38,14 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
           class="shrink-0"
           [checked]="blogPageEnabled()"
           (change)="store.togglePageEnabled('blog', $event.checked)"
-          aria-label="Enable Publish in admin navigation"
+          aria-label="Enable Blog on the public site"
         />
       </div>
     }
     <div class="flex flex-wrap gap-2">
       @if (layout() === 'hub') {
         <button mat-stroked-button type="button" (click)="router.navigate(['/pages/blog'])">
-          Publish settings
+          Blog settings
         </button>
       }
       <button mat-stroked-button type="button" (click)="router.navigate(['/posts'])">Open posts</button>
@@ -62,6 +61,6 @@ export class BlogPublishSettingsComponent {
   readonly layout = input<'hub' | 'page'>('hub');
 
   protected readonly blogPageEnabled = computed(() =>
-    isBlogPageNavEnabled(this.store.config() ?? undefined),
+    this.store.config()?.pages?.blog?.enabled === true,
   );
 }

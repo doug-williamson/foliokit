@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,8 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlanGatingService, Series } from '@foliokit/cms-core';
-import { PlanGateComponent } from '../plan-gate/plan-gate.component';
+import { Series } from '@foliokit/cms-core';
 import { SeriesFormComponent } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
@@ -25,25 +23,14 @@ import { TaxonomyStore } from './taxonomy.store';
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    PlanGateComponent,
   ],
   template: `
-    <cms-plan-gate
-      feature="taxonomy"
-      requiredPlan="pro"
-      featureLabel="Series"
-      featureDescription="Group your posts into named series. Surface structured collections and reading paths on your blog."
-    >
-      <!-- Full taxonomy UI — loaded reactively once the Pro plan is confirmed -->
-      <div class="flex flex-col h-full overflow-hidden">
+    <div class="flex flex-col h-full overflow-hidden">
         <!-- Header -->
-        <div
-          class="flex items-center justify-between px-6 py-4 border-b shrink-0"
-          style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-        >
-          <h1 class="text-xl font-semibold">Series</h1>
+        <div class="page-header flex items-center justify-between border-b shrink-0"
+             style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
+          <h1 class="page-heading">Series</h1>
           <button mat-flat-button (click)="openNewSeries()">
-            <mat-icon svgIcon="add" />
             New Series
           </button>
         </div>
@@ -54,67 +41,52 @@ import { TaxonomyStore } from './taxonomy.store';
             <div class="flex items-center justify-center p-12">
               <mat-spinner diameter="40" />
             </div>
+          } @else if (store.series().length === 0) {
+            <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
+              <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="collections_bookmark" />
+              <p>No series yet. Create one to get started.</p>
+            </div>
           } @else {
             <div class="p-4 sm:p-6 flex flex-col gap-6">
               @if (store.error()) {
                 <p class="text-sm text-red-600">{{ store.error() }}</p>
               }
-
-              <!-- Empty state -->
-              @if (store.series().length === 0) {
-                <div class="flex flex-col items-center justify-center gap-4 p-12 opacity-50">
-                  <mat-icon
-                    svgIcon="category"
-                    style="font-size: 4rem; width: 4rem; height: 4rem"
-                  />
-                  <p class="text-sm">No series yet. Create one to get started.</p>
-                </div>
-              } @else {
-                <div
-                  class="border rounded-lg overflow-hidden"
-                  style="border-color: var(--border)"
-                >
-                  @for (s of store.series(); track s.id) {
-                    <div
-                      class="flex items-center gap-3 px-4 py-2 border-t text-sm"
-                      style="border-color: color-mix(in srgb, currentColor 8%, transparent)"
-                    >
-                      <span class="flex-1 font-medium">{{ s.name }}</span>
-                      <mat-slide-toggle
-                        [checked]="s.isActive"
-                        (change)="store.setSeriesActive(s.id, $event.checked)"
-                        matTooltip="Active"
-                      />
-                      <button mat-icon-button matTooltip="Edit" (click)="openEditSeries(s)">
-                        <mat-icon svgIcon="edit" />
-                      </button>
-                      <button mat-icon-button matTooltip="Delete" (click)="deleteSeries(s)">
-                        <mat-icon svgIcon="delete" />
-                      </button>
-                    </div>
-                  }
-                </div>
-              }
+              <div
+                class="border rounded-lg overflow-hidden"
+                style="border-color: var(--border)"
+              >
+                @for (s of store.series(); track s.id) {
+                  <div
+                    class="flex items-center gap-3 px-4 py-2 border-t text-sm"
+                    style="border-color: color-mix(in srgb, currentColor 8%, transparent)"
+                  >
+                    <span class="flex-1 font-medium">{{ s.name }}</span>
+                    <mat-slide-toggle
+                      [checked]="s.isActive"
+                      (change)="store.setSeriesActive(s.id, $event.checked)"
+                      matTooltip="Active"
+                    />
+                    <button mat-icon-button matTooltip="Edit" (click)="openEditSeries(s)">
+                      <mat-icon svgIcon="edit" />
+                    </button>
+                    <button mat-icon-button matTooltip="Delete" (click)="deleteSeries(s)">
+                      <mat-icon svgIcon="delete" />
+                    </button>
+                  </div>
+                }
+              </div>
             </div>
           }
         </div>
-      </div>
-    </cms-plan-gate>
+    </div>
   `,
 })
 export class TaxonomyPageComponent {
   protected readonly store = inject(TaxonomyStore);
-  private readonly planGating = inject(PlanGatingService);
   private readonly dialog = inject(MatDialog);
 
   constructor() {
-    // Reactively load taxonomy data when the Pro plan is confirmed.
-    // Uses effect so it re-runs if the plan changes mid-session (e.g. after upgrade).
-    effect(() => {
-      if (this.planGating.features().platform.taxonomy) {
-        this.store.loadAll();
-      }
-    });
+    this.store.loadAll();
   }
 
   protected openNewSeries(): void {

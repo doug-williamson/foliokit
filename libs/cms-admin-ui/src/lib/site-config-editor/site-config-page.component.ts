@@ -21,7 +21,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService } from '@foliokit/cms-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { SettingsProTabComponent } from '../settings/settings-pro-tab.component';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
 import { SaveBarComponent } from '../components/save-bar/save-bar.component';
@@ -47,7 +46,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatSelectModule,
     MatTabsModule,
     MatSnackBarModule,
-    SettingsProTabComponent,
     SaveBarComponent,
   ],
   styles: [
@@ -156,9 +154,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
             </div>
           </mat-tab>
 
-          <mat-tab label="Pro">
-            <folio-settings-pro-tab />
-          </mat-tab>
+          <!-- GATE_TODO: pro tab -->
         </mat-tab-group>
       }
 

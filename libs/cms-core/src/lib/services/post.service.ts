@@ -125,8 +125,10 @@ export class PostService implements IBlogPostService {
       map((snapshot) =>
         snapshot.docs.map((d) => normalizePost({ id: d.id, ...d.data() })),
       ),
-      catchError((err) => {
-        console.error('[PostService.getAllPosts]', err);
+      catchError((err: unknown) => {
+        if ((err as { code?: string })?.code !== 'permission-denied') {
+          console.error('[PostService.getAllPosts]', err);
+        }
         return of([]);
       }),
     );

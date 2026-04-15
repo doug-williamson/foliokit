@@ -16,6 +16,7 @@ service cloud.firestore {
     // volume justifies the added Auth trigger complexity. Revisit when tenants > 100.
     function isTenantOwner(tenantId) {
       return request.auth != null
+        && exists(/databases/$(database)/documents/tenants/$(tenantId))
         && get(/databases/$(database)/documents/tenants/$(tenantId)).data.ownerEmail == request.auth.token.email;
     }
 
@@ -23,7 +24,7 @@ service cloud.firestore {
     // All new writes go through tenants/{tenantId}/<collection>.
     // These rules exist only for backwards compatibility during migration.
     match /posts/{postId} {
-      allow read: if resource.data.status == 'published';
+      allow read: if resource == null || resource.data.status == 'published';
       allow write: if false;
     }
     match /pages/{pageId} {
@@ -48,7 +49,9 @@ service cloud.firestore {
     // Owners can read/write their own tenant doc; platform admin can manage all.
     match /tenants/{tenantId} {
       allow read: if isAdmin() || isTenantOwner(tenantId);
-      allow write: if isAdmin();
+      allow create: if request.auth != null
+        && request.resource.data.ownerEmail == request.auth.token.email;
+      allow update, delete: if isAdmin();
 
       // ── Multi-tenant subcollections ────────────────────────────────────────
       // When tenantId is provided to provideFolioKit(), data lives under
@@ -56,7 +59,7 @@ service cloud.firestore {
       // owner (looked up from the tenant document's ownerEmail field) or the
       // platform super-admin.
       match /posts/{postId} {
-        allow read: if resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);
+        allow read: if resource == null || resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);
         allow write: if isAdmin() || isTenantOwner(tenantId);
       }
       match /pages/{pageId} {
