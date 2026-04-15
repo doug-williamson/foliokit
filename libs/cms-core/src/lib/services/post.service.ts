@@ -22,6 +22,7 @@ import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
 import { normalizePost } from '../utils/normalize-post';
 import type { IBlogPostService } from '../tokens/post-service.token';
+import type { SeriesNavItem } from '../models/post.model';
 
 /** Firestore inequality/order queries require Timestamp, not numeric ms. */
 function blogPostFirestoreTimestampFields(post: BlogPost): Record<string, Timestamp> {
@@ -111,6 +112,32 @@ export class PostService implements IBlogPostService {
       ),
       catchError((err) => {
         console.error('[PostService.getBySeriesId]', err);
+        return of([]);
+      }),
+    );
+  }
+
+  getPublishedPostsBySeriesId(seriesId: string): Observable<SeriesNavItem[]> {
+    const q = query(
+      collection(this.firestore, this.paths.collection('posts')),
+      where('seriesId', '==', seriesId),
+      where('status', '==', 'published'),
+      orderBy('seriesOrder', 'asc'),
+    );
+    return from(getDocs(q)).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            slug: data['slug'] as string,
+            title: data['title'] as string,
+            seriesOrder: (data['seriesOrder'] as number) ?? 0,
+          };
+        }),
+      ),
+      catchError((err) => {
+        console.error('[PostService.getPublishedPostsBySeriesId]', err);
         return of([]);
       }),
     );

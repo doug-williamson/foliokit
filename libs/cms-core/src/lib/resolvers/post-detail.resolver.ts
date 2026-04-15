@@ -1,15 +1,18 @@
 import { inject, PLATFORM_ID, TransferState } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { ResolveFn, Router } from '@angular/router';
-import { map, switchMap, tap, take } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
+import { catchError, map, switchMap, tap, take } from 'rxjs/operators';
 import { BLOG_POST_SERVICE } from '../tokens/post-service.token';
 import {
   AUTHOR_SERVICE,
   POST_DETAIL_KEY,
   POST_AUTHOR_KEY,
+  POST_SERIES_KEY,
+  POST_SERIES_POSTS_KEY,
 } from '../tokens/author-service.token';
-import type { PostRouteData } from '../models/post.model';
+import { SeriesService } from '../services/series.service';
+import type { PostRouteData, SeriesNavItem } from '../models/post.model';
 
 /** Options for {@link createPostDetailResolver}. */
 export interface PostDetailResolverOptions {
@@ -22,8 +25,8 @@ export interface PostDetailResolverOptions {
 
   /**
    * Route to redirect to when the post is not found.
-   * Set to `null` to resolve with `{ post: null, author: null }` instead
-   * of redirecting (useful when the component handles the empty state).
+   * Set to `null` to resolve with `{ post: null, author: null, series: null, seriesPosts: null }`
+   * instead of redirecting (useful when the component handles the empty state).
    * @default null
    */
   notFoundRoute?: string | null;
@@ -36,6 +39,8 @@ export interface PostDetailResolverOptions {
  * using Angular's `TransferState` to avoid a duplicate Firestore read on
  * browser hydration after SSR. Optionally fetches the author via
  * `AUTHOR_SERVICE.getById()` when `withAuthor` is `true` (the default).
+ * Also resolves series metadata and the ordered list of published sibling
+ * posts (`series` and `seriesPosts`) when the post has a `seriesId`.
  *
  * `BLOG_POST_SERVICE` must be provided in your app — either the default
  * `PostService` (client SDK) or a server-side override (Admin SDK) via
@@ -65,10 +70,11 @@ export function createPostDetailResolver(
     const authorService = withAuthor
       ? inject(AUTHOR_SERVICE, { optional: true })
       : null;
+    const seriesService = inject(SeriesService, { optional: true });
     const router = notFoundRoute != null ? inject(Router) : null;
     const slug = route.paramMap.get('slug') ?? '';
 
-    const empty: PostRouteData = { post: null, author: null };
+    const empty: PostRouteData = { post: null, author: null, series: null, seriesPosts: null };
 
     // Browser hydration: use transferred state if available.
     if (transferState.hasKey(POST_DETAIL_KEY)) {
@@ -76,13 +82,21 @@ export function createPostDetailResolver(
       const author = transferState.hasKey(POST_AUTHOR_KEY)
         ? transferState.get(POST_AUTHOR_KEY, null)
         : null;
+      const series = transferState.hasKey(POST_SERIES_KEY)
+        ? transferState.get(POST_SERIES_KEY, null)
+        : null;
+      const seriesPosts = transferState.hasKey(POST_SERIES_POSTS_KEY)
+        ? transferState.get(POST_SERIES_POSTS_KEY, null)
+        : null;
       transferState.remove(POST_DETAIL_KEY);
       transferState.remove(POST_AUTHOR_KEY);
+      transferState.remove(POST_SERIES_KEY);
+      transferState.remove(POST_SERIES_POSTS_KEY);
 
       if (!post && router && notFoundRoute) {
         return router.createUrlTree([notFoundRoute]) as never;
       }
-      return { post, author } as PostRouteData;
+      return { post, author, series, seriesPosts } as PostRouteData;
     }
 
     // Helper to wrap author resolution.
@@ -91,7 +105,7 @@ export function createPostDetailResolver(
         if (isPlatformServer(platformId)) {
           transferState.set(POST_AUTHOR_KEY, null);
         }
-        return of({ post, author: null });
+        return of({ post, author: null, series: null, seriesPosts: null });
       }
 
       return authorService.getById(post.authorId).pipe(
@@ -101,11 +115,48 @@ export function createPostDetailResolver(
             transferState.set(POST_AUTHOR_KEY, author);
           }
         }),
-        map((author) => ({ post, author })),
+        map((author) => ({ post, author, series: null, seriesPosts: null })),
       );
     }
 
-    // Fetch post by slug, then optionally fetch author.
+    // Helper to wrap series resolution.
+    function resolveSeries(
+      data: PostRouteData,
+      post: NonNullable<PostRouteData['post']>,
+    ): Observable<PostRouteData> {
+      if (!post.seriesId || !seriesService) {
+        if (isPlatformServer(platformId)) {
+          transferState.set(POST_SERIES_KEY, null);
+          transferState.set(POST_SERIES_POSTS_KEY, null);
+        }
+        return of(data);
+      }
+
+      const series$ = seriesService.getById(post.seriesId);
+      const seriesPosts$: Observable<SeriesNavItem[]> = postService.getPublishedPostsBySeriesId
+        ? postService.getPublishedPostsBySeriesId(post.seriesId)
+        : of([]);
+
+      return combineLatest([series$, seriesPosts$]).pipe(
+        take(1),
+        tap(([series, seriesPosts]) => {
+          if (isPlatformServer(platformId)) {
+            transferState.set(POST_SERIES_KEY, series);
+            transferState.set(POST_SERIES_POSTS_KEY, seriesPosts);
+          }
+        }),
+        map(([series, seriesPosts]) => ({ ...data, series, seriesPosts })),
+        catchError(() => {
+          if (isPlatformServer(platformId)) {
+            transferState.set(POST_SERIES_KEY, null);
+            transferState.set(POST_SERIES_POSTS_KEY, null);
+          }
+          return of(data);
+        }),
+      );
+    }
+
+    // Fetch post by slug, then optionally fetch author and series.
     return postService.getPostBySlug(slug).pipe(
       take(1),
       tap((post) => {
@@ -117,10 +168,14 @@ export function createPostDetailResolver(
         if (!post) {
           if (isPlatformServer(platformId)) {
             transferState.set(POST_AUTHOR_KEY, null);
+            transferState.set(POST_SERIES_KEY, null);
+            transferState.set(POST_SERIES_POSTS_KEY, null);
           }
           return of(empty);
         }
-        return resolveAuthor(post);
+        return resolveAuthor(post).pipe(
+          switchMap((data) => resolveSeries(data, post)),
+        );
       }),
       map((data) => {
         if (!data.post && router && notFoundRoute) {

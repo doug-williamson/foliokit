@@ -4,7 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { IBlogPostService, resolveCollectionPath, SITE_ID } from '@foliokit/cms-core';
 import { normalizePost } from '@foliokit/cms-core/utils/normalize-post';
-import type { BlogPost } from '@foliokit/cms-core';
+import type { BlogPost, SeriesNavItem } from '@foliokit/cms-core';
 
 @Injectable()
 export class ServerBlogPostService implements IBlogPostService {
@@ -28,6 +28,32 @@ export class ServerBlogPostService implements IBlogPostService {
       ),
       catchError((err) => {
         console.error('[ServerBlogPostService.getPublishedPosts]', err);
+        return of([]);
+      }),
+    );
+  }
+
+  getPublishedPostsBySeriesId(seriesId: string): Observable<SeriesNavItem[]> {
+    const db = getFirestore();
+    const q = db
+      .collection(resolveCollectionPath('posts', this.siteId))
+      .where('status', '==', 'published')
+      .where('seriesId', '==', seriesId)
+      .orderBy('seriesOrder', 'asc');
+    return from(q.get()).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            slug: data['slug'] as string,
+            title: data['title'] as string,
+            seriesOrder: (data['seriesOrder'] as number) ?? 0,
+          };
+        }),
+      ),
+      catchError((err) => {
+        console.error('[ServerBlogPostService.getPublishedPostsBySeriesId]', err);
         return of([]);
       }),
     );

@@ -1,4 +1,5 @@
 import type { Author } from './author.model';
+import type { Series } from './series.model';
 
 /**
  * Persisted SEO block (Firestore: `title`, `description`, `ogImage`, …).
@@ -33,6 +34,7 @@ export interface BlogPost {
   thumbnailAlt?: string;
   tags: string[];
   seriesId?: string;
+  seriesOrder?: number;
   authorId?: string;
   readingTimeMinutes?: number;
   embeddedMedia: Record<string, EmbeddedMediaEntry>;
@@ -47,6 +49,13 @@ export interface BlogPost {
   createdAt: number;
 }
 
+export interface SeriesNavItem {
+  id: string;
+  slug: string;
+  title: string;
+  seriesOrder: number;
+}
+
 /**
  * Shape of the resolved route data for the post-detail route.
  * The resolver places this object under the `'post'` data key.
@@ -54,4 +63,6 @@ export interface BlogPost {
 export interface PostRouteData {
   post: BlogPost | null;
   author: Author | null;
+  series: Series | null;
+  seriesPosts: SeriesNavItem[] | null;
 }

@@ -15,7 +15,7 @@ import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
-import type { BlogPost, Tag, PostRouteData } from '@foliokit/cms-core';
+import type { BlogPost, Tag, PostRouteData, Series, SeriesNavItem } from '@foliokit/cms-core';
 import {
   TagService,
   BLOG_SEO_SERVICE,
@@ -23,6 +23,7 @@ import {
   resolvePostCanonicalUrl,
 } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
+import { SeriesNavComponent } from './series-nav.component';
 
 /** Unified shape for `toSignal` (avoids union branches that break overload inference). */
 interface TagFetchState {
@@ -43,7 +44,7 @@ interface PostShareLinks {
   selector: 'folio-post-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent],
+  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent, SeriesNavComponent],
   template: `
     <div
       class="px-4 md:px-6 py-8 lg:py-12"
@@ -83,6 +84,19 @@ interface PostShareLinks {
         </div>
       } @else {
         <article class="max-w-[720px] mx-auto">
+          @if (series(); as s) {
+            <div class="series-eyebrow">
+              <a [routerLink]="['/series', s.slug]" class="series-eyebrow-link">
+                {{ s.name }}
+              </a>
+              @if (currentSeriesIndex() !== -1) {
+                <span class="series-eyebrow-pos">
+                  Part {{ currentSeriesIndex() + 1 }} of {{ seriesPosts()!.length }}
+                </span>
+              }
+            </div>
+          }
+
           <h1 class="post-title">
             {{ post()!.title }}
           </h1>
@@ -182,6 +196,15 @@ interface PostShareLinks {
             </div>
 
           </div>
+
+          @if (series() && seriesPosts()) {
+            <folio-series-nav
+              [series]="series()!"
+              [posts]="seriesPosts()!"
+              [currentPostId]="post()!.id"
+            />
+          }
+
         </article>
       }
     </div>
@@ -272,6 +295,37 @@ interface PostShareLinks {
       background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       color: var(--text-primary);
     }
+
+    /* ── Series eyebrow — above title ─────────────────────────────── */
+    .series-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .series-eyebrow-link {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-accent);
+      text-decoration: none;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: color-mix(in srgb, var(--text-accent) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-accent) 25%, transparent);
+      transition: background 0.15s;
+      &:hover { background: color-mix(in srgb, var(--text-accent) 18%, transparent); }
+    }
+
+    .series-eyebrow-pos {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
   `],
 })
 export class BlogPostDetailComponent implements OnInit {
@@ -308,6 +362,18 @@ export class BlogPostDetailComponent implements OnInit {
   protected readonly post = computed(() => this.routeData()?.post ?? null);
 
   protected readonly author = computed(() => this.routeData()?.author ?? null);
+
+  protected readonly series = computed((): Series | null => this.routeData()?.series ?? null);
+  protected readonly seriesPosts = computed((): SeriesNavItem[] | null => this.routeData()?.seriesPosts ?? null);
+
+  protected readonly currentSeriesIndex = computed(() => {
+    const posts = this.seriesPosts();
+    const post = this.post();
+    if (!posts || !post) return -1;
+    return posts.findIndex((p) => p.id === post.id);
+  });
+
+  protected readonly currentPostId = computed(() => this.post()?.id ?? null);
 
   protected readonly publishedDate = computed(() => {
     const p = this.post();

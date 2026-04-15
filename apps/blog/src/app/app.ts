@@ -15,7 +15,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { doc, getDoc } from 'firebase/firestore';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import type { NavItem, SiteConfig } from '@foliokit/cms-core';
+import type { SiteConfig } from '@foliokit/cms-core';
+
+interface NavItem { label: string; url: string; }
 import {
   FIRESTORE,
   SITE_ID,
@@ -88,7 +90,7 @@ export class App implements OnInit {
     const aboutOn = config?.pages?.about?.enabled === true;
     const linksOn = config?.pages?.links?.enabled === true;
 
-    const rawBase = config?.nav ?? DEFAULT_NAV;
+    const rawBase = DEFAULT_NAV;
     const base = rawBase.filter((item) => {
       if (item.url === '/'      && !homeOn)  return false;
       if (item.url === '/posts' && !blogOn)  return false;
@@ -97,10 +99,11 @@ export class App implements OnInit {
       return true;
     });
     const extra: NavItem[] = [];
-    if (homeOn)  extra.push({ label: 'Home',  url: '/'      });
-    if (blogOn)  extra.push({ label: 'Blog',  url: '/posts' });
-    if (aboutOn) extra.push({ label: 'About', url: '/about' });
-    if (linksOn) extra.push({ label: 'Links', url: '/links' });
+    if (homeOn)  extra.push({ label: 'Home',   url: '/'       });
+    if (blogOn)  extra.push({ label: 'Blog',   url: '/posts'  });
+    if (blogOn)  extra.push({ label: 'Series', url: '/series' });
+    if (aboutOn) extra.push({ label: 'About',  url: '/about'  });
+    if (linksOn) extra.push({ label: 'Links',  url: '/links'  });
     const existingUrls = new Set(base.map((i) => i.url));
     return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });
@@ -113,7 +116,6 @@ export class App implements OnInit {
       appName: config?.siteName ?? 'FolioKit Blog',
       logoUrl: features.removeBranding ? config?.logo : undefined,
       showAuth: false,
-      nav: this.navItems(),
       features,
       toolbarHomeRoute: '/',
     };

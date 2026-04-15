@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { take } from 'rxjs/operators';
-import { Author, AuthorService, BlogPost, SiteConfigService } from '@foliokit/cms-core';
+import { Author, AuthorService, BlogPost, Series, SeriesService, SiteConfigService } from '@foliokit/cms-core';
 import { PostEditorStore } from '../post-editor.store';
 
 function slugify(title: string): string {
@@ -88,6 +88,36 @@ function slugify(title: string): string {
           </mat-select>
         </mat-form-field>
 
+        <!-- Series -->
+        <mat-form-field class="w-full">
+          <mat-label>Series</mat-label>
+          <mat-select
+            [value]="post.seriesId ?? ''"
+            (valueChange)="onSeriesChange($event)"
+          >
+            <mat-option value="">(none)</mat-option>
+            @for (s of series(); track s.id) {
+              <mat-option [value]="s.id">{{ s.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Series Order — only when a series is selected -->
+        @if (post.seriesId) {
+          <mat-form-field class="w-full">
+            <mat-label>Series order</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              step="1"
+              [value]="post.seriesOrder ?? ''"
+              (input)="onSeriesOrderInput($any($event.target).value)"
+            />
+            <mat-hint>Position within the series (1 = first)</mat-hint>
+          </mat-form-field>
+        }
+
         <!-- Published At — only when status is published -->
         @if (post.status === 'published') {
           <mat-form-field class="w-full">
@@ -143,6 +173,10 @@ export class MetadataTabComponent {
     initialValue: [] as Author[],
   });
 
+  readonly series = toSignal(inject(SeriesService).getAll(), {
+    initialValue: [] as Series[],
+  });
+
   private readonly siteConfig = toSignal(
     inject(SiteConfigService).getDefaultSiteConfig().pipe(take(1)),
     { initialValue: null },
@@ -191,5 +225,19 @@ export class MetadataTabComponent {
   onPublishedAtChange(date: Date | null, post: BlogPost): void {
     if (!date) return;
     this.store.updateField('publishedAt', date.getTime());
+  }
+
+  onSeriesChange(seriesId: string): void {
+    if (!seriesId) {
+      this.store.updateField('seriesId', undefined);
+      this.store.updateField('seriesOrder', undefined);
+    } else {
+      this.store.updateField('seriesId', seriesId);
+    }
+  }
+
+  onSeriesOrderInput(raw: string): void {
+    const n = parseInt(raw, 10);
+    this.store.updateField('seriesOrder', Number.isFinite(n) && n > 0 ? n : undefined);
   }
 }

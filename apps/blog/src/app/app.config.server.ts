@@ -1,10 +1,11 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
 import { provideServerRendering, withRoutes } from '@angular/ssr';
-import { AUTHOR_SERVICE, BLOG_POST_SERVICE, SITE_CONFIG_SERVICE, SITE_ID } from '@foliokit/cms-core';
+import { AUTHOR_SERVICE, BLOG_POST_SERVICE, SeriesService, SITE_CONFIG_SERVICE, SITE_ID } from '@foliokit/cms-core';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 import { ServerAuthorService } from './services/server-author.service';
 import { ServerBlogPostService } from './services/server-post.service';
+import { ServerSeriesService } from './services/server-series.service';
 import { ServerSiteConfigService } from './services/server-site-config.service';
 import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
 
@@ -13,6 +14,7 @@ const serverConfig: ApplicationConfig = {
     provideServerRendering(withRoutes(serverRoutes)),
     { provide: AUTHOR_SERVICE, useClass: ServerAuthorService },
     { provide: BLOG_POST_SERVICE, useClass: ServerBlogPostService },
+    { provide: SeriesService, useClass: ServerSeriesService },
     { provide: SITE_CONFIG_SERVICE, useClass: ServerSiteConfigService },
 
     // This blog app bundle is wired to a single tenant via providesFolioKit({ tenantId }).

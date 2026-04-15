@@ -1,17 +1,32 @@
 {
   "name": "seed",
   "targets": {
-    "emulator": {
+    "bare-auth": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "seed:build-emulator",
+        "buildTarget": "seed:build-bare-auth",
         "watch": false
       }
     },
-    "build-emulator": {
+    "build-bare-auth": {
       "executor": "@nx/js:tsc",
       "options": {
-        "main": "tools/seed/seed-emulator.ts",
+        "main": "tools/seed/seed-bare-auth.ts",
+        "outputPath": "dist/tools/seed",
+        "tsConfig": "tools/seed/tsconfig.seed.json"
+      }
+    },
+    "full-monty": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "seed:build-full-monty",
+        "watch": false
+      }
+    },
+    "build-full-monty": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "tools/seed/seed-full-monty.ts",
         "outputPath": "dist/tools/seed",
         "tsConfig": "tools/seed/tsconfig.seed.json"
       }
