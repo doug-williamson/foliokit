@@ -15,7 +15,7 @@ import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
-import type { BlogPost, Tag, PostRouteData } from '@foliokit/cms-core';
+import type { BlogPost, Tag, PostRouteData, Series, SeriesNavItem } from '@foliokit/cms-core';
 import {
   TagService,
   BLOG_SEO_SERVICE,
@@ -83,6 +83,19 @@ interface PostShareLinks {
         </div>
       } @else {
         <article class="max-w-[720px] mx-auto">
+          @if (series(); as s) {
+            <div class="series-eyebrow">
+              <a [routerLink]="['/series', s.slug]" class="series-eyebrow-link">
+                {{ s.name }}
+              </a>
+              @if (currentSeriesIndex() !== -1) {
+                <span class="series-eyebrow-pos">
+                  Part {{ currentSeriesIndex() + 1 }} of {{ seriesPosts()!.length }}
+                </span>
+              }
+            </div>
+          }
+
           <h1 class="post-title">
             {{ post()!.title }}
           </h1>
@@ -182,6 +195,28 @@ interface PostShareLinks {
             </div>
 
           </div>
+
+          @if (prevSeriesPost() || nextSeriesPost()) {
+            <nav class="series-nav" aria-label="Series navigation">
+              <div class="series-nav-inner">
+                @if (prevSeriesPost(); as prev) {
+                  <a [routerLink]="['/posts', prev.slug]" class="series-nav-item series-nav-item--prev">
+                    <span class="series-nav-label">← Previous</span>
+                    <span class="series-nav-title">{{ prev.title }}</span>
+                  </a>
+                } @else {
+                  <div></div>
+                }
+                @if (nextSeriesPost(); as next) {
+                  <a [routerLink]="['/posts', next.slug]" class="series-nav-item series-nav-item--next">
+                    <span class="series-nav-label">Next →</span>
+                    <span class="series-nav-title">{{ next.title }}</span>
+                  </a>
+                }
+              </div>
+            </nav>
+          }
+
         </article>
       }
     </div>
@@ -272,6 +307,88 @@ interface PostShareLinks {
       background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       color: var(--text-primary);
     }
+
+    /* ── Series eyebrow — above title ─────────────────────────────── */
+    .series-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .series-eyebrow-link {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-accent);
+      text-decoration: none;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: color-mix(in srgb, var(--text-accent) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-accent) 25%, transparent);
+      transition: background 0.15s;
+      &:hover { background: color-mix(in srgb, var(--text-accent) 18%, transparent); }
+    }
+
+    .series-eyebrow-pos {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Series nav — below article card ──────────────────────────── */
+    .series-nav {
+      margin-top: 24px;
+    }
+
+    .series-nav-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .series-nav-inner { grid-template-columns: 1fr; }
+    }
+
+    .series-nav-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 16px;
+      border-radius: var(--r-xl);
+      border: 1px solid var(--border);
+      background: var(--surface-0);
+      text-decoration: none;
+      transition: box-shadow 0.15s, transform 0.15s;
+      &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+    }
+
+    .series-nav-item--next {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .series-nav-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-accent);
+    }
+
+    .series-nav-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
   `],
 })
 export class BlogPostDetailComponent implements OnInit {
@@ -308,6 +425,28 @@ export class BlogPostDetailComponent implements OnInit {
   protected readonly post = computed(() => this.routeData()?.post ?? null);
 
   protected readonly author = computed(() => this.routeData()?.author ?? null);
+
+  protected readonly series = computed((): Series | null => this.routeData()?.series ?? null);
+  protected readonly seriesPosts = computed((): SeriesNavItem[] | null => this.routeData()?.seriesPosts ?? null);
+
+  protected readonly currentSeriesIndex = computed(() => {
+    const posts = this.seriesPosts();
+    const post = this.post();
+    if (!posts || !post) return -1;
+    return posts.findIndex((p) => p.id === post.id);
+  });
+
+  protected readonly prevSeriesPost = computed((): SeriesNavItem | null => {
+    const posts = this.seriesPosts();
+    const idx = this.currentSeriesIndex();
+    return posts && idx > 0 ? posts[idx - 1] : null;
+  });
+
+  protected readonly nextSeriesPost = computed((): SeriesNavItem | null => {
+    const posts = this.seriesPosts();
+    const idx = this.currentSeriesIndex();
+    return posts && idx !== -1 && idx < posts.length - 1 ? posts[idx + 1] : null;
+  });
 
   protected readonly publishedDate = computed(() => {
     const p = this.post();
