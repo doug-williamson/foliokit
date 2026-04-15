@@ -16,6 +16,7 @@ export * from './lib/post-list/blog-post-card.component';
 export * from './lib/post-list/blog-tag-filter.component';
 export * from './lib/post-list/blog-post-list.component';
 export * from './lib/post-detail/blog-post-detail.component';
+export * from './lib/post-detail/series-nav.component';
 export * from './lib/not-found/not-found.component';
 
 // ── Blog routes ───────────────────────────────────────────────────────────────

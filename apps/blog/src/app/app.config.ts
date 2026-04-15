@@ -33,10 +33,6 @@ export const appConfig: ApplicationConfig = {
       features: { markdown: true, auth: false },
       shell: {
         appName: 'FolioKit Blog',
-        nav: [
-          { label: 'Home', url: '/' },
-          { label: 'Posts', url: '/posts' },
-        ],
       },
     }),
     { provide: BLOG_SEO_SERVICE, useExisting: BlogSeoService },

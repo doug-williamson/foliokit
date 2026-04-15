@@ -52,6 +52,8 @@ export function normalizePost(raw: Record<string, unknown>): BlogPost {
     thumbnailAlt: raw['thumbnailAlt'] as string | undefined,
     tags: (raw['tags'] as string[]) ?? [],
     authorId: raw['authorId'] as string | undefined,
+    seriesId: raw['seriesId'] as string | undefined,
+    seriesOrder: raw['seriesOrder'] as number | undefined,
     readingTimeMinutes: raw['readingTimeMinutes'] as number | undefined,
     embeddedMedia: (raw['embeddedMedia'] as BlogPost['embeddedMedia']) ?? {},
     seo: (raw['seo'] as BlogPost['seo']) ?? {},

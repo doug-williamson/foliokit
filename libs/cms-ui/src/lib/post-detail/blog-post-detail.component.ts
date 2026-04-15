@@ -23,6 +23,7 @@ import {
   resolvePostCanonicalUrl,
 } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
+import { SeriesNavComponent } from './series-nav.component';
 
 /** Unified shape for `toSignal` (avoids union branches that break overload inference). */
 interface TagFetchState {
@@ -43,7 +44,7 @@ interface PostShareLinks {
   selector: 'folio-post-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent],
+  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent, SeriesNavComponent],
   template: `
     <div
       class="px-4 md:px-6 py-8 lg:py-12"
@@ -196,25 +197,12 @@ interface PostShareLinks {
 
           </div>
 
-          @if (prevSeriesPost() || nextSeriesPost()) {
-            <nav class="series-nav" aria-label="Series navigation">
-              <div class="series-nav-inner">
-                @if (prevSeriesPost(); as prev) {
-                  <a [routerLink]="['/posts', prev.slug]" class="series-nav-item series-nav-item--prev">
-                    <span class="series-nav-label">← Previous</span>
-                    <span class="series-nav-title">{{ prev.title }}</span>
-                  </a>
-                } @else {
-                  <div></div>
-                }
-                @if (nextSeriesPost(); as next) {
-                  <a [routerLink]="['/posts', next.slug]" class="series-nav-item series-nav-item--next">
-                    <span class="series-nav-label">Next →</span>
-                    <span class="series-nav-title">{{ next.title }}</span>
-                  </a>
-                }
-              </div>
-            </nav>
+          @if (series() && seriesPosts()) {
+            <folio-series-nav
+              [series]="series()!"
+              [posts]="seriesPosts()!"
+              [currentPostId]="post()!.id"
+            />
           }
 
         </article>
@@ -338,57 +326,6 @@ interface PostShareLinks {
       color: var(--text-muted);
     }
 
-    /* ── Series nav — below article card ──────────────────────────── */
-    .series-nav {
-      margin-top: 24px;
-    }
-
-    .series-nav-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    @media (max-width: 480px) {
-      .series-nav-inner { grid-template-columns: 1fr; }
-    }
-
-    .series-nav-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 14px 16px;
-      border-radius: var(--r-xl);
-      border: 1px solid var(--border);
-      background: var(--surface-0);
-      text-decoration: none;
-      transition: box-shadow 0.15s, transform 0.15s;
-      &:hover {
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
-      }
-    }
-
-    .series-nav-item--next {
-      text-align: right;
-      align-items: flex-end;
-    }
-
-    .series-nav-label {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-accent);
-    }
-
-    .series-nav-title {
-      font-family: var(--font-display);
-      font-size: 0.9rem;
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--text-primary);
-    }
   `],
 })
 export class BlogPostDetailComponent implements OnInit {
@@ -436,17 +373,7 @@ export class BlogPostDetailComponent implements OnInit {
     return posts.findIndex((p) => p.id === post.id);
   });
 
-  protected readonly prevSeriesPost = computed((): SeriesNavItem | null => {
-    const posts = this.seriesPosts();
-    const idx = this.currentSeriesIndex();
-    return posts && idx > 0 ? posts[idx - 1] : null;
-  });
-
-  protected readonly nextSeriesPost = computed((): SeriesNavItem | null => {
-    const posts = this.seriesPosts();
-    const idx = this.currentSeriesIndex();
-    return posts && idx !== -1 && idx < posts.length - 1 ? posts[idx + 1] : null;
-  });
+  protected readonly currentPostId = computed(() => this.post()?.id ?? null);
 
   protected readonly publishedDate = computed(() => {
     const p = this.post();
