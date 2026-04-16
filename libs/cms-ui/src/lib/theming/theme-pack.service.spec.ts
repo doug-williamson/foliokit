@@ -38,6 +38,14 @@ const mockSiteConfigService = {
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+const baseProviders = [
+  ThemePackService,
+  { provide: DOCUMENT, useValue: documentSpy },
+  { provide: PLATFORM_ID, useValue: 'browser' },
+  { provide: ThemeService, useValue: mockThemeService },
+  { provide: SiteConfigService, useValue: mockSiteConfigService },
+];
+
 function createService(): ThemePackService {
   return TestBed.inject(ThemePackService);
 }
@@ -64,13 +72,7 @@ describe('ThemePackService', () => {
   // ── Test 1: Defaults to editorial pack ──────────────────────────────────────
   it('defaults activePack to editorial when no FOLIOKIT_THEME_PACKS provided', () => {
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -81,13 +83,7 @@ describe('ThemePackService', () => {
   // ── Test 2: setPack writes inline styles to documentElement ─────────────────
   it('setPack writes CSS custom properties to documentElement.style', () => {
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -105,12 +101,8 @@ describe('ThemePackService', () => {
   it('setPack removes previous pack tokens before applying new ones', () => {
     TestBed.configureTestingModule({
       providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-        { provide: FOLIOKIT_THEME_PACKS, useValue: [[MOCK_DEV_PACK]], multi: false },
+        ...baseProviders,
+        { provide: FOLIOKIT_THEME_PACKS, useValue: [MOCK_DEV_PACK], multi: true },
       ],
     });
 
@@ -130,13 +122,7 @@ describe('ThemePackService', () => {
   // ── Test 4: Mode change re-applies tokens with correct values ───────────────
   it('re-applies tokens with dark-mode values when scheme changes to dark', () => {
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -156,13 +142,7 @@ describe('ThemePackService', () => {
   // ── Test 5: setPackById with unknown id is a no-op + warns ─────────────────
   it('setPackById warns and does not change activePack for unknown id', () => {
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -188,13 +168,7 @@ describe('ThemePackService', () => {
     mockSiteConfigService.saveSiteConfig.mockReturnValue(of({}));
 
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -221,13 +195,7 @@ describe('ThemePackService', () => {
     );
 
     TestBed.configureTestingModule({
-      providers: [
-        ThemePackService,
-        { provide: DOCUMENT, useValue: documentSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: SiteConfigService, useValue: mockSiteConfigService },
-      ],
+      providers: baseProviders,
     });
 
     service = createService();
@@ -235,6 +203,7 @@ describe('ThemePackService', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     expect(() => service.setPack(EDITORIAL_PACK)).not.toThrow();
+    expect(mockSiteConfigService.saveSiteConfig).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
   });
 });
