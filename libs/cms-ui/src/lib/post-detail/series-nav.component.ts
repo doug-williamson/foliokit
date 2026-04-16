@@ -66,10 +66,11 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
     .series-nav-block {
       margin-top: 24px;
       padding: 16px 20px;
-      background: var(--surface-1);
-      border: 2.5px solid #1A0A00;
-      border-radius: 0;
-      box-shadow: 4px 4px 0 #1A0A00;
+      background: var(--surface-0);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
 
     .series-nav-header {
@@ -82,8 +83,8 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       margin-left: -20px;
       margin-right: -20px;
       padding: 8px 20px;
-      background: var(--color-sky);
-      border-bottom: 2px solid #1A0A00;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
     }
 
     .series-title {
@@ -92,11 +93,11 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
 
     .series-title-link {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--color-sky-text);
+      color: var(--text-secondary);
       text-decoration: none;
     }
 
@@ -106,9 +107,8 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
 
     .series-part {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-sky-text);
-      opacity: 0.8;
+      font-size: 10px;
+      color: var(--text-secondary);
     }
 
     .series-toc {
@@ -133,18 +133,19 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       font-family: var(--font-body);
       font-size: 0.8rem;
       line-height: 1.45;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       text-decoration: none;
-      transition: color 0.15s;
+      transition: color 0.15s, background 0.15s;
     }
 
     .series-toc-item.is-current .series-toc-link {
       color: var(--accent);
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .series-toc-link:hover {
       color: var(--text-primary);
+      background: var(--surface-2);
     }
 
     .series-pn {
@@ -152,13 +153,17 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       justify-content: space-between;
       gap: 12px;
       margin-top: 14px;
-      padding-top: 14px;
+      margin-bottom: -16px;
+      margin-left: -20px;
+      margin-right: -20px;
+      padding: 10px 20px;
       border-top: 1px solid var(--border);
+      background: var(--surface-1);
     }
 
     .series-pn-link {
       font-family: var(--font-body);
-      font-size: 0.78rem;
+      font-size: 11px;
       color: var(--text-muted);
       text-decoration: none;
       max-width: 45%;
