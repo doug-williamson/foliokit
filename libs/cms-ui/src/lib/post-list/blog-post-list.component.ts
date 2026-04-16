@@ -63,6 +63,7 @@ interface AuthorFetchState {
           <folio-tag-filter
             #tagFilter
             [tags]="allTagOptions()"
+            [postCounts]="tagPostCounts()"
             (tagSelected)="onTagSelected($event)"
           />
         </div>
@@ -197,6 +198,16 @@ export class BlogPostListComponent {
     () =>
       new Map((this.tagFetchState()?.tags ?? []).map((t) => [t.id, t])),
   );
+
+  protected readonly tagPostCounts = computed<Map<string, number>>(() => {
+    const m = new Map<string, number>();
+    for (const post of this.posts()) {
+      for (const id of post.tags) {
+        m.set(id, (m.get(id) ?? 0) + 1);
+      }
+    }
+    return m;
+  });
 
   protected readonly allTagOptions = computed<Tag[]>(() => {
     if (!this.tagsReady()) return [];
