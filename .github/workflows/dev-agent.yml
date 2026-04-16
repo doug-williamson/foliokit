@@ -1,0 +1,278 @@
+name: FolioKit Dev Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — print plan but make no changes'
+        type: boolean
+        default: false
+
+# One job at a time — prevents two agents racing on the same card.
+concurrency:
+  group: dev-agent
+  cancel-in-progress: false
+
+jobs:
+  pick-and-implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      # ── 0. Auth ──────────────────────────────────────────────────────────────
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Claude CLI (claude-code)
+        run: npm install -g @anthropic-ai/claude-code
+
+      # ── 1. Claim a card ──────────────────────────────────────────────────────
+      #
+      # Fetch the first card in "Ready for Dev", atomically move it to
+      # "In Progress", and write its details to GITHUB_ENV so later steps
+      # can reference them.  The move happens BEFORE any code is generated
+      # so a second concurrent run (if somehow triggered) finds an empty list.
+      #
+      - name: Claim card from Ready for Dev
+        id: claim
+        env:
+          TRELLO_KEY:   ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          LIST_READY:   ${{ secrets.TRELLO_LIST_READY_FOR_DEV }}
+          LIST_WIP:     ${{ secrets.TRELLO_LIST_IN_PROGRESS }}
+        run: |
+          node - <<'EOF'
+          const KEY   = process.env.TRELLO_KEY;
+          const TOKEN = process.env.TRELLO_TOKEN;
+          const LIST_READY = process.env.LIST_READY;
+          const LIST_WIP   = process.env.LIST_WIP;
+
+          const api = async (method, path, body = {}) => {
+            const url = new URL(`https://api.trello.com/1${path}`);
+            url.searchParams.set('key', KEY);
+            url.searchParams.set('token', TOKEN);
+            const opts = { method };
+            if (method !== 'GET') {
+              opts.headers = { 'Content-Type': 'application/json' };
+              opts.body = JSON.stringify(body);
+            }
+            const res = await fetch(url.toString(), opts);
+            if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+            return res.json();
+          };
+
+          const cards = await api('GET', `/lists/${LIST_READY}/cards?fields=id,name,desc,labels,url`);
+          if (cards.length === 0) {
+            console.log('NO_CARD');
+            // Signal to subsequent steps that there's nothing to do
+            const fs = await import('fs');
+            fs.appendFileSync(process.env.GITHUB_ENV, 'CARD_FOUND=false\n');
+            process.exit(0);
+          }
+
+          const card = cards[0];
+          console.log(`Claiming: ${card.name} (${card.id})`);
+
+          // Atomic move to In Progress
+          await api('PUT', `/cards/${card.id}`, { idList: LIST_WIP, pos: 'top' });
+
+          // Extract the primary library label (first label whose name matches a known package)
+          const PACKAGES = ['cms-core','cms-ui','cms-markdown','cms-admin-ui','docs-ui',
+                            'app:blog','app:admin','app:docs','functions','infra'];
+          const pkgLabel = card.labels.find(l => PACKAGES.includes(l.name))?.name ?? 'unknown';
+
+          // Write to GITHUB_ENV for downstream steps
+          const fs = await import('fs');
+          const lines = [
+            `CARD_FOUND=true`,
+            `CARD_ID=${card.id}`,
+            `CARD_URL=${card.url}`,
+            `CARD_PKG=${pkgLabel}`,
+            // Slug for branch name: lowercase, hyphens, max 50 chars
+            `CARD_SLUG=${card.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,50).replace(/-$/,'')}`,
+          ];
+          // Card description may contain newlines — base64 encode it
+          const descB64 = Buffer.from(card.desc ?? '').toString('base64');
+          lines.push(`CARD_DESC_B64=${descB64}`);
+          lines.push(`CARD_NAME=${card.name}`);
+          fs.appendFileSync(process.env.GITHUB_ENV, lines.join('\n') + '\n');
+          EOF
+
+      - name: Skip if no card available
+        if: env.CARD_FOUND == 'false'
+        run: |
+          echo "Ready for Dev is empty — nothing to do."
+          exit 0
+
+      # ── 2. Create feature branch ─────────────────────────────────────────────
+      - name: Create feature branch
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        run: |
+          BRANCH="feat/${CARD_SLUG}"
+          git config user.email "dev.foliokit@gmail.com"
+          git config user.name  "FolioKit Dev Agent"
+          git checkout -b "$BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+      # ── 3. Run Claude Code ───────────────────────────────────────────────────
+      #
+      # Claude Code runs non-interactively.  The prompt is assembled from:
+      #   - The card name and description (full context)
+      #   - The package label (narrows scope)
+      #   - Hard constraints inherited from the project system prompt
+      #
+      - name: Run Claude Code agent
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Decode the card description
+          CARD_DESC=$(echo "$CARD_DESC_B64" | base64 -d)
+
+          # Determine which paths Claude should focus on
+          case "$CARD_PKG" in
+            cms-core)     SCOPE_PATHS="libs/cms-core" ;;
+            cms-ui)       SCOPE_PATHS="libs/cms-ui" ;;
+            cms-markdown) SCOPE_PATHS="libs/cms-markdown" ;;
+            cms-admin-ui) SCOPE_PATHS="libs/cms-admin-ui" ;;
+            docs-ui)      SCOPE_PATHS="libs/docs-ui" ;;
+            app:blog)     SCOPE_PATHS="apps/blog" ;;
+            app:admin)    SCOPE_PATHS="apps/admin" ;;
+            app:docs)     SCOPE_PATHS="apps/docs" ;;
+            functions)    SCOPE_PATHS="functions" ;;
+            *)            SCOPE_PATHS="." ;;
+          esac
+
+          cat > /tmp/agent-prompt.md << PROMPT
+          # Trello card: ${CARD_NAME}
+          Trello card URL: ${CARD_URL}
+          Primary package: ${CARD_PKG}
+          Focused scope: ${SCOPE_PATHS}
+
+          ## Task description
+          ${CARD_DESC}
+
+          ## Hard constraints (do not violate)
+          - Angular 21 standalone components only — no NgModules
+          - Use new control flow syntax (@if, @for, @switch) — never *ngIf / *ngFor
+          - ChangeDetectionStrategy.OnPush on every component
+          - Prettier singleQuote: true
+          - No changes outside ${SCOPE_PATHS} unless the card description explicitly calls for cross-package work
+          - Preserve all existing public API surface — additive only on exports
+          - If adding a new injectable service, provide it via a factory function
+          - Nx module boundary rules: cms-admin-ui may depend on cms-core, never the reverse
+          - Firestore fields: string | null (never undefined) for nullable fields
+          - Conventional commits for all commit messages
+
+          ## Deliverables
+          1. All code changes committed to the current branch
+          2. A concise PR description written to /tmp/pr-description.md covering:
+             - What changed and why
+             - Any public API additions
+             - Manual verification steps
+             - Trello card link: ${CARD_URL}
+          PROMPT
+
+          claude --print --no-conversation \
+            --system-prompt "You are the FolioKit automated dev agent. Implement the task described in the prompt exactly as specified, committing all changes with conventional commit messages. Write the PR description to /tmp/pr-description.md when done." \
+            < /tmp/agent-prompt.md
+
+      # ── 4. Lint + build check ─────────────────────────────────────────────────
+      - name: Lint scope
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        run: |
+          case "$CARD_PKG" in
+            app:blog)     npx nx lint blog ;;
+            app:admin)    npx nx lint admin ;;
+            app:docs)     npx nx lint docs ;;
+            cms-*)        npx nx lint ${CARD_PKG} ;;
+            docs-ui)      npx nx lint docs-ui ;;
+            *)            echo "Skipping lint for scope: $CARD_PKG" ;;
+          esac
+
+      - name: Build scope
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        run: |
+          case "$CARD_PKG" in
+            app:blog)     npx nx build blog ;;
+            app:admin)    npx nx build admin ;;
+            app:docs)     npx nx build docs ;;
+            cms-*)        npx nx build ${CARD_PKG} ;;
+            docs-ui)      npx nx build docs-ui ;;
+            functions)    cd functions && npm run build ;;
+            *)            echo "Skipping build for scope: $CARD_PKG" ;;
+          esac
+
+      # ── 5. Commit + push ──────────────────────────────────────────────────────
+      - name: Commit and push
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        run: |
+          git add -A
+          # Only commit if there are actual changes
+          if git diff --staged --quiet; then
+            echo "No changes produced by agent — aborting."
+            exit 1
+          fi
+          git commit -m "feat(${CARD_PKG}): implement ${CARD_SLUG}
+
+          Trello: ${CARD_URL}"
+          git push origin "$BRANCH"
+
+      # ── 6. Open PR ────────────────────────────────────────────────────────────
+      - name: Create pull request
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          PR_BODY=$(cat /tmp/pr-description.md 2>/dev/null || echo "Implements Trello card: ${CARD_URL}")
+
+          gh pr create \
+            --title "feat(${CARD_PKG}): ${CARD_NAME}" \
+            --body "$PR_BODY" \
+            --base master \
+            --head "$BRANCH" \
+            --label "$CARD_PKG"
+
+      # ── 7. Add PR link to Trello card ─────────────────────────────────────────
+      - name: Attach PR link to Trello card
+        if: env.CARD_FOUND == 'true' && !inputs.dry_run
+        env:
+          TRELLO_KEY:   ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+        run: |
+          PR_URL=$(gh pr view --json url -q .url 2>/dev/null || echo "")
+          if [ -n "$PR_URL" ]; then
+            node - <<EOF
+          const res = await fetch(
+            \`https://api.trello.com/1/cards/${CARD_ID}/attachments?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}\`,
+            { method: 'POST', headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({ url: '$PR_URL', name: 'GitHub PR' }) }
+          );
+          console.log('Attachment status:', res.status);
+          EOF
+          fi
+
+      # ── 8. Handle failure — move card back to Ready for Dev ───────────────────
+      - name: Move card back on failure
+        if: failure() && env.CARD_FOUND == 'true'
+        env:
+          TRELLO_KEY:   ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          LIST_READY:   ${{ secrets.TRELLO_LIST_READY_FOR_DEV }}
+        run: |
+          node - <<EOF
+          const res = await fetch(
+            \`https://api.trello.com/1/cards/${CARD_ID}?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}\`,
+            { method: 'PUT', headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({ idList: '${LIST_READY}', pos: 'top' }) }
+          );
+          console.log('Card returned to Ready for Dev:', res.status);
+          EOF
