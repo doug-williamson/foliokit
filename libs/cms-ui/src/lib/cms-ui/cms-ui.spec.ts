@@ -20,7 +20,6 @@ const firebaseNullProviders = [
 
 const testConfig: ShellConfig = {
   appName: 'Test App',
-  nav: [],
 };
 
 // JSDOM doesn't implement window.matchMedia — stub it so ThemeService
@@ -78,7 +77,7 @@ describe('cms-ui public API smoke tests', () => {
     await TestBed.configureTestingModule({
       imports: [AppShellComponent],
       providers: [
-        { provide: SHELL_CONFIG, useValue: signal<ShellConfig>({ appName: 'My Blog', nav: [] }) },
+        { provide: SHELL_CONFIG, useValue: signal<ShellConfig>({ appName: 'My Blog' }) },
         provideRouter([]),
         provideAnimationsAsync(),
         ...firebaseNullProviders,
