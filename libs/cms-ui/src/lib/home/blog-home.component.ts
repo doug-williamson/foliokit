@@ -4,8 +4,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import type { SiteConfig } from '@foliokit/cms-core';
-import { BLOG_SEO_SERVICE, SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
+import type { BlogPost, SiteConfig } from '@foliokit/cms-core';
+import { BLOG_POST_SERVICE, BLOG_SEO_SERVICE, SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
 type HomeLoadState =
@@ -43,38 +43,36 @@ type HomeLoadState =
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-accent);
-      background: var(--teal-50);
-      border: 1px solid var(--border-accent);
+      color: #1A0A00;
+      background: var(--color-punch);
+      border: 2px solid #1A0A00;
       padding: 3px 10px;
-      border-radius: 100px;
+      border-radius: 0;
       margin-bottom: 20px;
-    }
-
-    [data-theme="dark"] .hero-eyebrow {
-      background: color-mix(in srgb, var(--teal-500) 10%, transparent);
     }
 
     .hero-eyebrow-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: var(--teal-400);
+      background: #1A0A00;
       flex-shrink: 0;
     }
 
     .hero-headline {
       font-family: var(--font-display);
-      font-size: clamp(2.4rem, 5vw, 3.8rem);
-      font-weight: 600;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       color: var(--text-primary);
       margin-bottom: 18px;
     }
 
     .hero-subheadline {
       font-size: 16px;
+      font-family: var(--font-body);
       line-height: 1.75;
       color: var(--text-secondary);
       margin-bottom: 28px;
@@ -88,6 +86,11 @@ type HomeLoadState =
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
+
+      @media (max-width: 480px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     .hero-skel-eyebrow {
@@ -122,41 +125,117 @@ type HomeLoadState =
 
     .btn-primary {
       display: inline-block;
-      background: var(--btn-primary-bg);
-      color: var(--btn-primary-text);
-      font-size: 15px;
+      background: var(--color-punch);
+      color: #1A0A00;
+      font-size: 1rem;
       padding: 13px 28px;
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-sm);
+      border-radius: 0;
+      border: 3px solid #1A0A00;
+      box-shadow: 4px 4px 0 #1A0A00;
       text-decoration: none;
-      font-weight: 600;
-      font-family: var(--font-body);
-      transition: background 0.12s, box-shadow 0.12s, transform 0.12s;
+      font-weight: 400;
+      font-family: var(--font-display);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: box-shadow 0.12s, transform 0.12s;
 
       &:hover {
-        background: var(--btn-primary-hover);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #1A0A00;
       }
     }
 
     .btn-secondary {
       display: inline-block;
-      background: var(--surface-1);
+      background: transparent;
       color: var(--text-primary);
-      font-size: 15px;
+      font-size: 1rem;
       padding: 13px 28px;
-      border-radius: var(--r-lg);
-      border: 1px solid var(--border-strong);
+      border-radius: 0;
+      border: 3px solid var(--border);
+      box-shadow: 4px 4px 0 var(--border);
       text-decoration: none;
-      font-weight: 600;
-      font-family: var(--font-body);
-      transition: background 0.12s, transform 0.12s;
+      font-weight: 400;
+      font-family: var(--font-display);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: box-shadow 0.12s, transform 0.12s;
 
       &:hover {
-        background: var(--surface-2);
-        transform: translateY(-1px);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #1A0A00;
       }
+    }
+
+    .recent-post-strip {
+      width: 100%;
+      max-width: 540px;
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    .recent-post-eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #1A0A00;
+      background: var(--color-punch);
+      border: 2px solid #1A0A00;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+    }
+
+    .recent-post-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      border: 2.5px solid #1A0A00;
+      box-shadow: 4px 4px 0 #1A0A00;
+      background: var(--surface-0);
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: box-shadow 0.12s, transform 0.12s;
+
+      &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #1A0A00;
+      }
+    }
+
+    .recent-post-img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #1A0A00;
+    }
+
+    .recent-post-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-post-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-primary);
+      margin: 0 0 4px;
+      line-height: 1.1;
+    }
+
+    .recent-post-excerpt {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
   `],
   template: `
@@ -200,6 +279,25 @@ type HomeLoadState =
               <a class="btn-secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
             }
           </div>
+
+          @if (showRecentPosts()) {
+            @if (recentPost(); as post) {
+              <div class="recent-post-strip">
+                <span class="recent-post-eyebrow">Latest Post</span>
+                <a [routerLink]="['/posts', post.slug]" class="recent-post-card">
+                  @if (post.thumbnailUrl) {
+                    <img [src]="post.thumbnailUrl" [alt]="post.title" class="recent-post-img" />
+                  }
+                  <div class="recent-post-body">
+                    <p class="recent-post-title">{{ post.title }}</p>
+                    @if (post.excerpt) {
+                      <p class="recent-post-excerpt">{{ post.excerpt }}</p>
+                    }
+                  </div>
+                </a>
+              </div>
+            }
+          }
         }
       </div>
     </div>
@@ -209,6 +307,7 @@ export class BlogHomeComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly siteConfigService = inject(SITE_CONFIG_SERVICE);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
+  private readonly postService = inject(BLOG_POST_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
 
   /** Set by {@link createHomeSiteConfigResolver} on standard blog routes (SSR + TransferState). */
@@ -268,6 +367,17 @@ export class BlogHomeComponent {
     const pages = this.siteConfig()?.pages;
     return pages?.about?.enabled ? '/about' : null;
   });
+
+  protected readonly showRecentPosts = computed(() =>
+    this.siteConfig()?.pages?.home?.showRecentPosts ?? false,
+  );
+
+  protected readonly recentPost = toSignal(
+    this.postService
+      ? this.postService.getPublishedPosts().pipe(take(1), map((posts) => posts[0] ?? null))
+      : of(null as BlogPost | null),
+    { initialValue: null as BlogPost | null },
+  );
 
   constructor() {
     effect(() => {

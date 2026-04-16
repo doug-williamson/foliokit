@@ -87,8 +87,9 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
 
       .onboarding-toolbar {
         flex-shrink: 0;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-0);
+        background: var(--color-hero);
+        border-bottom: 3px solid #1A0A00;
+        color: var(--color-hero-text);
 
         .folio-toolbar-brand {
           display: flex;
@@ -132,7 +133,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           font-family: var(--font-body);
           font-size: 15px;
           font-weight: 600;
-          color: var(--text-primary);
+          color: var(--color-hero-text);
           letter-spacing: -0.01em;
         }
 
@@ -146,6 +147,11 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+      }
+
+      :host-context([data-theme="dark"]) .onboarding-toolbar {
+        background: #1A0A00;
+        border-bottom-color: var(--color-punch);
       }
     `,
   ],

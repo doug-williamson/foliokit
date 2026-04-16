@@ -79,7 +79,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
           @if (row.enabled) {
             <a
               class="nav-item"
-              [class.nav-child]="row.id.startsWith('page-')"
+              [class.nav-child]="row.id !== 'dashboard'"
               [routerLink]="row.route"
               routerLinkActive="active-link"
               [routerLinkActiveOptions]="rlaOpts(row)"
@@ -94,7 +94,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
             <button
               type="button"
               class="nav-item nav-item--disabled"
-              [class.nav-child]="row.id.startsWith('page-')"
+              [class.nav-child]="row.id !== 'dashboard'"
               [attr.aria-disabled]="true"
               (click)="onDisabledTap(row)"
             >
@@ -118,7 +118,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item" routerLink="/settings" routerLinkActive="active-link">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>
