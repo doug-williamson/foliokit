@@ -18,25 +18,26 @@ html[data-theme='light'] {
     density: 0,
   ));
 
-  // FolioKit → M3 system token bridge
-  --mat-sys-primary:              #CC0000;
-  --mat-sys-on-primary:           #FFF8E7;
-  --mat-sys-primary-container:    #FF6B6B;
-  --mat-sys-on-primary-container: #1A0A00;
-  --mat-sys-secondary:            #0033AA;
-  --mat-sys-on-secondary:         #FFF8E7;
-  --mat-sys-secondary-container:  #6699FF;
-  --mat-sys-on-secondary-container: #00103A;
-  --mat-sys-tertiary:             #B8860B;
-  --mat-sys-on-tertiary:          #1A0A00;
-  --mat-sys-tertiary-container:   #FFD700;
-  --mat-sys-on-tertiary-container: #1A0A00;
-  --mat-sys-surface:              #FFF8E7;
-  --mat-sys-on-surface:           #1A0A00;
-  --mat-sys-surface-container:    #F5EDD0;
-  --mat-sys-surface-container-high: #EDE0B8;
-  --mat-sys-outline:              #1A0A00;
-  --mat-sys-outline-variant:      #8A6A40;
+  // FolioKit → M3 system token bridge — all references semantic vars so
+  // Material surfaces follow the active theme pack.
+  --mat-sys-primary:                 var(--btn-primary-bg);
+  --mat-sys-on-primary:              var(--btn-primary-text);
+  --mat-sys-primary-container:       var(--btn-primary-hover);
+  --mat-sys-on-primary-container:    var(--text-primary);
+  --mat-sys-secondary:               var(--teal-700);
+  --mat-sys-on-secondary:            var(--text-on-accent);
+  --mat-sys-secondary-container:     var(--teal-200);
+  --mat-sys-on-secondary-container:  var(--teal-900);
+  --mat-sys-tertiary:                var(--violet-500);
+  --mat-sys-on-tertiary:             var(--text-on-accent);
+  --mat-sys-tertiary-container:      var(--violet-100);
+  --mat-sys-on-tertiary-container:   var(--text-primary);
+  --mat-sys-surface:                 var(--surface-0);
+  --mat-sys-on-surface:              var(--text-primary);
+  --mat-sys-surface-container:       var(--surface-1);
+  --mat-sys-surface-container-high:  var(--surface-2);
+  --mat-sys-outline:                 var(--border-strong);
+  --mat-sys-outline-variant:         var(--border);
   --mat-sys-background: var(--bg);
 
   // ── Typography token bridge ─────────────────────────────────────────────
@@ -68,8 +69,6 @@ html[data-theme='light'] {
   --mat-form-field-outlined-idle-outline-color: var(--border-strong);
   --mat-form-field-outlined-hover-outline-color: var(--border-accent);
   --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
-  --mdc-outlined-text-field-label-text-size: 12px;
-  --mdc-outlined-text-field-label-text-weight: 500;
 }
 
 // ─── Dark Theme ──────────────────────────────────────────────────────────────
@@ -85,15 +84,26 @@ html[data-theme='dark'] {
     density: 0,
   ));
 
-  // FolioKit → M3 system token bridge
-  --mat-sys-primary:    #FF6B6B;
-  --mat-sys-on-primary: #1A0A00;
-  --mat-sys-secondary:  #6699FF;
-  --mat-sys-on-secondary: #00103A;
-  --mat-sys-surface:    #1A0A00;
-  --mat-sys-on-surface: #FFF8E7;
-  --mat-sys-surface-container: #2B1400;
-  --mat-sys-outline:    #C8A87A;
+  // FolioKit → M3 system token bridge — all references semantic vars so
+  // Material surfaces follow the active theme pack.
+  --mat-sys-primary:                 var(--btn-primary-bg);
+  --mat-sys-on-primary:              var(--btn-primary-text);
+  --mat-sys-primary-container:       var(--btn-primary-hover);
+  --mat-sys-on-primary-container:    var(--text-primary);
+  --mat-sys-secondary:               var(--teal-300);
+  --mat-sys-on-secondary:            var(--slate-950);
+  --mat-sys-secondary-container:     var(--teal-700);
+  --mat-sys-on-secondary-container:  var(--teal-100);
+  --mat-sys-tertiary:                var(--violet-400);
+  --mat-sys-on-tertiary:             var(--slate-950);
+  --mat-sys-tertiary-container:      var(--violet-600);
+  --mat-sys-on-tertiary-container:   var(--violet-100);
+  --mat-sys-surface:                 var(--surface-0);
+  --mat-sys-on-surface:              var(--text-primary);
+  --mat-sys-surface-container:       var(--surface-1);
+  --mat-sys-surface-container-high:  var(--surface-2);
+  --mat-sys-outline:                 var(--border-strong);
+  --mat-sys-outline-variant:         var(--border);
   --mat-sys-background: var(--bg);
 
   // ── Typography token bridge (same as light — see comment above) ─────────
@@ -122,6 +132,4 @@ html[data-theme='dark'] {
   --mat-form-field-outlined-idle-outline-color: var(--border-strong);
   --mat-form-field-outlined-hover-outline-color: var(--border-accent);
   --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
-  --mdc-outlined-text-field-label-text-size: 12px;
-  --mdc-outlined-text-field-label-text-weight: 500;
 }

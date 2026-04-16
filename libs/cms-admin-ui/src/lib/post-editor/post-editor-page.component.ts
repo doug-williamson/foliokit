@@ -79,7 +79,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
        */
       mat-sidenav {
         width: min(520px, 100vw);
-        border-left: 1px solid var(--border);
+        border-left: var(--border-width) solid var(--border);
       }
       mat-sidenav-container {
         flex: 1;
@@ -125,7 +125,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         gap: 8px;
         padding: 8px 12px;
         background: var(--surface-2);
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
         flex-shrink: 0;
       }
 

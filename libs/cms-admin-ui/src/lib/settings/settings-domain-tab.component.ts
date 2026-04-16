@@ -78,7 +78,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
 
       .settings-section {
         padding: 24px 0;
-        border-top: 1px solid var(--border);
+        border-top: var(--border-width) solid var(--border);
       }
 
       .settings-section--gated {
@@ -108,7 +108,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--text-accent);
-        border: 1px solid var(--text-accent);
+        border: var(--border-width) solid var(--text-accent);
         border-radius: 4px;
         padding: 1px 6px;
         font-family: var(--font-mono);

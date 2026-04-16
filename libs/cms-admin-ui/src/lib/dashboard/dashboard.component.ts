@@ -45,7 +45,7 @@ const PLAN_LABELS: Record<string, string> = {
       /* Section A — Quick actions */
       .section-header {
         padding: 32px 32px 24px;
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -63,7 +63,7 @@ const PLAN_LABELS: Record<string, string> = {
       /* Section B — Recent posts */
       .section-posts {
         padding: 24px 32px;
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
       }
       .section-title-row {
         display: flex;
@@ -186,7 +186,7 @@ const PLAN_LABELS: Record<string, string> = {
       }
       .health-tile {
         background: var(--surface-1);
-        border: 1px solid var(--border);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--r-md);
         padding: 16px;
         display: flex;

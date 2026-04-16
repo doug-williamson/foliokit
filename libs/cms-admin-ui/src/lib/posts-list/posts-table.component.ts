@@ -51,7 +51,7 @@ import { PostsListStore } from './posts-list.store';
       font-weight: 400;
       color: var(--text-muted);
       padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: var(--border-width) solid var(--border);
       text-align: left;
       white-space: nowrap;
     }
@@ -62,7 +62,7 @@ import { PostsListStore } from './posts-list.store';
 
     td {
       padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: var(--border-width) solid var(--border);
       vertical-align: middle;
     }
 

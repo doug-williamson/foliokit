@@ -90,7 +90,7 @@ import { BillingCheckoutService } from '../services/billing-checkout.service';
 
       .billing-section {
         background: var(--surface-1);
-        border: 1px solid var(--border);
+        border: var(--border-width) solid var(--border);
         border-radius: 8px;
         padding: 1.5rem;
       }
@@ -118,7 +118,7 @@ import { BillingCheckoutService } from '../services/billing-checkout.service';
         align-items: center;
         padding: 0.2rem 0.55rem;
         border-radius: var(--r-sm);
-        border: 1px solid var(--border-strong);
+        border: var(--border-width) solid var(--border-strong);
         font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.08em;
@@ -167,7 +167,7 @@ import { BillingCheckoutService } from '../services/billing-checkout.service';
 
       .warning-banner {
         background: color-mix(in srgb, var(--red-100) 68%, transparent);
-        border: 1px solid color-mix(in srgb, var(--red-600) 35%, var(--border-strong));
+        border: var(--border-width) solid color-mix(in srgb, var(--red-600) 35%, var(--border-strong));
         border-radius: var(--r-md);
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
@@ -175,7 +175,7 @@ import { BillingCheckoutService } from '../services/billing-checkout.service';
       }
 
       .upgrade-card {
-        border-top: 1px solid var(--border);
+        border-top: var(--border-width) solid var(--border);
         padding-top: 1.5rem;
         display: flex;
         flex-direction: column;
@@ -203,7 +203,7 @@ import { BillingCheckoutService } from '../services/billing-checkout.service';
       }
 
       .manage-row {
-        border-top: 1px solid var(--border);
+        border-top: var(--border-width) solid var(--border);
         padding-top: 1.5rem;
       }
     `,

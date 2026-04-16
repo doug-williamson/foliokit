@@ -135,7 +135,7 @@ const UPGRADE_FRAGMENT = 'billing';
     .pg-mock-group {
       background: var(--surface-1);
       border-radius: var(--r-lg);
-      border: 1px solid var(--border);
+      border: var(--border-width) solid var(--border);
       overflow: hidden;
     }
 
@@ -144,7 +144,7 @@ const UPGRADE_FRAGMENT = 'billing';
       display: flex;
       align-items: center;
       gap: 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: var(--border-width) solid var(--border);
       background: var(--surface-2);
     }
 
@@ -232,7 +232,7 @@ const UPGRADE_FRAGMENT = 'billing';
 
     .pg-error {
       font-size: 12px;
-      color: var(--mat-sys-error, #b00020);
+      color: var(--mat-sys-error);
       margin: 0 0 12px;
       line-height: 1.4;
       max-width: 100%;

@@ -50,9 +50,8 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
     .links-name {
       font-family: var(--font-display);
       font-size: 1.5rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       color: var(--text-primary);
       text-align: center;
       margin-top: 16px;
@@ -77,34 +76,26 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
     .link-btn {
       width: 100%;
       margin-top: 0;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
       background: var(--surface-0);
-      border: 2px solid #1A0A00;
-      border-radius: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
       padding: 13px 18px;
-      box-shadow: none;
+      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
       cursor: pointer;
-      transition: background 0.12s, color 0.12s;
+      transition: box-shadow 0.18s, transform 0.18s, border-color 0.12s;
 
       &:hover {
-        background: var(--color-punch);
-        color: #1A0A00;
-        border-color: #1A0A00;
+        border-color: var(--border-accent);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
 
         .link-icon {
-          color: #1A0A00;
-        }
-
-        .link-label {
-          color: #1A0A00;
-        }
-
-        .link-chevron {
-          color: #1A0A00;
+          color: var(--text-accent);
         }
       }
 
@@ -112,8 +103,9 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: var(--color-hero);
+        color: var(--text-accent);
         flex-shrink: 0;
+        transition: color 0.12s;
       }
 
       .link-label {

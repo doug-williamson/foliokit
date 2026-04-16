@@ -169,7 +169,7 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
       flex: 1;
       height: 36px;
       padding: 0 0.75rem;
-      border: 1px solid var(--border);
+      border: var(--border-width) solid var(--border);
       border-radius: 6px;
       background: var(--surface-0);
       color: var(--text-primary);
@@ -223,7 +223,7 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
 
     .ds-dns-card {
       background: var(--surface-1);
-      border: 1px solid var(--border);
+      border: var(--border-width) solid var(--border);
       border-radius: 8px;
       padding: 1rem 1.25rem;
       margin-bottom: 1rem;
@@ -248,7 +248,7 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
         letter-spacing: 0.05em;
         color: var(--text-muted);
         padding: 0.35rem 0.5rem;
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
       }
 
       td {
