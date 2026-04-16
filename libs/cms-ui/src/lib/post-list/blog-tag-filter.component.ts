@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
   signal,
@@ -20,13 +21,22 @@ import type { Tag } from '@foliokit/cms-core';
       >
         All
       </button>
-      @for (tag of tags(); track tag.id) {
+      @for (tag of visibleTags(); track tag.id) {
         <button
           class="tag-chip"
           [class.tag-chip--active]="activeTag() === tag.id"
           (click)="select(tag.id)"
         >
           {{ tag.label }}
+        </button>
+      }
+      @if (tags().length > 8) {
+        <button
+          class="tag-chip tag-chip--control"
+          [attr.aria-expanded]="showAllTags()"
+          (click)="showAllTags.set(!showAllTags())"
+        >
+          {{ showAllTags() ? 'Show less' : 'Show all (' + tags().length + ')' }}
         </button>
       }
     </div>
@@ -67,6 +77,18 @@ import type { Tag } from '@foliokit/cms-core';
           color: var(--text-accent);
         }
       }
+
+      &.tag-chip--control {
+        color: var(--text-muted);
+        background: var(--surface-2);
+        border-color: var(--border);
+
+        &:hover {
+          color: var(--text-primary);
+          background: var(--surface-2);
+          border-color: var(--border-accent);
+        }
+      }
     }
 
     :host-context([data-theme="dark"]) .tag-chip.tag-chip--active,
@@ -77,9 +99,22 @@ import type { Tag } from '@foliokit/cms-core';
 })
 export class BlogTagFilterComponent {
   readonly tags = input.required<Tag[]>();
+  readonly postCounts = input<Map<string, number>>(new Map());
   readonly tagSelected = output<string | null>();
 
   protected readonly activeTag = signal<string | null>(null);
+  protected readonly showAllTags = signal(false);
+
+  protected readonly sortedTags = computed(() =>
+    [...this.tags()].sort((a, b) => {
+      const diff = (this.postCounts().get(b.id) ?? 0) - (this.postCounts().get(a.id) ?? 0);
+      return diff !== 0 ? diff : a.label.localeCompare(b.label);
+    }),
+  );
+
+  protected readonly visibleTags = computed(() =>
+    this.showAllTags() ? this.sortedTags() : this.sortedTags().slice(0, 8),
+  );
 
   protected select(tag: string | null): void {
     this.activeTag.set(tag);
