@@ -88,6 +88,8 @@ export interface SiteConfig {
    * reverting the UI to the onboarding layout.
    */
   onboardingComplete?: boolean;
+  /** Active theme pack ID. null = use service default (editorial). */
+  themePackId?: string | null;
   /** Unix milliseconds. */
   updatedAt: number;
 }
