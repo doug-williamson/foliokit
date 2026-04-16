@@ -47,9 +47,10 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
 
     .about-name {
       font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.015em;
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       color: var(--text-primary);
       text-align: center;
       margin-top: 16px;
@@ -70,17 +71,24 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 20px;
+
+      @media (max-width: 480px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     .social-link {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--r-md);
+      border: 2px solid #1A0A00;
+      border-radius: 0;
       padding: 6px 12px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 700;
+      font-family: var(--font-body);
       color: var(--text-secondary);
       background: var(--surface-0);
       text-decoration: none;
@@ -93,8 +101,9 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       }
 
       &:hover {
-        background: var(--surface-2);
-        color: var(--text-primary);
+        background: var(--color-punch);
+        color: #1A0A00;
+        border-color: #1A0A00;
       }
     }
 

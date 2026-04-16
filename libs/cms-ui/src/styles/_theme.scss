@@ -19,12 +19,24 @@ html[data-theme='light'] {
   ));
 
   // FolioKit → M3 system token bridge
-  --mat-sys-primary: var(--teal-500);
-  --mat-sys-on-primary: #FFFFFF;
-  --mat-sys-surface: var(--surface-1);
-  --mat-sys-on-surface: var(--text-primary);
-  --mat-sys-surface-variant: var(--surface-2);
-  --mat-sys-outline: var(--border-strong);
+  --mat-sys-primary:              #CC0000;
+  --mat-sys-on-primary:           #FFF8E7;
+  --mat-sys-primary-container:    #FF6B6B;
+  --mat-sys-on-primary-container: #1A0A00;
+  --mat-sys-secondary:            #0033AA;
+  --mat-sys-on-secondary:         #FFF8E7;
+  --mat-sys-secondary-container:  #6699FF;
+  --mat-sys-on-secondary-container: #00103A;
+  --mat-sys-tertiary:             #B8860B;
+  --mat-sys-on-tertiary:          #1A0A00;
+  --mat-sys-tertiary-container:   #FFD700;
+  --mat-sys-on-tertiary-container: #1A0A00;
+  --mat-sys-surface:              #FFF8E7;
+  --mat-sys-on-surface:           #1A0A00;
+  --mat-sys-surface-container:    #F5EDD0;
+  --mat-sys-surface-container-high: #EDE0B8;
+  --mat-sys-outline:              #1A0A00;
+  --mat-sys-outline-variant:      #8A6A40;
   --mat-sys-background: var(--bg);
 
   // ── Typography token bridge ─────────────────────────────────────────────
@@ -74,12 +86,14 @@ html[data-theme='dark'] {
   ));
 
   // FolioKit → M3 system token bridge
-  --mat-sys-primary: var(--teal-400);
-  --mat-sys-on-primary: var(--slate-950);
-  --mat-sys-surface: var(--surface-1);
-  --mat-sys-on-surface: var(--text-primary);
-  --mat-sys-surface-variant: var(--surface-2);
-  --mat-sys-outline: var(--border-strong);
+  --mat-sys-primary:    #FF6B6B;
+  --mat-sys-on-primary: #1A0A00;
+  --mat-sys-secondary:  #6699FF;
+  --mat-sys-on-secondary: #00103A;
+  --mat-sys-surface:    #1A0A00;
+  --mat-sys-on-surface: #FFF8E7;
+  --mat-sys-surface-container: #2B1400;
+  --mat-sys-outline:    #C8A87A;
   --mat-sys-background: var(--bg);
 
   // ── Typography token bridge (same as light — see comment above) ─────────

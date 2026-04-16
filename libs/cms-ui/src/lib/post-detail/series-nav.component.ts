@@ -67,8 +67,9 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       margin-top: 24px;
       padding: 16px 20px;
       background: var(--surface-1);
-      border: 1px solid var(--border);
-      border-radius: var(--r-xl, 12px);
+      border: 2.5px solid #1A0A00;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #1A0A00;
     }
 
     .series-nav-header {
@@ -76,6 +77,13 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       align-items: baseline;
       gap: 10px;
       margin-bottom: 12px;
+      /* Bleed to card edges to form a solid header band */
+      margin-top: -16px;
+      margin-left: -20px;
+      margin-right: -20px;
+      padding: 8px 20px;
+      background: var(--color-sky);
+      border-bottom: 2px solid #1A0A00;
     }
 
     .series-title {
@@ -83,12 +91,12 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
     }
 
     .series-title-link {
-      font-family: var(--font-body);
+      font-family: var(--font-mono);
       font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--color-sky-text);
       text-decoration: none;
     }
 
@@ -97,9 +105,10 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
     }
 
     .series-part {
-      font-family: var(--font-body);
+      font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: var(--text-muted);
+      color: var(--color-sky-text);
+      opacity: 0.8;
     }
 
     .series-toc {

@@ -142,14 +142,17 @@ mat-sidenav.icon-rail {
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 
-::ng-deep mat-sidenav .nav-item {
+::ng-deep mat-sidenav .nav-item,
+::ng-deep mat-sidenav .mat-mdc-list-item {
   height: 40px;
   padding: 0 16px;
   gap: 10px;
   display: flex !important;
   align-items: center;
-  font-size: 13px;
-  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--text-secondary);
   text-decoration: none;
   border-left: 2px solid transparent;
@@ -168,10 +171,10 @@ mat-sidenav.icon-rail {
   }
 
   &.active-link {
-    border-left-color: var(--text-accent);
-    background: var(--surface-2);
-    color: var(--text-accent);
-    font-weight: 500;
+    border-left-color: var(--nav-active-color);
+    background: var(--nav-active-bg);
+    color: var(--nav-active-color);
+    font-weight: 700;
     padding-left: 14px;
   }
 }
@@ -280,14 +283,14 @@ mat-sidenav.icon-rail {
   font-family: var(--font-display);
   font-size: 17px;
   font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
+  color: var(--color-hero-text);
+  letter-spacing: 0.04em;
   margin-left: 6px;
   white-space: nowrap;
 
   em {
     font-style: italic;
-    color: var(--text-muted);
+    color: rgba(255, 248, 231, 0.7);
     font-weight: 400;
   }
 }
@@ -312,15 +315,30 @@ mat-sidenav.icon-rail {
   top: 0;
   z-index: 100;
   height: 56px;
-  background: color-mix(in srgb, var(--surface-2) 85%, transparent);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
+  background: var(--color-hero);
+  border-bottom: 3px solid #1A0A00;
   gap: 4px;
+  color: var(--color-hero-text);
 
   /* Extra air between sidenav toggle and brand (menu is only first child when shown). */
   > button.mat-mdc-icon-button:first-child {
     margin-inline-end: 8px;
   }
+
+  /* All icon buttons in the toolbar inherit hero-text color */
+  button.mat-mdc-icon-button {
+    color: var(--color-hero-text);
+  }
+
+  /* Theme toggle (last icon button) uses the punch/yellow color */
+  button.mat-mdc-icon-button:last-of-type {
+    color: var(--color-punch);
+  }
+}
+
+[data-theme="dark"] .folio-toolbar {
+  background: #1A0A00;
+  border-bottom-color: var(--color-punch);
 }
 
 .folio-toolbar-brand {
@@ -387,5 +405,12 @@ mat-sidenav.icon-rail {
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+// ─── Mobile drawer max-width fix ──────────────────────────────────────────────
+@media (max-width: 768px) {
+  mat-sidenav {
+    max-width: min(280px, 85vw);
   }
 }

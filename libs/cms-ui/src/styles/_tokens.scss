@@ -99,10 +99,18 @@
   --hero-title-color:   #ffffff;
   --hero-meta-color:    rgba(255,255,255,0.75);
 
+  /* Comic book brand palette */
+  --color-hero:       #CC0000;
+  --color-hero-text:  #FFF8E7;
+  --color-punch:      #FFD700;
+  --color-punch-text: #1A0A00;
+  --color-sky:        #0033AA;
+  --color-sky-text:   #FFF8E7;
+
   /* Typography */
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'Bangers', 'Impact', cursive;
+  --font-body:    'Nunito', 'Arial Rounded MT Bold', sans-serif;
+  --font-mono:    'VT323', 'Courier New', monospace;
   /* Radii */
   --r-xs:  2px;
   --r-sm:  4px;
@@ -115,36 +123,36 @@
   --code-block-text: #CDD9E8;
 }
 [data-theme="light"] {
-  --bg:             var(--cloud-100);
-  --bg-subtle:      var(--cloud-200);
-  --surface-0:      var(--cloud-0);
-  --surface-1:      var(--cloud-100);
-  --surface-2:      var(--cloud-200);
-  --surface-3:      var(--cloud-300);
-  --border:         var(--slate-200);
-  --border-strong:  var(--slate-300);
-  --border-accent:  var(--teal-300);
-  --text-primary:   var(--slate-900);
-  --text-secondary: var(--slate-600);
-  --text-muted:     var(--slate-400);
+  --bg:             #FFF8E7;
+  --bg-subtle:      #F5EDD0;
+  --surface-0:      #FFFDF4;
+  --surface-1:      #FFF8E7;
+  --surface-2:      #F5EDD0;
+  --surface-3:      #EDE0B8;
+  --border:         #1A0A00;
+  --border-strong:  #1A0A00;
+  --border-accent:  var(--color-hero);
+  --text-primary:   #1A0A00;
+  --text-secondary: #3D1F00;
+  --text-muted:     #8A6A40;
   --text-disabled:  var(--slate-300);
-  --text-accent:    var(--teal-600);
-  --text-on-accent: #FFFFFF;
-  --text-on-dark:   #E8EDF5;
-  --btn-primary-bg:    var(--teal-500);
-  --btn-primary-text:  #FFFFFF;
-  --btn-primary-hover: var(--teal-600);
-  --logo-bg:   var(--slate-900);
-  --logo-text: var(--cloud-0);
-  --logo-dot:  var(--teal-400);
-  --focus-ring:   rgba(42, 151, 151, 0.22);
-  --focus-border: var(--teal-500);
+  --text-accent:    #CC0000;
+  --text-on-accent: #FFF8E7;
+  --text-on-dark:   #FFF8E7;
+  --btn-primary-bg:    var(--color-punch);
+  --btn-primary-text:  #1A0A00;
+  --btn-primary-hover: #e6c200;
+  --logo-bg:   #1A0A00;
+  --logo-text: #FFF8E7;
+  --logo-dot:  var(--color-punch);
+  --focus-ring:   rgba(204, 0, 0, 0.22);
+  --focus-border: var(--color-hero);
   --shadow-sm: 0 1px 3px rgba(12,15,20,0.07), 0 1px 2px rgba(12,15,20,0.04);
   --shadow-md: 0 3px 10px rgba(12,15,20,0.08), 0 1px 4px rgba(12,15,20,0.05);
   --shadow-lg: 0 8px 28px rgba(12,15,20,0.10), 0 2px 8px rgba(12,15,20,0.06);
   --shadow-xl: 0 20px 56px rgba(12,15,20,0.12), 0 4px 16px rgba(12,15,20,0.07);
-  --nav-active-bg:    var(--teal-50);
-  --nav-active-color: var(--teal-800);
+  --nav-active-bg:    color-mix(in srgb, var(--color-hero) 10%, transparent);
+  --nav-active-color: #CC0000;
   --overlay-dark: rgba(0, 0, 0, 0.45);
   --warning:          var(--amber-600);
   --warning-subtle:   var(--amber-100);
@@ -236,42 +244,41 @@
   width: 96px;
   height: 96px;
   font-size: 32px;
+  border: 3px solid #1A0A00;
+  box-shadow: 4px 4px 0 #1A0A00;
 }
 
 [data-theme="dark"] {
-  --bg:             #1A1F2E;
-  --bg-subtle:      #1E2535;
-  --surface-0:      #242B3D;
-  --surface-1:      #2A3347;
-  --surface-2:      #303B52;
-  --surface-3:      #3A4660;
-  --border:         rgba(255, 255, 255, 0.09);
-  --border-strong:  rgba(255, 255, 255, 0.16);
-  --border-accent:  rgba(56, 178, 172, 0.40);
-  --text-primary:   #E8EDF5;
-  --text-secondary: #9AACBF;
-  --text-muted:     #5F7490;
-  --text-disabled:  #3D4F63;
-  --text-accent:    var(--teal-300);
-  --text-on-accent: var(--slate-950);
-  --text-on-dark:   #E8EDF5;
-  --btn-primary-bg:    var(--teal-400);
-  /* teal-400 (#4FD1C5) on white = 4.6:1 — passes WCAG AA.
-     If you override --btn-primary-bg to a dark colour, also set --btn-primary-text
-     to a light value to maintain contrast. */
-  --btn-primary-text:  #ffffff;
-  --btn-primary-hover: var(--teal-300);
-  --logo-bg:   var(--teal-500);
-  --logo-text: #FFFFFF;
-  --logo-dot:  var(--teal-200);
-  --focus-ring:   rgba(56, 178, 172, 0.28);
-  --focus-border: var(--teal-400);
+  --bg:             #1A0A00;
+  --bg-subtle:      #2B1400;
+  --surface-0:      #1A0A00;
+  --surface-1:      #2B1400;
+  --surface-2:      #3D1F00;
+  --surface-3:      #542B00;
+  --border:         #C8A87A;
+  --border-strong:  #C8A87A;
+  --border-accent:  #FF6B6B;
+  --text-primary:   #FFF8E7;
+  --text-secondary: #F5EDD0;
+  --text-muted:     #C8A87A;
+  --text-disabled:  #8A6A40;
+  --text-accent:    #FF6B6B;
+  --text-on-accent: #1A0A00;
+  --text-on-dark:   #FFF8E7;
+  --btn-primary-bg:    var(--color-punch);
+  --btn-primary-text:  #1A0A00;
+  --btn-primary-hover: #e6c200;
+  --logo-bg:   #2B1400;
+  --logo-text: #FFF8E7;
+  --logo-dot:  var(--color-punch);
+  --focus-ring:   rgba(255, 107, 107, 0.28);
+  --focus-border: #FF6B6B;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
   --shadow-md: 0 3px 10px rgba(0,0,0,0.35);
   --shadow-lg: 0 8px 28px rgba(0,0,0,0.40);
   --shadow-xl: 0 20px 56px rgba(0,0,0,0.50);
-  --nav-active-bg:    rgba(56, 178, 172, 0.14);
-  --nav-active-color: var(--text-primary);
+  --nav-active-bg:    color-mix(in srgb, #FF6B6B 14%, transparent);
+  --nav-active-color: #FF6B6B;
   --overlay-dark: rgba(0, 0, 0, 0.55);
   --warning:          var(--amber-400);
   --warning-subtle:   rgba(122, 74, 0, 0.18);

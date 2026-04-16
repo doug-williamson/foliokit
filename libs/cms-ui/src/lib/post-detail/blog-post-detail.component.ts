@@ -212,14 +212,19 @@ interface PostShareLinks {
   styles: [`
     :host { display: block; }
 
+    /* Bug 2 fix: prevent blank gap below content on mobile */
+    :host > div {
+      min-height: 0 !important;
+    }
+
     .surface-card {
       background: var(--surface-0);
-      border-radius: var(--r-2xl);
-      box-shadow: var(--shadow-sm);
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .folio-post-subtitle {
-      font-family: var(--font-display);
+      font-family: var(--font-body);
       font-style: italic;
       font-size: 1.125rem;
       line-height: 1.6;
@@ -229,12 +234,41 @@ interface PostShareLinks {
 
     .post-title {
       font-family: var(--font-display);
-      font-size: clamp(1.7rem, 3.5vw, 2.7rem);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       color: var(--text-primary);
       margin-bottom: 12px;
+    }
+
+    /* Hero image: ink border + offset shadow */
+    .w-full.overflow-hidden {
+      border: 3px solid #1A0A00;
+      box-shadow: 6px 6px 0 #1A0A00;
+      border-radius: 0 !important;
+    }
+
+    /* Back link */
+    a.transition-colors {
+      font-family: var(--font-body);
+      font-weight: 700;
+      color: var(--text-accent) !important;
+
+      &:hover {
+        color: var(--color-hero) !important;
+      }
+    }
+
+    /* Byline tag pills */
+    a.rounded-full {
+      background-color: var(--color-punch) !important;
+      color: #1A0A00 !important;
+      border: 2px solid #1A0A00;
+      border-radius: 0 !important;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
     }
 
     .post-meta {
@@ -310,14 +344,14 @@ interface PostShareLinks {
       font-weight: 600;
       letter-spacing: 0.07em;
       text-transform: uppercase;
-      color: var(--text-accent);
+      color: var(--color-sky-text);
       text-decoration: none;
       padding: 2px 8px;
-      border-radius: 100px;
-      background: color-mix(in srgb, var(--text-accent) 10%, transparent);
-      border: 1px solid color-mix(in srgb, var(--text-accent) 25%, transparent);
-      transition: background 0.15s;
-      &:hover { background: color-mix(in srgb, var(--text-accent) 18%, transparent); }
+      border-radius: 0;
+      background: var(--color-sky);
+      border: 2px solid #1A0A00;
+      transition: opacity 0.15s;
+      &:hover { opacity: 0.85; }
     }
 
     .series-eyebrow-pos {
