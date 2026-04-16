@@ -1,16 +1,16 @@
 export interface FontFaceSource {
   /** 'google' = inject <link> tag; 'face' = inject inline @font-face <style> block */
-  type: 'google' | 'face';
+  readonly type: 'google' | 'face';
   /** For 'google': the full Google Fonts URL. For 'face': the @font-face CSS string. */
-  url: string;
+  readonly url: string;
 }
 
 export interface ThemePackTypography {
-  display: string;  // e.g. "'Fraunces', Georgia, serif"
-  body: string;     // e.g. "'Plus Jakarta Sans', system-ui, sans-serif"
-  mono: string;     // e.g. "'JetBrains Mono', 'Fira Code', monospace"
+  readonly display: string;  // e.g. "'Fraunces', Georgia, serif"
+  readonly body: string;     // e.g. "'Plus Jakarta Sans', system-ui, sans-serif"
+  readonly mono: string;     // e.g. "'JetBrains Mono', 'Fira Code', monospace"
   /** Future: --fs-xs etc. overrides. Unused for now — include in type, leave unimplemented. */
-  scale?: Readonly<Record<string, string>>;
+  readonly scale?: Readonly<Record<string, string>>;
 }
 
 export interface ThemePack {
