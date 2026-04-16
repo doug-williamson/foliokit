@@ -10,9 +10,10 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { CollectionPaths } from '../firebase/collection-paths';
 import { FIRESTORE } from '../firebase/firebase.config';
 import type { Series } from '../models/series.model';
@@ -131,6 +132,28 @@ export class SeriesService {
       catchError((err) => {
         console.error('[SeriesService.delete]', err);
         throw err;
+      }),
+    );
+  }
+
+  syncPostCount(seriesId: string): Observable<void> {
+    const q = query(
+      collection(this.firestore, this.paths.collection('posts')),
+      where('seriesId', '==', seriesId),
+      where('status', '==', 'published'),
+    );
+    return from(getDocs(q)).pipe(
+      switchMap((snap) =>
+        from(
+          updateDoc(doc(this.firestore, this.paths.collection('series'), seriesId), {
+            postCount: snap.size,
+            updatedAt: Timestamp.now(),
+          }),
+        ),
+      ),
+      catchError((err) => {
+        console.error('[SeriesService.syncPostCount]', err);
+        return of(undefined as void);
       }),
     );
   }

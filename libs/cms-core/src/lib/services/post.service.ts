@@ -104,6 +104,7 @@ export class PostService implements IBlogPostService {
     const q = query(
       collection(this.firestore, this.paths.collection('posts')),
       where('seriesId', '==', seriesId),
+      where('status', '==', 'published'),
       orderBy('publishedAt', 'desc'),
     );
     return from(getDocs(q)).pipe(

@@ -9,7 +9,7 @@ import {
 import { computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable, tap } from 'rxjs';
-import { BlogPost, PostService } from '@foliokit/cms-core';
+import { BlogPost, PostService, SeriesService } from '@foliokit/cms-core';
 
 export interface PostEditorState {
   post: BlogPost | null;
@@ -72,7 +72,7 @@ export const PostEditorStore = signalStore(
     }),
   })),
 
-  withMethods((store, postService = inject(PostService), router = inject(Router)) => {
+  withMethods((store, postService = inject(PostService), router = inject(Router), seriesService = inject(SeriesService)) => {
     const discardChanges = (): void => {
       const base = store.persistedPost();
       if (!base) return;
@@ -122,6 +122,7 @@ export const PostEditorStore = signalStore(
       save(): Observable<BlogPost> {
         const post = store.post();
         if (!post) return EMPTY as Observable<BlogPost>;
+        const prevSeriesId = store.persistedPost()?.seriesId;
         patchState(store, { isSaving: true, saveError: null });
         return postService.savePost(post).pipe(
           tap({
@@ -134,6 +135,13 @@ export const PostEditorStore = signalStore(
                 saveError: null,
                 mode: 'edit',
               });
+              const newSeriesId = saved.seriesId;
+              if (prevSeriesId && prevSeriesId !== newSeriesId) {
+                seriesService.syncPostCount(prevSeriesId).subscribe();
+              }
+              if (newSeriesId) {
+                seriesService.syncPostCount(newSeriesId).subscribe();
+              }
             },
             error: (err: unknown) => {
               const message =
@@ -181,6 +189,7 @@ export const PostEditorStore = signalStore(
         if (!post) return EMPTY as Observable<BlogPost>;
         const prevStatus = post.status;
         const prevPublishedAt = post.publishedAt;
+        const seriesId = post.seriesId;
         patchState(store, {
           post: { ...post, status: 'draft', publishedAt: 0 },
           isDirty: true,
@@ -197,6 +206,7 @@ export const PostEditorStore = signalStore(
                 saveError: null,
                 mode: 'edit',
               });
+              if (seriesId) seriesService.syncPostCount(seriesId).subscribe();
             },
             error: (err: unknown) => {
               const message =
@@ -217,11 +227,13 @@ export const PostEditorStore = signalStore(
       deletePost(): Observable<void> {
         const post = store.post();
         if (!post?.id) return EMPTY as Observable<void>;
+        const seriesId = post.seriesId;
         patchState(store, { isSaving: true, saveError: null });
         return postService.deletePost(post.id).pipe(
           tap({
             next: () => {
               patchState(store, { isDirty: false, isSaving: false, saveError: null });
+              if (seriesId) seriesService.syncPostCount(seriesId).subscribe();
               router.navigate(['/posts']);
             },
             error: (err: unknown) => {
@@ -237,6 +249,7 @@ export const PostEditorStore = signalStore(
         if (!post) return EMPTY as Observable<BlogPost>;
         const prevStatus = post.status;
         const prevPublishedAt = post.publishedAt;
+        const seriesId = post.seriesId;
         const now = Date.now();
         patchState(store, {
           post: { ...post, status: 'published', publishedAt: now },
@@ -254,6 +267,7 @@ export const PostEditorStore = signalStore(
                 saveError: null,
                 mode: 'edit',
               });
+              if (seriesId) seriesService.syncPostCount(seriesId).subscribe();
             },
             error: (err: unknown) => {
               const message =
