@@ -26,3 +26,6 @@ export * from './lib/routes/blog.routes';
 export * from './lib/series/series.resolver';
 export * from './lib/series/series-list.component';
 export * from './lib/series/series-detail.component';
+
+// ── Theming ───────────────────────────────────────────────────────────────────
+export * from './lib/theming';

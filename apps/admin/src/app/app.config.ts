@@ -3,6 +3,7 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from 
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideFolioKit } from '@foliokit/cms-core';
 import { provideAdminKit } from '@foliokit/cms-admin-ui';
+import { provideThemePacks } from '@foliokit/cms-ui';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 
@@ -23,5 +24,6 @@ export const appConfig: ApplicationConfig = {
       adminEmail: environment.adminEmail,
       cloudFunctionsBaseUrl: environment.cloudFunctionsBaseUrl,
     }),
+    provideThemePacks(),
   ],
 };
