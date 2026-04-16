@@ -36,7 +36,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         width: 100%;
         max-width: 440px;
         background: var(--surface-1);
-        border: 1px solid var(--border);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--r-lg);
         padding: 32px;
         display: flex;
@@ -70,7 +70,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         align-items: center;
         gap: 4px;
         padding: 10px 0;
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
       }
 
       .page-row:last-child {

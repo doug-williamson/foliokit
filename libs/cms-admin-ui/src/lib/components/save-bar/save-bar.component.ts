@@ -26,7 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         padding: 12px 16px;
         padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
         background: var(--mat-sys-surface-container-high, var(--mat-sys-surface));
-        border-top: 1px solid var(--border, color-mix(in srgb, currentColor 12%, transparent));
+        border-top: var(--border-width) solid var(--border);
         box-shadow: 0 -4px 12px color-mix(in srgb, currentColor 8%, transparent);
         transform: translateY(100%);
         transition: transform 200ms ease;

@@ -38,9 +38,9 @@ import type { Tag } from '@foliokit/cms-core';
       display: inline-flex;
       align-items: center;
       padding: 0.3125rem 0.875rem;
-      border-radius: 0;
-      border: 2px solid var(--border);
-      background: var(--surface-2);
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface-1);
       color: var(--text-secondary);
       font-size: 0.7rem;
       font-family: var(--font-mono);
@@ -51,22 +51,27 @@ import type { Tag } from '@foliokit/cms-core';
       line-height: 1;
 
       &:hover {
-        background: var(--color-hero);
-        color: var(--color-hero-text);
-        border-color: #1A0A00;
+        background: var(--surface-2);
+        color: var(--text-primary);
+        border-color: var(--border-accent);
       }
 
       &.tag-chip--active {
-        background-color: var(--color-punch);
-        border-color: #1A0A00;
-        color: #1A0A00;
+        background-color: var(--teal-50);
+        border-color: var(--border-accent);
+        color: var(--text-accent);
 
         &:hover {
-          background-color: var(--color-punch);
-          border-color: #1A0A00;
-          color: #1A0A00;
+          background-color: var(--teal-50);
+          border-color: var(--border-accent);
+          color: var(--text-accent);
         }
       }
+    }
+
+    :host-context([data-theme="dark"]) .tag-chip.tag-chip--active,
+    :host-context([data-theme="dark"]) .tag-chip.tag-chip--active:hover {
+      background-color: rgba(42, 151, 151, 0.12);
     }
   `],
 })

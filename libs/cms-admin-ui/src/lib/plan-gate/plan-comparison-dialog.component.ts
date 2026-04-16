@@ -88,13 +88,13 @@ const FEATURE_ROWS: FeatureRow[] = [
         letter-spacing: 0.05em;
         text-transform: uppercase;
         color: var(--text-muted);
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
         font-family: var(--font-mono);
       }
 
       td {
         padding: 8px 12px;
-        border-bottom: 1px solid var(--border);
+        border-bottom: var(--border-width) solid var(--border);
         color: var(--text-primary);
         vertical-align: middle;
       }

@@ -48,9 +48,9 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
     .about-name {
       font-family: var(--font-display);
       font-size: clamp(1.8rem, 6vw, 2.8rem);
-      font-weight: 400;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
       color: var(--text-primary);
       text-align: center;
       margin-top: 16px;
@@ -83,27 +83,30 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       align-items: center;
       justify-content: center;
       gap: 6px;
-      border: 2px solid #1A0A00;
-      border-radius: 0;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 700;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-lg);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
       font-family: var(--font-body);
-      color: var(--text-secondary);
-      background: var(--surface-0);
+      color: var(--text-primary);
+      background: var(--surface-1);
       text-decoration: none;
-      transition: background 0.12s, color 0.12s;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.12s, box-shadow 0.12s, transform 0.12s, border-color 0.12s;
 
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
+        color: var(--text-accent);
       }
 
       &:hover {
-        background: var(--color-punch);
-        color: #1A0A00;
-        border-color: #1A0A00;
+        background: var(--surface-2);
+        border-color: var(--border-accent);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
       }
     }
 

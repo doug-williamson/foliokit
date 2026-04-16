@@ -49,7 +49,7 @@ const UPGRADE_FRAGMENT = 'billing';
         margin: 0 0 20px;
         font-size: 0.9375rem;
         line-height: 1.5;
-        color: var(--text-secondary, #666);
+        color: var(--text-secondary);
       }
       .folio-upgrade-sheet__cta {
         width: 100%;

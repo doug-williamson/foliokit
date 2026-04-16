@@ -16,10 +16,10 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
     .card {
       background: var(--surface-0);
-      border: 2.5px solid #1A0A00;
-      border-radius: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
       overflow: hidden;
-      box-shadow: 4px 4px 0 #1A0A00;
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -27,17 +27,8 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       transition: box-shadow 0.18s, transform 0.18s;
 
       &:hover {
-        box-shadow: 6px 6px 0 #1A0A00;
-        transform: translate(-2px, -2px);
-      }
-    }
-
-    :host-context([data-theme="dark"]) .card {
-      border-color: var(--border);
-      box-shadow: 4px 4px 0 var(--color-punch);
-
-      &:hover {
-        box-shadow: 6px 6px 0 var(--color-punch);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
       }
     }
 
@@ -88,32 +79,35 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
     .chip {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 9px;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       padding: 2px 8px;
-      border-radius: 0;
-      background: var(--color-punch);
-      border: 2px solid #1A0A00;
-      color: #1A0A00;
+      border-radius: 100px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
       white-space: nowrap;
       position: relative;
       z-index: 20;
     }
 
     .chip--primary {
-      background: var(--color-punch);
-      border-color: #1A0A00;
-      color: #1A0A00;
+      background: var(--teal-50);
+      border-color: var(--border-accent);
+      color: var(--text-accent);
+    }
+
+    :host-context([data-theme="dark"]) .chip--primary {
+      background: rgba(42, 151, 151, 0.12);
     }
 
     .card-title {
       font-family: var(--font-display);
       font-size: clamp(1.1rem, 3.5vw, 1.4rem);
-      font-weight: 400;
-      line-height: 1.1;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
       color: var(--text-primary);
       margin-bottom: 6px;
     }

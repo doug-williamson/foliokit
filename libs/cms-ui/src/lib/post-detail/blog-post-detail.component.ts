@@ -235,19 +235,11 @@ interface PostShareLinks {
     .post-title {
       font-family: var(--font-display);
       font-size: clamp(2rem, 8vw, 3.5rem);
-      font-weight: 400;
-      line-height: 0.95;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
       color: var(--text-primary);
       margin-bottom: 12px;
-    }
-
-    /* Hero image: ink border + offset shadow */
-    .w-full.overflow-hidden {
-      border: 3px solid #1A0A00;
-      box-shadow: 6px 6px 0 #1A0A00;
-      border-radius: 0 !important;
     }
 
     /* Back link */
@@ -257,18 +249,9 @@ interface PostShareLinks {
       color: var(--text-accent) !important;
 
       &:hover {
-        color: var(--color-hero) !important;
+        color: var(--text-accent) !important;
+        opacity: 0.85;
       }
-    }
-
-    /* Byline tag pills */
-    a.rounded-full {
-      background-color: var(--color-punch) !important;
-      color: #1A0A00 !important;
-      border: 2px solid #1A0A00;
-      border-radius: 0 !important;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
     }
 
     .post-meta {
@@ -342,16 +325,20 @@ interface PostShareLinks {
       font-family: var(--font-mono);
       font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--color-sky-text);
+      color: var(--text-accent);
       text-decoration: none;
       padding: 2px 8px;
-      border-radius: 0;
-      background: var(--color-sky);
-      border: 2px solid #1A0A00;
+      border-radius: 100px;
+      background: var(--teal-50);
+      border: 1px solid var(--border-accent);
       transition: opacity 0.15s;
       &:hover { opacity: 0.85; }
+    }
+
+    :host-context([data-theme="dark"]) .series-eyebrow-link {
+      background: rgba(42, 151, 151, 0.12);
     }
 
     .series-eyebrow-pos {

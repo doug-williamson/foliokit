@@ -57,7 +57,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
       }
       .drag-handle:active { cursor: grabbing; }
       .cdk-drag-preview {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        box-shadow: var(--shadow-md);
         border-radius: 8px;
         opacity: 0.95;
       }

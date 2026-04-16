@@ -87,9 +87,9 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
 
       .onboarding-toolbar {
         flex-shrink: 0;
-        background: var(--color-hero);
-        border-bottom: 3px solid #1A0A00;
-        color: var(--color-hero-text);
+        background: var(--surface-1);
+        border-bottom: var(--border-width) solid var(--border);
+        color: var(--text-primary);
 
         .folio-toolbar-brand {
           display: flex;
@@ -103,7 +103,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           width: 28px;
           height: 28px;
           background: var(--logo-bg);
-          border-radius: 6px;
+          border-radius: var(--r-md);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -133,7 +133,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           font-family: var(--font-body);
           font-size: 15px;
           font-weight: 600;
-          color: var(--color-hero-text);
+          color: var(--text-primary);
           letter-spacing: -0.01em;
         }
 
@@ -150,8 +150,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
       }
 
       :host-context([data-theme="dark"]) .onboarding-toolbar {
-        background: #1A0A00;
-        border-bottom-color: var(--color-punch);
+        background: var(--surface-1);
+        border-bottom-color: var(--border);
       }
     `,
   ],

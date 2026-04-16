@@ -56,7 +56,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
         <div class="flex flex-col items-center gap-1">
           @if (darkUrl(); as url) {
             <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group"
-                 style="background: #1a1a1a">
+                 style="background: var(--surface-2)">
               <img [src]="url" alt="Image (dark)" class="w-full h-full object-cover" />
               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                    style="background: rgba(0,0,0,0.5)">
