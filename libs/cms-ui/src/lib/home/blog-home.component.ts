@@ -4,8 +4,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import type { SiteConfig } from '@foliokit/cms-core';
-import { BLOG_SEO_SERVICE, SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
+import type { BlogPost, SiteConfig } from '@foliokit/cms-core';
+import { BLOG_POST_SERVICE, BLOG_SEO_SERVICE, SITE_CONFIG_SERVICE } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
 
 type HomeLoadState =
@@ -166,6 +166,77 @@ type HomeLoadState =
         box-shadow: 2px 2px 0 #1A0A00;
       }
     }
+
+    .recent-post-strip {
+      width: 100%;
+      max-width: 540px;
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    .recent-post-eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #1A0A00;
+      background: var(--color-punch);
+      border: 2px solid #1A0A00;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+    }
+
+    .recent-post-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      border: 2.5px solid #1A0A00;
+      box-shadow: 4px 4px 0 #1A0A00;
+      background: var(--surface-0);
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: box-shadow 0.12s, transform 0.12s;
+
+      &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #1A0A00;
+      }
+    }
+
+    .recent-post-img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #1A0A00;
+    }
+
+    .recent-post-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-post-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-primary);
+      margin: 0 0 4px;
+      line-height: 1.1;
+    }
+
+    .recent-post-excerpt {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
   `],
   template: `
     <div class="hero">
@@ -208,6 +279,25 @@ type HomeLoadState =
               <a class="btn-secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
             }
           </div>
+
+          @if (showRecentPosts()) {
+            @if (recentPost(); as post) {
+              <div class="recent-post-strip">
+                <span class="recent-post-eyebrow">Latest Post</span>
+                <a [routerLink]="['/posts', post.slug]" class="recent-post-card">
+                  @if (post.thumbnailUrl) {
+                    <img [src]="post.thumbnailUrl" [alt]="post.title" class="recent-post-img" />
+                  }
+                  <div class="recent-post-body">
+                    <p class="recent-post-title">{{ post.title }}</p>
+                    @if (post.excerpt) {
+                      <p class="recent-post-excerpt">{{ post.excerpt }}</p>
+                    }
+                  </div>
+                </a>
+              </div>
+            }
+          }
         }
       </div>
     </div>
@@ -217,6 +307,7 @@ export class BlogHomeComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly siteConfigService = inject(SITE_CONFIG_SERVICE);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
+  private readonly postService = inject(BLOG_POST_SERVICE, { optional: true });
   private readonly document = inject(DOCUMENT);
 
   /** Set by {@link createHomeSiteConfigResolver} on standard blog routes (SSR + TransferState). */
@@ -276,6 +367,17 @@ export class BlogHomeComponent {
     const pages = this.siteConfig()?.pages;
     return pages?.about?.enabled ? '/about' : null;
   });
+
+  protected readonly showRecentPosts = computed(() =>
+    this.siteConfig()?.pages?.home?.showRecentPosts ?? false,
+  );
+
+  protected readonly recentPost = toSignal(
+    this.postService
+      ? this.postService.getPublishedPosts().pipe(take(1), map((posts) => posts[0] ?? null))
+      : of(null as BlogPost | null),
+    { initialValue: null as BlogPost | null },
+  );
 
   constructor() {
     effect(() => {

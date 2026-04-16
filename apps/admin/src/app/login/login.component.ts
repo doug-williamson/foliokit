@@ -24,14 +24,14 @@ import { ThemeService } from '@foliokit/cms-ui';
         min-height: 100vh;
         background-color: var(--bg);
         background-image:
-          radial-gradient(ellipse 60% 50% at 20% 30%, rgba(42, 151, 151, 0.12) 0%, transparent 70%),
-          radial-gradient(ellipse 50% 60% at 80% 70%, rgba(71, 85, 105, 0.10) 0%, transparent 70%);
+          radial-gradient(ellipse 60% 50% at 20% 30%, rgba(204, 0, 0, 0.08) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 60% at 80% 70%, rgba(255, 215, 0, 0.06) 0%, transparent 70%);
       }
 
       :host-context([data-theme="dark"]) {
         background-image:
-          radial-gradient(ellipse 60% 50% at 20% 30%, rgba(42, 151, 151, 0.18) 0%, transparent 70%),
-          radial-gradient(ellipse 50% 60% at 80% 70%, rgba(56, 178, 172, 0.10) 0%, transparent 70%);
+          radial-gradient(ellipse 60% 50% at 20% 30%, rgba(204, 0, 0, 0.14) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 60% at 80% 70%, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
       }
 
       @keyframes loginCardEnter {
@@ -43,9 +43,9 @@ import { ThemeService } from '@foliokit/cms-ui';
         width: 380px;
         max-width: calc(100vw - 48px);
         background: var(--surface-0);
-        border: 1px solid var(--border);
-        border-radius: var(--r-xl);
-        box-shadow: var(--shadow-lg);
+        border: 2.5px solid #1A0A00;
+        border-radius: 0;
+        box-shadow: 5px 5px 0 #1A0A00;
         padding: 40px 36px 36px;
         display: flex;
         flex-direction: column;

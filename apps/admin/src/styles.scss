@@ -192,11 +192,6 @@
 /* ── Admin-scoped mobile-first retro skin (no public site impact) ───────── */
 
 .folio-admin {
-  /* Single admin UI stack (display/body/mono all resolve here). */
-  --admin-ui-font: Tahoma, Verdana, 'Segoe UI', sans-serif;
-  --font-display: var(--admin-ui-font);
-  --font-body: var(--admin-ui-font);
-  --font-mono: var(--admin-ui-font);
   --r-xs: 0px;
   --r-sm: 1px;
   --r-md: 2px;
@@ -205,37 +200,18 @@
   --r-2xl: 4px;
   --mat-form-field-container-shape: 1px;
   --admin-page-padding-x: clamp(12px, 4vw, 24px);
-
-  font-family: var(--admin-ui-font);
-
-  /* Re-bridge M3 typography tokens so nested var(--font-*) resolves to admin stack. */
-  --mat-sys-body-large-font: var(--admin-ui-font);
-  --mat-sys-body-medium-font: var(--admin-ui-font);
-  --mat-sys-body-small-font: var(--admin-ui-font);
-  --mat-sys-label-large-font: var(--admin-ui-font);
-  --mat-sys-label-medium-font: var(--admin-ui-font);
-  --mat-sys-label-small-font: var(--admin-ui-font);
-  --mat-sys-title-medium-font: var(--admin-ui-font);
-  --mat-sys-title-small-font: var(--admin-ui-font);
-  --mat-sys-title-large-font: var(--admin-ui-font);
-  --mat-sys-display-large-font: var(--admin-ui-font);
-  --mat-sys-display-medium-font: var(--admin-ui-font);
-  --mat-sys-display-small-font: var(--admin-ui-font);
-  --mat-sys-headline-large-font: var(--admin-ui-font);
-  --mat-sys-headline-medium-font: var(--admin-ui-font);
-  --mat-sys-headline-small-font: var(--admin-ui-font);
 }
 
 html[data-theme='light'] .folio-admin {
-  --surface-1: color-mix(in srgb, var(--cloud-100) 92%, #ffffff);
-  --surface-2: color-mix(in srgb, var(--cloud-200) 88%, #ffffff);
-  --surface-3: color-mix(in srgb, var(--cloud-300) 84%, #ffffff);
+  --surface-1: #FFF8E7;
+  --surface-2: #F5EDD0;
+  --surface-3: #EDE0B8;
 }
 
 html[data-theme='dark'] .folio-admin {
-  --surface-1: color-mix(in srgb, var(--slate-900) 94%, #000000);
-  --surface-2: color-mix(in srgb, var(--slate-800) 92%, #000000);
-  --surface-3: color-mix(in srgb, var(--slate-700) 90%, #000000);
+  --surface-1: #2B1400;
+  --surface-2: #3D1F00;
+  --surface-3: #542B00;
 }
 
 .folio-admin .folio-content {
@@ -248,12 +224,6 @@ html[data-theme='dark'] .folio-admin {
       color-mix(in srgb, var(--border) 34%, transparent) 16px
     ),
     var(--bg);
-}
-
-.folio-admin .folio-toolbar {
-  backdrop-filter: none;
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border-strong);
 }
 
 .folio-admin mat-sidenav {
@@ -284,7 +254,7 @@ html[data-theme='dark'] .folio-admin {
 
 .folio-admin .section-label,
 .folio-admin .admin-section-label {
-  font-family: var(--admin-ui-font);
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -293,7 +263,7 @@ html[data-theme='dark'] .folio-admin {
 }
 
 .folio-admin .admin-meta {
-  font-family: var(--admin-ui-font);
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -317,7 +287,7 @@ html[data-theme='dark'] .folio-admin {
 .folio-admin .badge {
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  font-family: var(--admin-ui-font);
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -328,63 +298,34 @@ html[data-theme='dark'] .folio-admin {
 }
 
 .folio-admin .badge-pub {
-  background: color-mix(in srgb, var(--teal-200) 70%, transparent);
-  color: var(--teal-700);
-  border-color: color-mix(in srgb, var(--teal-500) 45%, var(--border-strong));
+  background: color-mix(in srgb, var(--color-sky) 20%, transparent);
+  color: #0033AA;
+  border-color: color-mix(in srgb, var(--color-sky) 40%, var(--border));
+}
+
+[data-theme='dark'] .folio-admin .badge-pub {
+  color: var(--color-sky-text);
 }
 
 .folio-admin .badge-draft {
-  background: color-mix(in srgb, var(--slate-200) 75%, transparent);
-  color: var(--slate-700);
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+  color: var(--text-muted);
+  border-color: var(--border);
 }
 
 .folio-admin .badge-sched {
-  background: color-mix(in srgb, var(--blue-100) 80%, transparent);
-  color: var(--blue-700);
-  border-color: color-mix(in srgb, var(--blue-600) 45%, var(--border-strong));
+  background: color-mix(in srgb, var(--color-punch) 25%, transparent);
+  color: #5A3A00;
+  border-color: color-mix(in srgb, var(--color-punch) 50%, var(--border));
+}
+
+[data-theme='dark'] .folio-admin .badge-sched {
+  color: var(--color-punch);
 }
 
 .folio-admin .badge-arch {
-  background: color-mix(in srgb, var(--violet-100) 80%, transparent);
-  color: var(--violet-600);
-  border-color: color-mix(in srgb, var(--violet-600) 40%, var(--border-strong));
+  background: color-mix(in srgb, var(--color-hero) 15%, transparent);
+  color: var(--color-hero);
+  border-color: color-mix(in srgb, var(--color-hero) 30%, var(--border));
 }
 
-/* Angular Material MDC often bakes Plus Jakarta Sans; force admin stack on interactive surfaces. */
-.folio-admin .mdc-button__label,
-.folio-admin .mat-mdc-button,
-.folio-admin .mat-mdc-unelevated-button,
-.folio-admin .mat-mdc-outlined-button,
-.folio-admin .mat-mdc-button-base,
-.folio-admin .mat-mdc-icon-button,
-.folio-admin .mat-mdc-mini-fab,
-.folio-admin .mat-mdc-fab,
-.folio-admin .mat-mdc-form-field,
-.folio-admin .mat-mdc-form-field .mat-mdc-floating-label,
-.folio-admin .mat-mdc-form-field .mdc-floating-label,
-.folio-admin .mat-mdc-form-field .mat-mdc-form-field-hint,
-.folio-admin .mat-mdc-input-element,
-.folio-admin textarea.mat-mdc-input-element,
-.folio-admin .mat-mdc-select,
-.folio-admin .mat-mdc-select-value,
-.folio-admin .mat-mdc-option,
-.folio-admin .mat-mdc-menu-item,
-.folio-admin .mat-mdc-menu-item-text,
-.folio-admin .mat-mdc-tab,
-.folio-admin .mat-mdc-tab .mdc-tab__text-label,
-.folio-admin .mat-mdc-chip,
-.folio-admin .mat-mdc-chip-action-label,
-.folio-admin .mat-mdc-standard-chip .mdc-evolution-chip__text-label,
-.folio-admin .mat-mdc-slide-toggle .mdc-label,
-.folio-admin .mat-mdc-radio-button .mdc-label,
-.folio-admin .mat-mdc-checkbox .mdc-label,
-.folio-admin .mat-datepicker-content,
-.folio-admin .mat-calendar,
-.folio-admin .mat-mdc-dialog-container,
-.folio-admin .mat-mdc-dialog-title,
-.folio-admin .mat-mdc-table,
-.folio-admin .mat-mdc-paginator,
-.folio-admin .mat-mdc-tooltip,
-.folio-admin .mat-mdc-snack-bar-container {
-  font-family: var(--admin-ui-font) !important;
-}
