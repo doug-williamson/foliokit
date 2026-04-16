@@ -8,8 +8,7 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { take } from 'rxjs/operators';
 import { ThemePack } from './theme-pack.model';
 import { FOLIOKIT_THEME_PACKS } from './theme-pack.tokens';
@@ -37,7 +36,7 @@ export class ThemePackService {
   // ── public signals ────────────────────────────────────────────────────────
   private readonly _activePack: WritableSignal<ThemePack> = signal(EDITORIAL_PACK);
   readonly activePack: Signal<ThemePack> = this._activePack.asReadonly();
-  readonly availablePacks: Signal<ReadonlyArray<ThemePack>> = computed(() => this.allPacks);
+  readonly availablePacks: Signal<ReadonlyArray<ThemePack>> = signal(this.allPacks).asReadonly();
 
   // ── private state ─────────────────────────────────────────────────────────
   /** Tracks which CSS property keys the current pack applied so they can be cleared on pack change. */

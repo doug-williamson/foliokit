@@ -1,4 +1,4 @@
-export type { ThemePack, FontFaceSource } from './theme-pack.model';
+export type { ThemePack, FontFaceSource, ThemePackTypography } from './theme-pack.model';
 export { ThemePackService } from './theme-pack.service';
 export { FOLIOKIT_THEME_PACKS } from './theme-pack.tokens';
 export { provideThemePacks } from './provide-theme-packs';
