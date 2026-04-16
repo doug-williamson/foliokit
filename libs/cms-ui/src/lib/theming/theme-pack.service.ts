@@ -35,7 +35,8 @@ export class ThemePackService {
   ];
 
   // ── public signals ────────────────────────────────────────────────────────
-  readonly activePack: WritableSignal<ThemePack> = signal(EDITORIAL_PACK);
+  private readonly _activePack: WritableSignal<ThemePack> = signal(EDITORIAL_PACK);
+  readonly activePack: Signal<ThemePack> = this._activePack.asReadonly();
   readonly availablePacks: Signal<ReadonlyArray<ThemePack>> = computed(() => this.allPacks);
 
   // ── private state ─────────────────────────────────────────────────────────
@@ -47,6 +48,8 @@ export class ThemePackService {
   constructor() {
     // Apply editorial tokens immediately as the default (before Firestore resolves).
     this.applyTokens();
+    // Load editorial fonts immediately.
+    this.loadFonts(EDITORIAL_PACK);
 
     // Re-apply tokens whenever the color mode changes.
     effect(() => {
@@ -68,7 +71,7 @@ export class ThemePackService {
   // ── public API ────────────────────────────────────────────────────────────
 
   setPack(pack: ThemePack, options?: { persist?: boolean }): void {
-    this.activePack.set(pack);
+    this._activePack.set(pack);
     this.applyTokens();
     this.loadFonts(pack);
 
