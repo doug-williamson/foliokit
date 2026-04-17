@@ -6,6 +6,13 @@ import { SettingsProTabComponent } from './settings-pro-tab.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SettingsProTabComponent],
-  template: `<folio-settings-pro-tab />`,
+  template: `
+    <div class="page-header">
+      <div class="page-header-title">
+        <h1 class="page-heading">Settings</h1>
+      </div>
+    </div>
+    <folio-settings-pro-tab />
+  `,
 })
 export class SettingsPageComponent {}

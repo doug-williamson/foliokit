@@ -105,7 +105,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             <p class="settings-section-body">
               Point your own domain to your FolioKit site.
             </p>
-            <button mat-stroked-button color="primary" (click)="scrollToUpgrade()">
+            <button mat-stroked-button color="primary">
               Upgrade to Pro to unlock
             </button>
           </section>
@@ -125,7 +125,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             <p class="settings-section-body">
               Replace the FolioKit header mark with your own logo.
             </p>
-            <button mat-stroked-button color="primary" (click)="scrollToUpgrade()">
+            <button mat-stroked-button color="primary">
               Upgrade to Pro to unlock
             </button>
           </section>
@@ -152,7 +152,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
     .billing-section {
       background: var(--surface-1);
       border: var(--border-width) solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--r-lg);
       padding: 1.5rem;
     }
 
@@ -178,7 +178,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
       display: inline-flex;
       align-items: center;
       padding: 0.2rem 0.55rem;
-      border-radius: 1px;
+      border-radius: var(--r-xs);
       border: var(--border-width) solid var(--border-strong);
       font-size: 0.75rem;
       font-weight: 600;
@@ -344,10 +344,6 @@ export class SettingsProTabComponent implements OnInit {
     } catch {
       this.loadState.set('error');
     }
-  }
-
-  protected scrollToUpgrade(): void {
-    document.getElementById('upgrade-cta')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   protected planLabel(plan: string | undefined): string {
