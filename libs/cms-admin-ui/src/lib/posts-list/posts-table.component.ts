@@ -8,6 +8,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { take } from 'rxjs/operators';
@@ -22,7 +23,7 @@ import { PostsListStore } from './posts-list.store';
   selector: 'folio-posts-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [DatePipe, MatButtonModule, MatDivider, MatIconModule, MatMenuModule],
   host: { class: 'block min-w-0' },
   styles: [`
     :host {
@@ -45,7 +46,7 @@ import { PostsListStore } from './posts-list.store';
 
     th {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 11px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       font-weight: 400;
@@ -100,13 +101,13 @@ import { PostsListStore } from './posts-list.store';
     }
 
     .cell-title-meta-date {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-muted);
     }
 
     .cell-meta {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-muted);
       white-space: nowrap;
       min-width: 0;
@@ -123,7 +124,7 @@ import { PostsListStore } from './posts-list.store';
     .cell-meta-date {
       display: block;
       margin-top: 4px;
-      font-size: 10px;
+      font-size: 11px;
     }
 
     /* Give the status column a fixed width so title gets the rest */
@@ -206,6 +207,17 @@ import { PostsListStore } from './posts-list.store';
                 @if (post.status === 'published') {
                   <button mat-menu-item (click)="confirmUnpublish(post)">Unpublish</button>
                 }
+                @if (post.status !== 'archived') {
+                  <button mat-menu-item (click)="archivePost(post)">Archive</button>
+                }
+                <mat-divider />
+                <button
+                  mat-menu-item
+                  [style.color]="'var(--mat-sys-error)'"
+                  (click)="confirmDelete(post)"
+                >
+                  Delete…
+                </button>
               </mat-menu>
             </td>
           </tr>
@@ -234,6 +246,29 @@ export class PostsTableComponent {
     if (status === 'published') return 'PUBLISHED';
     if (status === 'archived') return 'ARCHIVED';
     return 'DRAFT';
+  }
+
+  protected archivePost(post: BlogPost): void {
+    this.store.archivePost(post.id);
+  }
+
+  protected confirmDelete(post: BlogPost): void {
+    const title = post.title?.trim() || 'Untitled';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete post?',
+          message: `Permanently delete "${title}"? This cannot be undone.`,
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          destructive: true,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.deletePost(post.id);
+      });
   }
 
   protected confirmUnpublish(post: BlogPost): void {

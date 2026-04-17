@@ -129,6 +129,7 @@ import { PostsTableComponent } from './posts-table.component';
             <button mat-menu-item (click)="store.setFilterStatus('all')">All</button>
             <button mat-menu-item (click)="store.setFilterStatus('draft')">Draft</button>
             <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
+            <button mat-menu-item (click)="store.setFilterStatus('archived')">Archived</button>
           </mat-menu>
 
           <!-- Tablet+: chip strip -->
@@ -141,6 +142,7 @@ import { PostsTableComponent } from './posts-table.component';
               <mat-chip-option value="all">All</mat-chip-option>
               <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
               <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
+              <mat-chip-option value="archived">Archived</mat-chip-option>
             </mat-chip-listbox>
           </div>
         </div>

@@ -10,7 +10,7 @@ import {
 import { BlogPost, PostService } from '@foliokit/cms-core';
 
 export type PostStatus = BlogPost['status'];
-export type PostFilterStatus = 'draft' | 'published';
+export type PostFilterStatus = 'draft' | 'published' | 'archived';
 
 export interface PostsListState {
   posts: BlogPost[];
@@ -98,6 +98,35 @@ export const PostsListStore = signalStore(
 
       setFilterStatus(status: PostFilterStatus | 'all'): void {
         patchState(store, { filterStatus: status });
+      },
+
+      archivePost(id: string): void {
+        const post = store.posts().find((p) => p.id === id);
+        if (!post) return;
+        const updated: BlogPost = { ...post, status: 'archived' };
+        postService.savePost(updated).subscribe({
+          next: () => {
+            patchState(store, {
+              posts: store.posts().map((p) => (p.id === id ? updated : p)),
+            });
+          },
+          error: (err: unknown) => {
+            console.error('[PostsListStore.archivePost]', err);
+          },
+        });
+      },
+
+      deletePost(id: string): void {
+        postService.deletePost(id).subscribe({
+          next: () => {
+            patchState(store, {
+              posts: store.posts().filter((p) => p.id !== id),
+            });
+          },
+          error: (err: unknown) => {
+            console.error('[PostsListStore.deletePost]', err);
+          },
+        });
       },
 
       unpublishPost(id: string): void {
