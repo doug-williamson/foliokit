@@ -181,9 +181,10 @@ jobs:
              - Trello card link: ${CARD_URL}
           PROMPT
 
-          claude --print --no-conversation \
+          claude -p "$(cat /tmp/agent-prompt.md)" \
             --system-prompt "You are the FolioKit automated dev agent. Implement the task described in the prompt exactly as specified, committing all changes with conventional commit messages. Write the PR description to /tmp/pr-description.md when done." \
-            < /tmp/agent-prompt.md
+            --dangerously-skip-permissions \
+            --max-turns 30
 
       # ── 4. Lint + build check ─────────────────────────────────────────────────
       - name: Lint scope
