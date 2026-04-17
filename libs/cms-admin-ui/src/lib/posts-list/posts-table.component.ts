@@ -208,9 +208,11 @@ import { PostsListStore } from './posts-list.store';
                   <button mat-menu-item (click)="confirmUnpublish(post)">Unpublish</button>
                 }
                 @if (post.status !== 'archived') {
-                  <button mat-menu-item (click)="archivePost(post)">Archive</button>
+                  <button mat-menu-item (click)="confirmArchive(post)">Archive</button>
                 }
-                <mat-divider />
+                @if (post.status !== 'archived') {
+                  <mat-divider />
+                }
                 <button
                   mat-menu-item
                   [style.color]="'var(--mat-sys-error)'"
@@ -248,8 +250,23 @@ export class PostsTableComponent {
     return 'DRAFT';
   }
 
-  protected archivePost(post: BlogPost): void {
-    this.store.archivePost(post.id);
+  protected confirmArchive(post: BlogPost): void {
+    const title = post.title?.trim() || 'Untitled';
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data: {
+          title: 'Archive post?',
+          message: `"${title}" will be hidden from the live site and moved to the archive.`,
+          confirmLabel: 'Archive',
+          cancelLabel: 'Cancel',
+          destructive: false,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (confirmed) this.store.archivePost(post.id);
+      });
   }
 
   protected confirmDelete(post: BlogPost): void {

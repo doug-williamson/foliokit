@@ -7,7 +7,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { BlogPost, PostService } from '@foliokit/cms-core';
+import { BlogPost, PostService, SeriesService } from '@foliokit/cms-core';
 
 export type PostStatus = BlogPost['status'];
 export type PostFilterStatus = 'draft' | 'published' | 'archived';
@@ -76,7 +76,7 @@ export const PostsListStore = signalStore(
   })),
 
   withMethods(
-    (store, postService = inject(PostService), platformId = inject(PLATFORM_ID)) => ({
+    (store, postService = inject(PostService), platformId = inject(PLATFORM_ID), seriesService = inject(SeriesService)) => ({
       loadPosts(): void {
         if (!isPlatformBrowser(platformId)) return;
         patchState(store, { loading: true, error: null });
@@ -103,12 +103,13 @@ export const PostsListStore = signalStore(
       archivePost(id: string): void {
         const post = store.posts().find((p) => p.id === id);
         if (!post) return;
-        const updated: BlogPost = { ...post, status: 'archived' };
+        const updated: BlogPost = { ...post, status: 'archived', updatedAt: Date.now() };
         postService.savePost(updated).subscribe({
           next: () => {
             patchState(store, {
               posts: store.posts().map((p) => (p.id === id ? updated : p)),
             });
+            if (post.seriesId) seriesService.syncPostCount(post.seriesId).subscribe();
           },
           error: (err: unknown) => {
             console.error('[PostsListStore.archivePost]', err);
@@ -117,11 +118,13 @@ export const PostsListStore = signalStore(
       },
 
       deletePost(id: string): void {
+        const post = store.posts().find((p) => p.id === id);
         postService.deletePost(id).subscribe({
           next: () => {
             patchState(store, {
               posts: store.posts().filter((p) => p.id !== id),
             });
+            if (post?.seriesId) seriesService.syncPostCount(post.seriesId).subscribe();
           },
           error: (err: unknown) => {
             console.error('[PostsListStore.deletePost]', err);
