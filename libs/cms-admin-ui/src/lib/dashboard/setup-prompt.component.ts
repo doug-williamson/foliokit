@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { from, last } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-nav.store';
@@ -16,7 +17,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
   selector: 'admin-setup-prompt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatCheckboxModule],
+  imports: [MatButtonModule, MatCheckboxModule, MatSnackBarModule],
   styles: [
     `
       :host {
@@ -82,22 +83,17 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         min-width: 0;
       }
 
-      /* Locked rows (Home / Blog) use disabled+checked mat-checkbox.
-         Override MDC disabled-selected tokens so they render in the
-         primary/brand color instead of the muted disabled palette. */
-      .page-row--locked mat-checkbox {
-        --mdc-checkbox-disabled-selected-icon-color: var(--mat-sys-primary);
-        --mdc-checkbox-disabled-selected-checkmark-color: var(--mat-sys-on-primary);
-        --mdc-checkbox-disabled-unselected-icon-color: var(--mat-sys-primary);
-        pointer-events: none;
-      }
-
       .page-row-label {
         flex: 1;
         font-size: 15px;
         font-weight: 500;
         color: var(--text-primary);
       }
+
+      .required-page-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+      .required-check-icon { width: 20px; height: 20px; border-radius: 4px; background: var(--btn-primary-bg); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+      .required-label { flex: 1; font-size: 14px; }
+      .required-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
 
       .save-btn {
         width: 100%;
@@ -114,15 +110,15 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
           </div>
 
           <div class="page-rows">
-            <div class="page-row page-row--locked">
-              <mat-checkbox [checked]="true" [disabled]="true">
-                <span class="page-row-label">Home page</span>
-              </mat-checkbox>
+            <div class="required-page-row">
+              <div class="required-check-icon">✓</div>
+              <span class="required-label">Home page</span>
+              <span class="required-pill">Required</span>
             </div>
-            <div class="page-row page-row--locked">
-              <mat-checkbox [checked]="true" [disabled]="true">
-                <span class="page-row-label">Blog page</span>
-              </mat-checkbox>
+            <div class="required-page-row">
+              <div class="required-check-icon">✓</div>
+              <span class="required-label">Blog page</span>
+              <span class="required-pill">Required</span>
             </div>
             <div class="page-row">
               <mat-checkbox
@@ -159,6 +155,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
 export class SetupPromptComponent {
   private readonly store = inject(SiteConfigNavStore);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly aboutEnabled = signal(false);
   readonly linksEnabled = signal(false);
@@ -188,7 +185,10 @@ export class SetupPromptComponent {
         last(),
       )
       .subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => {
+          this.snackBar.open('Site setup complete', undefined, { duration: 3000 });
+          this.router.navigate(['/dashboard']);
+        },
         error: () => void 0,
       });
   }
