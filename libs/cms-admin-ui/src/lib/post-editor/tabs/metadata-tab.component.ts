@@ -66,6 +66,17 @@ function slugify(title: string): string {
           ></textarea>
         </mat-form-field>
 
+        <!-- Subtitle -->
+        <mat-form-field class="w-full">
+          <mat-label>Subtitle</mat-label>
+          <input
+            matInput
+            [value]="post.subtitle ?? ''"
+            (input)="store.updateField('subtitle', $any($event.target).value)"
+            placeholder="Optional subtitle displayed below the title"
+          />
+        </mat-form-field>
+
         <!-- Tags -->
         <mat-form-field class="w-full">
           <mat-label>Tags</mat-label>

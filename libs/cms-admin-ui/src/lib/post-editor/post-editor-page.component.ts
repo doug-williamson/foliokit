@@ -269,13 +269,13 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             [matMenuTriggerFor]="moreMenu"
             aria-label="More options"
           >
-            <mat-icon>more_vert</mat-icon>
+            <mat-icon svgIcon="more_vert" />
           </button>
 
           <mat-menu #moreMenu>
             <a
               mat-menu-item
-              [href]="store.post()?.slug ? '/blog/' + store.post()!.slug : null"
+              [attr.href]="store.post()?.slug ? '/blog/' + store.post()!.slug : null"
               [disabled]="!store.post()?.slug"
               target="_blank"
               rel="noopener"
@@ -286,7 +286,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             <mat-divider />
             <button
               mat-menu-item
-              class="text-warn"
+              [style.color]="'var(--mat-sys-error)'"
               [disabled]="store.isSaving()"
               (click)="confirmDeletePost()"
             >
