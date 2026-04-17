@@ -24,7 +24,7 @@ process.env['FIRESTORE_EMULATOR_HOST'] = '127.0.0.1:8080';
 
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { FieldValue, getFirestore, WriteBatch } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore, Timestamp, WriteBatch } from 'firebase-admin/firestore';
 import { FIREBASE_EMULATOR_PROJECT_ID } from './emulator-config';
 
 const ADMIN_EMAIL = 'dev.foliokit@gmail.com';
@@ -85,6 +85,18 @@ async function seedTenant(): Promise<void> {
     { merge: true },
   );
   console.log('[seed:full-monty] Tenant document created.');
+
+  console.log(`[seed:full-monty] Creating billing document billing/${TENANT_ID}...`);
+  await db.collection('billing').doc(TENANT_ID).set({
+    tenantId: TENANT_ID,
+    stripeCustomerId: '',
+    stripePriceId: '',
+    plan: 'agency_internal',
+    status: 'active',
+    trialEndsAt: null,
+    currentPeriodEndsAt: Timestamp.fromDate(new Date('2099-01-01')),
+  });
+  console.log('[seed:full-monty] Billing document created.');
 }
 
 // ─── Site Config ──────────────────────────────────────────────────────────────

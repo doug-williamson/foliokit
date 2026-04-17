@@ -9,6 +9,7 @@ export function getPlanFeatures(plan: PlanTier): PlanFeatures {
   switch (plan) {
     case 'pro':
     case 'agency':
+    case 'agency_internal':
       return { customDomain: true, removeBranding: true };
     case 'starter':
     default:
@@ -48,6 +49,10 @@ export const TIER_FEATURES: Record<PlanTier, TenantFeatures> = {
     unlockedPageTypes: ['about', 'links', 'videoWalkthrough', 'donate'],
   },
   agency: {
+    platform: { customDomain: true, customCss: true, multipleAuthors: true, analytics: true, taxonomy: true },
+    unlockedPageTypes: ['about', 'links', 'videoWalkthrough', 'donate', 'survey', 'ranking', 'stream'],
+  },
+  agency_internal: {
     platform: { customDomain: true, customCss: true, multipleAuthors: true, analytics: true, taxonomy: true },
     unlockedPageTypes: ['about', 'links', 'videoWalkthrough', 'donate', 'survey', 'ranking', 'stream'],
   },

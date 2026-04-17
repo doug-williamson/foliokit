@@ -20,7 +20,7 @@ process.env['FIRESTORE_EMULATOR_HOST'] = '127.0.0.1:8080';
 
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { FIREBASE_EMULATOR_PROJECT_ID } from './emulator-config';
 
 const ADMIN_EMAIL = 'dev.foliokit@gmail.com';
@@ -67,6 +67,18 @@ async function seed(): Promise<void> {
       { merge: true },
     );
     console.log('[seed:bare-auth] Tenant document created.');
+
+    console.log(`[seed:bare-auth] Creating billing document billing/${TENANT_ID}...`);
+    await db.collection('billing').doc(TENANT_ID).set({
+      tenantId: TENANT_ID,
+      stripeCustomerId: '',
+      stripePriceId: '',
+      plan: 'agency_internal',
+      status: 'active',
+      trialEndsAt: null,
+      currentPeriodEndsAt: Timestamp.fromDate(new Date('2099-01-01')),
+    });
+    console.log('[seed:bare-auth] Billing document created.');
 
     console.log('[seed:bare-auth] Done.');
   } catch (err) {
