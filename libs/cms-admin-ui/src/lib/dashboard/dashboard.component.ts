@@ -5,7 +5,7 @@ import {
   inject,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,7 +30,7 @@ const PLAN_LABELS: Record<string, string> = {
   selector: 'cms-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, SetupPromptComponent],
+  imports: [DatePipe, MatButtonModule, MatIconModule, RouterLink, SetupPromptComponent],
   styles: [
     `
       :host {
@@ -180,8 +180,8 @@ const PLAN_LABELS: Record<string, string> = {
       }
       .health-grid {
         display: grid;
-        grid-template-columns: 1fr;
-        max-width: 240px;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 480px;
         gap: 16px;
       }
       .health-tile {
@@ -260,7 +260,7 @@ const PLAN_LABELS: Record<string, string> = {
       <div class="section-posts">
         <div class="section-title-row">
           <h2 class="section-title admin-section-label">Recent posts</h2>
-          <button type="button" class="view-all-link" (click)="navigateToPosts()">View all</button>
+          <a routerLink="/posts" class="view-all-link">View all →</a>
         </div>
 
         @if (allPosts() === undefined) {
@@ -303,6 +303,18 @@ const PLAN_LABELS: Record<string, string> = {
           <div class="health-tile">
             <span class="tile-label">Published</span>
             <span class="tile-value">{{ postCounts().published }}</span>
+          </div>
+
+          <!-- Drafts count -->
+          <div class="health-tile">
+            <span class="tile-label">Drafts</span>
+            <span class="tile-value">{{ postCounts().draft }}</span>
+          </div>
+
+          <!-- Archived count -->
+          <div class="health-tile">
+            <span class="tile-label">Archived</span>
+            <span class="tile-value">{{ postCounts().archived }}</span>
           </div>
 
         </div>
@@ -371,10 +383,6 @@ export class DashboardComponent {
 
   navigateToPost(postId: string): void {
     this.router.navigate(['/posts', postId, 'edit']);
-  }
-
-  navigateToPosts(): void {
-    this.router.navigate(['/posts']);
   }
 
   navigateToSettings(): void {
