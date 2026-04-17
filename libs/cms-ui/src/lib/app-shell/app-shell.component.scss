@@ -28,6 +28,14 @@ mat-sidenav.icon-rail {
   overflow-x: hidden;
 }
 
+::ng-deep mat-sidenav.icon-rail .nav-item.active-link {
+  margin: 1px 4px;
+
+  &::before {
+    display: none;
+  }
+}
+
 ::ng-deep mat-sidenav.icon-rail .nav-label {
   display: none;
 }
@@ -65,7 +73,7 @@ mat-sidenav.icon-rail {
 .folio-nav-body {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: visible; // cap pseudo-element paints left of content box; mat-sidenav clips
   padding-top: 8px;
 }
 
@@ -176,7 +184,6 @@ mat-sidenav.icon-rail {
     font-weight: 700;
     border-radius: 8px;
     margin: 1px 8px;
-    border-left: none;
 
     &::before {
       content: '';
@@ -193,6 +200,7 @@ mat-sidenav.icon-rail {
 }
 
 ::ng-deep mat-sidenav .nav-item.nav-child {
+  // no padding adjustment needed for active-link — pill style handles inset via margin
   padding-left: 28px;
   height: 36px;
 
@@ -200,10 +208,6 @@ mat-sidenav.icon-rail {
     font-size: 16px !important;
     width: 16px !important;
     height: 16px !important;
-  }
-
-  &.active-link {
-    // no padding adjustment needed — pill style handles inset via margin
   }
 }
 
