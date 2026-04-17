@@ -170,8 +170,8 @@ type HomeLoadState =
 
     .recent-post-strip {
       width: 100%;
-      max-width: 540px;
-      margin-top: 40px;
+      max-width: 480px;
+      margin: 48px auto 0;
       text-align: left;
     }
 
