@@ -21,12 +21,12 @@ jobs:
     steps:
       # ── 0. Auth ──────────────────────────────────────────────────────────────
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           token: ${{ secrets.GH_PAT }}
 
       - name: Set up Node 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '22'
           cache: 'npm'
@@ -181,9 +181,10 @@ jobs:
              - Trello card link: ${CARD_URL}
           PROMPT
 
-          claude --print --no-conversation \
+          claude -p "$(cat /tmp/agent-prompt.md)" \
             --system-prompt "You are the FolioKit automated dev agent. Implement the task described in the prompt exactly as specified, committing all changes with conventional commit messages. Write the PR description to /tmp/pr-description.md when done." \
-            < /tmp/agent-prompt.md
+            --dangerously-skip-permissions \
+            --max-turns 30
 
       # ── 4. Lint + build check ─────────────────────────────────────────────────
       - name: Lint scope
@@ -250,11 +251,14 @@ jobs:
         run: |
           PR_URL=$(gh pr view --json url -q .url 2>/dev/null || echo "")
           if [ -n "$PR_URL" ]; then
-            node - <<EOF
+            CARD_ID_VAL="$CARD_ID"
+            PR_URL_VAL="$PR_URL"
+            node - "$CARD_ID_VAL" "$PR_URL_VAL" <<'EOF'
+          const [,, cardId, prUrl] = process.argv;
           const res = await fetch(
-            \`https://api.trello.com/1/cards/${CARD_ID}/attachments?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}\`,
+            `https://api.trello.com/1/cards/${cardId}/attachments?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}`,
             { method: 'POST', headers: {'Content-Type':'application/json'},
-              body: JSON.stringify({ url: '$PR_URL', name: 'GitHub PR' }) }
+              body: JSON.stringify({ url: prUrl, name: 'GitHub PR' }) }
           );
           console.log('Attachment status:', res.status);
           EOF
@@ -268,11 +272,14 @@ jobs:
           TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
           LIST_READY:   ${{ secrets.TRELLO_LIST_READY_FOR_DEV }}
         run: |
-          node - <<EOF
+          CARD_ID_VAL="$CARD_ID"
+          LIST_READY_VAL="$LIST_READY"
+          node - "$CARD_ID_VAL" "$LIST_READY_VAL" <<'EOF'
+          const [,, cardId, listReady] = process.argv;
           const res = await fetch(
-            \`https://api.trello.com/1/cards/${CARD_ID}?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}\`,
+            `https://api.trello.com/1/cards/${cardId}?key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}`,
             { method: 'PUT', headers: {'Content-Type':'application/json'},
-              body: JSON.stringify({ idList: '${LIST_READY}', pos: 'top' }) }
+              body: JSON.stringify({ idList: listReady, pos: 'top' }) }
           );
           console.log('Card returned to Ready for Dev:', res.status);
           EOF
