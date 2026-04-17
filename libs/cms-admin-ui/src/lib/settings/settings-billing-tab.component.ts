@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService, PlanGatingService, SITE_ID } from '@foliokit/cms-core';
@@ -218,12 +218,12 @@ export class SettingsBillingTabComponent {
   private readonly billingCheckout = inject(BillingCheckoutService);
 
   readonly billingRecord = this.planGating.billingRecord;
+  readonly features = this.planGating.features;
 
   readonly checkoutState = signal<'idle' | 'redirecting'>('idle');
   readonly portalState = signal<'idle' | 'redirecting'>('idle');
 
-  /** Firestore missing doc or failed read: treat as starter for this surface (matches PlanGatingService). */
-  readonly effectivePlanTier = computed<PlanTier>(() => this.billingRecord()?.plan ?? 'starter');
+  readonly effectivePlanTier = this.planGating.plan;
 
   readonly trialEndsDate = computed(() => this.billingRecord()?.trialEndsAt?.toDate() ?? null);
   readonly periodEndsDate = computed(() => this.billingRecord()?.currentPeriodEndsAt?.toDate() ?? null);
@@ -233,6 +233,7 @@ export class SettingsBillingTabComponent {
       starter: 'Starter',
       pro: 'Pro',
       agency: 'Agency',
+      agency_internal: 'Agency (Internal)',
     };
     return labels[plan];
   }
