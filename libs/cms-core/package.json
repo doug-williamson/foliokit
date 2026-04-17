@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-core",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Core Firebase services, models, and tokens for FolioKit CMS",
   "keywords": [
     "angular",
