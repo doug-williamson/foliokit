@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-ui",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Angular shell layout components and theme service for FolioKit CMS",
   "keywords": [
     "angular",
