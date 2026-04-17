@@ -196,8 +196,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         </nav>
         <ng-container shellNavFooter>
           <div class="flex items-center justify-between pl-3 pr-1 py-1">
-            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" matTooltipPosition="right">{{ auth.user()?.email }}</span>
-            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" [matTooltip]="(auth.user()?.email ?? '') + ' — Sign out'" matTooltipPosition="right">
+            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" [matTooltipDisabled]="!auth.user()?.email" matTooltipPosition="right">{{ auth.user()?.email }}</span>
+            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" matTooltip="Sign out" matTooltipPosition="right">
               <mat-icon class="nav-icon" svgIcon="logout" />
             </button>
           </div>

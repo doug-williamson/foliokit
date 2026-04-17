@@ -8,6 +8,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AppShellComponent } from '@foliokit/cms-ui';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -85,6 +86,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [routerLinkActiveOptions]="rlaOpts(row)"
               [matTooltip]="row.label"
               matTooltipPosition="right"
+              [matTooltipDisabled]="!shell.isIconRail()"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -101,6 +103,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               (click)="onDisabledTap(row)"
               [matTooltip]="row.label"
               matTooltipPosition="right"
+              [matTooltipDisabled]="!shell.isIconRail()"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -113,6 +116,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
                   svgIcon="info"
                   matTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
                   matTooltipPosition="right"
+                  [matTooltipDisabled]="!shell.isIconRail()"
                 />
               }
             </button>
@@ -122,7 +126,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right" [matTooltipDisabled]="!shell.isIconRail()">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>
@@ -131,6 +135,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 export class AdminNavComponent {
   private readonly navStore = inject(SiteConfigNavStore);
   private readonly bottomSheet = inject(MatBottomSheet);
+  protected readonly shell = inject(AppShellComponent);
 
   /** Rows for dashboard, Pages + children, Publish + children (Configure appended in template). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {

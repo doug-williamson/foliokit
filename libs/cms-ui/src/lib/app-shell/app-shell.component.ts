@@ -44,7 +44,7 @@ export class AppShellComponent {
   @ContentChild(ShellNavFooterDirective) protected navFooter?: ShellNavFooterDirective;
 
   protected readonly isMobile = signal(false);
-  protected readonly isIconRail = signal(false);
+  readonly isIconRail = signal(false);
   protected readonly sidenavOpen = signal(false);
 
   private _isMobileInitialized = false;
