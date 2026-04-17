@@ -83,6 +83,8 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [routerLink]="row.route"
               routerLinkActive="active-link"
               [routerLinkActiveOptions]="rlaOpts(row)"
+              [matTooltip]="row.label"
+              matTooltipPosition="right"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -97,6 +99,8 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [class.nav-child]="row.id !== 'dashboard'"
               [attr.aria-disabled]="true"
               (click)="onDisabledTap(row)"
+              [matTooltip]="row.label"
+              matTooltipPosition="right"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -118,7 +122,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>
@@ -142,7 +146,7 @@ export class AdminNavComponent {
         id: 'dashboard',
         label: 'Dashboard',
         route: '/dashboard',
-        icon: 'home',
+        icon: 'grid_view',
         enabled: true,
         pageLocked: false,
         planLocked: false,
@@ -151,7 +155,7 @@ export class AdminNavComponent {
       {
         kind: 'item',
         id: 'page-config',
-        label: 'Configuration',
+        label: 'Page Setup',
         route: '/pages',
         icon: 'web',
         enabled: true,

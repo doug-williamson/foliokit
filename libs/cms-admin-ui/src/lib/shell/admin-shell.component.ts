@@ -8,6 +8,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective, ThemeService } from '@foliokit/cms-ui';
 import { AuthService } from '@foliokit/cms-core';
@@ -67,6 +68,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     RouterOutlet,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     MatToolbarModule,
     ShellNavFooterDirective,
     AdminNavComponent,
@@ -194,8 +196,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         </nav>
         <ng-container shellNavFooter>
           <div class="flex items-center justify-between pl-3 pr-1 py-1">
-            <span class="text-xs truncate" style="color: var(--text-muted)">{{ auth.user()?.email }}</span>
-            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out">
+            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" matTooltipPosition="right">{{ auth.user()?.email }}</span>
+            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" [matTooltip]="(auth.user()?.email ?? '') + ' — Sign out'" matTooltipPosition="right">
               <mat-icon class="nav-icon" svgIcon="logout" />
             </button>
           </div>
