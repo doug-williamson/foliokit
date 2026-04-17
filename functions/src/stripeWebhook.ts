@@ -1,11 +1,17 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { getApps, initializeApp } from 'firebase-admin/app';
+import type { Firestore } from 'firebase-admin/firestore';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { stripeSecretKey, stripeWebhookSecret, getStripeClient } from './stripeClient';
 import { resolvePlanFromPriceId } from './stripe-constants';
 
 if (!getApps().length) initializeApp();
+
+async function isAgencyInternal(db: Firestore, tenantId: string): Promise<boolean> {
+  const snap = await db.doc(`billing/${tenantId}`).get();
+  return snap.exists && (snap.data() as { plan?: string } | undefined)?.plan === 'agency_internal';
+}
 
 export const stripeWebhook = onRequest(
   { secrets: [stripeSecretKey, stripeWebhookSecret] },
@@ -53,6 +59,10 @@ export const stripeWebhook = onRequest(
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
           const priceId = subscription.items.data[0].price.id;
           const resolvedPlan = resolvePlanFromPriceId(priceId) ?? 'pro';
+          if (await isAgencyInternal(db, tenantId)) {
+            logger.info('stripeWebhook: skipping agency_internal tenant', { tenantId });
+            break;
+          }
           await db.doc(`billing/${tenantId}`).update({
             stripeCustomerId: session.customer,
             stripePriceId: priceId,
@@ -101,6 +111,10 @@ export const stripeWebhook = onRequest(
           }
           const priceId = subscription.items.data[0].price.id;
           const resolvedPlan = resolvePlanFromPriceId(priceId) ?? 'pro';
+          if (await isAgencyInternal(db, tenantId)) {
+            logger.info('stripeWebhook: skipping agency_internal tenant', { tenantId });
+            break;
+          }
           await db.doc(`billing/${tenantId}`).update({
             stripePriceId: priceId,
             plan: resolvedPlan,
@@ -120,6 +134,10 @@ export const stripeWebhook = onRequest(
           const tenantId = subscription.metadata?.tenantId;
           if (!tenantId) {
             logger.warn('stripeWebhook: customer.subscription.deleted missing tenantId', { subscriptionId: subscription.id });
+            break;
+          }
+          if (await isAgencyInternal(db, tenantId)) {
+            logger.info('stripeWebhook: skipping agency_internal tenant', { tenantId });
             break;
           }
           // Preserve the billing doc — only mark canceled, do not delete.
