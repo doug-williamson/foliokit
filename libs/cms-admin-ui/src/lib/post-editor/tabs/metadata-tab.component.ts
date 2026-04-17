@@ -54,6 +54,18 @@ function slugify(title: string): string {
   template: `
     @if (store.post(); as post) {
       <div class="flex flex-col gap-4 p-4">
+        <!-- Excerpt -->
+        <mat-form-field class="w-full">
+          <mat-label>Excerpt</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            [value]="post.excerpt ?? ''"
+            (input)="store.updateField('excerpt', $any($event.target).value)"
+            placeholder="Short description shown in post cards"
+          ></textarea>
+        </mat-form-field>
+
         <!-- Tags -->
         <mat-form-field class="w-full">
           <mat-label>Tags</mat-label>

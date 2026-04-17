@@ -1,14 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { PostEditorStore } from '../post-editor.store';
 
 @Component({
   selector: 'folio-content-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule],
+  imports: [],
   styles: [
     `
       /*
@@ -49,40 +46,6 @@ import { PostEditorStore } from '../post-editor.store';
   template: `
     @if (store.post(); as post) {
       <div class="flex flex-col flex-1 min-h-0 p-4 gap-4">
-        <!-- Title -->
-        <mat-form-field class="w-full shrink-0">
-          <mat-label>Title</mat-label>
-          <input
-            matInput
-            [value]="post.title"
-            (input)="store.updateField('title', $any($event.target).value)"
-            placeholder="Post title"
-          />
-        </mat-form-field>
-
-        <!-- Subtitle -->
-        <mat-form-field class="w-full shrink-0">
-          <mat-label>Subtitle</mat-label>
-          <input
-            matInput
-            [value]="post.subtitle ?? ''"
-            (input)="store.updateField('subtitle', $any($event.target).value)"
-            placeholder="Optional subtitle"
-          />
-        </mat-form-field>
-
-        <!-- Excerpt -->
-        <mat-form-field class="w-full shrink-0">
-          <mat-label>Excerpt</mat-label>
-          <textarea
-            matInput
-            rows="3"
-            [value]="post.excerpt ?? ''"
-            (input)="store.updateField('excerpt', $any($event.target).value)"
-            placeholder="Short description shown in post cards"
-          ></textarea>
-        </mat-form-field>
-
         <!-- Markdown editor — fills remaining height -->
         <div class="flex flex-col flex-1 min-h-0 gap-1">
           <label for="content-editor" class="text-xs font-medium opacity-60">

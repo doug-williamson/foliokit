@@ -30,7 +30,8 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
-import { SaveBarComponent } from '../components/save-bar/save-bar.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDivider } from '@angular/material/divider';
 
 type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
 type RightTab = 'Article' | 'Card' | 'SEO';
@@ -70,7 +71,8 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     ArticlePreviewComponent,
     CardPreviewComponent,
     SeoPreviewComponent,
-    SaveBarComponent,
+    MatMenuModule,
+    MatDivider,
   ],
   styles: [
     `
@@ -144,6 +146,22 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         flex: 1 1 auto;
       }
 
+      .post-editor-title-input {
+        font-weight: 600;
+        font-size: 1rem;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: inherit;
+        width: 100%;
+        padding: 4px 0;
+      }
+
+      .post-editor-title-input::placeholder {
+        color: color-mix(in srgb, currentColor 40%, transparent);
+        font-weight: 400;
+      }
+
       .post-editor-toolbar-actions {
         display: flex;
         flex-wrap: wrap;
@@ -167,9 +185,14 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Toolbar -->
       <div class="post-editor-toolbar">
-        <span class="post-editor-toolbar-title truncate page-subheading">
-          {{ store.post()?.title || 'Untitled post' }}
-        </span>
+        <input
+          class="post-editor-toolbar-title post-editor-title-input"
+          type="text"
+          [value]="store.post()?.title ?? ''"
+          (input)="store.updateField('title', $any($event.target).value)"
+          placeholder="Untitled post"
+          aria-label="Post title"
+        />
 
         <div class="post-editor-toolbar-actions">
           @if (store.post()?.status; as status) {
@@ -227,29 +250,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               >
                 Unpublish
               </button>
-              @if (!isDesktop()) {
-                <button
-                  mat-icon-button
-                  type="button"
-                  class="toolbar-icon-btn shrink-0"
-                  [disabled]="store.isSaving()"
-                  (click)="confirmDeletePost()"
-                  aria-label="Delete post"
-                >
-                  <mat-icon svgIcon="delete" />
-                </button>
-              } @else {
-                <button
-                  mat-flat-button
-                  color="warn"
-                  type="button"
-                  class="shrink-0"
-                  [disabled]="store.isSaving()"
-                  (click)="confirmDeletePost()"
-                >
-                  Delete
-                </button>
-              }
             } @else {
               <span class="shrink-0 min-w-0 post-editor-publish-wrap">
                 <cms-post-publish-button
@@ -260,6 +260,40 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               </span>
             }
           }
+
+          <!-- Overflow menu -->
+          <button
+            mat-icon-button
+            type="button"
+            class="toolbar-icon-btn shrink-0"
+            [matMenuTriggerFor]="moreMenu"
+            aria-label="More options"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #moreMenu>
+            <a
+              mat-menu-item
+              [href]="store.post()?.slug ? '/blog/' + store.post()!.slug : null"
+              [disabled]="!store.post()?.slug"
+              target="_blank"
+              rel="noopener"
+            >
+              <mat-icon>open_in_new</mat-icon>
+              View on site
+            </a>
+            <mat-divider />
+            <button
+              mat-menu-item
+              class="text-warn"
+              [disabled]="store.isSaving()"
+              (click)="confirmDeletePost()"
+            >
+              <mat-icon>delete</mat-icon>
+              Delete post…
+            </button>
+          </mat-menu>
         </div>
       </div>
 
@@ -322,12 +356,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         </mat-sidenav-content>
       </mat-sidenav-container>
 
-      <folio-save-bar
-        [isDirty]="store.isDirty()"
-        [isSaving]="store.isSaving()"
-        (saved)="onSaveBarSave()"
-        (discarded)="onSaveBarDiscard()"
-      />
     </div>
   `,
 })
@@ -372,14 +400,6 @@ export class PostEditorPageComponent implements OnInit {
     this.subscribePostWrite(this.store.save(), { successMessage: 'Changes saved' });
   }
 
-  protected onSaveBarSave(): void {
-    this.onManualSave();
-  }
-
-  protected onSaveBarDiscard(): void {
-    this.store.discardChanges();
-  }
-
   /**
    * Subscribes to save/publish/unpublish/delete streams and shows snackbars.
    * Omit `successMessage` when no success toast is desired (e.g. delete navigates away).
@@ -404,9 +424,9 @@ export class PostEditorPageComponent implements OnInit {
   }
 
   protected editorStatusLabel(status: BlogPost['status']): string {
-    if (status === 'published') return '● PUBLISHED';
-    if (status === 'archived') return '● ARCHIVED';
-    return '● DRAFT';
+    if (status === 'published') return 'PUBLISHED';
+    if (status === 'archived') return 'ARCHIVED';
+    return 'DRAFT';
   }
 
   togglePreview(): void {
