@@ -144,6 +144,7 @@ mat-sidenav.icon-rail {
 
 ::ng-deep mat-sidenav .nav-item,
 ::ng-deep mat-sidenav .mat-mdc-list-item {
+  position: relative;
   height: 40px;
   padding: 0 16px;
   gap: 10px;
@@ -154,7 +155,7 @@ mat-sidenav.icon-rail {
   letter-spacing: normal;
   color: var(--text-secondary);
   text-decoration: none;
-  border-left: 2px solid transparent;
+  border-left: none;
   transition: background 0.12s, color 0.12s;
 
   &:hover {
@@ -170,11 +171,24 @@ mat-sidenav.icon-rail {
   }
 
   &.active-link {
-    border-left-color: var(--nav-active-text);
     background: var(--nav-active-bg);
     color: var(--nav-active-text);
-    font-weight: 500;
-    padding-left: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+    margin: 1px 8px;
+    border-left: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60%;
+      background: var(--nav-active-text);
+      border-radius: 0 4px 4px 0;
+    }
   }
 }
 
@@ -189,19 +203,15 @@ mat-sidenav.icon-rail {
   }
 
   &.active-link {
-    padding-left: 26px;
+    // no padding adjustment needed — pill style handles inset via margin
   }
 }
 
 ::ng-deep mat-sidenav .nav-item.nav-item--disabled {
   cursor: not-allowed;
   opacity: 0.45;
-  border-left-color: transparent !important;
 }
 
-[data-theme="dark"] ::ng-deep mat-sidenav .nav-item.active-link {
-  background: var(--nav-active-bg);
-}
 
 // ─── Plan tier badges on nav items ───────────────────────────────────────────
 
