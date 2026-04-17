@@ -196,8 +196,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         </nav>
         <ng-container shellNavFooter>
           <div class="flex items-center justify-between pl-3 pr-1 py-1">
-            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" [matTooltipDisabled]="!auth.user()?.email" matTooltipPosition="right">{{ auth.user()?.email }}</span>
-            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" matTooltip="Sign out" matTooltipPosition="right">
+            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" [matTooltipDisabled]="!auth.user()?.email || !shell.isIconRail()" matTooltipPosition="right">{{ auth.user()?.email }}</span>
+            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" matTooltip="Sign out" matTooltipPosition="right" [matTooltipDisabled]="!shell.isIconRail()">
               <mat-icon class="nav-icon" svgIcon="logout" />
             </button>
           </div>
@@ -212,6 +212,7 @@ export class AdminShellComponent {
 
   protected readonly auth = inject(AuthService);
   protected readonly theme = inject(ThemeService);
+  protected readonly shell = inject(AppShellComponent);
   private readonly router = inject(Router);
 
   readonly isOnboarding = computed(() => {

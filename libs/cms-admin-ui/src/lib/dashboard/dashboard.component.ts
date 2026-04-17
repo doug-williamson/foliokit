@@ -24,6 +24,7 @@ const PLAN_LABELS: Record<string, string> = {
   starter: 'Free',
   pro: 'Pro',
   agency: 'Agency',
+  agency_internal: 'Agency (Internal)',
 };
 
 @Component({

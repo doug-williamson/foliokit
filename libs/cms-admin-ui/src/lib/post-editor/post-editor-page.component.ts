@@ -280,7 +280,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               target="_blank"
               rel="noopener"
             >
-              <mat-icon>open_in_new</mat-icon>
+              <mat-icon svgIcon="open_in_new" />
               View on site
             </a>
             <mat-divider />
@@ -290,7 +290,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               [disabled]="store.isSaving()"
               (click)="confirmDeletePost()"
             >
-              <mat-icon>delete</mat-icon>
+              <mat-icon svgIcon="delete" />
               Delete post…
             </button>
           </mat-menu>

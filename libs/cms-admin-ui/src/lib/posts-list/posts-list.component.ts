@@ -142,7 +142,7 @@ import { PostsTableComponent } from './posts-table.component';
               <mat-chip-option value="all">All</mat-chip-option>
               <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
               <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
-              <mat-chip-option value="archived">Archived</mat-chip-option>
+              <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
             </mat-chip-listbox>
           </div>
         </div>
