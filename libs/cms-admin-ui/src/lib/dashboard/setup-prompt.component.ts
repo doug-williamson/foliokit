@@ -90,10 +90,44 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         color: var(--text-primary);
       }
 
-      .required-page-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-      .required-check-icon { width: 20px; height: 20px; border-radius: 4px; background: var(--btn-primary-bg); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-      .required-label { flex: 1; font-size: 14px; }
-      .required-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+      .required-page-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: var(--border-width) solid var(--border);
+      }
+
+      .required-check-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        background: var(--btn-primary-bg);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .required-label {
+        flex: 1;
+        font-size: 14px;
+      }
+
+      .required-pill {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 2px 8px;
+        border-radius: 100px;
+        background: var(--surface-2);
+        color: var(--text-muted);
+        border: var(--border-width) solid var(--border);
+      }
 
       .save-btn {
         width: 100%;

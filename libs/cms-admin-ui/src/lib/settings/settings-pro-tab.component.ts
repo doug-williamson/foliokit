@@ -307,7 +307,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
       letter-spacing: 0.05em;
       color: var(--text-accent);
       border: var(--border-width) solid var(--text-accent);
-      border-radius: 4px;
+      border-radius: var(--r-sm);
       padding: 1px 6px;
       font-family: var(--font-mono);
     }
@@ -351,6 +351,7 @@ export class SettingsProTabComponent implements OnInit {
       starter: 'Starter',
       pro: 'Pro',
       agency: 'Agency',
+      agency_internal: 'Agency (Internal)',
     };
     return labels[plan ?? ''] ?? (plan ?? '');
   }

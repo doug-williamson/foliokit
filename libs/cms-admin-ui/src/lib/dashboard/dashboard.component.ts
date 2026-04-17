@@ -87,10 +87,7 @@ const PLAN_LABELS: Record<string, string> = {
         color: var(--text-accent);
         text-decoration: none;
         cursor: pointer;
-        background: none;
-        border: none;
         padding: 4px 0;
-        font-family: var(--font-body);
         flex-shrink: 0;
         &:hover { text-decoration: underline; }
       }
@@ -305,9 +302,9 @@ const PLAN_LABELS: Record<string, string> = {
             <span class="tile-value">{{ postCounts().published }}</span>
           </div>
 
-          <!-- Drafts count -->
+          <!-- In Progress count (draft + scheduled) -->
           <div class="health-tile">
-            <span class="tile-label">Drafts</span>
+            <span class="tile-label">In Progress</span>
             <span class="tile-value">{{ postCounts().draft }}</span>
           </div>
 
@@ -385,7 +382,4 @@ export class DashboardComponent {
     this.router.navigate(['/posts', postId, 'edit']);
   }
 
-  navigateToSettings(): void {
-    this.router.navigate(['/settings']);
-  }
 }
