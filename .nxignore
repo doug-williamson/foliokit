@@ -1,0 +1,2 @@
+# Nested Claude agent worktrees contain duplicate project.json trees and break the Nx graph.
+.claude/worktrees/**

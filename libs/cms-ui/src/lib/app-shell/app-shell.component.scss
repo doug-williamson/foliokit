@@ -184,6 +184,7 @@ mat-sidenav.icon-rail {
     font-weight: 700;
     border-radius: 8px;
     margin: 1px 8px;
+    overflow: hidden; // clips MDC state layer/ripple to pill boundary
 
     &::before {
       content: '';
