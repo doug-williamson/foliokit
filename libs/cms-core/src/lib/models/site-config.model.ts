@@ -23,16 +23,34 @@ export interface SocialLink {
   icon?: string;
 }
 
+export interface SiteProfile {
+  displayName: string | null;
+  photoUrl: string | null;
+  photoUrlDark: string | null;
+  photoAlt: string | null;
+  socialLinks?: SocialLink[];
+}
+
 export interface AboutPageConfig {
   enabled: boolean;
   headline: string;
   subheadline?: string;
   /** Markdown — rendered via MarkdownComponent */
   bio: string;
-  /** Firebase Storage URL */
+  /**
+   * @deprecated Use SiteConfig.profile.photoUrl instead.
+   * Retained for migration compatibility.
+   */
   photoUrl?: string;
-  /** Firebase Storage URL — shown in dark mode when set */
+  /**
+   * @deprecated Use SiteConfig.profile.photoUrlDark instead.
+   * Retained for migration compatibility.
+   */
   photoUrlDark?: string;
+  /**
+   * @deprecated Use SiteConfig.profile.photoAlt instead.
+   * Retained for migration compatibility.
+   */
   photoAlt?: string;
   socialLinks?: SocialLink[];
   seo?: SeoMeta;
@@ -42,8 +60,20 @@ export interface LinksPageConfig {
   enabled: boolean;
   links?: LinksLink[];
   title?: string;
+  /**
+   * @deprecated Use SiteConfig.profile.photoUrl instead.
+   * Retained for migration compatibility.
+   */
   avatarUrl?: string;
+  /**
+   * @deprecated Use SiteConfig.profile.photoUrlDark instead.
+   * Retained for migration compatibility.
+   */
   avatarUrlDark?: string;
+  /**
+   * @deprecated Use SiteConfig.profile.photoAlt instead.
+   * Retained for migration compatibility.
+   */
   avatarAlt?: string;
   headline?: string;
   bio?: string;
@@ -81,6 +111,8 @@ export interface SiteConfig {
     about?: AboutPageConfig;
     links?: LinksPageConfig;
   };
+  /** Site owner profile used across About, Links, and future pages. */
+  profile?: SiteProfile;
   /**
    * Set to `true` once the user has enabled all four pages at least once.
    * After this point the full admin shell is always shown, even if pages are
