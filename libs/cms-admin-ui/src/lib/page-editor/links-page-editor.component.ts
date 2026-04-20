@@ -15,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTabsModule } from '@angular/material/tabs';
 import { LinksEditorFormComponent } from './links-editor-form.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
@@ -40,7 +39,6 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatTabsModule,
     MatSnackBarModule,
     LinksEditorFormComponent,
     SaveBarComponent,
@@ -54,12 +52,9 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
         height: 100%;
         overflow: hidden;
       }
-      ::ng-deep .links-tabs .mat-mdc-tab-body-wrapper {
+      .links-scroll {
         flex: 1;
-        overflow: hidden;
-      }
-      ::ng-deep .links-tabs .mat-mdc-tab-body-content {
-        height: 100%;
+        min-height: 0;
         overflow-y: auto;
       }
     `,
@@ -78,42 +73,33 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
           <mat-spinner diameter="40" />
         </div>
       } @else {
-        <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <mat-tab-group
-            class="flex flex-col flex-1 min-h-0 overflow-hidden links-tabs"
-            [mat-stretch-tabs]="true"
-            color="accent"
-            animationDuration="200ms"
-          >
-            <mat-tab label="Content">
-              <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
-                <folio-profile-preview
-                  [profile]="store.config()?.profile ?? null"
-                  settingsRoute="/settings"
-                />
+        <div class="links-scroll">
+          <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <folio-profile-preview
+              [profile]="store.config()?.profile ?? null"
+              settingsRoute="/settings"
+            />
 
-                <admin-links-editor-form />
+            <admin-links-editor-form />
 
-                <mat-expansion-panel class="!shadow-none">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div class="flex flex-col gap-4 pt-2" [formGroup]="linksSeoForm">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Meta Title</mat-label>
-                      <input matInput formControlName="metaTitle" placeholder="My Links" />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Meta Description</mat-label>
-                      <textarea matInput rows="3"
-                        formControlName="metaDescription"
-                        placeholder="Short description…"></textarea>
-                    </mat-form-field>
-                  </div>
-                </mat-expansion-panel>
+            <mat-expansion-panel class="!shadow-none">
+              <mat-expansion-panel-header>
+                <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="flex flex-col gap-4 pt-2" [formGroup]="linksSeoForm">
+                <mat-form-field appearance="outline">
+                  <mat-label>Meta Title</mat-label>
+                  <input matInput formControlName="metaTitle" placeholder="My Links" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Meta Description</mat-label>
+                  <textarea matInput rows="3"
+                    formControlName="metaDescription"
+                    placeholder="Short description…"></textarea>
+                </mat-form-field>
               </div>
-            </mat-tab>
-          </mat-tab-group>
+            </mat-expansion-panel>
+          </div>
         </div>
       }
 

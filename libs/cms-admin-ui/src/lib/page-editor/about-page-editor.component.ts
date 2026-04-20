@@ -131,6 +131,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           >
             <mat-tab label="Content">
               <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+                <folio-profile-preview
+                  [profile]="store.config()?.profile ?? null"
+                  settingsRoute="/settings"
+                />
+
                 <form [formGroup]="aboutForm" class="flex flex-col gap-5">
                   <mat-form-field appearance="outline">
                     <mat-label>Headline</mat-label>
@@ -159,11 +164,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     }
                   </mat-form-field>
                 </form>
-
-                <folio-profile-preview
-                  [profile]="store.config()?.profile ?? null"
-                  settingsRoute="/settings"
-                />
 
                 <mat-expansion-panel class="!shadow-none">
                   <mat-expansion-panel-header>

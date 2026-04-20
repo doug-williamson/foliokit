@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BlogPost } from '@foliokit/cms-core';
+import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -146,6 +147,14 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         flex: 1 1 auto;
       }
 
+      .post-editor-toolbar-lead {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
       .post-editor-title-input {
         font-weight: 600;
         font-size: 1rem;
@@ -185,14 +194,26 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     <div class="flex flex-col h-full overflow-hidden relative">
       <!-- Toolbar -->
       <div class="post-editor-toolbar">
-        <input
-          class="post-editor-toolbar-title post-editor-title-input"
-          type="text"
-          [value]="store.post()?.title ?? ''"
-          (input)="store.updateField('title', $any($event.target).value)"
-          placeholder="Untitled post"
-          aria-label="Post title"
-        />
+        <div class="post-editor-toolbar-lead">
+          <button
+            mat-icon-button
+            type="button"
+            class="toolbar-icon-btn shrink-0"
+            (click)="backToPosts()"
+            matTooltip="Back to Posts"
+            aria-label="Back to Posts"
+          >
+            <mat-icon svgIcon="arrow_back" />
+          </button>
+          <input
+            class="post-editor-toolbar-title post-editor-title-input"
+            type="text"
+            [value]="store.post()?.title ?? ''"
+            (input)="store.updateField('title', $any($event.target).value)"
+            placeholder="Untitled post"
+            aria-label="Post title"
+          />
+        </div>
 
         <div class="post-editor-toolbar-actions">
           @if (store.post()?.status; as status) {
@@ -364,6 +385,11 @@ export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
+
+  protected backToPosts(): void {
+    this.router.navigate(['/posts']);
+  }
 
   private static readonly errorSnackbarPanelClass = ['save-error-snackbar'];
 

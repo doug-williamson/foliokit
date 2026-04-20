@@ -17,8 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PostsListStore } from './posts-list.store';
+import { PostsListStore, type PostFilterStatus } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
+import { PostsSectionComponent } from './posts-section.component';
 
 @Component({
   selector: 'folio-posts-list',
@@ -34,6 +35,7 @@ import { PostsTableComponent } from './posts-table.component';
     MatMenuModule,
     MatProgressSpinnerModule,
     PostsTableComponent,
+    PostsSectionComponent,
   ],
   host: { class: 'block h-full min-w-0 overflow-hidden' },
   styles: [`
@@ -150,17 +152,54 @@ import { PostsTableComponent } from './posts-table.component';
         </div>
 
         <div class="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden flex flex-col">
-        @if (store.filteredPosts().length === 0 && (inputValue() || store.filterStatus() !== 'all')) {
-          <div class="empty-filter-state shrink-0">
-            No posts match your filter.
-            <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
-          </div>
-        }
+        @if (showSections()) {
+          <folio-posts-section
+            label="Drafts"
+            status="draft"
+            [posts]="trueDraftPosts()"
+            emptyLabel="No drafts. Write something."
+            (postSelected)="onPostSelected($event)"
+            (viewAllClick)="onViewAll($event)"
+          />
+          <folio-posts-section
+            label="Scheduled"
+            status="scheduled"
+            [posts]="store.scheduledPosts()"
+            emptyLabel="Nothing scheduled."
+            (postSelected)="onPostSelected($event)"
+            (viewAllClick)="onViewAll($event)"
+          />
+          <folio-posts-section
+            label="Published"
+            status="published"
+            [posts]="store.publishedPosts()"
+            emptyLabel="No published posts yet."
+            (postSelected)="onPostSelected($event)"
+            (viewAllClick)="onViewAll($event)"
+          />
+          <folio-posts-section
+            label="Archived"
+            status="archived"
+            [posts]="store.archivedPosts()"
+            emptyLabel="No archived posts."
+            [collapsible]="true"
+            [defaultExpanded]="false"
+            (postSelected)="onPostSelected($event)"
+            (viewAllClick)="onViewAll($event)"
+          />
+        } @else {
+          @if (store.filteredPosts().length === 0) {
+            <div class="empty-filter-state shrink-0">
+              No posts match your filter.
+              <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
+            </div>
+          }
 
-        <folio-posts-table
-          class="flex-1 min-h-0 min-w-0 block"
-          (postSelected)="onPostSelected($event)"
-        />
+          <folio-posts-table
+            class="flex-1 min-h-0 min-w-0 block"
+            (postSelected)="onPostSelected($event)"
+          />
+        }
         </div>
         </div>
       }
@@ -179,6 +218,14 @@ export class PostsListComponent implements OnInit {
     if (s === 'all') return 'Status: All';
     return 'Status: ' + s.charAt(0).toUpperCase() + s.slice(1);
   });
+
+  protected readonly showSections = computed(
+    () => this.store.filterStatus() === 'all' && !this.store.filterText().trim(),
+  );
+
+  protected readonly trueDraftPosts = computed(() =>
+    this.store.posts().filter((p) => p.status === 'draft'),
+  );
 
   constructor() {
     this.filterText$
@@ -207,5 +254,9 @@ export class PostsListComponent implements OnInit {
 
   protected onPostSelected(id: string): void {
     this.router.navigate(['/posts', id, 'edit']);
+  }
+
+  protected onViewAll(status: PostFilterStatus): void {
+    this.store.setFilterStatus(status);
   }
 }

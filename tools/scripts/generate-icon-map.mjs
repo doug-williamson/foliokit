@@ -16,13 +16,13 @@ const SVG_DIR = resolve(ROOT, 'node_modules/@material-design-icons/svg/filled');
 const OUT = resolve(ROOT, 'libs/cms-admin-ui/src/lib/icons/icon-svg-map.ts');
 
 const ICONS = [
-  'add', 'add_photo_alternate', 'arrow_back', 'arrow_forward', 'article',
-  'auto_stories', 'block', 'business', 'cancel', 'category',
-  'check_circle', 'check_circle_outline', 'chevron_right', 'cloud', 'code',
+  'add', 'add_photo_alternate', 'arrow_back', 'arrow_drop_down', 'arrow_forward',
+  'article', 'auto_stories', 'block', 'business', 'cancel', 'category',
+  'check_circle', 'check_circle_outline', 'chevron_right', 'close', 'cloud', 'code',
   'collections_bookmark', 'content_copy', 'dark_mode', 'delete', 'drag_indicator',
-  'edit', 'edit_note', 'expand_less', 'expand_more', 'home', 'info',
+  'edit', 'edit_note', 'expand_less', 'expand_more', 'grid_view', 'home', 'info',
   'language', 'light_mode', 'link', 'live_tv', 'lock', 'logout', 'mail',
-  'menu', 'music_note', 'open_in_new', 'palette', 'people', 'person',
+  'menu', 'more_vert', 'music_note', 'open_in_new', 'palette', 'people', 'person',
   'person_off', 'photo_camera', 'play_circle', 'preview', 'publish',
   'radio_button_unchecked', 'save', 'schedule', 'settings', 'swap_horiz',
   'tag', 'thumb_up', 'tune', 'upload', 'upload_file', 'warning', 'web',

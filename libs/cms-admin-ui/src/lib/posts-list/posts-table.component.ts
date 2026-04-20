@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  input,
   output,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
@@ -234,9 +235,13 @@ export class PostsTableComponent {
 
   postSelected = output<string>();
 
-  protected readonly allPosts = computed<BlogPost[]>(() =>
-    [...this.store.filteredPosts()].sort((a, b) => b.updatedAt - a.updatedAt),
-  );
+  readonly posts = input<BlogPost[] | null>(null);
+
+  protected readonly allPosts = computed<BlogPost[]>(() => {
+    const override = this.posts();
+    const source = override ?? this.store.filteredPosts();
+    return [...source].sort((a, b) => b.updatedAt - a.updatedAt);
+  });
 
   badgeClass(status: BlogPost['status']): string {
     if (status === 'published') return 'badge-pub';
