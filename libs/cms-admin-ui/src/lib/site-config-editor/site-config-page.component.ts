@@ -130,7 +130,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
               <div class="flex flex-col gap-4">
                 <h3 class="text-sm font-semibold opacity-80 m-0">Site Profile</h3>
 
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 sm:max-w-sm">
+                <div class="flex justify-around sm:justify-center sm:gap-24 py-2">
                   <div class="flex flex-col items-center gap-3">
                     <div
                       class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"

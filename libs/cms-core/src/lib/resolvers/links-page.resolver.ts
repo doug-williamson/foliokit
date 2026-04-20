@@ -60,13 +60,23 @@ export function createLinksPageResolver(
 
     return service.getConfig().pipe(
       take(1),
-      tap((config) => {
-        if (isPlatformServer(platformId)) {
-          transferState.set(LINKS_PAGE_KEY, config.pages?.links ?? null);
-        }
-      }),
       map((config) => {
         const links = config.pages?.links;
+        if (!links) return null;
+        const profile = config.profile;
+        return {
+          ...links,
+          avatarUrl: profile?.photoUrl ?? links.avatarUrl,
+          avatarUrlDark: profile?.photoUrlDark ?? links.avatarUrlDark,
+          avatarAlt: profile?.photoAlt ?? links.avatarAlt,
+        } satisfies LinksPageConfig;
+      }),
+      tap((links) => {
+        if (isPlatformServer(platformId)) {
+          transferState.set(LINKS_PAGE_KEY, links);
+        }
+      }),
+      map((links) => {
         if (!links || !links.links?.length) {
           return router.createUrlTree([notFoundRoute]) as never;
         }
