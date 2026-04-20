@@ -77,3 +77,4 @@ export * from './lib/shared/confirm-dialog/confirm-dialog.component';
 export * from './lib/shared/empty-state/empty-state.component';
 export * from './lib/components/seo-fields/seo-fields.component';
 export * from './lib/components/save-bar/save-bar.component';
+export * from './lib/shared/profile-preview/profile-preview.component';
