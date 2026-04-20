@@ -10,7 +10,7 @@ import {
 import { BlogPost, PostService, SeriesService } from '@foliokit/cms-core';
 
 export type PostStatus = BlogPost['status'];
-export type PostFilterStatus = 'draft' | 'published' | 'archived';
+export type PostFilterStatus = 'draft' | 'scheduled' | 'published' | 'archived';
 
 export interface PostsListState {
   posts: BlogPost[];
@@ -41,6 +41,9 @@ export const PostsListStore = signalStore(
     archivedPosts: computed(() =>
       store.posts().filter((p) => p.status === 'archived'),
     ),
+    scheduledPosts: computed(() =>
+      store.posts().filter((p) => p.status === 'scheduled'),
+    ),
     // Kept for backward compatibility
     draftCount: computed(
       () =>
@@ -64,9 +67,7 @@ export const PostsListStore = signalStore(
       }
       if (status !== 'all') {
         if (status === 'draft') {
-          result = result.filter(
-            (p) => p.status === 'draft' || p.status === 'scheduled',
-          );
+          result = result.filter((p) => p.status === 'draft');
         } else {
           result = result.filter((p) => p.status === status);
         }
