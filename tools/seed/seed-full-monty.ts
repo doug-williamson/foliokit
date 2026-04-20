@@ -114,6 +114,18 @@ async function seedSiteConfig(): Promise<void> {
       description: 'A personal blog and portfolio built with FolioKit.',
       defaultAuthorId: AUTHOR_ID,
       onboardingComplete: true,
+      profile: {
+        displayName: 'Alex Rivera',
+        photoUrl: 'https://picsum.photos/seed/alex-light/400/400',
+        photoUrlDark: 'https://picsum.photos/seed/alex-dark/400/400',
+        photoAlt: 'Alex Rivera headshot',
+        socialLinks: [
+          { platform: 'github', url: 'https://github.com/alexrivera-dev', label: 'GitHub' },
+          { platform: 'twitter', url: 'https://twitter.com/alexrivera_dev', label: 'Twitter / X' },
+          { platform: 'linkedin', url: 'https://linkedin.com/in/alexrivera-dev', label: 'LinkedIn' },
+          { platform: 'bluesky', url: 'https://bsky.app/profile/alexrivera.dev', label: 'Bluesky' },
+        ],
+      },
       pages: {
         home: {
           enabled: true,
@@ -147,15 +159,6 @@ My primary stack is **TypeScript**, **Angular**, and **Firebase**, though I spen
 Outside of work I enjoy hiking, specialty coffee, and reading way too many technical blog posts about things I'll never have time to implement.
 
 Feel free to reach out — I'm always happy to chat about code, career, or whatever you're working on.`,
-          photoUrl: 'https://picsum.photos/seed/alex-light/400/400',
-          photoUrlDark: 'https://picsum.photos/seed/alex-dark/400/400',
-          photoAlt: 'Alex Rivera headshot',
-          socialLinks: [
-            { platform: 'github', url: 'https://github.com/alexrivera-dev', label: 'GitHub' },
-            { platform: 'twitter', url: 'https://twitter.com/alexrivera_dev', label: 'Twitter / X' },
-            { platform: 'linkedin', url: 'https://linkedin.com/in/alexrivera-dev', label: 'LinkedIn' },
-            { platform: 'bluesky', url: 'https://bsky.app/profile/alexrivera.dev', label: 'Bluesky' },
-          ],
           seo: {
             title: 'About Alex Rivera',
             description: 'Software engineer, open-source contributor, and writer.',
@@ -166,9 +169,6 @@ Feel free to reach out — I'm always happy to chat about code, career, or whate
           title: 'Alex Rivera',
           headline: 'Engineer • Writer • Builder',
           bio: 'TypeScript, Angular & Firebase enthusiast. Writing about software and the people who make it.',
-          avatarUrl: 'https://picsum.photos/seed/alex-links-light/200/200',
-          avatarUrlDark: 'https://picsum.photos/seed/alex-links-dark/200/200',
-          avatarAlt: 'Alex Rivera',
           links: [
             {
               id: 'link-blog',

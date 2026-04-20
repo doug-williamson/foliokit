@@ -24,7 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AuthorService, SITE_ID, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
+import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
@@ -130,21 +130,21 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
               <div class="flex flex-col gap-4">
                 <h3 class="text-sm font-semibold opacity-80 m-0">Site Profile</h3>
 
-                <div class="flex items-center gap-4">
-                  <div
-                    class="w-[120px] h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"
-                    style="background: #64748b; border-color: color-mix(in srgb, currentColor 14%, transparent)"
-                  >
-                    @if (profilePhotoUrl()) {
-                      <img
-                        [src]="profilePhotoUrl()!"
-                        [alt]="profileForm.get('photoAlt')?.value ?? 'Profile photo'"
-                        class="w-full h-full object-cover"
-                      />
-                    }
-                  </div>
-                  <div class="flex flex-col gap-2">
-                    <label class="text-xs opacity-60">Light mode photo</label>
+                <div class="grid grid-cols-2 gap-4 sm:gap-6 sm:max-w-sm">
+                  <div class="flex flex-col items-center gap-3">
+                    <div
+                      class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"
+                      style="background: #64748b; border-color: color-mix(in srgb, currentColor 14%, transparent)"
+                    >
+                      @if (profilePhotoUrl()) {
+                        <img
+                          [src]="profilePhotoUrl()!"
+                          [alt]="profileForm.get('photoAlt')?.value ?? 'Profile photo'"
+                          class="w-full h-full object-cover"
+                        />
+                      }
+                    </div>
+                    <span class="text-xs opacity-60 leading-none">Light mode</span>
                     <label class="cursor-pointer">
                       <input
                         type="file"
@@ -156,10 +156,26 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                         @if (photoUploadState() === 'uploading') {
                           <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
                         } @else {
-                          Upload photo
+                          Upload
                         }
                       </span>
                     </label>
+                  </div>
+
+                  <div class="flex flex-col items-center gap-3">
+                    <div
+                      class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"
+                      style="background: #0f172a; border-color: color-mix(in srgb, currentColor 14%, transparent)"
+                    >
+                      @if (profilePhotoDarkUrl()) {
+                        <img
+                          [src]="profilePhotoDarkUrl()!"
+                          [alt]="profileForm.get('photoAlt')?.value ?? 'Profile photo (dark)'"
+                          class="w-full h-full object-cover"
+                        />
+                      }
+                    </div>
+                    <span class="text-xs opacity-60 leading-none">Dark mode</span>
                     <label class="cursor-pointer">
                       <input
                         type="file"
@@ -171,7 +187,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                         @if (photoDarkUploadState() === 'uploading') {
                           <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
                         } @else {
-                          Upload dark mode photo
+                          Upload
                         }
                       </span>
                     </label>
@@ -299,7 +315,7 @@ export class SiteConfigPageComponent implements OnInit {
 
   protected readonly authors = toSignal(this.authorService.getAll(), { initialValue: [] });
 
-  private readonly siteId = inject(SITE_ID, { optional: true }) ?? 'default';
+  private readonly paths = inject(CollectionPaths);
 
   protected readonly profilePhotoUrl = signal<string | null>(null);
   protected readonly profilePhotoDarkUrl = signal<string | null>(null);
@@ -489,7 +505,7 @@ export class SiteConfigPageComponent implements OnInit {
     }
     try {
       const ext = file.name.split('.').pop() ?? 'jpg';
-      const path = `sites/${this.siteId}/profile/avatar-${variant}.${ext}`;
+      const path = this.paths.storagePath(`profile/avatar-${variant}.${ext}`);
       const snapshot = await uploadBytes(ref(getStorage(), path), file);
       const url = await getDownloadURL(snapshot.ref);
       if (variant === 'light') {
