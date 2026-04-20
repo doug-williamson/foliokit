@@ -118,7 +118,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
               </div>
 
               <mat-checkbox formControlName="showRecentPosts">
-                Show recent posts below the hero
+                Show recent post below the hero
               </mat-checkbox>
 
               <mat-expansion-panel [expanded]="false" togglePosition="after" class="!shadow-none mt-2"
