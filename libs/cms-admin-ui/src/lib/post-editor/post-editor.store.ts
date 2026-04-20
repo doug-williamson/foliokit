@@ -86,13 +86,9 @@ export const PostEditorStore = signalStore(
     return {
       loadPost(id: string): void {
         postService.getPostById(id).subscribe((post) => {
-          const coerced =
-            post.status === 'scheduled'
-              ? { ...post, status: 'draft' as const, scheduledPublishAt: undefined }
-              : post;
           patchState(store, {
-            post: coerced,
-            persistedPost: clonePost(coerced),
+            post,
+            persistedPost: clonePost(post),
             isDirty: false,
             isSaving: false,
             saveError: null,
