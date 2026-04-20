@@ -58,8 +58,20 @@ export function createAboutPageResolver(
       return about;
     }
 
-    return service.getAboutConfig().pipe(
+    return service.getConfig().pipe(
       take(1),
+      map((config) => {
+        const about = config.pages?.about;
+        if (!about) return null;
+        const profile = config.profile;
+        return {
+          ...about,
+          photoUrl: profile?.photoUrl ?? about.photoUrl,
+          photoUrlDark: profile?.photoUrlDark ?? about.photoUrlDark,
+          photoAlt: profile?.photoAlt ?? about.photoAlt,
+          socialLinks: profile?.socialLinks ?? about.socialLinks,
+        } satisfies AboutPageConfig;
+      }),
       tap((about) => {
         if (isPlatformServer(platformId)) {
           transferState.set(ABOUT_PAGE_KEY, about);

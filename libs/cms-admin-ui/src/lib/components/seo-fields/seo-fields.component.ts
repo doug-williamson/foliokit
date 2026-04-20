@@ -20,17 +20,17 @@ export type SeoFieldsFormGroup = FormGroup<{
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule],
   template: `
     <div [formGroup]="group()" class="flex flex-col gap-4">
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
         <mat-label>Meta Title</mat-label>
         <input matInput formControlName="metaTitle" placeholder="Defaults to post title" />
       </mat-form-field>
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
         <mat-label>Meta Description</mat-label>
         <textarea matInput rows="3" formControlName="metaDescription" placeholder="Defaults to excerpt"></textarea>
       </mat-form-field>
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
         <mat-label>OG Image URL</mat-label>
         <input
           matInput
@@ -40,7 +40,7 @@ export type SeoFieldsFormGroup = FormGroup<{
         />
       </mat-form-field>
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
         <mat-label>Canonical URL</mat-label>
         <input
           matInput

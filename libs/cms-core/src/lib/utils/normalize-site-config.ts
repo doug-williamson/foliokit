@@ -1,5 +1,6 @@
 import type {
   SiteConfig,
+  SiteProfile,
   SocialLink,
   SocialPlatform,
   SeoMeta,
@@ -116,6 +117,20 @@ function normalizeLinksPageConfig(raw: unknown): LinksPageConfig {
   };
 }
 
+function normalizeSiteProfile(raw: unknown): SiteProfile | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    displayName: (r['displayName'] as string | null) ?? null,
+    photoUrl: (r['photoUrl'] as string | null) ?? null,
+    photoUrlDark: (r['photoUrlDark'] as string | null) ?? null,
+    photoAlt: (r['photoAlt'] as string | null) ?? null,
+    socialLinks: Array.isArray(r['socialLinks'])
+      ? normalizeSocialLinks(r['socialLinks'])
+      : undefined,
+  };
+}
+
 function normalizeBlogPageConfig(raw: unknown): BlogPageConfig | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const r = raw as Record<string, unknown>;
@@ -154,6 +169,7 @@ export function normalizeSiteConfig(raw: Record<string, unknown>): SiteConfig {
     favicon: raw['favicon'] as string | undefined,
     defaultAuthorId: raw['defaultAuthorId'] as string | undefined,
     defaultSeo: normalizeSeoMeta(raw['defaultSeo']),
+    profile: normalizeSiteProfile(raw['profile']),
     pages: normalizedPages,
     onboardingComplete,
     updatedAt: normalizeTimestamp(raw['updatedAt']),

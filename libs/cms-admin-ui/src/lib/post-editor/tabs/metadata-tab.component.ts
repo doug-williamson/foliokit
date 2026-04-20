@@ -155,6 +155,29 @@ function slugify(title: string): string {
             <mat-datepicker #publishedPicker />
           </mat-form-field>
         }
+        @if (post.status === 'scheduled') {
+          <mat-form-field class="w-full">
+            <mat-label>Scheduled Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="scheduledPicker"
+              [value]="scheduledDate()"
+              (dateChange)="onScheduledDateChange($event.value)"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker" />
+            <mat-datepicker #scheduledPicker />
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>Scheduled Time</mat-label>
+            <input
+              matInput
+              type="time"
+              [value]="scheduledTime()"
+              (change)="onScheduledTimeChange($any($event.target).value)"
+            />
+            <mat-hint>Uses your local timezone</mat-hint>
+          </mat-form-field>
+        }
 
         <!-- Slug -->
         <mat-form-field class="w-full">
@@ -191,6 +214,8 @@ export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
   readonly separatorKeys = [ENTER, COMMA];
   readonly internalNotes = signal('');
+  protected readonly scheduledDate = signal<Date | null>(null);
+  protected readonly scheduledTime = signal<string>('09:00');
 
   readonly authors = toSignal(inject(AuthorService).getAll(), {
     initialValue: [] as Author[],
@@ -219,6 +244,16 @@ export class MetadataTabComponent {
       const post = this.store.post();
       if (!post || post.slug !== '' || this.store.mode() !== 'new' || !post.title) return;
       this.store.updateField('slug', slugify(post.title));
+    });
+
+    effect(() => {
+      const post = this.store.post();
+      if (!post || post.status !== 'scheduled' || !post.scheduledPublishAt) return;
+      const d = new Date(post.scheduledPublishAt);
+      this.scheduledDate.set(d);
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      this.scheduledTime.set(`${hh}:${mm}`);
     });
   }
 
@@ -262,5 +297,25 @@ export class MetadataTabComponent {
   onSeriesOrderInput(raw: string): void {
     const n = parseInt(raw, 10);
     this.store.updateField('seriesOrder', Number.isFinite(n) && n > 0 ? n : undefined);
+  }
+
+  protected onScheduledDateChange(date: Date | null): void {
+    if (!date) return;
+    this.scheduledDate.set(date);
+    this.commitScheduledPublishAt(date, this.scheduledTime());
+  }
+
+  protected onScheduledTimeChange(timeStr: string): void {
+    this.scheduledTime.set(timeStr);
+    const date = this.scheduledDate();
+    if (!date || !timeStr) return;
+    this.commitScheduledPublishAt(date, timeStr);
+  }
+
+  private commitScheduledPublishAt(date: Date, timeStr: string): void {
+    const [hh, mm] = timeStr.split(':').map(Number);
+    const combined = new Date(date);
+    combined.setHours(hh ?? 0, mm ?? 0, 0, 0);
+    this.store.updateField('scheduledPublishAt', combined.getTime());
   }
 }

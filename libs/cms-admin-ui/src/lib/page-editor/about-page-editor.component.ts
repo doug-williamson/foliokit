@@ -17,7 +17,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SocialLink, SocialPlatform } from '@foliokit/cms-core';
+import { ProfilePreviewComponent } from '../shared/profile-preview/profile-preview.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
 import {
@@ -63,7 +64,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
-    MatCardModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -74,6 +75,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatSnackBarModule,
     SeoFieldsComponent,
     SaveBarComponent,
+    ProfilePreviewComponent,
   ],
   styles: [
     `
@@ -158,16 +160,19 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   </mat-form-field>
                 </form>
 
-                <mat-card appearance="outlined" class="!shadow-none"
-                          style="border-color: color-mix(in srgb, currentColor 14%, transparent); background: color-mix(in srgb, currentColor 4%, transparent)">
-                  <mat-card-content class="flex items-start gap-3 !pb-4 !pt-4">
-                    <mat-icon class="shrink-0 opacity-70 mt-0.5" svgIcon="person" />
-                    <p class="text-sm opacity-85 m-0 leading-relaxed">
-                      Profile photo and author details are managed in the
-                      <a routerLink="/authors" class="text-[var(--mat-sys-primary)] underline font-medium">Author profile</a>.
-                    </p>
-                  </mat-card-content>
-                </mat-card>
+                <folio-profile-preview
+                  [profile]="store.config()?.profile ?? null"
+                  settingsRoute="/settings"
+                />
+
+                <mat-expansion-panel class="!shadow-none">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="pt-2">
+                    <folio-seo-fields [group]="aboutSeoForm" />
+                  </div>
+                </mat-expansion-panel>
               </div>
             </mat-tab>
 
@@ -231,11 +236,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               </div>
             </mat-tab>
 
-            <mat-tab label="SEO">
-              <div class="max-w-2xl mx-auto px-6 py-8">
-                <folio-seo-fields [group]="aboutSeoForm" />
-              </div>
-            </mat-tab>
           </mat-tab-group>
         </div>
       }

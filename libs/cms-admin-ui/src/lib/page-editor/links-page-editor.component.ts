@@ -4,29 +4,27 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   FormControl,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { LinksEditorFormComponent } from './links-editor-form.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
-import {
-  SeoFieldsComponent,
-  type SeoFieldsFormGroup,
-} from '../components/seo-fields/seo-fields.component';
 import { SaveBarComponent } from '../components/save-bar/save-bar.component';
+import { ProfilePreviewComponent } from '../shared/profile-preview/profile-preview.component';
 
 /**
- * Links page editor — Content (title, headline, bio, link list) and SEO tabs,
- * with `folio-save-bar` for save/discard.
+ * Links page editor — Content (title, headline, bio, link list) tab with
+ * inline SEO expansion panel, and `folio-save-bar` for save/discard.
  *
  * `SiteConfigEditorStore` must be provided at the route level (already
  * wired in `adminRoutes`). The component calls `store.load()` on init.
@@ -37,15 +35,16 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
-    MatCardModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatTabsModule,
     MatSnackBarModule,
     LinksEditorFormComponent,
-    SeoFieldsComponent,
     SaveBarComponent,
+    ProfilePreviewComponent,
   ],
   styles: [
     `
@@ -88,24 +87,30 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
           >
             <mat-tab label="Content">
               <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
-                <mat-card appearance="outlined" class="!shadow-none"
-                          style="border-color: color-mix(in srgb, currentColor 14%, transparent); background: color-mix(in srgb, currentColor 4%, transparent)">
-                  <mat-card-content class="flex items-start gap-3 !pb-4 !pt-4">
-                    <mat-icon class="shrink-0 opacity-70 mt-0.5" svgIcon="person" />
-                    <p class="text-sm opacity-85 m-0 leading-relaxed">
-                      Profile photo and author details are managed in the
-                      <a routerLink="/authors" class="text-[var(--mat-sys-primary)] underline font-medium">Author profile</a>.
-                    </p>
-                  </mat-card-content>
-                </mat-card>
+                <folio-profile-preview
+                  [profile]="store.config()?.profile ?? null"
+                  settingsRoute="/settings"
+                />
 
                 <admin-links-editor-form />
-              </div>
-            </mat-tab>
 
-            <mat-tab label="SEO">
-              <div class="max-w-2xl mx-auto px-6 py-8">
-                <folio-seo-fields [group]="linksSeoForm" />
+                <mat-expansion-panel class="!shadow-none">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="flex flex-col gap-4 pt-2" [formGroup]="linksSeoForm">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Meta Title</mat-label>
+                      <input matInput formControlName="metaTitle" placeholder="My Links" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Meta Description</mat-label>
+                      <textarea matInput rows="3"
+                        formControlName="metaDescription"
+                        placeholder="Short description…"></textarea>
+                    </mat-form-field>
+                  </div>
+                </mat-expansion-panel>
               </div>
             </mat-tab>
           </mat-tab-group>
@@ -126,12 +131,10 @@ export class LinksPageEditorComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
-  protected readonly linksSeoForm: SeoFieldsFormGroup = this.fb.group({
+  protected readonly linksSeoForm = this.fb.group({
     metaTitle: new FormControl<string | null>(null),
     metaDescription: new FormControl<string | null>(null),
-    ogImageUrl: new FormControl<string | null>(null),
-    canonicalUrl: new FormControl<string | null>(null),
-  }) as SeoFieldsFormGroup;
+  });
 
   constructor() {
     wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
@@ -165,8 +168,6 @@ export class LinksPageEditorComponent implements OnInit {
       {
         metaTitle: seo?.title ?? null,
         metaDescription: seo?.description ?? null,
-        ogImageUrl: seo?.ogImage ?? null,
-        canonicalUrl: seo?.canonicalUrl ?? null,
       },
       { emitEvent: false },
     );
@@ -178,18 +179,13 @@ export class LinksPageEditorComponent implements OnInit {
     const v = this.linksSeoForm.getRawValue() as {
       metaTitle: string | null;
       metaDescription: string | null;
-      ogImageUrl: string | null;
-      canonicalUrl: string | null;
     };
-    const prev = current.seo;
     this.store.updateLinks({
       ...current,
       seo: {
-        ...prev,
+        ...current.seo,
         title: v.metaTitle ?? '',
         description: v.metaDescription ?? '',
-        ogImage: v.ogImageUrl ?? '',
-        canonicalUrl: v.canonicalUrl ?? '',
       },
     });
   }

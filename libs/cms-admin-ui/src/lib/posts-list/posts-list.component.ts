@@ -128,6 +128,7 @@ import { PostsTableComponent } from './posts-table.component';
           <mat-menu #statusMenu>
             <button mat-menu-item (click)="store.setFilterStatus('all')">All</button>
             <button mat-menu-item (click)="store.setFilterStatus('draft')">Draft</button>
+            <button mat-menu-item (click)="store.setFilterStatus('scheduled')">Scheduled</button>
             <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
             <button mat-menu-item (click)="store.setFilterStatus('archived')">Archived</button>
           </mat-menu>
@@ -141,6 +142,7 @@ import { PostsTableComponent } from './posts-table.component';
             >
               <mat-chip-option value="all">All</mat-chip-option>
               <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
+              <mat-chip-option value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
               <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
               <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
             </mat-chip-listbox>

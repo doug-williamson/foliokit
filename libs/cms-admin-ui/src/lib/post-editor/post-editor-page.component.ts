@@ -199,7 +199,8 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             <span
               class="badge admin-meta shrink-0"
               [class.badge-pub]="status === 'published'"
-              [class.badge-draft]="status === 'draft' || status === 'scheduled'"
+              [class.badge-draft]="status === 'draft'"
+              [class.badge-sched]="status === 'scheduled'"
               [class.badge-arch]="status === 'archived'"
             >
               {{ editorStatusLabel(status) }}
@@ -385,14 +386,17 @@ export class PostEditorPageComponent implements OnInit {
   readonly rightTab = signal<RightTab>('Article');
 
   onStatusChange(status: BlogPost['status']): void {
+    if (status === 'scheduled') {
+      this.store.updateField('status', 'scheduled');
+      this.leftTab.set('Metadata');
+      return;
+    }
     this.store.updateField('scheduledPublishAt', undefined);
     this.store.updateField('status', status);
     const successMessage =
       status === 'published'
         ? 'Post published'
-        : status === 'draft'
-          ? 'Post unpublished'
-          : 'Changes saved';
+        : 'Post unpublished';
     this.subscribePostWrite(this.store.save(), { successMessage });
   }
 
@@ -426,6 +430,7 @@ export class PostEditorPageComponent implements OnInit {
   protected editorStatusLabel(status: BlogPost['status']): string {
     if (status === 'published') return 'PUBLISHED';
     if (status === 'archived') return 'ARCHIVED';
+    if (status === 'scheduled') return 'SCHEDULED';
     return 'DRAFT';
   }
 

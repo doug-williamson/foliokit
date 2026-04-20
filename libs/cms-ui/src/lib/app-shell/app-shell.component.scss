@@ -185,18 +185,6 @@ mat-sidenav.icon-rail {
     border-radius: 8px;
     margin: 1px 8px;
     overflow: hidden; // clips MDC state layer/ripple to pill boundary
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: -8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 60%;
-      background: var(--nav-active-text);
-      border-radius: 0 4px 4px 0;
-    }
   }
 }
 

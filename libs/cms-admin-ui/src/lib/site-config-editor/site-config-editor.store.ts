@@ -13,6 +13,7 @@ import {
   SITE_ID,
   SiteConfig,
   SiteConfigService,
+  SiteProfile,
 } from '@foliokit/cms-core';
 
 export interface SiteConfigEditorState {
@@ -138,6 +139,15 @@ export const SiteConfigEditorStore = signalStore(
             ...current,
             pages: { ...current.pages, links: { ...links, enabled } },
           },
+          isDirty: true,
+        });
+      },
+
+      updateProfile(profile: SiteProfile): void {
+        const current = store.config();
+        if (!current) return;
+        patchState(store, {
+          config: { ...current, profile },
           isDirty: true,
         });
       },

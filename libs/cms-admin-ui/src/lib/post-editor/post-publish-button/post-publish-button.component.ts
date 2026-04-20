@@ -1,26 +1,20 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
-  inject,
   input,
   output,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { take } from 'rxjs/operators';
 import { BlogPost } from '@foliokit/cms-core';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'cms-post-publish-button',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatProgressSpinnerModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatProgressSpinnerModule],
   styles: [
     `
       :host {
@@ -30,57 +24,48 @@ import {
     `,
   ],
   template: `
-    <button
-      mat-flat-button
-      type="button"
-      [disabled]="isSaving()"
-      (click)="onPrimaryClick()"
-    >
-      @if (isSaving()) {
-        <mat-spinner diameter="16" style="display: inline-block" />
-      } @else {
-        {{ primaryLabel() }}
-      }
-    </button>
+    <div style="display: inline-flex; align-items: stretch;">
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="isSaving()"
+        (click)="onPublishNow()"
+        style="border-radius: 4px 0 0 4px; border-right: none"
+      >
+        @if (isSaving()) {
+          <mat-spinner diameter="16" style="display: inline-block" />
+        } @else {
+          Publish now
+        }
+      </button>
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="isSaving()"
+        [matMenuTriggerFor]="publishMenu"
+        style="border-radius: 0 4px 4px 0; min-width: 32px; padding: 0 4px"
+        aria-label="More publish options"
+      >
+        <mat-icon svgIcon="arrow_drop_down" style="margin: 0" />
+      </button>
+    </div>
+    <mat-menu #publishMenu>
+      <button mat-menu-item type="button" (click)="onPublishNow()">Publish now</button>
+      <button mat-menu-item type="button" (click)="onSchedule()">Schedule…</button>
+    </mat-menu>
   `,
 })
 export class PostPublishButtonComponent {
-  private readonly dialog = inject(MatDialog);
-
   readonly currentStatus = input.required<BlogPost['status']>();
   readonly isSaving = input<boolean>(false);
 
   readonly statusChange = output<BlogPost['status']>();
 
-  readonly primaryLabel = computed(() =>
-    this.currentStatus() === 'published' ? 'Unpublish' : 'Publish now',
-  );
+  onPublishNow(): void {
+    this.statusChange.emit('published');
+  }
 
-  readonly primaryAction = computed<BlogPost['status']>(() =>
-    this.currentStatus() === 'published' ? 'draft' : 'published',
-  );
-
-  readonly requiresConfirmation = computed(() => this.primaryAction() === 'draft');
-
-  onPrimaryClick(): void {
-    if (this.requiresConfirmation()) {
-      this.dialog
-        .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-          data: {
-            title: 'Unpublish post?',
-            message: 'Are you sure you want to unpublish this post?',
-            confirmLabel: 'Unpublish',
-            cancelLabel: 'Keep published',
-            destructive: true,
-          },
-        })
-        .afterClosed()
-        .pipe(take(1))
-        .subscribe((confirmed) => {
-          if (confirmed) this.statusChange.emit(this.primaryAction());
-        });
-    } else {
-      this.statusChange.emit(this.primaryAction());
-    }
+  onSchedule(): void {
+    this.statusChange.emit('scheduled');
   }
 }

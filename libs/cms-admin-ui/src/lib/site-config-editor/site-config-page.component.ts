@@ -3,15 +3,19 @@ import {
   Component,
   OnInit,
   inject,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
+  FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +23,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AuthorService } from '@foliokit/cms-core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
@@ -46,6 +51,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatSelectModule,
     MatTabsModule,
     MatSnackBarModule,
+    MatTooltipModule,
     SaveBarComponent,
   ],
   styles: [
@@ -120,6 +126,139 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                   }
                 </mat-form-field>
               </form>
+
+              <div class="flex flex-col gap-4">
+                <h3 class="text-sm font-semibold opacity-80 m-0">Site Profile</h3>
+
+                <div class="flex justify-around sm:justify-center sm:gap-24 py-2">
+                  <div class="flex flex-col items-center gap-3">
+                    <div
+                      class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"
+                      style="background: #64748b; border-color: color-mix(in srgb, currentColor 14%, transparent)"
+                    >
+                      @if (profilePhotoUrl()) {
+                        <img
+                          [src]="profilePhotoUrl()!"
+                          [alt]="profileForm.get('photoAlt')?.value ?? 'Profile photo'"
+                          class="w-full h-full object-cover"
+                        />
+                      }
+                    </div>
+                    <span class="text-xs opacity-60 leading-none">Light mode</span>
+                    <label class="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        (change)="onProfilePhotoSelected($event, 'light')"
+                      />
+                      <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
+                        @if (photoUploadState() === 'uploading') {
+                          <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
+                        } @else {
+                          Upload
+                        }
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="flex flex-col items-center gap-3">
+                    <div
+                      class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden shrink-0 flex items-center justify-center border"
+                      style="background: #0f172a; border-color: color-mix(in srgb, currentColor 14%, transparent)"
+                    >
+                      @if (profilePhotoDarkUrl()) {
+                        <img
+                          [src]="profilePhotoDarkUrl()!"
+                          [alt]="profileForm.get('photoAlt')?.value ?? 'Profile photo (dark)'"
+                          class="w-full h-full object-cover"
+                        />
+                      }
+                    </div>
+                    <span class="text-xs opacity-60 leading-none">Dark mode</span>
+                    <label class="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        (change)="onProfilePhotoSelected($event, 'dark')"
+                      />
+                      <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
+                        @if (photoDarkUploadState() === 'uploading') {
+                          <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
+                        } @else {
+                          Upload
+                        }
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <form [formGroup]="profileForm" class="flex flex-col gap-4">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Display Name</mat-label>
+                    <input matInput formControlName="displayName" placeholder="Jane Smith" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Photo Alt Text</mat-label>
+                    <input matInput formControlName="photoAlt" placeholder="Headshot of Jane Smith" />
+                  </mat-form-field>
+                </form>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold opacity-70">Social Links</span>
+                  <button mat-stroked-button type="button" (click)="addProfileSocialLink()">
+                    <mat-icon svgIcon="add" />
+                    Add
+                  </button>
+                </div>
+
+                <div [formGroup]="profileSocialForm" class="flex flex-col gap-3">
+                  <div formArrayName="socialLinks" class="flex flex-col gap-3">
+                    @for (ctrl of profileSocialLinksArray.controls; track $index) {
+                      <div
+                        [formGroupName]="$index"
+                        class="flex flex-col gap-2 p-3 rounded-lg border"
+                        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+                      >
+                        <div class="flex items-start gap-2">
+                          <mat-form-field appearance="outline" class="flex-1">
+                            <mat-label>Platform</mat-label>
+                            <mat-select formControlName="platform">
+                              @for (p of platforms; track p.value) {
+                                <mat-option [value]="p.value">{{ p.label }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                          <button
+                            mat-icon-button
+                            type="button"
+                            class="shrink-0 mt-1"
+                            matTooltip="Remove"
+                            (click)="removeProfileSocialLink($index)"
+                          >
+                            <mat-icon svgIcon="delete" />
+                          </button>
+                        </div>
+                        <div class="flex gap-2">
+                          <mat-form-field appearance="outline" class="flex-1">
+                            <mat-label>Label</mat-label>
+                            <input matInput formControlName="label" placeholder="Optional" />
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="flex-1">
+                            <mat-label>URL</mat-label>
+                            <input matInput formControlName="url" placeholder="https://…" />
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    }
+                    @if (!profileSocialLinksArray.length) {
+                      <p class="text-sm opacity-50 text-center py-2 m-0">No social links yet.</p>
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           </mat-tab>
 
@@ -175,6 +314,40 @@ export class SiteConfigPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   protected readonly authors = toSignal(this.authorService.getAll(), { initialValue: [] });
+
+  private readonly paths = inject(CollectionPaths);
+
+  protected readonly profilePhotoUrl = signal<string | null>(null);
+  protected readonly profilePhotoDarkUrl = signal<string | null>(null);
+  protected readonly photoUploadState = signal<'idle' | 'uploading'>('idle');
+  protected readonly photoDarkUploadState = signal<'idle' | 'uploading'>('idle');
+
+  protected readonly profileForm: FormGroup = this.fb.group({
+    displayName: new FormControl<string | null>(null),
+    photoAlt: new FormControl<string | null>(null),
+  });
+
+  protected readonly profileSocialForm: FormGroup = this.fb.group({
+    socialLinks: this.fb.array([]),
+  });
+
+  protected readonly platforms: { value: SocialPlatform; label: string }[] = [
+    { value: 'twitter', label: 'Twitter / X' },
+    { value: 'bluesky', label: 'Bluesky' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'github', label: 'GitHub' },
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'youtube', label: 'YouTube' },
+    { value: 'twitch', label: 'Twitch' },
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'email', label: 'Email' },
+    { value: 'website', label: 'Website' },
+  ];
+
+  get profileSocialLinksArray(): FormArray {
+    return this.profileSocialForm.get('socialLinks') as FormArray;
+  }
 
   protected readonly generalForm: FormGroup = this.fb.group({
     siteName: ['', Validators.required],
@@ -240,6 +413,29 @@ export class SiteConfigPageComponent implements OnInit {
       },
       { emitEvent: false },
     );
+
+    const profile = config.profile;
+    this.profileForm.patchValue(
+      {
+        displayName: profile?.displayName ?? null,
+        photoAlt: profile?.photoAlt ?? null,
+      },
+      { emitEvent: false },
+    );
+    this.profilePhotoUrl.set(profile?.photoUrl ?? null);
+    this.profilePhotoDarkUrl.set(profile?.photoUrlDark ?? null);
+
+    this.profileSocialLinksArray.clear({ emitEvent: false });
+    for (const link of profile?.socialLinks ?? []) {
+      this.profileSocialLinksArray.push(
+        this.fb.group({
+          platform: [link.platform],
+          label: [link.label ?? ''],
+          url: [link.url ?? ''],
+        }),
+        { emitEvent: false },
+      );
+    }
   }
 
   private watchForms(): void {
@@ -257,5 +453,74 @@ export class SiteConfigPageComponent implements OnInit {
         canonicalUrl: val.canonicalUrl || undefined,
       });
     });
+
+    this.profileForm.valueChanges.subscribe(() => this.flushProfileToStore());
+    this.profileSocialForm.valueChanges.subscribe(() => this.flushProfileToStore());
+  }
+
+  private flushProfileToStore(): void {
+    const v = this.profileForm.getRawValue() as {
+      displayName: string | null;
+      photoAlt: string | null;
+    };
+    const socialLinks: SocialLink[] = this.profileSocialLinksArray.value.map(
+      (row: { platform: SocialPlatform; label: string; url: string }) => ({
+        platform: row.platform,
+        label: row.label || undefined,
+        url: row.url,
+      }),
+    );
+    const profile: SiteProfile = {
+      displayName: v.displayName,
+      photoUrl: this.profilePhotoUrl(),
+      photoUrlDark: this.profilePhotoDarkUrl(),
+      photoAlt: v.photoAlt,
+      socialLinks: socialLinks.length ? socialLinks : undefined,
+    };
+    this.store.updateProfile(profile);
+  }
+
+  protected addProfileSocialLink(): void {
+    this.profileSocialLinksArray.push(
+      this.fb.group({ platform: ['website'], label: [''], url: [''] }),
+    );
+  }
+
+  protected removeProfileSocialLink(index: number): void {
+    this.profileSocialLinksArray.removeAt(index);
+    this.flushProfileToStore();
+  }
+
+  protected async onProfilePhotoSelected(
+    event: Event,
+    variant: 'light' | 'dark',
+  ): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    if (variant === 'light') {
+      this.photoUploadState.set('uploading');
+    } else {
+      this.photoDarkUploadState.set('uploading');
+    }
+    try {
+      const ext = file.name.split('.').pop() ?? 'jpg';
+      const path = this.paths.storagePath(`profile/avatar-${variant}.${ext}`);
+      const snapshot = await uploadBytes(ref(getStorage(), path), file);
+      const url = await getDownloadURL(snapshot.ref);
+      if (variant === 'light') {
+        this.profilePhotoUrl.set(url);
+      } else {
+        this.profilePhotoDarkUrl.set(url);
+      }
+      this.flushProfileToStore();
+    } finally {
+      if (variant === 'light') {
+        this.photoUploadState.set('idle');
+      } else {
+        this.photoDarkUploadState.set('idle');
+      }
+      input.value = '';
+    }
   }
 }
