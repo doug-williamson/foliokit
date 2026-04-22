@@ -35,6 +35,13 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "check-styles": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/cms-admin-ui/scripts/check-styles.mjs",
+        "cwd": "{workspaceRoot}"
+      }
     }
   }
 }
