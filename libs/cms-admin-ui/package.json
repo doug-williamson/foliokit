@@ -1,6 +1,6 @@
 {
   "name": "@foliokit/cms-admin-ui",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Admin UI components, guards, shell, routes, and providers for FolioKit CMS.",
   "keywords": [
     "angular",
@@ -32,7 +32,7 @@
     "ngx-markdown": "^21.1.0",
     "rxjs": "~7.8.0"
   },
-  "sideEffects": false,
+  "sideEffects": ["**/*.scss"],
   "scripts": {
     "prepublishOnly": "node ../../tools/scripts/block-publish-from-libs.mjs"
   },
@@ -41,6 +41,12 @@
       "types": "./index.d.ts",
       "esm2022": "./esm2022/foliokit-cms-admin-ui.mjs",
       "default": "./fesm2022/foliokit-cms-admin-ui.mjs"
+    },
+    "./styles": {
+      "sass": "./styles/index.scss"
+    },
+    "./styles/*": {
+      "sass": "./styles/_*.scss"
     }
   },
   "schematics": "./schematics/collection.json",

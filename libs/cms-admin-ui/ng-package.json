@@ -9,6 +9,11 @@
       "input": "./schematics",
       "glob": "**/*",
       "output": "schematics"
+    },
+    {
+      "input": "src/styles",
+      "glob": "**/*.scss",
+      "output": "styles"
     }
   ]
 }
