@@ -384,7 +384,7 @@ export class BlogHomeComponent {
       const s = this.loadState();
       if (s.pending || !s.config) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
-      this.blogSeoService?.setDefaultMeta(s.config, baseUrl);
+      this.blogSeoService?.setHomeMeta(s.config, baseUrl);
     });
   }
 }
