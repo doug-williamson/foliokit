@@ -132,7 +132,6 @@ export const FOLIO_BLOG_ROUTES: Routes = [
   },
   {
     path: 'links',
-    title: 'Links | FolioKit',
     canActivate: [featureGuard('links')],
     resolve: { page: createLinksPageResolver() },
     loadComponent: () => loadUi().then((m) => m['LinksPageComponent'] as any),

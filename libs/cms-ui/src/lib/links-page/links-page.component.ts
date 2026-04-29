@@ -4,16 +4,15 @@ import {
   computed,
   effect,
   inject,
-  PLATFORM_ID,
 } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { Meta, Title } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
+import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
 import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
@@ -164,10 +163,8 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
 })
 export class LinksPageComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly meta = inject(Meta);
-  private readonly title = inject(Title);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
+  private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
   readonly page = toSignal(
     this.route.data.pipe(map((data) => (data['page'] as LinksPageConfig) ?? null)),
     { initialValue: (this.route.snapshot.data['page'] as LinksPageConfig) ?? null },
@@ -176,16 +173,6 @@ export class LinksPageComponent {
   readonly sortedLinks = computed<LinksLink[]>(() =>
     [...(this.page()?.links ?? [])].sort((a, b) => a.order - b.order),
   );
-
-  private upsertCanonical(href: string): void {
-    let el = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!el) {
-      el = this.document.createElement('link');
-      el.rel = 'canonical';
-      this.document.head.appendChild(el);
-    }
-    el.href = href;
-  }
 
   getIcon(link: LinksLink): string {
     if (link.platform && PLATFORM_ICONS[link.platform]) {
@@ -198,25 +185,8 @@ export class LinksPageComponent {
     effect(() => {
       const p = this.page();
       if (!p) return;
-      if (!isPlatformBrowser(this.platformId)) return;
-      const pageTitle = p.seo?.title ?? p.title ?? 'Links';
-      this.title.setTitle(pageTitle);
-      if (p.seo?.description) {
-        this.meta.updateTag({ name: 'description', content: p.seo.description });
-      }
-      this.meta.updateTag({ property: 'og:title', content: pageTitle });
-      this.meta.updateTag({ property: 'og:type', content: 'website' });
-      const canonicalUrl = `${this.document.location?.origin ?? ''}/links`;
-      this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
-      this.upsertCanonical(canonicalUrl);
-      if (p.seo?.ogImage) {
-        this.meta.updateTag({ property: 'og:image', content: p.seo.ogImage });
-      }
-      if (p.seo?.noIndex) {
-        this.meta.updateTag({ name: 'robots', content: 'noindex' });
-      } else {
-        this.meta.removeTag('name="robots"');
-      }
+      const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
+      this.blogSeoService?.setLinksMeta(p, baseUrl);
     });
   }
 }

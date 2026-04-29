@@ -13,7 +13,6 @@ import {
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Title } from '@angular/platform-browser';
 import { forkJoin, of, type Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import type { Author, BlogPost, Tag } from '@foliokit/cms-core';
@@ -22,7 +21,6 @@ import {
   SiteConfigService,
   TagService,
   BLOG_SEO_SERVICE,
-  buildPageTitle,
   tagIdFallbackLabel,
 } from '@foliokit/cms-core';
 import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
@@ -118,7 +116,6 @@ export class BlogPostListComponent {
   private readonly authorService = inject(AUTHOR_SERVICE, { optional: true });
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
-  private readonly titleService = inject(Title);
   private readonly document = inject(DOCUMENT);
 
   private readonly siteConfig = toSignal(
@@ -242,13 +239,7 @@ export class BlogPostListComponent {
       const config = this.siteConfig();
       if (!config) return;
       const baseUrl = this.document.location?.origin ?? 'https://blog.foliokitcms.com';
-      this.blogSeoService?.setDefaultMeta(config, `${baseUrl}/posts`);
-    });
-
-    effect(() => {
-      if (!this.siteConfig()) return;
-      const tag = this.selectedTag();
-      this.titleService.setTitle(tag ? buildPageTitle(`#${tag}`) : buildPageTitle('Blog'));
+      this.blogSeoService?.setBlogMeta(config, baseUrl, this.selectedTag());
     });
 
     effect(() => {
