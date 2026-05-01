@@ -66,13 +66,12 @@ export class BlogSeoService implements IBlogSeoService {
   }
 
   setHomeMeta(config: SiteConfig, baseUrl: string): void {
-    const home = config.pages?.home;
-    const pageTitle = home?.seo?.title ?? buildPageTitle(config.siteName ?? 'Home');
+    const pageTitle = config.pages?.home?.seo?.title ?? config.siteName;
     const description =
-      home?.seo?.description ?? config.defaultSeo?.description ?? config.description ?? '';
-    const canonical = home?.seo?.canonicalUrl ?? baseUrl;
+      config.pages?.home?.seo?.description ?? config.defaultSeo?.description ?? '';
+    const canonical = config.pages?.home?.seo?.canonicalUrl ?? baseUrl;
     const ogImage = toPublicImageUrl(
-      home?.seo?.ogImage ?? config.defaultSeo?.ogImage ?? '',
+      config.pages?.home?.seo?.ogImage ?? config.defaultSeo?.ogImage ?? '',
     );
 
     this.applyMeta({
@@ -81,7 +80,7 @@ export class BlogSeoService implements IBlogSeoService {
       canonical,
       ogImage,
       ogType: 'website',
-      noIndex: home?.seo?.noIndex,
+      noIndex: config.pages?.home?.seo?.noIndex,
     });
 
     const schema = {
@@ -94,14 +93,15 @@ export class BlogSeoService implements IBlogSeoService {
   }
 
   setBlogMeta(config: SiteConfig, baseUrl: string, tag?: string | null): void {
-    const blog = config.pages?.blog;
-    const baseTitle = blog?.seo?.title ?? buildPageTitle('Blog');
-    const pageTitle = tag ? `${baseTitle} #${tag}` : baseTitle;
+    const baseTitle = config.pages?.blog?.seo?.title ?? 'Blog';
+    const pageTitle = buildPageTitle(tag ? `${baseTitle} #${tag}` : baseTitle);
     const description =
-      blog?.seo?.description ?? config.defaultSeo?.description ?? '';
-    const canonical = blog?.seo?.canonicalUrl ?? `${baseUrl}/posts`;
+      config.pages?.blog?.seo?.description ?? config.defaultSeo?.description ?? '';
+    const canonical = tag
+      ? `${baseUrl}/posts?tag=${tag}`
+      : config.pages?.blog?.seo?.canonicalUrl ?? `${baseUrl}/posts`;
     const ogImage = toPublicImageUrl(
-      blog?.seo?.ogImage ?? config.defaultSeo?.ogImage ?? '',
+      config.pages?.blog?.seo?.ogImage ?? config.defaultSeo?.ogImage ?? '',
     );
 
     this.applyMeta({
@@ -110,12 +110,20 @@ export class BlogSeoService implements IBlogSeoService {
       canonical,
       ogImage,
       ogType: 'website',
-      noIndex: blog?.seo?.noIndex,
+      noIndex: config.pages?.blog?.seo?.noIndex,
     });
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      url: canonical,
+    };
+    this.upsertJsonLd(schema, 'blog');
   }
 
   setAboutMeta(config: AboutPageConfig, baseUrl: string): void {
-    const pageTitle = config.seo?.title ?? buildPageTitle('About');
+    const pageTitle = buildPageTitle(config.seo?.title ?? 'About');
     const description = config.seo?.description ?? config.subheadline ?? '';
     const canonical = config.seo?.canonicalUrl ?? `${baseUrl}/about`;
     const ogImage = toPublicImageUrl(
@@ -136,6 +144,7 @@ export class BlogSeoService implements IBlogSeoService {
       '@type': 'Person',
       name: config.headline,
       description: config.subheadline ?? '',
+      url: canonical,
       sameAs: (config.socialLinks ?? []).map((l) => l.url),
     };
     this.upsertJsonLd(schema, 'about');
@@ -163,7 +172,7 @@ export class BlogSeoService implements IBlogSeoService {
   setDefaultMeta(siteConfig: SiteConfig, canonicalUrl?: string): void {
     const description = siteConfig.defaultSeo?.description ?? '';
     const ogImage = toPublicImageUrl(siteConfig.defaultSeo?.ogImage ?? '');
-    const pageTitle = buildPageTitle('Blog');
+    const pageTitle = buildPageTitle(siteConfig.siteName);
 
     this.applyMeta({
       pageTitle,
