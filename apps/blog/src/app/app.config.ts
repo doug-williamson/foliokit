@@ -9,14 +9,13 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
   AUTHOR_SERVICE,
   AuthorService,
-  BLOG_SEO_SERVICE,
+  provideDefaultBlogSeo,
   providesFolioKit,
 } from '@foliokit/cms-core';
 import { provideCmsUiMatIcons } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
 import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
 import { appRoutes } from './app.routes';
-import { BlogSeoService } from './services/blog-seo.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,7 +34,7 @@ export const appConfig: ApplicationConfig = {
         appName: 'FolioKit Blog',
       },
     }),
-    { provide: BLOG_SEO_SERVICE, useExisting: BlogSeoService },
+    provideDefaultBlogSeo(),
     { provide: AUTHOR_SERVICE, useExisting: AuthorService },
   ],
 };

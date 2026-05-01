@@ -12,6 +12,7 @@ export * from './lib/models/tag.model';
 export * from './lib/models/author.model';
 export * from './lib/services/auth.service';
 export * from './lib/services/author.service';
+export * from './lib/services/default-blog-seo.service';
 export * from './lib/services/post.service';
 export * from './lib/services/series.service';
 export * from './lib/services/site-config.service';
@@ -46,6 +47,7 @@ export * from './lib/resolvers/posts.resolver';
 
 // ── High-level providers ──────────────────────────────────────────────────────
 export * from './lib/provide-folio-kit';
+export * from './lib/providers/provide-default-blog-seo';
 
 // ── Route definitions ─────────────────────────────────────────────────────────
 export * from './lib/blog-routes';
