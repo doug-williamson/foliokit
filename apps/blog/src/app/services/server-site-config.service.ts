@@ -10,6 +10,24 @@ import type { AboutPageConfig, SiteConfig } from '@foliokit/cms-core';
 export class ServerSiteConfigService implements ISiteConfigService {
   private readonly siteId = inject(SITE_ID, { optional: true });
 
+  getSiteConfig(): Observable<SiteConfig | null> {
+    const db = getFirestore();
+    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
+    return from(db.doc(docPath).get()).pipe(
+      map((snap) => {
+        if (!snap.exists) return null;
+        return normalizeSiteConfig({
+          id: snap.id,
+          ...(snap.data() as Record<string, unknown>),
+        });
+      }),
+      catchError((err) => {
+        console.error('[ServerSiteConfigService.getSiteConfig]', err);
+        return of(null);
+      }),
+    );
+  }
+
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
     const db = getFirestore();
     const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
