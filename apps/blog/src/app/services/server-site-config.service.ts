@@ -10,7 +10,7 @@ import type { AboutPageConfig, SiteConfig } from '@foliokit/cms-core';
 export class ServerSiteConfigService implements ISiteConfigService {
   private readonly siteId = inject(SITE_ID, { optional: true });
 
-  getDefaultSiteConfig(): Observable<SiteConfig | null> {
+  getSiteConfig(): Observable<SiteConfig | null> {
     const db = getFirestore();
     const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
     return from(db.doc(docPath).get()).pipe(
@@ -22,10 +22,14 @@ export class ServerSiteConfigService implements ISiteConfigService {
         });
       }),
       catchError((err) => {
-        console.error('[ServerSiteConfigService.getDefaultSiteConfig]', err);
+        console.error('[ServerSiteConfigService.getSiteConfig]', err);
         return of(null);
       }),
     );
+  }
+
+  getDefaultSiteConfig(): Observable<SiteConfig | null> {
+    return this.getSiteConfig();
   }
 
   getConfig(): Observable<SiteConfig> {
@@ -48,20 +52,6 @@ export class ServerSiteConfigService implements ISiteConfigService {
   }
 
   getAboutConfig(): Observable<AboutPageConfig | null> {
-    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
-    return from(getFirestore().doc(docPath).get()).pipe(
-      map((snap) => {
-        if (!snap.exists) return null;
-        const config = normalizeSiteConfig({
-          id: snap.id,
-          ...(snap.data() as Record<string, unknown>),
-        });
-        return config.pages?.about ?? null;
-      }),
-      catchError((err) => {
-        console.error('[ServerSiteConfigService.getAboutConfig]', err);
-        return of(null);
-      }),
-    );
+    return this.getSiteConfig().pipe(map((c) => c?.pages?.about ?? null));
   }
 }

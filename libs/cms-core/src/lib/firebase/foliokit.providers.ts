@@ -33,7 +33,7 @@ import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
  *
  * loadConfig() {
  *   const id = this.tenantId ?? 'default';
- *   return this.siteConfigService.getSiteConfig(id);
+ *   return this.siteConfigService.getSiteConfigForTenant(id);
  * }
  * ```
  */

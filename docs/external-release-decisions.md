@@ -23,7 +23,7 @@ The API audit rated 64+ exports. Two were not rated **(A)**:
 **Verdict: Public contract. Promote to (A).**
 
 - `provideFolioKit()` accepts `siteId` in `FolioKitConfig` and stores it as the `SITE_ID` injection token.
-- `SiteConfigService.getSiteConfig(siteId)` already supports multi-site by accepting a site ID parameter.
+- `SiteConfigService.getSiteConfigForTenant(tenantId)` already supports multi-tenant by accepting a tenant ID parameter.
 - `SITE_ID` is the injection bridge that lets services resolve the active site without threading a parameter manually. Removing it would break the `siteId` parameter in `FolioKitConfig` — or at least leave it inert.
 - The token has a clear consumer path: any service or guard that needs to know "which site am I" can `inject(SITE_ID, { optional: true })`.
 - **Action:** Upgrade the rating in `api-audit.md` from **(C)** to **(A)**. Add a usage example to the JSDoc on the `SITE_ID` token. Remove the "candidate for removal" note.
