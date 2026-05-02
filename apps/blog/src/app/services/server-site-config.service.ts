@@ -29,21 +29,7 @@ export class ServerSiteConfigService implements ISiteConfigService {
   }
 
   getDefaultSiteConfig(): Observable<SiteConfig | null> {
-    const db = getFirestore();
-    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
-    return from(db.doc(docPath).get()).pipe(
-      map((snap) => {
-        if (!snap.exists) return null;
-        return normalizeSiteConfig({
-          id: snap.id,
-          ...(snap.data() as Record<string, unknown>),
-        });
-      }),
-      catchError((err) => {
-        console.error('[ServerSiteConfigService.getDefaultSiteConfig]', err);
-        return of(null);
-      }),
-    );
+    return this.getSiteConfig();
   }
 
   getConfig(): Observable<SiteConfig> {
@@ -66,20 +52,6 @@ export class ServerSiteConfigService implements ISiteConfigService {
   }
 
   getAboutConfig(): Observable<AboutPageConfig | null> {
-    const docPath = resolveSiteConfigDocPath(this.siteId ?? 'default', this.siteId);
-    return from(getFirestore().doc(docPath).get()).pipe(
-      map((snap) => {
-        if (!snap.exists) return null;
-        const config = normalizeSiteConfig({
-          id: snap.id,
-          ...(snap.data() as Record<string, unknown>),
-        });
-        return config.pages?.about ?? null;
-      }),
-      catchError((err) => {
-        console.error('[ServerSiteConfigService.getAboutConfig]', err);
-        return of(null);
-      }),
-    );
+    return this.getSiteConfig().pipe(map((c) => c?.pages?.about ?? null));
   }
 }
