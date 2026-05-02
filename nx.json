@@ -59,7 +59,14 @@
     }
   ],
   "release": {
-    "projects": ["cms-core", "cms-ui", "cms-markdown", "cms-admin-ui", "docs-ui"],
+    "projects": [
+      "cms-core",
+      "cms-ui",
+      "cms-markdown",
+      "cms-admin-ui",
+      "docs-ui",
+      "cms-ssr"
+    ],
     "projectsRelationship": "independent",
     "changelog": {
       "workspaceChangelog": false,

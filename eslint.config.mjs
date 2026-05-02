@@ -26,7 +26,11 @@ export default [
             },
             {
               sourceTag: 'scope:blog',
-              onlyDependOnLibsWithTags: ['scope:shared'],
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:ssr'],
+            },
+            {
+              sourceTag: 'scope:ssr',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:ssr'],
             },
           ],
         },

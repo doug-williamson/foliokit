@@ -20,6 +20,10 @@
     "libs/docs-ui": {
       "component": "docs-ui",
       "release-type": "node"
+    },
+    "libs/cms-ssr": {
+      "component": "cms-ssr",
+      "release-type": "node"
     }
   },
   "separate-pull-requests": true,
