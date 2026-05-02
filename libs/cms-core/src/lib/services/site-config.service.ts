@@ -28,6 +28,10 @@ export class SiteConfigService implements ISiteConfigService {
   private readonly firestore = inject(FIRESTORE);
   private readonly paths = inject(CollectionPaths);
 
+  getSiteConfig(): Observable<SiteConfig | null> {
+    return this.getSiteConfigForTenant(this.paths.tenantId ?? 'default');
+  }
+
   getSiteConfigForTenant(tenantId: string): Observable<SiteConfig | null> {
     if (!this.firestore) return of(null);
     const docPath = this.paths.siteConfigDocPath(tenantId);
