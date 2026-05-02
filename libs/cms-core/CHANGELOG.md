@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.1.0...cms-core-v1.2.0) (2026-05-02)
+
+
+### Features
+
+* **cms-core:** add ISeriesService interface and SERIES_SERVICE token ([0aaf3d3](https://github.com/doug-williamson/foliokit/commit/0aaf3d3a21ff34e76b62bad43564c80d4952e8a8))
+* **cms-core:** add ISiteConfigService.getSiteConfig(); deprecate two siblings ([b122b10](https://github.com/doug-williamson/foliokit/commit/b122b1005d3ca45ba233ef1aae10bb37bed40f55))
+* **cms-core:** consolidate normalizers and add normalizePost/normalizeAuthor/normalizeSeries ([869c6d5](https://github.com/doug-williamson/foliokit/commit/869c6d5b1e0d34599817e36f590cf89179b11c1e))
+* **cms-core:** Phase A — interface cleanup, ISeriesService, normalizer consolidation ([537299b](https://github.com/doug-williamson/foliokit/commit/537299b9a8b93f186c353eb223cb34a0d645a332))
+
 ## [1.1.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.0.3...cms-core-v1.1.0) (2026-05-01)
 
 
