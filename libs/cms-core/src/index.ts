@@ -20,6 +20,7 @@ export * from './lib/services/tag.service';
 export * from './lib/tokens/post-service.token';
 export * from './lib/tokens/author-service.token';
 export * from './lib/tokens/site-config-service.token';
+export * from './lib/tokens/series.service.token';
 export * from './lib/tokens/blog-seo-service.token';
 export * from './lib/pipes/tag-label.pipe';
 export * from './lib/utils/page-meta.utils';

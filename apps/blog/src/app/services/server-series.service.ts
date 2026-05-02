@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { resolveCollectionPath, SeriesService, SITE_ID } from '@foliokit/cms-core';
+import { ISeriesService, resolveCollectionPath, SeriesService, SITE_ID } from '@foliokit/cms-core';
 import type { Series } from '@foliokit/cms-core';
 
 function normalizeTimestamp(value: unknown): number {
@@ -50,7 +50,7 @@ function normalizeSeries(raw: Record<string, unknown>): Series {
  * overriding the default client-SDK service whose FIRESTORE dependency is null during SSR.
  */
 @Injectable()
-export class ServerSeriesService {
+export class ServerSeriesService implements ISeriesService {
   private readonly siteId = inject(SITE_ID, { optional: true });
 
   getById(id: string): Observable<Series | null> {
