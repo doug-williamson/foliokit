@@ -21,6 +21,7 @@ import { CollectionPaths } from '../firebase/collection-paths';
 import { FIREBASE_STORAGE, FIRESTORE } from '../firebase/firebase.config';
 import type { BlogPost } from '../models/post.model';
 import { normalizePost } from '../utils/normalize-post';
+import { computeReadingTimeMinutes } from '../utils/compute-reading-time';
 import type { IBlogPostService } from '../tokens/post-service.token';
 import type { SeriesNavItem } from '../models/post.model';
 
@@ -200,6 +201,8 @@ export class PostService implements IBlogPostService {
   savePost(post: BlogPost): Observable<BlogPost> {
     const nowMs = Date.now();
     const nowTs = Timestamp.fromMillis(nowMs);
+
+    post = { ...post, readingTimeMinutes: computeReadingTimeMinutes(post.content) };
 
     if (post.status === 'scheduled') {
       const { scheduledPublishAt: _, ...rest } = post;
