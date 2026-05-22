@@ -6,3 +6,4 @@ export { stripeWebhook } from './stripeWebhook';
 export { createBillingPortalSession } from './createBillingPortalSession';
 export { setCustomDomain } from './setCustomDomain';
 export { verifyCustomDomain } from './verifyCustomDomain';
+export { recordPostView } from './recordPostView';

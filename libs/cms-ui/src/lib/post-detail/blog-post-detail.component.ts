@@ -1,6 +1,8 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   OnInit,
   ViewChild,
@@ -19,6 +21,7 @@ import type { BlogPost, Tag, PostRouteData, Series, SeriesNavItem } from '@folio
 import {
   TagService,
   BLOG_SEO_SERVICE,
+  BLOG_POST_ANALYTICS_SERVICE,
   TagLabelPipe,
   resolvePostCanonicalUrl,
 } from '@foliokit/cms-core';
@@ -356,6 +359,8 @@ export class BlogPostDetailComponent implements OnInit {
   private readonly tagService = inject(TagService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly blogSeoService = inject(BLOG_SEO_SERVICE, { optional: true });
+  private readonly postAnalytics = inject(BLOG_POST_ANALYTICS_SERVICE, { optional: true });
+  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
 
   /** Browser-only fetch: SSR keeps `ready: false` so hydrated DOM matches (tags appear after load). */
@@ -453,6 +458,76 @@ export class BlogPostDetailComponent implements OnInit {
       const p = this.post();
       if (!p) return;
       this.blogSeoService?.setPostMeta(p, this.originBase(), this.author()?.displayName);
+    });
+
+    afterNextRender(() => this.startViewBeacon());
+  }
+
+  /**
+   * Fire a single view beacon after the article body has been visible for
+   * a cumulative 5 seconds. Browser-only; all errors swallowed so analytics
+   * failures never affect rendering.
+   */
+  private startViewBeacon(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!this.postAnalytics) return;
+
+    const post = this.post();
+    if (!post) return;
+
+    const target = this.document.querySelector<HTMLElement>('.folio-prose');
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+
+    const DWELL_MS = 5000;
+    let cumulativeMs = 0;
+    let visibleSince: number | null = null;
+    let fired = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const fire = (): void => {
+      if (fired) return;
+      fired = true;
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      observer.disconnect();
+      try {
+        this.postAnalytics?.recordView(post.id);
+      } catch {
+        // Beacon must never throw.
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            visibleSince = performance.now();
+            const remaining = Math.max(0, DWELL_MS - cumulativeMs);
+            if (timer !== null) clearTimeout(timer);
+            timer = setTimeout(fire, remaining);
+          } else {
+            if (visibleSince !== null) {
+              cumulativeMs += performance.now() - visibleSince;
+              visibleSince = null;
+            }
+            if (timer !== null) {
+              clearTimeout(timer);
+              timer = null;
+            }
+            if (cumulativeMs >= DWELL_MS) fire();
+          }
+        }
+      },
+      { threshold: 0.25 },
+    );
+
+    observer.observe(target);
+
+    this.destroyRef.onDestroy(() => {
+      if (timer !== null) clearTimeout(timer);
+      observer.disconnect();
     });
   }
 }

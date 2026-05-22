@@ -14,9 +14,11 @@ import {
 } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import {
   FIREBASE_APP,
   FIREBASE_AUTH,
+  FIREBASE_FUNCTIONS,
   FIREBASE_OPTIONS,
   FIREBASE_STORAGE,
   FIRESTORE,
@@ -83,6 +85,20 @@ export function provideFirebase(
           connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
         }
         return auth;
+      },
+    },
+    {
+      // Functions SDK — browser-only for callables. Server-side analytics
+      // would call the Admin SDK directly, not via the client callable.
+      provide: FIREBASE_FUNCTIONS,
+      useFactory: () => {
+        const platformId = inject(PLATFORM_ID);
+        if (!isPlatformBrowser(platformId)) return null;
+        const fns = getFunctions(inject(FIREBASE_APP));
+        if (useEmulator) {
+          connectFunctionsEmulator(fns, '127.0.0.1', 5001);
+        }
+        return fns;
       },
     },
   ]);
