@@ -6,7 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
@@ -24,7 +24,7 @@ import { PostsListStore } from './posts-list.store';
   selector: 'folio-posts-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatDivider, MatIconModule, MatMenuModule],
+  imports: [DatePipe, DecimalPipe, MatButtonModule, MatDivider, MatIconModule, MatMenuModule],
   host: { class: 'block min-w-0' },
   styles: [`
     :host {
@@ -147,6 +147,17 @@ import { PostsListStore } from './posts-list.store';
     /* Slug/Date column: hidden on mobile */
     .col-slug { display: none; }
 
+    /* Views column: hidden on mobile, right-aligned numeric on sm+. */
+    .col-views { display: none; }
+    th.col-views { text-align: right; }
+    td.col-views {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
     @media (min-width: 640px) {
       .col-slug {
         display: table-cell;
@@ -154,7 +165,30 @@ import { PostsListStore } from './posts-list.store';
         min-width: 0;
         overflow: hidden;
       }
+      .col-views {
+        display: table-cell;
+        width: 80px;
+      }
       .cell-title-meta { display: none; }
+    }
+
+    /* Sortable header button — inherits th typography. */
+    .sort-header {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      color: inherit;
+    }
+    .sort-header:hover { color: var(--text-primary); }
+    .sort-header-arrow {
+      font-size: 10px;
+      line-height: 1;
+      opacity: 0.7;
     }
 
     /* Actions column: always visible, mobile-first */
@@ -170,7 +204,32 @@ import { PostsListStore } from './posts-list.store';
       <thead>
         <tr>
           <th class="col-title">Title</th>
-          <th class="col-slug">Slug / Date</th>
+          <th class="col-slug">
+            <button
+              type="button"
+              class="sort-header"
+              (click)="store.toggleSort('updatedAt')"
+              [attr.aria-sort]="ariaSort('updatedAt')"
+            >
+              Slug / Date
+              @if (store.sortBy() === 'updatedAt') {
+                <span class="sort-header-arrow" aria-hidden="true">{{ sortArrow() }}</span>
+              }
+            </button>
+          </th>
+          <th class="col-views">
+            <button
+              type="button"
+              class="sort-header"
+              (click)="store.toggleSort('viewCount')"
+              [attr.aria-sort]="ariaSort('viewCount')"
+            >
+              Views
+              @if (store.sortBy() === 'viewCount') {
+                <span class="sort-header-arrow" aria-hidden="true">{{ sortArrow() }}</span>
+              }
+            </button>
+          </th>
           <th class="col-status">Status</th>
           <th class="col-actions"></th>
         </tr>
@@ -191,6 +250,7 @@ import { PostsListStore } from './posts-list.store';
                 <span class="cell-meta-date">{{ post.updatedAt | date: 'MMM d, yyyy' }}</span>
               </span>
             </td>
+            <td class="col-views">{{ (post.viewCount ?? 0) | number }}</td>
             <td class="col-status">
               <span [class]="'badge ' + badgeClass(post.status)">{{ badgeLabel(post.status) }}</span>
             </td>
@@ -239,9 +299,19 @@ export class PostsTableComponent {
 
   protected readonly allPosts = computed<BlogPost[]>(() => {
     const override = this.posts();
-    const source = override ?? this.store.filteredPosts();
-    return [...source].sort((a, b) => b.updatedAt - a.updatedAt);
+    // When a caller passes an explicit [posts] input (e.g. section views),
+    // honor that ordering. Otherwise consume the store's sortedPosts.
+    return override ?? this.store.sortedPosts();
   });
+
+  protected sortArrow(): string {
+    return this.store.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
+  protected ariaSort(column: 'updatedAt' | 'viewCount'): 'ascending' | 'descending' | 'none' {
+    if (this.store.sortBy() !== column) return 'none';
+    return this.store.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
 
   badgeClass(status: BlogPost['status']): string {
     if (status === 'published') return 'badge-pub';

@@ -60,7 +60,20 @@ service cloud.firestore {
       // platform super-admin.
       match /posts/{postId} {
         allow read: if resource == null || resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);
-        allow write: if isAdmin() || isTenantOwner(tenantId);
+        allow create, delete: if isAdmin() || isTenantOwner(tenantId);
+        // Reject client updates that touch view-tracking fields — those are
+        // exclusively populated by the recordPostView Cloud Function via the
+        // Admin SDK (which bypasses these rules).
+        allow update: if (isAdmin() || isTenantOwner(tenantId))
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['viewCount', 'viewCountUpdatedAt']);
+      }
+      // ── Analytics subtree (per-post daily buckets) ───────────────────────
+      // Written exclusively by the recordPostView Cloud Function. Owners
+      // and platform admins can read for future dashboards.
+      match /analytics/{document=**} {
+        allow read: if isAdmin() || isTenantOwner(tenantId);
+        allow write: if false;
       }
       match /pages/{pageId} {
         allow read: if resource == null || resource.data.status == 'published' || isAdmin() || isTenantOwner(tenantId);

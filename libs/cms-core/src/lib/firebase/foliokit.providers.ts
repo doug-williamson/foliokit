@@ -11,8 +11,10 @@ import type { FirebaseOptions } from 'firebase/app';
 import { provideFirebase } from './firebase.providers';
 import { FIREBASE_AUTH } from './firebase.config';
 import { PostService } from '../services/post.service';
+import { PostAnalyticsService } from '../services/post-analytics.service';
 import { SiteConfigService } from '../services/site-config.service';
 import { BLOG_POST_SERVICE } from '../tokens/post-service.token';
+import { BLOG_POST_ANALYTICS_SERVICE } from '../tokens/post-analytics-service.token';
 import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
 
 /**
@@ -147,6 +149,7 @@ export function provideFolioKit(config: FolioKitConfig): EnvironmentProviders {
     // Default concrete service implementations bound to their public tokens.
     // Override by re-providing the token after this call in the same array.
     { provide: BLOG_POST_SERVICE, useExisting: PostService },
+    { provide: BLOG_POST_ANALYTICS_SERVICE, useExisting: PostAnalyticsService },
     { provide: SITE_CONFIG_SERVICE, useExisting: SiteConfigService },
   ];
 

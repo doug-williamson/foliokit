@@ -47,6 +47,17 @@ export interface BlogPost {
   updatedAt: number;
   /** Unix milliseconds. */
   createdAt: number;
+  /**
+   * Total view count. Populated by the `recordPostView` Cloud Function only —
+   * never written from the client. Field-level rule in firestore.rules rejects
+   * client writes that touch this field.
+   */
+  viewCount?: number;
+  /**
+   * Unix milliseconds of the last view increment. Populated by the
+   * `recordPostView` Cloud Function only.
+   */
+  viewCountUpdatedAt?: number;
 }
 
 export interface SeriesNavItem {
