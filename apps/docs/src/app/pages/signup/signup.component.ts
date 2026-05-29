@@ -98,7 +98,7 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
     }
     .status-checking { color: var(--mat-sys-on-surface-variant); }
     .status-available { color: var(--mat-sys-tertiary, #00897b); }
-    .status-taken, .status-invalid, .status-reserved { color: var(--mat-sys-error); }
+    .status-taken, .status-invalid, .status-reserved { color: var(--error); }
     .status-error { color: var(--mat-sys-on-surface-variant); }
     .submit-btn {
       width: 100%;
@@ -121,7 +121,7 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
       cursor: not-allowed;
     }
     .error-message {
-      color: var(--mat-sys-error);
+      color: var(--error);
       font-size: 0.875rem;
       margin-top: 1rem;
       text-align: center;
