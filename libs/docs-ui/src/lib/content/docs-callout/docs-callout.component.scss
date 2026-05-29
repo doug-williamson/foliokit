@@ -40,11 +40,11 @@
   }
 
   &--danger {
-    border-color: var(--mat-sys-error);
-    background: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
+    border-color: var(--error);
+    background: color-mix(in srgb, var(--error) 8%, transparent);
 
     .docs-callout__icon {
-      color: var(--mat-sys-error);
+      color: var(--error);
     }
   }
 }

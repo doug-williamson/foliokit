@@ -55,7 +55,7 @@ export interface EnablePageSheetData {
       .folio-enable-sheet__err {
         margin: 0 0 12px;
         font-size: 0.8125rem;
-        color: var(--mat-sys-error);
+        color: var(--error);
       }
       .folio-enable-sheet__cta {
         width: 100%;

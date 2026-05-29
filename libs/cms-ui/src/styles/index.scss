@@ -1,6 +1,24 @@
+@use '@rhombuskit/tokens/scss';
 @forward 'tokens';
 @forward 'reset';
 @forward 'theme';
 @forward 'typography';
 @forward 'focus';
 @forward 'theme-factory';
+
+// ─── RhombusKit error-token bridge ─────────────────────────────────────────────
+// @rhombuskit/tokens scopes --error/--error-bg under [data-theme="rhombus-*"],
+// which FolioKit's DOM never sets (it uses [data-theme="light"|"dark"]). Re-emit
+// those two tokens under FolioKit's theme selectors so var(--error) resolves.
+// Values mirror @rhombuskit/tokens/dist/scss/_theme-rhombus.scss (rhombus-light
+// L25-26, rhombus-dark L68-69). All other FolioKit tokens stay FolioKit-local.
+// NOTE: the @use above MUST stay the first line — its global reset/focus rules are
+// neutralized only because FolioKit's @forward 'reset'/'focus' emit afterward.
+[data-theme='light'] {
+  --error: #dc2626;
+  --error-bg: #fef2f2;
+}
+[data-theme='dark'] {
+  --error: #ef4444;
+  --error-bg: #2a0a0a;
+}

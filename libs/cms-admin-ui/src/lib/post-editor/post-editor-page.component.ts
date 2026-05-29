@@ -308,7 +308,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             <mat-divider />
             <button
               mat-menu-item
-              [style.color]="'var(--mat-sys-error)'"
+              [style.color]="'var(--error)'"
               [disabled]="store.isSaving()"
               (click)="confirmDeletePost()"
             >

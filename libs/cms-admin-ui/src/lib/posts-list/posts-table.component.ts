@@ -276,7 +276,7 @@ import { PostsListStore } from './posts-list.store';
                 }
                 <button
                   mat-menu-item
-                  [style.color]="'var(--mat-sys-error)'"
+                  [style.color]="'var(--error)'"
                   (click)="confirmDelete(post)"
                 >
                   Delete…

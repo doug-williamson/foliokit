@@ -232,7 +232,7 @@ const UPGRADE_FRAGMENT = 'billing';
 
     .pg-error {
       font-size: 12px;
-      color: var(--mat-sys-error);
+      color: var(--error);
       margin: 0 0 12px;
       line-height: 1.4;
       max-width: 100%;
