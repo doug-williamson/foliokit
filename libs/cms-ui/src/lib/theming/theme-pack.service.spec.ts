@@ -6,7 +6,7 @@ import { ThemePackService } from './theme-pack.service';
 import { FOLIOKIT_THEME_PACKS } from './theme-pack.tokens';
 import { EDITORIAL_PACK } from './built-in-packs';
 import { MOCK_DEV_PACK } from './built-in-packs/_dev-fixtures/mock.pack';
-import { ThemeService } from '../theme.service';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 import { SiteConfigService } from '@foliokit/cms-core';
 
 // ── Document mock ────────────────────────────────────────────────────────────
@@ -27,9 +27,14 @@ const documentSpy = {
   head: { appendChild: vi.fn(), querySelectorAll: vi.fn(() => []) },
 };
 
-// ── ThemeService mock ────────────────────────────────────────────────────────
+// ── RhombusThemeService mock ─────────────────────────────────────────────────
+// ThemePackService reads only current(); preference/setTheme are stubbed for shape.
 const schemeSignal = signal<'light' | 'dark'>('light');
-const mockThemeService = { scheme: schemeSignal };
+const mockThemeService = {
+  current: schemeSignal,
+  preference: schemeSignal,
+  setTheme: vi.fn(),
+};
 
 // ── SiteConfigService mock ───────────────────────────────────────────────────
 const mockSiteConfigService = {
@@ -42,7 +47,7 @@ const baseProviders = [
   ThemePackService,
   { provide: DOCUMENT, useValue: documentSpy },
   { provide: PLATFORM_ID, useValue: 'browser' },
-  { provide: ThemeService, useValue: mockThemeService },
+  { provide: RhombusThemeService, useValue: mockThemeService },
   { provide: SiteConfigService, useValue: mockSiteConfigService },
 ];
 

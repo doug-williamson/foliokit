@@ -27,10 +27,10 @@
 
   <button
     mat-icon-button
-    [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-    (click)="theme.toggle()"
+    [attr.aria-label]="theme.current() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+    (click)="toggleTheme()"
   >
-    <mat-icon>{{ theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    <mat-icon>{{ theme.current() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
 </mat-toolbar>
 

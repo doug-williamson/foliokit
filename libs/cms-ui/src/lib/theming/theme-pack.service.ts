@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
 import { ThemePack } from './theme-pack.model';
 import { FOLIOKIT_THEME_PACKS } from './theme-pack.tokens';
 import { EDITORIAL_PACK } from './built-in-packs';
-import { ThemeService } from '../theme.service';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 import { SiteConfigService } from '@foliokit/cms-core';
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +21,7 @@ export class ThemePackService {
   // ── injected ──────────────────────────────────────────────────────────────
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
-  private readonly themeService = inject(ThemeService);
+  private readonly themeService = inject(RhombusThemeService);
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly injectedPacks =
     inject(FOLIOKIT_THEME_PACKS, { optional: true }) as ReadonlyArray<ReadonlyArray<ThemePack>> | null;
@@ -52,7 +52,7 @@ export class ThemePackService {
 
     // Re-apply tokens whenever the color mode changes.
     effect(() => {
-      this.themeService.scheme(); // tracked — triggers when mode changes
+      this.themeService.current(); // tracked — triggers when mode changes
       this.applyTokens();
     });
 
@@ -93,7 +93,7 @@ export class ThemePackService {
   private applyTokens(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const mode = this.themeService.scheme();
+    const mode: 'light' | 'dark' = this.themeService.current() === 'dark' ? 'dark' : 'light';
     const tokens = this.activePack().tokens[mode];
     const root = this.document.documentElement;
 

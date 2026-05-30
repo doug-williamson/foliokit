@@ -5,7 +5,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
 export type ProfileAvatarSize = 'lg' | 'xl';
 
@@ -31,7 +31,7 @@ export type ProfileAvatarSize = 'lg' | 'xl';
   `,
 })
 export class ProfileAvatarComponent {
-  private readonly theme = inject(ThemeService);
+  private readonly theme = inject(RhombusThemeService);
 
   /** Primary image URL (light mode, or fallback when no dark variant). */
   readonly photoUrl = input<string | null | undefined>(undefined);
@@ -47,7 +47,7 @@ export class ProfileAvatarComponent {
   protected readonly resolvedSrc = computed(() => {
     const light = this.photoUrl()?.trim() || null;
     const dark = this.photoUrlDark()?.trim() || null;
-    if (this.theme.isDark() && dark) return dark;
+    if (this.theme.current() === 'dark' && dark) return dark;
     return light;
   });
 
