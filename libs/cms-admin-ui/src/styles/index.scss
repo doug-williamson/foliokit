@@ -1,1 +1,8 @@
+// @rhombuskit/core directive-component styles (badge/chip/form-field). Aliased to
+// avoid the `scss` namespace collision with @rhombuskit/tokens/material-preset (both
+// /scss entrypoints default to `scss`). Admin-only — cms-ui/blog/docs don't consume
+// core primitives. Loads after material-preset via apps/admin/src/styles.scss order
+// (cms-ui barrel first, then this cms-admin-ui barrel).
+@use '@rhombuskit/core/scss' as core;
+
 @forward 'layout';
