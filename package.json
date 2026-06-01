@@ -22,6 +22,7 @@
     "publish:cms-ssr": "nx build cms-ssr && npm publish dist/libs/cms-ssr --access public",
     "publish:libs": "npm run build:libs && npm publish dist/libs/cms-core --access public && npm publish dist/libs/cms-ui --access public && npm publish dist/libs/cms-markdown --access public && npm publish dist/libs/cms-admin-ui --access public --tag next && npm publish dist/libs/docs-ui --access public",
     "verify:packs": "node tools/scripts/verify-dist-packs.mjs",
+    "verify:theme-init": "node tools/scripts/verify-theme-init.mjs",
     "verify:publish-artifacts": "npm run build:libs && node tools/scripts/verify-dist-packs.mjs",
     "emulator": "firebase emulators:start --only auth,firestore,storage",
     "emulator:data": "firebase emulators:start --only auth,firestore,storage --import .firebase/emulator-data --export-on-exit",
