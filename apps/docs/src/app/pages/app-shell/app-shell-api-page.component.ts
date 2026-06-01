@@ -20,18 +20,20 @@ const slotsRows: ApiTableRow[] = [
   { name: '(default)',          type: 'ng-content slot', description: 'Routed page content rendered in the main content area.' },
 ];
 
-const themeServiceSnippet = `import { ThemeService } from '@foliokit/cms-ui';
+const themeServiceSnippet = `import { RhombusThemeService } from '@foliokit/cms-ui';
 
 @Component({ ... })
 export class MyComponent {
-  private readonly theme = inject(ThemeService);
+  private readonly theme = inject(RhombusThemeService);
 
+  // Two-state toggle (light ↔ dark). RhombusThemeService.toggle() cycles
+  // light → dark → system; FolioKit stays two-state via setTheme().
   toggleTheme(): void {
-    this.theme.toggle();
+    this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
   }
 
   get isDark(): boolean {
-    return this.theme.isDark();
+    return this.theme.current() === 'dark';
   }
 }`;
 
@@ -58,10 +60,11 @@ export class MyComponent {
     </section>
 
     <section class="mt-8">
-      <h2 id="theme-service" class="mat-headline-small">ThemeService</h2>
+      <h2 id="theme-service" class="mat-headline-small">RhombusThemeService</h2>
       <p class="mat-body-medium">
-        Inject <code>ThemeService</code> to programmatically toggle the theme or read
-        the current dark-mode state.
+        Inject <code>RhombusThemeService</code> (from <code>@foliokit/cms-ui</code>) to
+        programmatically set the theme or read the current resolved scheme. Register
+        <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your app config.
       </p>
       <docs-code-block [code]="themeServiceSnippet" language="typescript" />
     </section>

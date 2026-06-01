@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
 
-const themeServiceSnippet = `import { ThemeService } from '@foliokit/cms-ui';
+const themeServiceSnippet = `import { RhombusThemeService } from '@foliokit/cms-ui';
 
 @Component({ ... })
 export class HeaderComponent {
-  readonly theme = inject(ThemeService);
+  readonly theme = inject(RhombusThemeService);
+
+  // Two-state toggle (light ↔ dark) — setTheme-driven, not the 3-state toggle().
+  toggleTheme(): void {
+    this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
+  }
 }`;
 
-const themeServiceTemplate = `<button mat-icon-button (click)="theme.toggle()">
-  <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+const themeServiceTemplate = `<button mat-icon-button (click)="toggleTheme()">
+  <mat-icon>{{ theme.current() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
 </button>`;
 
-const dataDarkMode = `<!-- Set by ThemeService.toggle() on <html> -->
+const dataDarkMode = `<!-- Set by RhombusThemeService on <html> -->
 <html data-theme="dark">
   <!-- all descendants receive dark M3 tokens -->
 </html>`;
@@ -35,11 +40,13 @@ module.exports = {
     <docs-page-header />
 
     <section>
-      <h2 id="theme-service" class="mat-headline-small">ThemeService</h2>
+      <h2 id="theme-service" class="mat-headline-small">RhombusThemeService</h2>
       <p class="mat-body-medium">
-        <code>ThemeService</code> (from <code>@foliokit/cms-ui</code>) manages the
-        <code>data-theme</code> attribute on the <code>&lt;html&gt;</code> element.
-        Inject it anywhere to read or toggle the current theme.
+        <code>RhombusThemeService</code> (from <code>@foliokit/cms-ui</code>) manages the
+        <code>data-theme</code> attribute on the <code>&lt;html&gt;</code> element. Register
+        <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your app config,
+        then inject it anywhere to read <code>current()</code> / <code>preference()</code> or call
+        <code>setTheme()</code>.
       </p>
       <docs-code-block [code]="themeServiceSnippet" language="typescript" />
       <docs-code-block [code]="themeServiceTemplate" language="html" />

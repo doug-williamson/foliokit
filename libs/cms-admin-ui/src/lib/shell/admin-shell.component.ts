@@ -11,7 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective, ThemeService } from '@foliokit/cms-ui';
+import { AppShellComponent, SHELL_CONFIG, ShellNavFooterDirective } from '@foliokit/cms-ui';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 import { AuthService } from '@foliokit/cms-core';
 import { AdminNavComponent } from './admin-nav.component';
 import { SiteConfigNavStore } from '../stores/site-config-nav.store';
@@ -180,10 +181,10 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <span class="flex-1"></span>
           <button
             mat-icon-button
-            [attr.aria-label]="theme.scheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-            (click)="theme.toggle()"
+            [attr.aria-label]="theme.current() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+            (click)="toggleTheme()"
           >
-            <mat-icon [svgIcon]="theme.scheme() === 'dark' ? 'light_mode' : 'dark_mode'" />
+            <mat-icon [svgIcon]="theme.current() === 'dark' ? 'light_mode' : 'dark_mode'" />
           </button>
         </mat-toolbar>
         <main class="onboarding-main">
@@ -212,9 +213,14 @@ export class AdminShellComponent {
   readonly navStore = inject(SiteConfigNavStore);
 
   protected readonly auth = inject(AuthService);
-  protected readonly theme = inject(ThemeService);
+  protected readonly theme = inject(RhombusThemeService);
   protected readonly shellRef = viewChild(AppShellComponent);
   private readonly router = inject(Router);
+
+  /** Two-state toggle (light ↔ dark) — deliberately not RhombusThemeService.toggle()'s 3-state cycle. */
+  protected toggleTheme(): void {
+    this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
+  }
 
   readonly isOnboarding = computed(() => {
     if (!this.navStore.isLoaded()) return false;

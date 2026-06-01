@@ -160,7 +160,7 @@ class AboutPreviewComponent {}
       <h2 id="dark-mode" class="mat-headline-small">Dark Mode Avatar</h2>
       <p class="mat-body-medium">
         When <code>photoUrlDark</code> is set, the component automatically switches
-        to the dark variant when the user toggles dark mode via <code>ThemeService</code>.
+        to the dark variant when the user toggles dark mode via <code>RhombusThemeService</code>.
       </p>
     </section>
 

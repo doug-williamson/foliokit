@@ -99,6 +99,9 @@
   --font-display: 'Fraunces', Georgia, serif;
   --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  /* CONTRACT aliases consumed by @rhombuskit/* — map onto FolioKit-owned fonts. */
+  --font-sans:    var(--font-body);
+  --font-prose:   var(--font-body);
   /* Radii */
   --r-xs:  2px;
   --r-sm:  4px;

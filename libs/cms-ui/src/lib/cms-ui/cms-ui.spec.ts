@@ -22,7 +22,7 @@ const testConfig: ShellConfig = {
   appName: 'Test App',
 };
 
-// JSDOM doesn't implement window.matchMedia — stub it so ThemeService
+// JSDOM doesn't implement window.matchMedia — stub it so RhombusThemeService
 // (providedIn:'root') can initialise without throwing.
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {

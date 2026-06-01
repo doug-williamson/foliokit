@@ -8,7 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '@foliokit/cms-core';
-import { ThemeService } from '@foliokit/cms-ui';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
 @Component({
   selector: 'folio-admin-login',
@@ -144,11 +144,12 @@ import { ThemeService } from '@foliokit/cms-ui';
 export class AdminLoginComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly theme = inject(ThemeService);
+  // Injected eagerly so RhombusThemeService applies data-theme on the login
+  // screen, which renders outside the admin shell.
+  private readonly theme = inject(RhombusThemeService);
   protected readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.theme.apply();
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
