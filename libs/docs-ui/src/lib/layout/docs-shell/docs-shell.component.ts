@@ -17,7 +17,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { RhombusThemeService } from '@rhombuskit/theme-engine';
+import { FolioThemeControlComponent } from '@foliokit/cms-ui';
 // Side-effect import: registers docs-ui's 'light'/'dark' ThemeRegistry augmentation.
 import '../../theme-registry';
 import { DOCS_ROUTE_MANIFEST } from '../../tokens/docs-tokens';
@@ -45,13 +45,13 @@ const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
     DocsPageHeaderComponent,
     DocsTocComponent,
     DocsAnchorNavComponent,
+    FolioThemeControlComponent,
   ],
   templateUrl: './docs-shell.component.html',
   styleUrl: './docs-shell.component.scss',
 })
 export class DocsShellComponent implements OnInit, OnDestroy {
   readonly manifest = inject(DOCS_ROUTE_MANIFEST);
-  readonly theme = inject(RhombusThemeService);
 
   readonly #router = inject(Router);
   readonly #iconRegistry = inject(MatIconRegistry);
@@ -79,11 +79,6 @@ export class DocsShellComponent implements OnInit, OnDestroy {
       'github',
       this.#sanitizer.bypassSecurityTrustHtml(GITHUB_ICON_SVG),
     );
-  }
-
-  /** Two-state toggle (light ↔ dark) — deliberately not RhombusThemeService.toggle()'s 3-state cycle. */
-  toggleTheme(): void {
-    this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
   }
 
   ngOnInit(): void {
