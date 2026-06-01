@@ -3,7 +3,6 @@ import { RhombusThemeService } from '@rhombuskit/theme-engine';
 import { provideFolioKitTheme } from './foliokit-theme.providers';
 
 const RHOMBUS_KEY = 'rhombuskit:theme-preference';
-const LEGACY_KEY = 'folio-theme';
 
 // RhombusThemeService.subscribeToSystemTheme() calls window.matchMedia on
 // construction; JSDOM doesn't implement it.
@@ -22,7 +21,9 @@ beforeAll(() => {
   });
 });
 
-describe('provideFolioKitTheme migration shim', () => {
+// Legacy folio-theme migration is handled pre-paint by FOLIOKIT_THEME_INIT_SCRIPT
+// (see theme-init-script.spec.ts), not by this provider.
+describe('provideFolioKitTheme', () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.removeAttribute('data-theme');
@@ -30,35 +31,12 @@ describe('provideFolioKitTheme migration shim', () => {
 
   afterEach(() => TestBed.resetTestingModule());
 
-  it('migrates a legacy folio-theme value to the rhombuskit key on first load', () => {
-    localStorage.setItem(LEGACY_KEY, 'dark');
-
+  it('configures RhombusThemeService with the system default and FolioKit theme names', () => {
     TestBed.configureTestingModule({ providers: [provideFolioKitTheme()] });
     const svc = TestBed.inject(RhombusThemeService);
 
-    // Initializer ran before the service first read storage (plan #9).
-    expect(localStorage.getItem(RHOMBUS_KEY)).toBe('dark');
-    expect(svc.preference()).toBe('dark');
-    expect(svc.current()).toBe('dark');
-  });
-
-  it('does not overwrite an existing rhombuskit preference', () => {
-    localStorage.setItem(LEGACY_KEY, 'dark');
-    localStorage.setItem(RHOMBUS_KEY, 'light');
-
-    TestBed.configureTestingModule({ providers: [provideFolioKitTheme()] });
-    const svc = TestBed.inject(RhombusThemeService);
-
-    expect(localStorage.getItem(RHOMBUS_KEY)).toBe('light');
-    expect(svc.current()).toBe('light');
-  });
-
-  it('falls back to the system default when no legacy value exists', () => {
-    TestBed.configureTestingModule({ providers: [provideFolioKitTheme()] });
-    const svc = TestBed.inject(RhombusThemeService);
-
-    // No migration written; preference is the configured 'system' default,
-    // resolving to 'light' (matchMedia stub reports matches:false).
+    // No persisted preference; default 'system' resolves to 'light'
+    // (matchMedia stub reports matches:false).
     expect(localStorage.getItem(RHOMBUS_KEY)).toBeNull();
     expect(svc.preference()).toBe('system');
     expect(svc.current()).toBe('light');

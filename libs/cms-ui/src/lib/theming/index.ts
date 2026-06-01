@@ -4,3 +4,4 @@ export { FOLIOKIT_THEME_PACKS } from './theme-pack.tokens';
 export { provideThemePacks } from './provide-theme-packs';
 export { EDITORIAL_PACK } from './built-in-packs';
 export { provideFolioKitTheme } from './foliokit-theme.providers';
+export { FOLIOKIT_THEME_INIT_SCRIPT } from './theme-init-script';
