@@ -2,22 +2,20 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   output,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { take } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import type { BlogPost } from '@foliokit/cms-core';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../shared/confirm-dialog/confirm-dialog.component';
+import { RhombusConfirmService } from '@rhombuskit/core';
 import { PostsListStore } from './posts-list.store';
 
 @Component({
@@ -291,7 +289,8 @@ import { PostsListStore } from './posts-list.store';
 })
 export class PostsTableComponent {
   protected readonly store = inject(PostsListStore);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirm = inject(RhombusConfirmService);
+  private readonly destroyRef = inject(DestroyRef);
 
   postSelected = output<string>();
 
@@ -327,58 +326,43 @@ export class PostsTableComponent {
 
   protected confirmArchive(post: BlogPost): void {
     const title = post.title?.trim() || 'Untitled';
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        data: {
-          title: 'Archive post?',
-          message: `"${title}" will be hidden from the live site and moved to the archive.`,
-          confirmLabel: 'Archive',
-          cancelLabel: 'Cancel',
-          destructive: false,
-        },
+    this.confirm
+      .confirm({
+        title: 'Archive post?',
+        message: `"${title}" will be hidden from the live site and moved to the archive.`,
+        confirmLabel: 'Archive',
+        cancelLabel: 'Cancel',
+        variant: 'default',
       })
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((confirmed) => {
-        if (confirmed) this.store.archivePost(post.id);
-      });
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.store.archivePost(post.id));
   }
 
   protected confirmDelete(post: BlogPost): void {
     const title = post.title?.trim() || 'Untitled';
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        data: {
-          title: 'Delete post?',
-          message: `Permanently delete "${title}"? This cannot be undone.`,
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel',
-          destructive: true,
-        },
+    this.confirm
+      .confirm({
+        title: 'Delete post?',
+        message: `Permanently delete "${title}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        variant: 'danger',
       })
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((confirmed) => {
-        if (confirmed) this.store.deletePost(post.id);
-      });
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.store.deletePost(post.id));
   }
 
   protected confirmUnpublish(post: BlogPost): void {
     const title = post.title?.trim() || 'Untitled';
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        data: {
-          title: 'Unpublish post?',
-          message: `“${title}” will return to draft and will no longer be visible on the live site.`,
-          confirmLabel: 'Unpublish',
-          cancelLabel: 'Keep published',
-          destructive: true,
-        },
+    this.confirm
+      .confirm({
+        title: 'Unpublish post?',
+        message: `“${title}” will return to draft and will no longer be visible on the live site.`,
+        confirmLabel: 'Unpublish',
+        cancelLabel: 'Keep published',
+        variant: 'danger',
       })
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((confirmed) => {
-        if (confirmed) this.store.unpublishPost(post.id);
-      });
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.store.unpublishPost(post.id));
   }
 }
