@@ -1,19 +1,20 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   input,
   OnInit,
   signal,
 } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { RhombusConfirmService } from '@rhombuskit/core';
 import { BlogPost } from '@foliokit/cms-core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -27,10 +28,6 @@ import { SeoTabComponent } from './tabs/seo-tab.component';
 import { ArticlePreviewComponent } from './preview/article-preview.component';
 import { CardPreviewComponent } from './preview/card-preview.component';
 import { SeoPreviewComponent } from './preview/seo-preview.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
 
@@ -383,7 +380,8 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 })
 export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirm = inject(RhombusConfirmService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
 
@@ -466,45 +464,35 @@ export class PostEditorPageComponent implements OnInit {
 
   protected confirmUnpublish(): void {
     const title = this.store.post()?.title?.trim() || 'Untitled post';
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        data: {
-          title: 'Unpublish post?',
-          message: `“${title}” will return to draft and will no longer be visible on the live site.`,
-          confirmLabel: 'Unpublish',
-          cancelLabel: 'Keep published',
-          destructive: true,
-        },
+    this.confirm
+      .confirm({
+        title: 'Unpublish post?',
+        message: `“${title}” will return to draft and will no longer be visible on the live site.`,
+        confirmLabel: 'Unpublish',
+        cancelLabel: 'Keep published',
+        variant: 'danger',
       })
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.subscribePostWrite(this.store.unpublish(), {
-            successMessage: 'Post unpublished',
-          });
-        }
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.subscribePostWrite(this.store.unpublish(), {
+          successMessage: 'Post unpublished',
+        });
       });
   }
 
   protected confirmDeletePost(): void {
     const title = this.store.post()?.title?.trim() || 'Untitled post';
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        data: {
-          title: 'Delete post?',
-          message: `Permanently delete “${title}”? This cannot be undone.`,
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel',
-          destructive: true,
-        },
+    this.confirm
+      .confirm({
+        title: 'Delete post?',
+        message: `Permanently delete “${title}”? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        variant: 'danger',
       })
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.subscribePostWrite(this.store.deletePost(), {});
-        }
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.subscribePostWrite(this.store.deletePost(), {});
       });
   }
 

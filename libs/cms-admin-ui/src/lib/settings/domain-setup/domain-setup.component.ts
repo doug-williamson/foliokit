@@ -1,24 +1,23 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   PLATFORM_ID,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID } from '@foliokit/cms-core';
 import type { TenantConfig } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../../provide-admin-kit';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../../shared/confirm-dialog/confirm-dialog.component';
+import { RhombusConfirmService } from '@rhombuskit/core';
 
 const CNAME_TARGET = 'foliokit-blog--foliokit-6f974.us-central1.hosted.app';
 const DOMAIN_RE = /^(www\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
@@ -324,7 +323,8 @@ export class DomainSetupComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly functionsBaseUrl = inject(FUNCTIONS_BASE_URL);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirm = inject(RhombusConfirmService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly step = signal<Step>('enter');
   readonly domain = signal<string | null>(null);
@@ -455,35 +455,32 @@ export class DomainSetupComponent implements OnInit {
   }
 
   protected removeDomain(): void {
-    const ref = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
-      ConfirmDialogComponent,
-      {
-        data: {
-          title: 'Remove custom domain?',
-          message: `This will disconnect ${this.domain()} from your site. You can add a new domain at any time.`,
-          confirmLabel: 'Remove',
-          destructive: true,
-        },
-      },
-    );
-    ref.afterClosed().subscribe(async (confirmed) => {
-      if (!confirmed || !this.firestore) return;
-      try {
-        await updateDoc(doc(this.firestore, 'tenants', this.siteId), {
-          customDomain: null,
-          customDomainStatus: null,
-        });
-        this.domain.set(null);
-        this.domainInput.set('');
-        this.step.set('enter');
-        this.verifyState.set('idle');
-        this.apexNote.set(null);
-        this.cnameHostname.set('www');
-        this.copiedField.set(null);
-      } catch {
-        this.snackBar.open('Failed to remove domain. Please try again.', 'OK', { duration: 5000 });
-      }
-    });
+    this.confirm
+      .confirm({
+        title: 'Remove custom domain?',
+        message: `This will disconnect ${this.domain()} from your site. You can add a new domain at any time.`,
+        confirmLabel: 'Remove',
+        variant: 'danger',
+      })
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(async () => {
+        if (!this.firestore) return;
+        try {
+          await updateDoc(doc(this.firestore, 'tenants', this.siteId), {
+            customDomain: null,
+            customDomainStatus: null,
+          });
+          this.domain.set(null);
+          this.domainInput.set('');
+          this.step.set('enter');
+          this.verifyState.set('idle');
+          this.apexNote.set(null);
+          this.cnameHostname.set('www');
+          this.copiedField.set(null);
+        } catch {
+          this.snackBar.open('Failed to remove domain. Please try again.', 'OK', { duration: 5000 });
+        }
+      });
   }
 
   protected copyToClipboard(): void {

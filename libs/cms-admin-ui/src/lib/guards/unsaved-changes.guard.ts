@@ -1,11 +1,7 @@
 import { inject } from '@angular/core';
 import { CanDeactivateFn } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { map, tap } from 'rxjs/operators';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../shared/confirm-dialog/confirm-dialog.component';
+import { tap } from 'rxjs/operators';
+import { RhombusConfirmService } from '@rhombuskit/core';
 
 /**
  * Implement this interface on any component that uses `unsavedChangesGuard`
@@ -27,25 +23,15 @@ export const unsavedChangesGuard: CanDeactivateFn<HasDirtyStore> = (
   component,
 ) => {
   if (!component.store.isDirty()) return true;
-  const dialog = inject(MatDialog);
-  return dialog
-    .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
-      ConfirmDialogComponent,
-      {
-        data: {
-          title: 'Unsaved changes',
-          message: 'You have unsaved changes. Leave anyway?',
-          confirmLabel: 'Leave',
-          cancelLabel: 'Stay',
-          destructive: false,
-        },
-        width: '380px',
-        autoFocus: 'dialog',
-      },
-    )
-    .afterClosed()
-    .pipe(
-      tap((result) => { if (result === true) component.store.discard?.(); }),
-      map((result) => result === true),
-    );
+  // RhombusConfirmService.confirm() emits true on confirm, false on cancel/dismiss —
+  // exactly the boolean CanDeactivate needs, so we return it directly.
+  return inject(RhombusConfirmService)
+    .confirm({
+      title: 'Unsaved changes',
+      message: 'You have unsaved changes. Leave anyway?',
+      confirmLabel: 'Leave',
+      cancelLabel: 'Stay',
+      variant: 'default',
+    })
+    .pipe(tap((confirmed) => { if (confirmed) component.store.discard?.(); }));
 };
