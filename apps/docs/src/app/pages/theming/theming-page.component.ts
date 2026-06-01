@@ -60,19 +60,23 @@ const overrideExample = `/* src/styles.scss — after tokens.css import */
   --nav-active-color: #FF8A5C;
 }`;
 
-const themeServiceCode = `import { ThemeService, ColorScheme } from '@foliokit/cms-ui';
+const themeServiceCode = `import { RhombusThemeService } from '@rhombuskit/theme-engine';
+import type { ThemeName, ThemePreference } from '@rhombuskit/theme-engine';
 
 // In any component or service:
-readonly theme = inject(ThemeService);
+readonly theme = inject(RhombusThemeService);
 
-// Read current scheme
-const current: ColorScheme = this.theme.scheme();  // 'light' | 'dark'
+// Read the resolved scheme applied to the DOM ('light' | 'dark')
+const current: ThemeName = this.theme.current();
 
-// Toggle between light and dark
-this.theme.toggle();
+// Read the user's preference ('light' | 'dark' | 'system')
+const pref: ThemePreference = this.theme.preference();
 
-// Set explicitly
-this.theme.setScheme('dark');`;
+// Two-state toggle between light and dark
+this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
+
+// Set explicitly ('system' follows the OS preference)
+this.theme.setTheme('dark');`;
 
 @Component({
   selector: 'docs-theming-page',
@@ -97,10 +101,11 @@ this.theme.setScheme('dark');`;
         selectors. Theme switching is instant — no Angular change detection or recompilation needed.
       </p>
       <p class="mat-body-medium mt-2">
-        <code>ThemeService</code> manages the <code>data-theme</code> attribute on
-        <code>&lt;html&gt;</code>, persists the user's preference to <code>localStorage</code>
-        (key: <code>folio-theme</code>), and falls back to the OS
-        <code>prefers-color-scheme</code> media query.
+        <code>RhombusThemeService</code> (from <code>@rhombuskit/theme-engine</code>) manages the
+        <code>data-theme</code> attribute on <code>&lt;html&gt;</code>, persists the user's
+        preference to <code>localStorage</code> (key: <code>rhombuskit:theme-preference</code>),
+        and falls back to the OS <code>prefers-color-scheme</code> media query. Register it via
+        <code>provideFolioKitTheme()</code> from <code>@foliokit/cms-ui</code>.
       </p>
     </section>
 
@@ -128,12 +133,14 @@ this.theme.setScheme('dark');`;
     </section>
 
     <section class="mt-8">
-      <h2 id="theme-service" class="mat-headline-small">ThemeService API</h2>
+      <h2 id="theme-service" class="mat-headline-small">RhombusThemeService API</h2>
       <docs-code-block [code]="themeServiceCode" language="typescript" />
       <p class="mat-body-medium mt-4">
-        <code>ThemeService</code> is <code>providedIn: 'root'</code> — no additional provider
-        setup needed. <code>AppShellComponent</code> calls <code>theme.apply()</code> on init
-        and includes a built-in toggle button.
+        Register <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your
+        application providers — it configures <code>RhombusThemeService</code> with FolioKit's
+        light/dark theme names and migrates any legacy <code>folio-theme</code> preference.
+        <code>RhombusThemeService</code> applies the stored theme automatically on startup, and
+        <code>AppShellComponent</code> includes a built-in two-state toggle button.
       </p>
     </section>
   `,

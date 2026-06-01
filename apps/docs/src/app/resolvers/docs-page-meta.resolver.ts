@@ -41,14 +41,14 @@ const META: Record<string, DocsPageMeta> = {
     headings: [
       { id: 'shell-config',  label: 'SHELL_CONFIG',  level: 2 },
       { id: 'slots',         label: 'Content Slots', level: 2 },
-      { id: 'theme-service', label: 'ThemeService',  level: 2 },
+      { id: 'theme-service', label: 'RhombusThemeService',  level: 2 },
     ],
   },
   'app-shell/theming': {
     title: 'AppShell — Theming',
-    description: 'Light/dark mode, CSS custom properties, and ThemeService.',
+    description: 'Light/dark mode, CSS custom properties, and RhombusThemeService.',
     headings: [
-      { id: 'theme-service', label: 'ThemeService',  level: 2 },
+      { id: 'theme-service', label: 'RhombusThemeService',  level: 2 },
       { id: 'css-vars',      label: 'CSS Variables', level: 2 },
       { id: 'dark-mode',     label: 'Dark Mode',     level: 2 },
     ],
@@ -104,13 +104,13 @@ const META: Record<string, DocsPageMeta> = {
   },
   'theming': {
     title: 'Theming',
-    description: 'Design token contract, ThemeService API, and how to write custom theme overrides.',
+    description: 'Design token contract, RhombusThemeService API, and how to write custom theme overrides.',
     badge: 'v1.0.0',
     headings: [
       { id: 'how-it-works',     label: 'How It Works',      level: 2 },
       { id: 'token-reference',  label: 'Token Reference',   level: 2 },
       { id: 'custom-overrides', label: 'Custom Overrides',  level: 2 },
-      { id: 'theme-service',    label: 'ThemeService API',  level: 2 },
+      { id: 'theme-service',    label: 'RhombusThemeService API',  level: 2 },
     ],
   },
   'firebase': {
