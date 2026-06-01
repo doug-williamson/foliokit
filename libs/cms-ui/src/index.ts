@@ -28,3 +28,9 @@ export * from './lib/series/series-detail.component';
 
 // ── Theming ───────────────────────────────────────────────────────────────────
 export * from './lib/theming';
+
+// Re-export the theme engine's runtime surface so consumers have a single
+// FolioKit import (paired with provideFolioKitTheme above). @rhombuskit/theme-engine
+// is a peerDependency, so this re-exports the same singleton consumers install.
+export { RhombusThemeService } from '@rhombuskit/theme-engine';
+export type { ThemeName, ThemePreference } from '@rhombuskit/theme-engine';

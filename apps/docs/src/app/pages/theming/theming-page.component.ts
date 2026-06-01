@@ -60,8 +60,8 @@ const overrideExample = `/* src/styles.scss — after tokens.css import */
   --nav-active-color: #FF8A5C;
 }`;
 
-const themeServiceCode = `import { RhombusThemeService } from '@rhombuskit/theme-engine';
-import type { ThemeName, ThemePreference } from '@rhombuskit/theme-engine';
+const themeServiceCode = `import { RhombusThemeService } from '@foliokit/cms-ui';
+import type { ThemeName, ThemePreference } from '@foliokit/cms-ui';
 
 // In any component or service:
 readonly theme = inject(RhombusThemeService);
@@ -101,7 +101,7 @@ this.theme.setTheme('dark');`;
         selectors. Theme switching is instant — no Angular change detection or recompilation needed.
       </p>
       <p class="mat-body-medium mt-2">
-        <code>RhombusThemeService</code> (from <code>@rhombuskit/theme-engine</code>) manages the
+        <code>RhombusThemeService</code> (from <code>@foliokit/cms-ui</code>) manages the
         <code>data-theme</code> attribute on <code>&lt;html&gt;</code>, persists the user's
         preference to <code>localStorage</code> (key: <code>rhombuskit:theme-preference</code>),
         and falls back to the OS <code>prefers-color-scheme</code> media query. Register it via

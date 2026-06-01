@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
 
-const themeServiceSnippet = `import { RhombusThemeService } from '@rhombuskit/theme-engine';
+const themeServiceSnippet = `import { RhombusThemeService } from '@foliokit/cms-ui';
 
 @Component({ ... })
 export class HeaderComponent {
@@ -42,7 +42,7 @@ module.exports = {
     <section>
       <h2 id="theme-service" class="mat-headline-small">RhombusThemeService</h2>
       <p class="mat-body-medium">
-        <code>RhombusThemeService</code> (from <code>@rhombuskit/theme-engine</code>) manages the
+        <code>RhombusThemeService</code> (from <code>@foliokit/cms-ui</code>) manages the
         <code>data-theme</code> attribute on the <code>&lt;html&gt;</code> element. Register
         <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your app config,
         then inject it anywhere to read <code>current()</code> / <code>preference()</code> or call

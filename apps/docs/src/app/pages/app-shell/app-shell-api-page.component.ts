@@ -20,7 +20,7 @@ const slotsRows: ApiTableRow[] = [
   { name: '(default)',          type: 'ng-content slot', description: 'Routed page content rendered in the main content area.' },
 ];
 
-const themeServiceSnippet = `import { RhombusThemeService } from '@rhombuskit/theme-engine';
+const themeServiceSnippet = `import { RhombusThemeService } from '@foliokit/cms-ui';
 
 @Component({ ... })
 export class MyComponent {
@@ -62,7 +62,7 @@ export class MyComponent {
     <section class="mt-8">
       <h2 id="theme-service" class="mat-headline-small">RhombusThemeService</h2>
       <p class="mat-body-medium">
-        Inject <code>RhombusThemeService</code> (from <code>@rhombuskit/theme-engine</code>) to
+        Inject <code>RhombusThemeService</code> (from <code>@foliokit/cms-ui</code>) to
         programmatically set the theme or read the current resolved scheme. Register
         <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your app config.
       </p>
