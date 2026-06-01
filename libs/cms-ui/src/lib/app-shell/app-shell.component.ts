@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SHELL_CONFIG } from '../shell-config.token';
-import { RhombusThemeService } from '@rhombuskit/theme-engine';
+import { FolioThemeControlComponent } from '../theming/theme-control/theme-control.component';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
 
 const DEFAULT_MOBILE_MAX_PX = 767;
@@ -35,11 +35,11 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
     MatButtonModule,
     MatTooltipModule,
     RouterLink,
+    FolioThemeControlComponent,
   ],
 })
 export class AppShellComponent {
   protected readonly config = inject(SHELL_CONFIG);
-  protected readonly theme = inject(RhombusThemeService);
 
   @ContentChild(ShellNavFooterDirective) protected navFooter?: ShellNavFooterDirective;
 
@@ -98,11 +98,6 @@ export class AppShellComponent {
 
   protected toggleSidenav(): void {
     this.sidenavOpen.update((v) => !v);
-  }
-
-  /** Two-state toggle (light ↔ dark) — deliberately not RhombusThemeService.toggle()'s 3-state cycle. */
-  protected toggleTheme(): void {
-    this.theme.setTheme(this.theme.current() === 'dark' ? 'light' : 'dark');
   }
 
   protected navigateToNewPost(): void {

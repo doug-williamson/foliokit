@@ -81,13 +81,7 @@
           </button>
         }
 
-        <button
-          mat-icon-button
-          [attr.aria-label]="theme.current() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-          (click)="toggleTheme()"
-        >
-          <mat-icon [svgIcon]="theme.current() === 'dark' ? 'light_mode' : 'dark_mode'" />
-        </button>
+        <folio-theme-control />
       </mat-toolbar>
 
       <main class="shell-main">

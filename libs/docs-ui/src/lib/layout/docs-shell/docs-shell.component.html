@@ -25,13 +25,7 @@
 
   <a mat-flat-button routerLink="/signup">Get Started</a>
 
-  <button
-    mat-icon-button
-    [attr.aria-label]="theme.current() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-    (click)="toggleTheme()"
-  >
-    <mat-icon>{{ theme.current() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
-  </button>
+  <folio-theme-control />
 </mat-toolbar>
 
 <mat-sidenav-container class="docs-sidenav-container">
