@@ -1,4 +1,11 @@
 @use '@rhombuskit/tokens/scss';
+// Additive M3 component-token layer (button/card/chip/select/table/menu/dialog/etc.
+// + shape, state-layer, typescale, error). Emits at :root (0,1,0); FolioKit's
+// html[data-theme] bridge + mat.theme() (0,1,1) stay authoritative for ALL
+// surface/color system tokens. Do NOT delete FolioKit's surface/color overrides
+// expecting the preset to cover them — it cannot outrank mat.theme() from :root,
+// so dropping them regresses surfaces to raw palette values. (PR3 recon.)
+@use '@rhombuskit/material-preset/scss' as material-preset;
 @forward 'tokens';
 @forward 'reset';
 @forward 'theme';
