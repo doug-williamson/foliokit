@@ -59,3 +59,16 @@ __screenshots__/
 # Service account key — never commit
 *service-account*.json
 *serviceAccount*.json
+
+# Firebase emulator local data (seeded/regenerated, exported on exit — not source)
+.firebase/emulator-data/
+# Firebase CLI / emulator debug logs
+*-debug.log
+
+# Agent working scratch (PR prompt drafts)
+prompt.md
+
+# Playwright MCP verification artifacts (snapshots/screenshots)
+.playwright-mcp/
+posts-dark-mode.png
+posts-action-menu-no-nav.png
