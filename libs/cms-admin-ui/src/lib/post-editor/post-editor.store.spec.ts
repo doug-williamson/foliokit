@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
-import { PostService } from '@foliokit/cms-core';
+import { PostService, FIRESTORE } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 import type { BlogPost } from '@foliokit/cms-core';
 import { Router } from '@angular/router';
@@ -49,6 +49,10 @@ function setup() {
       PostEditorStore,
       { provide: PostService, useValue: postServiceStub },
       { provide: Router, useValue: { navigate: vi.fn() } },
+      // PostEditorStore injects the root SeriesService, which does inject(FIRESTORE)!.
+      // These tests never call series methods, so a null token is enough to let
+      // SeriesService instantiate without real Firebase.
+      { provide: FIRESTORE, useValue: null },
     ],
   });
 
@@ -393,13 +397,16 @@ describe('PostEditorStore canPublish computed', () => {
     expect(store.canPublish()).toBe(true);
   });
 
-  it('coerces legacy "scheduled" posts to draft on load; canPublish stays true', () => {
+  it('keeps "scheduled" status on load; canPublish stays true', () => {
     const { store, postServiceStub } = setup();
     postServiceStub.getPostById.mockReturnValue(
       of(makePost({ title: 'Scheduled', status: 'scheduled' })),
     );
     store.loadPost('post-1');
-    expect(store.post()?.status).toBe('draft');
+    // 'scheduled' is a first-class status (see posts-list); it is no longer
+    // coerced to 'draft' on load. canPublish stays true for any titled,
+    // not-yet-published post.
+    expect(store.post()?.status).toBe('scheduled');
     expect(store.canPublish()).toBe(true);
   });
 });
@@ -416,6 +423,7 @@ describe('PostEditorStore (no internal autosave timer)', () => {
         PostEditorStore,
         { provide: PostService, useValue: postServiceStub },
         { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: FIRESTORE, useValue: null },
       ],
     });
     const store = TestBed.inject(PostEditorStore);
