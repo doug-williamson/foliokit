@@ -96,6 +96,7 @@ const DEFAULT_LIMIT = 5;
         } @else {
           <folio-posts-table
             [posts]="visiblePosts()"
+            [interactive]="false"
             (postSelected)="postSelected.emit($event)"
           />
           @if (hasMore()) {

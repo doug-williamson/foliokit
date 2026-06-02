@@ -197,6 +197,7 @@ import { PostsSectionComponent } from './posts-section.component';
 
           <folio-posts-table
             class="flex-1 min-h-0 min-w-0 block"
+            [interactive]="true"
             (postSelected)="onPostSelected($event)"
           />
         }

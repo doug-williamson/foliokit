@@ -6,6 +6,8 @@ import {
   inject,
   input,
   output,
+  TemplateRef,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -15,14 +17,30 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { filter } from 'rxjs/operators';
 import type { BlogPost } from '@foliokit/cms-core';
-import { RhombusConfirmService } from '@rhombuskit/core';
-import { PostsListStore } from './posts-list.store';
+import {
+  RhombusConfirmService,
+  RhombusDataTableComponent,
+  type ColumnDef,
+  type SortState,
+} from '@rhombuskit/core';
+import { PostsListStore, type PostsSortColumn } from './posts-list.store';
+
+/** Per-row cell template context emitted by `<rhombus-data-table>`. */
+type Cell = { $implicit: BlogPost; index: number };
 
 @Component({
   selector: 'folio-posts-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, MatButtonModule, MatDivider, MatIconModule, MatMenuModule],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    MatButtonModule,
+    MatDivider,
+    MatIconModule,
+    MatMenuModule,
+    RhombusDataTableComponent,
+  ],
   host: { class: 'block min-w-0' },
   styles: [`
     :host {
@@ -30,47 +48,7 @@ import { PostsListStore } from './posts-list.store';
       min-width: 0;
     }
 
-    .posts-table th.col-title,
-    .posts-table td.col-title {
-      max-width: 0;
-      width: auto;
-    }
-
-    .posts-table {
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    th {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 400;
-      color: var(--text-muted);
-      padding: 8px 12px;
-      border-bottom: var(--border-width) solid var(--border);
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    td {
-      padding: 8px 12px;
-      border-bottom: var(--border-width) solid var(--border);
-      vertical-align: middle;
-    }
-
-    tr:hover td {
-      background: var(--surface-2);
-      cursor: pointer;
-    }
-
+    /* ── Cell-content styling (table chrome is owned by rhombus-data-table) ── */
     .cell-title {
       font-family: var(--font-display);
       font-size: 13px;
@@ -126,165 +104,74 @@ import { PostsListStore } from './posts-list.store';
       font-size: 11px;
     }
 
-    /* Give the status column a fixed width so title gets the rest */
-    th.col-status {
-      text-align: center;
-    }
-
-    .col-status {
-      width: 120px;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .col-status .badge {
-      display: inline-flex;
-      justify-content: center;
-    }
-
-    /* Slug/Date column: hidden on mobile */
-    .col-slug { display: none; }
-
-    /* Views column: hidden on mobile, right-aligned numeric on sm+. */
-    .col-views { display: none; }
-    th.col-views { text-align: right; }
-    td.col-views {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
+    /* The stacked title-meta is a mobile affordance; once the dedicated
+       Slug/Date column appears (>=sm, via hideBelow:'sm'), hide it. */
     @media (min-width: 640px) {
-      .col-slug {
-        display: table-cell;
-        width: 200px;
-        min-width: 0;
-        overflow: hidden;
-      }
-      .col-views {
-        display: table-cell;
-        width: 80px;
-      }
       .cell-title-meta { display: none; }
-    }
-
-    /* Sortable header button — inherits th typography. */
-    .sort-header {
-      all: unset;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font: inherit;
-      letter-spacing: inherit;
-      text-transform: inherit;
-      color: inherit;
-    }
-    .sort-header:hover { color: var(--text-primary); }
-    .sort-header-arrow {
-      font-size: 10px;
-      line-height: 1;
-      opacity: 0.7;
-    }
-
-    /* Actions column: always visible, mobile-first */
-    .col-actions {
-      width: 40px;
-      padding: 0 4px;
-      text-align: center;
-      vertical-align: middle;
     }
   `],
   template: `
-    <table class="posts-table">
-      <thead>
-        <tr>
-          <th class="col-title">Title</th>
-          <th class="col-slug">
-            <button
-              type="button"
-              class="sort-header"
-              (click)="store.toggleSort('updatedAt')"
-              [attr.aria-sort]="ariaSort('updatedAt')"
-            >
-              Slug / Date
-              @if (store.sortBy() === 'updatedAt') {
-                <span class="sort-header-arrow" aria-hidden="true">{{ sortArrow() }}</span>
-              }
-            </button>
-          </th>
-          <th class="col-views">
-            <button
-              type="button"
-              class="sort-header"
-              (click)="store.toggleSort('viewCount')"
-              [attr.aria-sort]="ariaSort('viewCount')"
-            >
-              Views
-              @if (store.sortBy() === 'viewCount') {
-                <span class="sort-header-arrow" aria-hidden="true">{{ sortArrow() }}</span>
-              }
-            </button>
-          </th>
-          <th class="col-status">Status</th>
-          <th class="col-actions"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (post of allPosts(); track post.id) {
-          <tr (click)="postSelected.emit(post.id)">
-            <td class="col-title">
-              <div class="cell-title">{{ post.title || 'Untitled' }}</div>
-              <span class="cell-title-meta">
-                <span class="cell-title-meta-slug">/{{ post.slug }}</span>
-                <span class="cell-title-meta-date">{{ post.updatedAt | date: 'MMM d, yyyy' }}</span>
-              </span>
-            </td>
-            <td class="col-slug">
-              <span class="cell-meta">
-                <span class="cell-meta-slug">/{{ post.slug }}</span>
-                <span class="cell-meta-date">{{ post.updatedAt | date: 'MMM d, yyyy' }}</span>
-              </span>
-            </td>
-            <td class="col-views">{{ (post.viewCount ?? 0) | number }}</td>
-            <td class="col-status">
-              <span [class]="'badge ' + badgeClass(post.status)">{{ badgeLabel(post.status) }}</span>
-            </td>
-            <td class="col-actions">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="rowMenu"
-                aria-label="Post actions"
-                (click)="$event.stopPropagation()"
-              >
-                <mat-icon svgIcon="more_vert" />
-              </button>
-              <mat-menu #rowMenu>
-                <button mat-menu-item (click)="postSelected.emit(post.id)">Edit</button>
-                @if (post.status === 'published') {
-                  <button mat-menu-item (click)="confirmUnpublish(post)">Unpublish</button>
-                }
-                @if (post.status !== 'archived') {
-                  <button mat-menu-item (click)="confirmArchive(post)">Archive</button>
-                }
-                @if (post.status !== 'archived') {
-                  <mat-divider />
-                }
-                <button
-                  mat-menu-item
-                  [style.color]="'var(--error)'"
-                  (click)="confirmDelete(post)"
-                >
-                  Delete…
-                </button>
-              </mat-menu>
-            </td>
-          </tr>
+    <rhombus-data-table
+      [data]="allPosts()"
+      [columns]="columns()"
+      sortMode="controlled"
+      [sortState]="sortState()"
+      [paginated]="false"
+      (sortChange)="onSortChange($event)"
+      (rowClick)="postSelected.emit($event.id)"
+    />
+
+    <!-- ── Cell templates ───────────────────────────────────────────────── -->
+    <ng-template #titleCell let-row>
+      <div class="cell-title">{{ row.title || 'Untitled' }}</div>
+      <span class="cell-title-meta">
+        <span class="cell-title-meta-slug">/{{ row.slug }}</span>
+        <span class="cell-title-meta-date">{{ row.updatedAt | date: 'MMM d, yyyy' }}</span>
+      </span>
+    </ng-template>
+
+    <ng-template #dateCell let-row>
+      <span class="cell-meta">
+        <span class="cell-meta-slug">/{{ row.slug }}</span>
+        <span class="cell-meta-date">{{ row.updatedAt | date: 'MMM d, yyyy' }}</span>
+      </span>
+    </ng-template>
+
+    <ng-template #viewsCell let-row>{{ (row.viewCount ?? 0) | number }}</ng-template>
+
+    <ng-template #statusCell let-row>
+      <span [class]="'badge ' + badgeClass(row.status)">{{ badgeLabel(row.status) }}</span>
+    </ng-template>
+
+    <ng-template #actionsCell let-row>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="rowMenu"
+        aria-label="Post actions"
+        (click)="$event.stopPropagation()"
+      >
+        <mat-icon svgIcon="more_vert" />
+      </button>
+      <mat-menu #rowMenu>
+        <button mat-menu-item (click)="postSelected.emit(row.id)">Edit</button>
+        @if (row.status === 'published') {
+          <button mat-menu-item (click)="confirmUnpublish(row)">Unpublish</button>
         }
-      </tbody>
-    </table>
+        @if (row.status !== 'archived') {
+          <button mat-menu-item (click)="confirmArchive(row)">Archive</button>
+        }
+        @if (row.status !== 'archived') {
+          <mat-divider />
+        }
+        <button
+          mat-menu-item
+          [style.color]="'var(--error)'"
+          (click)="confirmDelete(row)"
+        >
+          Delete…
+        </button>
+      </mat-menu>
+    </ng-template>
   `,
 })
 export class PostsTableComponent {
@@ -294,22 +181,50 @@ export class PostsTableComponent {
 
   postSelected = output<string>();
 
+  /** Explicit row set (section views). Falls back to the store's sorted list. */
   readonly posts = input<BlogPost[] | null>(null);
 
-  protected readonly allPosts = computed<BlogPost[]>(() => {
-    const override = this.posts();
-    // When a caller passes an explicit [posts] input (e.g. section views),
-    // honor that ordering. Otherwise consume the store's sortedPosts.
-    return override ?? this.store.sortedPosts();
+  /**
+   * Interactive (main view): sortable headers, sort owned by the store.
+   * Static (section mini-tables): non-sortable, fixed order from `[posts]`.
+   */
+  readonly interactive = input<boolean>(true);
+
+  private readonly titleCell = viewChild<TemplateRef<Cell>>('titleCell');
+  private readonly dateCell = viewChild<TemplateRef<Cell>>('dateCell');
+  private readonly viewsCell = viewChild<TemplateRef<Cell>>('viewsCell');
+  private readonly statusCell = viewChild<TemplateRef<Cell>>('statusCell');
+  private readonly actionsCell = viewChild<TemplateRef<Cell>>('actionsCell');
+
+  protected readonly allPosts = computed<BlogPost[]>(
+    () => this.posts() ?? this.store.sortedPosts(),
+  );
+
+  /**
+   * Controlled sort: the store is the sole authority. Reflected into the table
+   * for the header affordance only. `null` when non-interactive so section
+   * mini-tables render no sort indicator.
+   */
+  protected readonly sortState = computed<SortState | null>(() =>
+    this.interactive()
+      ? { active: this.store.sortBy(), direction: this.store.sortDirection() }
+      : null,
+  );
+
+  protected readonly columns = computed<ColumnDef<BlogPost>[]>(() => {
+    const sortable = this.interactive();
+    return [
+      { key: 'title', header: 'Title', align: 'start', cellTemplate: this.titleCell() },
+      { key: 'updatedAt', header: 'Slug / Date', sortable, hideBelow: 'sm', cellTemplate: this.dateCell() },
+      { key: 'viewCount', header: 'Views', sortable, align: 'end', hideBelow: 'sm', cellTemplate: this.viewsCell() },
+      { key: 'status', header: 'Status', align: 'center', width: '120px', cellTemplate: this.statusCell() },
+      { key: 'id', header: '', align: 'center', width: '40px', cellTemplate: this.actionsCell() },
+    ];
   });
 
-  protected sortArrow(): string {
-    return this.store.sortDirection() === 'asc' ? '↑' : '↓';
-  }
-
-  protected ariaSort(column: 'updatedAt' | 'viewCount'): 'ascending' | 'descending' | 'none' {
-    if (this.store.sortBy() !== column) return 'none';
-    return this.store.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  protected onSortChange(sort: SortState): void {
+    // Drive the store's two-state toggle; it owns direction, not Material.
+    this.store.toggleSort(sort.active as PostsSortColumn);
   }
 
   badgeClass(status: BlogPost['status']): string {
