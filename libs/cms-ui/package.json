@@ -26,9 +26,9 @@
     "@angular/router": "^21.2.4",
     "@foliokit/cms-core": "^1.0.0",
     "@foliokit/cms-markdown": "^1.0.0",
-    "@rhombuskit/material-preset": "^0.3.0",
-    "@rhombuskit/theme-engine": "^0.3.0",
-    "@rhombuskit/tokens": "^0.3.0",
+    "@rhombuskit/material-preset": "^0.4.2",
+    "@rhombuskit/theme-engine": "^0.4.2",
+    "@rhombuskit/tokens": "^0.4.2",
     "ngx-markdown": "^21.1.0",
     "rxjs": "~7.8.0"
   },
