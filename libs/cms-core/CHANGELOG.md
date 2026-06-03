@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.2.0...cms-core-v1.3.0) (2026-06-03)
+
+
+### Features
+
+* **analytics:** v1 post view tracking ([6d5b5a6](https://github.com/doug-williamson/foliokit/commit/6d5b5a68c4d73119455911bd20ef74ab1bb8a8e8))
+* **analytics:** v1 post view tracking with plan-gated daily buckets ([31f4725](https://github.com/doug-williamson/foliokit/commit/31f4725377453988c55bd798149b34defc3197a1))
+* **cms-core:** auto-compute reading time on post save ([c29cc70](https://github.com/doug-williamson/foliokit/commit/c29cc70d1228d49ae9c271924344ea5af91fa1db))
+* **cms-core:** auto-compute readingTimeMinutes on post save ([14c09b4](https://github.com/doug-williamson/foliokit/commit/14c09b41e3be779824f61496450adce424d1868f))
+
 ## [1.2.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.1.0...cms-core-v1.2.0) (2026-05-02)
 
 
