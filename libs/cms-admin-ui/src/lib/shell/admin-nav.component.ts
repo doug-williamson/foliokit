@@ -8,7 +8,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AppShellComponent } from '@foliokit/cms-ui';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -51,13 +50,120 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
   imports: [RouterLink, RouterLinkActive, MatIconModule, MatTooltipModule],
   styles: [
     `
+      /* Nav-content styling re-homed from folio-app-shell's app-shell.component.scss
+         (formerly '::ng-deep mat-sidenav .nav-*'). rhombus-app-shell is structure-only
+         and ships no nav-item styling; admin-nav owns this markup, so these rules now
+         live here and travel with the component regardless of the host shell. */
+      .nav-group-label {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 0 16px;
+        margin-bottom: 3px;
+        margin-top: 18px;
+        display: block;
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &.nav-group-label--disabled {
+          opacity: 0.45;
+        }
+      }
+
+      .nav-item {
+        position: relative;
+        height: 40px;
+        padding: 0 16px;
+        gap: 10px;
+        display: flex !important;
+        align-items: center;
+        font-size: 12px;
+        font-family: var(--font-body);
+        letter-spacing: normal;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: none;
+        transition: background 0.12s, color 0.12s;
+
+        &:hover {
+          background: var(--surface-2);
+          color: var(--text-primary);
+        }
+
+        .nav-icon {
+          font-size: 18px !important;
+          width: 18px !important;
+          height: 18px !important;
+          flex-shrink: 0;
+        }
+
+        &.active-link {
+          background: var(--nav-active-bg);
+          color: var(--nav-active-text);
+          font-weight: 700;
+          border-radius: 8px;
+          margin: 1px 8px;
+          overflow: hidden;
+        }
+
+        &.nav-child {
+          padding-left: 28px;
+          height: 36px;
+
+          .nav-icon {
+            font-size: 16px !important;
+            width: 16px !important;
+            height: 16px !important;
+          }
+        }
+
+        &.nav-item--disabled {
+          cursor: not-allowed;
+          opacity: 0.45;
+        }
+      }
+
+      .nav-plan-badge {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        padding: 1px 6px;
+        border-radius: 100px;
+        margin-left: auto;
+        flex-shrink: 0;
+        line-height: 1.6;
+      }
+
+      :host-context([data-theme='light']) .nav-plan-badge--pro {
+        background: var(--teal-100);
+        color: var(--teal-700);
+      }
+      :host-context([data-theme='dark']) .nav-plan-badge--pro {
+        background: color-mix(in srgb, var(--teal-500) 20%, transparent);
+        color: var(--teal-200);
+      }
+      :host-context([data-theme='light']) .nav-plan-badge--agency {
+        background: var(--amber-100);
+        color: var(--amber-600);
+      }
+      :host-context([data-theme='dark']) .nav-plan-badge--agency {
+        background: color-mix(in srgb, var(--amber-600) 20%, transparent);
+        color: var(--amber-400);
+      }
+
       @media (max-width: 959.98px) {
-        :host ::ng-deep .nav-item,
-        :host ::ng-deep .nav-item.nav-child {
+        .nav-item,
+        .nav-item.nav-child {
           min-height: 48px;
         }
       }
-      :host ::ng-deep .folio-admin-nav__hint-icon {
+
+      .folio-admin-nav__hint-icon {
         font-size: 18px !important;
         width: 18px !important;
         height: 18px !important;
@@ -86,7 +192,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [routerLinkActiveOptions]="rlaOpts(row)"
               [matTooltip]="row.label"
               matTooltipPosition="right"
-              [matTooltipDisabled]="!shell.isIconRail()"
+              [matTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -103,7 +209,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               (click)="onDisabledTap(row)"
               [matTooltip]="row.label"
               matTooltipPosition="right"
-              [matTooltipDisabled]="!shell.isIconRail()"
+              [matTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -116,7 +222,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
                   svgIcon="info"
                   matTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
                   matTooltipPosition="right"
-                  [matTooltipDisabled]="!shell.isIconRail()"
+                  [matTooltipDisabled]="true"
                 />
               }
             </button>
@@ -126,7 +232,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right" [matTooltipDisabled]="!shell.isIconRail()">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right" [matTooltipDisabled]="true">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>
@@ -135,7 +241,6 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 export class AdminNavComponent {
   private readonly navStore = inject(SiteConfigNavStore);
   private readonly bottomSheet = inject(MatBottomSheet);
-  protected readonly shell = inject(AppShellComponent);
 
   /** Rows for dashboard, Pages + children, Publish + children (Configure appended in template). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {
