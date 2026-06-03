@@ -3,27 +3,26 @@ import {
   Component,
   computed,
   inject,
-  OnDestroy,
-  OnInit,
-  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import {
+  RhombusAppShellComponent,
+  RhombusShellAsideDirective,
+} from '@rhombuskit/core';
 import { FolioThemeControlComponent } from '@foliokit/cms-ui';
 // Side-effect import: registers docs-ui's 'light'/'dark' ThemeRegistry augmentation.
 import '../../theme-registry';
 import { DOCS_ROUTE_MANIFEST } from '../../tokens/docs-tokens';
 import { DocsNavComponent } from '../../nav/docs-nav/docs-nav.component';
 import { DocsPageHeaderComponent } from '../../content/docs-page-header/docs-page-header.component';
-import { DocsTocComponent } from '../../nav/docs-toc/docs-toc.component';
 import { DocsAnchorNavComponent } from '../../nav/docs-anchor-nav/docs-anchor-nav.component';
 
 const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -37,20 +36,21 @@ const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
   imports: [
     RouterOutlet,
     RouterLink,
+    NgTemplateOutlet,
     MatToolbarModule,
-    MatSidenavModule,
     MatButtonModule,
     MatIconModule,
+    RhombusAppShellComponent,
+    RhombusShellAsideDirective,
     DocsNavComponent,
     DocsPageHeaderComponent,
-    DocsTocComponent,
     DocsAnchorNavComponent,
     FolioThemeControlComponent,
   ],
   templateUrl: './docs-shell.component.html',
   styleUrl: './docs-shell.component.scss',
 })
-export class DocsShellComponent implements OnInit, OnDestroy {
+export class DocsShellComponent {
   readonly manifest = inject(DOCS_ROUTE_MANIFEST);
 
   readonly #router = inject(Router);
@@ -58,15 +58,9 @@ export class DocsShellComponent implements OnInit, OnDestroy {
   readonly #sanitizer = inject(DomSanitizer);
   readonly #breakpointObserver = inject(BreakpointObserver);
 
-  readonly isMobile = signal(false);
-  readonly sidenavOpen = signal(false);
-
-  #bpSub?: Subscription;
-  #navSub?: Subscription;
-
   readonly #url = toSignal(
     this.#router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
+      filter((e) => e instanceof NavigationEnd),
       map(() => this.#router.url),
       startWith(this.#router.url),
     ),
@@ -74,37 +68,22 @@ export class DocsShellComponent implements OnInit, OnDestroy {
 
   readonly isDocsRoute = computed(() => (this.#url() ?? '').startsWith('/docs'));
 
+  /**
+   * Tailwind `xl` (>= 1280px) gate for the right-rail aside, reproducing the
+   * former `hidden xl:block`. rhombus-app-shell switches 2-col <-> 3-col by the
+   * PRESENCE of `[shellAside]` content (contentChild), not by viewport — so the
+   * aside element itself must be `@if`-gated on width. Below xl the directive is
+   * absent and the shell renders 2 columns (no dead third column).
+   */
+  readonly isXl = toSignal(
+    this.#breakpointObserver.observe('(min-width: 1280px)').pipe(map((s) => s.matches)),
+    { initialValue: false },
+  );
+
   constructor() {
     this.#iconRegistry.addSvgIconLiteral(
       'github',
       this.#sanitizer.bypassSecurityTrustHtml(GITHUB_ICON_SVG),
     );
-  }
-
-  ngOnInit(): void {
-    this.#bpSub = this.#breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
-      .subscribe((state) => {
-        const mobile = state.matches;
-        this.isMobile.set(mobile);
-        this.sidenavOpen.set(!mobile && this.isDocsRoute());
-      });
-
-    this.#navSub = this.#router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => {
-        if (this.isMobile()) {
-          this.sidenavOpen.set(false);
-        }
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.#bpSub?.unsubscribe();
-    this.#navSub?.unsubscribe();
-  }
-
-  protected toggleSidenav(): void {
-    this.sidenavOpen.update((open) => !open);
   }
 }
