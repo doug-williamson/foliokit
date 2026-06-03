@@ -1,15 +1,8 @@
-<mat-toolbar class="docs-topbar">
-  @if (isMobile() && isDocsRoute()) {
-    <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
-      <mat-icon>menu</mat-icon>
-    </button>
-  }
-
-  <a routerLink="/" class="docs-logo" aria-label="FolioKit home">FolioKit</a>
-
+<!-- Shared top-bar actions. rhombus-app-shell renders its own toolbar on docs
+     routes; the non-docs branch hand-rolls one. Both pull this content so the
+     chrome can't drift. -->
+<ng-template #headerActions>
   <a mat-button routerLink="/docs" class="docs-nav-link">Docs</a>
-
-  <span class="docs-topbar-spacer"></span>
 
   <span class="docs-version-badge">v1.0.0</span>
 
@@ -26,35 +19,50 @@
   <a mat-flat-button routerLink="/signup">Get Started</a>
 
   <folio-theme-control />
-</mat-toolbar>
+</ng-template>
 
-<mat-sidenav-container class="docs-sidenav-container">
-  <mat-sidenav
-    [mode]="isMobile() ? 'over' : 'side'"
-    [opened]="isMobile() ? sidenavOpen() : isDocsRoute()"
-    class="docs-sidenav border-r border-[var(--mat-sys-outline-variant)]"
-  >
-    <div class="flex flex-col h-full overflow-y-auto py-4">
-      <docs-nav [manifest]="manifest" />
+@if (isDocsRoute()) {
+  <rhombus-app-shell class="docs-shell-host" [mobileBreakpoint]="959" [closeOnNavigate]="true">
+    <a shellBrand routerLink="/" class="docs-logo" aria-label="FolioKit home">FolioKit</a>
+
+    <div shellHeaderActions class="docs-header-actions">
+      <ng-container [ngTemplateOutlet]="headerActions" />
     </div>
-  </mat-sidenav>
 
-  <mat-sidenav-content>
-    @if (isDocsRoute()) {
-      <div class="grid grid-cols-1 xl:grid-cols-[1fr_220px] min-h-full">
-        <main class="min-w-0 px-8 py-6 max-w-[800px] mx-auto">
-          <docs-page-header />
-          <router-outlet />
-        </main>
+    <nav shellNav class="flex flex-col h-full overflow-y-auto py-4">
+      <docs-nav [manifest]="manifest" />
+    </nav>
 
-        <aside class="hidden xl:block">
-          <div class="sticky top-6 px-4 py-6">
-            <docs-anchor-nav />
-          </div>
-        </aside>
-      </div>
-    } @else {
-      <router-outlet />
+    @if (isXl()) {
+      <aside shellAside>
+        <div class="sticky top-6 px-4 py-6">
+          <docs-anchor-nav />
+        </div>
+      </aside>
     }
-  </mat-sidenav-content>
-</mat-sidenav-container>
+
+    <main class="min-w-0 px-8 py-6 max-w-[800px] mx-auto">
+      <docs-page-header />
+      <router-outlet />
+    </main>
+  </rhombus-app-shell>
+} @else {
+  <!-- GATE FINDING: rhombus-app-shell@0.6.0 has no bare / no-sidenav mode (it
+       always renders the mat-sidenav-container; there is no `hasNav` gate), so
+       non-docs routes ('', /signup, /**) that must be full-width keep the
+       hand-rolled toolbar + outlet. Do not force them through the shell — an
+       empty open sidenav would render on desktop. -->
+  <div class="docs-bare-wrap">
+    <mat-toolbar class="docs-topbar">
+      <a routerLink="/" class="docs-logo" aria-label="FolioKit home">FolioKit</a>
+      <span class="docs-topbar-spacer"></span>
+      <div class="docs-header-actions">
+        <ng-container [ngTemplateOutlet]="headerActions" />
+      </div>
+    </mat-toolbar>
+
+    <div class="docs-bare-content">
+      <router-outlet />
+    </div>
+  </div>
+}

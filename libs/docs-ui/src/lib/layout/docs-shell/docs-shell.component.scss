@@ -1,7 +1,27 @@
 :host {
+  display: block;
+  height: 100%;
+}
+
+// rhombus-app-shell fills the shell host on docs routes. Match the former
+// 220px right-rail width via the shell's public token (default is 240px).
+.docs-shell-host {
+  display: block;
+  height: 100%;
+  --rhombus-app-shell-aside-width: 220px;
+}
+
+// Non-docs (bare) layout: toolbar + scrolling full-width content.
+.docs-bare-wrap {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.docs-bare-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .docs-topbar {
@@ -31,6 +51,14 @@
   flex: 1;
 }
 
+// Lays out the projected header actions (rhombus toolbar slot is a single
+// flex item; the hand-rolled mat-toolbar reuses the same wrapper for parity).
+.docs-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .docs-version-badge {
   display: inline-flex;
   align-items: center;
@@ -43,14 +71,4 @@
   color: var(--mat-sys-on-secondary-container);
   margin-right: 0.25rem;
   white-space: nowrap;
-}
-
-.docs-sidenav-container {
-  flex: 1;
-  min-height: 0;
-}
-
-.docs-sidenav {
-  width: 260px;
-  background: var(--mat-sys-surface-container);
 }
