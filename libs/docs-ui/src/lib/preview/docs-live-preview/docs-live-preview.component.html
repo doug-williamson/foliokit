@@ -6,15 +6,16 @@
     @if (previews().length > 1) {
       <div class="flex gap-1">
         @for (p of previews(); track p.label; let i = $index) {
-          <button
-            mat-button
+          <rhombus-button
+            appearance="text"
+            variant="secondary"
             type="button"
             class="text-sm"
             [class.docs-live-preview__label-btn--active]="activePreviewIndex() === i"
             (click)="setPreview(i)"
           >
             {{ p.label }}
-          </button>
+          </rhombus-button>
         }
       </div>
       <div class="w-px h-5 bg-[var(--mat-sys-outline-variant)]"></div>
@@ -44,8 +45,9 @@
           <span class="material-icons text-base">fullscreen</span>
         </button>
         @for (vp of activePreview().viewports!; track vp.label) {
-          <button
-            mat-button
+          <rhombus-button
+            appearance="text"
+            variant="secondary"
             type="button"
             class="text-xs"
             [title]="vp.label + ' (' + vp.width + 'px)'"
@@ -53,7 +55,7 @@
             (click)="setViewport(vp.width)"
           >
             {{ vp.label }}
-          </button>
+          </rhombus-button>
         }
       </div>
     }
@@ -73,7 +75,7 @@
           <docs-preview-host [preview]="activePreview()" />
         } @else {
           @if (activePreview().code) {
-            <docs-code-block [code]="activePreview().code!" />
+            <rhombus-code-block [code]="activePreview().code!" />
           } @else {
             <p class="text-sm opacity-50 italic">No code sample provided.</p>
           }

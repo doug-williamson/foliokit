@@ -4,9 +4,9 @@ import {
   DocsPageHeaderComponent,
   DocsTabsComponent,
   DocsCalloutComponent,
-  DocsCodeBlockComponent,
   DocsTab,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const installTabs: DocsTab[] = [
   { label: 'npm',  content: 'npm install @foliokit/cms-core @foliokit/cms-ui @foliokit/cms-markdown' },
@@ -106,7 +106,7 @@ export class AppComponent {}`;
     DocsPageHeaderComponent,
     DocsTabsComponent,
     DocsCalloutComponent,
-    DocsCodeBlockComponent,
+    RhombusCodeBlockComponent,
   ],
   template: `
     <docs-page-header />
@@ -123,7 +123,7 @@ export class AppComponent {}`;
         Add the FolioKit token stylesheet to your <code>angular.json</code> styles array.
         This ships the full CSS custom property contract (colors, typography, radii, shadows):
       </p>
-      <docs-code-block [code]="tokensImportCode" language="json" />
+      <rhombus-code-block [code]="tokensImportCode" language="json" />
     </section>
 
     <section class="mt-8">
@@ -133,7 +133,7 @@ export class AppComponent {}`;
         It cannot be bundled inside a library. If you skip this, Material components render without
         colour or typography.
       </docs-callout>
-      <docs-code-block [code]="materialThemeCode" language="scss" />
+      <rhombus-code-block [code]="materialThemeCode" language="scss" />
     </section>
 
     <section class="mt-8">
@@ -143,7 +143,7 @@ export class AppComponent {}`;
         (app, Firestore, Storage, Auth), binds the default <code>PostService</code> and
         <code>SiteConfigService</code>, and optionally stores a <code>siteId</code>.
       </p>
-      <docs-code-block [code]="appConfigCode" language="typescript" />
+      <rhombus-code-block [code]="appConfigCode" language="typescript" />
       <docs-callout variant="tip">
         The default service bindings can be overridden. Add your own provider <em>after</em>
         <code>provideFolioKit()</code> in the array — Angular's DI uses last-provider-wins.
@@ -155,7 +155,7 @@ export class AppComponent {}`;
       <p class="mat-body-medium">
         Import <code>AppShellComponent</code> and use it as the root layout:
       </p>
-      <docs-code-block [code]="shellComponentCode" language="typescript" />
+      <rhombus-code-block [code]="shellComponentCode" language="typescript" />
     </section>
 
     <section class="mt-8">

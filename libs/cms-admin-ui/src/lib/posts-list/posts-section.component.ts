@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import type { BlogPost } from '@foliokit/cms-core';
 import type { PostFilterStatus } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
@@ -18,7 +19,7 @@ const DEFAULT_LIMIT = 5;
   selector: 'folio-posts-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, PostsTableComponent],
+  imports: [MatButtonModule, MatIconModule, RhombusButtonComponent, PostsTableComponent],
   styles: [`
     :host {
       display: block;
@@ -101,9 +102,9 @@ const DEFAULT_LIMIT = 5;
           />
           @if (hasMore()) {
             <div class="section-view-all">
-              <button mat-button type="button" (click)="viewAllClick.emit(status())">
+              <rhombus-button appearance="text" variant="secondary" type="button" (click)="viewAllClick.emit(status())">
                 View all {{ posts().length }} →
-              </button>
+              </rhombus-button>
             </div>
           }
         }

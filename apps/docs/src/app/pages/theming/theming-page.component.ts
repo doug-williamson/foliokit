@@ -3,10 +3,10 @@ import { RouterLink } from '@angular/router';
 import {
   DocsPageHeaderComponent,
   DocsCalloutComponent,
-  DocsCodeBlockComponent,
   DocsApiTableComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const tokenRows: ApiTableRow[] = [
   { name: '--bg', type: 'color', description: 'Page background', required: false },
@@ -86,7 +86,7 @@ this.theme.setTheme('dark');`;
     RouterLink,
     DocsPageHeaderComponent,
     DocsCalloutComponent,
-    DocsCodeBlockComponent,
+    RhombusCodeBlockComponent,
     DocsApiTableComponent,
   ],
   template: `
@@ -125,7 +125,7 @@ this.theme.setTheme('dark');`;
         <code>tokens.css</code> via <code>angular.json</code>. The cascade ensures your values
         win. Both light and dark variants should be overridden for consistency.
       </p>
-      <docs-code-block [code]="overrideExample" language="scss" />
+      <rhombus-code-block [code]="overrideExample" language="scss" />
       <docs-callout variant="tip">
         The <a href="https://github.com/doug-williamson/foliokit-demo-stark" target="_blank" rel="noopener noreferrer">
         Iron Man demo</a> uses this technique to shift the logo dot to an arc-reactor cyan.
@@ -134,7 +134,7 @@ this.theme.setTheme('dark');`;
 
     <section class="mt-8">
       <h2 id="theme-service" class="mat-headline-small">RhombusThemeService API</h2>
-      <docs-code-block [code]="themeServiceCode" language="typescript" />
+      <rhombus-code-block [code]="themeServiceCode" language="typescript" />
       <p class="mat-body-medium mt-4">
         Register <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your
         application providers — it configures <code>RhombusThemeService</code> with FolioKit's

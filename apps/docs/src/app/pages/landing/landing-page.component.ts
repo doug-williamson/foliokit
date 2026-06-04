@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { RhombusCardComponent } from '@rhombuskit/core';
 @Component({
   selector: 'docs-landing-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, MatCardModule, MatIconModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, RhombusCardComponent],
   styles: [`
     :host {
       display: block;
@@ -232,51 +232,47 @@ import { MatIconModule } from '@angular/material/icon';
     </section>
 
     <section class="features">
-      <mat-card class="overflow-visible">
-        <mat-card-content class="flex flex-col gap-3 pt-6 px-6 pb-6">
+      <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
+        <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
           <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">web</mat-icon>
           <h3 class="text-lg font-semibold m-0">Angular 21 + SSR</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             Standalone components, signals, and full SSR prerendering out of the box.
           </p>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </rhombus-card>
 
-      <mat-card class="overflow-visible">
-        <mat-card-content class="flex flex-col gap-3 pt-6 px-6 pb-6">
+      <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
+        <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
           <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">local_fire_department</mat-icon>
           <h3 class="text-lg font-semibold m-0">Firebase Native</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             Firestore, Firebase Auth, and Firebase Hosting — deeply integrated, zero boilerplate.
           </p>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </rhombus-card>
 
-      <mat-card class="overflow-visible">
-        <mat-card-content class="flex flex-col gap-3 pt-6 px-6 pb-6">
+      <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
+        <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
           <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">palette</mat-icon>
           <h3 class="text-lg font-semibold m-0">Material 3 + Tailwind</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             M3 design tokens with automatic light/dark theming and Tailwind utility classes.
           </p>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </rhombus-card>
     </section>
 
     <section class="social-proof">
       <h2 class="mat-headline-small m-0 mb-8">Built with FolioKit</h2>
       <div class="social-proof-inner">
-        <mat-card>
-          <div class="placeholder-image" mat-card-image></div>
-          <mat-card-header>
-            <mat-card-title>blog.foliokitcms.com</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p class="text-sm leading-relaxed m-0" style="color: var(--mat-sys-on-surface-variant)">
-              A fully SSR Angular blog built with @foliokit/cms-ui, Firebase, and Angular Material 3.
-            </p>
-          </mat-card-content>
-          <mat-card-actions>
+        <rhombus-card>
+          <div class="placeholder-image"></div>
+          <span slot="title">blog.foliokitcms.com</span>
+          <p class="text-sm leading-relaxed m-0" style="color: var(--mat-sys-on-surface-variant)">
+            A fully SSR Angular blog built with @foliokit/cms-ui, Firebase, and Angular Material 3.
+          </p>
+          <div slot="actions">
             <a
               mat-stroked-button
               href="https://blog.foliokitcms.com"
@@ -285,8 +281,8 @@ import { MatIconModule } from '@angular/material/icon';
             >
               Visit Site
             </a>
-          </mat-card-actions>
-        </mat-card>
+          </div>
+        </rhombus-card>
       </div>
     </section>
   `,

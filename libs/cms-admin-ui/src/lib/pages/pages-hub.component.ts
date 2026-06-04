@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { RhombusButtonComponent, RhombusCardComponent } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
 import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settings.component';
@@ -13,8 +12,8 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
-    MatCardModule,
+    RhombusButtonComponent,
+    RhombusCardComponent,
     MatSlideToggleModule,
     MatSnackBarModule,
     BlogPublishSettingsComponent,
@@ -36,7 +35,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
             Enable or disable your site's pages. Changes take effect immediately on both the public site and the admin sidebar.
           </p>
 
-          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+          <rhombus-card variant="outlined" [hasHeader]="false" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <h2 class="text-base font-semibold m-0">Home</h2>
@@ -50,22 +49,23 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                 aria-label="Enable Home page on the public site"
               />
             </div>
-            <button
-              mat-stroked-button
+            <rhombus-button
+              appearance="outlined"
+              variant="secondary"
               type="button"
               class="self-start"
               [disabled]="!homeEnabled()"
               (click)="router.navigate(['/pages/home'])"
             >
               Edit Home
-            </button>
-          </mat-card>
+            </rhombus-button>
+          </rhombus-card>
 
-          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+          <rhombus-card variant="outlined" [hasHeader]="false" class="p-4 flex flex-col gap-3">
             <folio-blog-publish-settings layout="hub" />
-          </mat-card>
+          </rhombus-card>
 
-          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+          <rhombus-card variant="outlined" [hasHeader]="false" class="p-4 flex flex-col gap-3">
             <!-- GATE_TODO: about -->
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
@@ -80,18 +80,19 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                 aria-label="Enable About page on the public site"
               />
             </div>
-            <button
-              mat-stroked-button
+            <rhombus-button
+              appearance="outlined"
+              variant="secondary"
               type="button"
               class="self-start"
               [disabled]="!aboutEnabled()"
               (click)="router.navigate(['/pages/about'])"
             >
               Edit About
-            </button>
-          </mat-card>
+            </rhombus-button>
+          </rhombus-card>
 
-          <mat-card appearance="outlined" class="p-4 flex flex-col gap-3">
+          <rhombus-card variant="outlined" [hasHeader]="false" class="p-4 flex flex-col gap-3">
             <!-- GATE_TODO: links -->
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
@@ -106,16 +107,17 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                 aria-label="Enable Links page on the public site"
               />
             </div>
-            <button
-              mat-stroked-button
+            <rhombus-button
+              appearance="outlined"
+              variant="secondary"
               type="button"
               class="self-start"
               [disabled]="!linksEnabled()"
               (click)="router.navigate(['/pages/links'])"
             >
               Edit Links
-            </button>
-          </mat-card>
+            </rhombus-button>
+          </rhombus-card>
 
           <!-- GATE_TODO: videoWalkthrough -->
           <!-- GATE_TODO: donate -->

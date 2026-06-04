@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import {
   CdkDrag,
@@ -10,12 +9,13 @@ import {
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { BlogPost } from '@foliokit/cms-core';
+import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-posts-queue-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatIconModule, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder],
+  imports: [DatePipe, MatIconModule, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder, RhombusCardComponent, RhombusEmptyStateComponent],
   host: { class: 'contents' },
   styles: [`
     .cdk-drag-preview {
@@ -44,7 +44,7 @@ import { BlogPost } from '@foliokit/cms-core';
     }
   `],
   template: `
-    <mat-card appearance="outlined" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 60ms">
+    <rhombus-card variant="outlined" [hasHeader]="false" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 60ms">
       <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
         <span class="text-sm font-semibold">Queued</span>
         <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
@@ -82,14 +82,14 @@ import { BlogPost } from '@foliokit/cms-core';
             <div *cdkDragPlaceholder class="h-12 rounded bg-[var(--mat-sys-surface-container)]"></div>
           </div>
         } @empty {
-          <div class="empty-state">
-            <mat-icon class="empty-state-icon" svgIcon="schedule" />
-            <p class="empty-state-heading">Nothing scheduled</p>
-            <p class="empty-state-body">Posts queued for future publishing will appear here.</p>
-          </div>
+          <rhombus-empty-state
+            icon="schedule"
+            heading="Nothing scheduled"
+            body="Posts queued for future publishing will appear here."
+          />
         }
       </div>
-    </mat-card>
+    </rhombus-card>
   `,
 })
 export class PostsQueueColumnComponent {

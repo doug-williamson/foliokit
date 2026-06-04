@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import {
   DocsPageHeaderComponent,
-  DocsCodeBlockComponent,
   DocsApiTableComponent,
   DocsPreviewComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 import { AboutPageComponent } from '@foliokit/cms-ui';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 
@@ -101,7 +101,7 @@ class AboutPreviewComponent {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DocsPageHeaderComponent,
-    DocsCodeBlockComponent,
+    RhombusCodeBlockComponent,
     DocsApiTableComponent,
     DocsPreviewComponent,
     AboutPreviewComponent,
@@ -141,7 +141,7 @@ class AboutPreviewComponent {}
         The component is loaded via a route with a resolver that provides the
         <code>AboutPageConfig</code> as route data under the <code>'about'</code> key:
       </p>
-      <docs-code-block [code]="routeExample" language="typescript" />
+      <rhombus-code-block [code]="routeExample" language="typescript" />
     </section>
 
     <section class="mt-8">
@@ -149,11 +149,11 @@ class AboutPreviewComponent {}
       <p class="mat-body-medium">
         With a live Firestore backend, fetch the about config from <code>SiteConfigService</code>:
       </p>
-      <docs-code-block [code]="resolverExample" language="typescript" />
+      <rhombus-code-block [code]="resolverExample" language="typescript" />
       <p class="mat-body-medium mt-4">
         For static sites or demos (no Firestore), return the data directly:
       </p>
-      <docs-code-block [code]="staticExample" language="typescript" />
+      <rhombus-code-block [code]="staticExample" language="typescript" />
     </section>
 
     <section class="mt-8">

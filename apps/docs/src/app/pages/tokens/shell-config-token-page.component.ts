@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
 const previewConfig: ShellConfig = {
@@ -68,7 +69,7 @@ export const appConfig: ApplicationConfig = {
   selector: 'docs-shell-config-token-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent, ShellConfigPreviewComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, DocsPreviewComponent, ShellConfigPreviewComponent],
   template: `
     <docs-page-header />
 
@@ -82,18 +83,18 @@ export const appConfig: ApplicationConfig = {
 
     <section class="mt-8">
       <h2 id="interface" class="mat-headline-small">ShellConfig interface</h2>
-      <docs-code-block [code]="shellConfigInterface" language="typescript" />
+      <rhombus-code-block [code]="shellConfigInterface" language="typescript" />
     </section>
 
     <section class="mt-8">
       <h2 id="nav-item" class="mat-headline-small">NavItem</h2>
-      <docs-code-block [code]="navItemInterface" language="typescript" />
+      <rhombus-code-block [code]="navItemInterface" language="typescript" />
     </section>
 
     <section class="mt-8">
       <h2 id="usage" class="mat-headline-small">Usage</h2>
       <p class="mat-body-medium">Provide <code>SHELL_CONFIG</code> in your root <code>appConfig</code> providers:</p>
-      <docs-code-block [code]="usageCode" language="typescript" />
+      <rhombus-code-block [code]="usageCode" language="typescript" />
     </section>
   `,
 })

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const themeServiceSnippet = `import { RhombusThemeService } from '@foliokit/cms-ui';
 
@@ -35,7 +36,7 @@ module.exports = {
   selector: 'docs-app-shell-theming-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent],
   template: `
     <docs-page-header />
 
@@ -48,8 +49,8 @@ module.exports = {
         then inject it anywhere to read <code>current()</code> / <code>preference()</code> or call
         <code>setTheme()</code>.
       </p>
-      <docs-code-block [code]="themeServiceSnippet" language="typescript" />
-      <docs-code-block [code]="themeServiceTemplate" language="html" />
+      <rhombus-code-block [code]="themeServiceSnippet" language="typescript" />
+      <rhombus-code-block [code]="themeServiceTemplate" language="html" />
     </section>
 
     <section class="mt-8">
@@ -75,8 +76,8 @@ module.exports = {
         <code>&lt;html&gt;</code> element. Angular Material then applies the dark color
         scheme and Tailwind's dark-mode selector activates dark utilities.
       </p>
-      <docs-code-block [code]="dataDarkMode" language="html" />
-      <docs-code-block [code]="tailwindDarkConfig" language="javascript" />
+      <rhombus-code-block [code]="dataDarkMode" language="html" />
+      <rhombus-code-block [code]="tailwindDarkConfig" language="javascript" />
     </section>
   `,
 })

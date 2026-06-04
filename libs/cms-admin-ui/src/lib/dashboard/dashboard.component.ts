@@ -7,9 +7,9 @@ import {
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
+import { RhombusButtonComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
 import { SetupPromptComponent } from './setup-prompt.component';
 import { SiteConfigNavStore } from '../stores/site-config-nav.store';
 
@@ -31,7 +31,7 @@ const PLAN_LABELS: Record<string, string> = {
   selector: 'cms-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, RouterLink, SetupPromptComponent],
+  imports: [DatePipe, RhombusButtonComponent, MatIconModule, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent],
   styles: [
     `
       :host {
@@ -251,7 +251,7 @@ const PLAN_LABELS: Record<string, string> = {
       <!-- Section A: Quick actions header -->
       <div class="section-header">
         <h1 class="greeting admin-page-title admin-page-title--greeting">{{ greeting() }}</h1>
-        <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
+        <rhombus-button (click)="navigateToNewPost()">New Post</rhombus-button>
       </div>
 
       <!-- Section B: Recent posts -->
@@ -272,12 +272,13 @@ const PLAN_LABELS: Record<string, string> = {
           }
         } @else if (recentFive().length === 0) {
           <!-- Empty state -->
-          <div class="empty-state">
-            <mat-icon class="empty-icon" svgIcon="edit" />
-            <p class="empty-heading">No posts yet</p>
-            <p class="empty-sub">Start writing — your first post is one click away.</p>
-            <button mat-flat-button color="primary" (click)="navigateToNewPost()">New Post</button>
-          </div>
+          <rhombus-empty-state
+            icon="edit"
+            heading="No posts yet"
+            body="Start writing — your first post is one click away."
+            ctaLabel="New Post"
+            (ctaClick)="navigateToNewPost()"
+          />
         } @else {
           @for (post of recentFive(); track post.id) {
             <div class="post-row" (click)="navigateToPost(post.id)">

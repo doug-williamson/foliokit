@@ -19,7 +19,6 @@ export * from './lib/nav/docs-anchor-nav/docs-anchor-nav.component';
 // Content
 export * from './lib/content/docs-page-header/docs-page-header.component';
 export * from './lib/content/docs-api-table/docs-api-table.component';
-export * from './lib/content/docs-code-block/docs-code-block.component';
 export * from './lib/content/docs-callout/docs-callout.component';
 export * from './lib/content/docs-tabs/docs-tabs.component';
 

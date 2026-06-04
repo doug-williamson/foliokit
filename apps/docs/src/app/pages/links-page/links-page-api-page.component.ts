@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DocsPageHeaderComponent,
   DocsApiTableComponent,
-  DocsCodeBlockComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const routeDataRow: ApiTableRow[] = [
   {
@@ -40,7 +40,7 @@ export type SocialPlatform =
   selector: 'docs-links-page-api-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsApiTableComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, DocsApiTableComponent, RhombusCodeBlockComponent],
   template: `
     <docs-page-header />
 
@@ -60,7 +60,7 @@ export type SocialPlatform =
 
     <section class="mt-8">
       <h2 id="platforms" class="mat-headline-small">SocialPlatform Type</h2>
-      <docs-code-block [code]="platformsCode" language="typescript" />
+      <rhombus-code-block [code]="platformsCode" language="typescript" />
     </section>
   `,
 })

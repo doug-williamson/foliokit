@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Directive, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { DocsPageHeaderComponent } from '@foliokit/docs-ui';
+import { RhombusCardComponent } from '@rhombuskit/core';
 
 @Directive({
   selector: '[matTypography]',
@@ -17,7 +17,7 @@ export class MatTypographyDirective {
   selector: 'docs-tokens-overview-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatCardModule, MatIconModule, DocsPageHeaderComponent, MatTypographyDirective],
+  imports: [RouterLink, MatIconModule, DocsPageHeaderComponent, MatTypographyDirective, RhombusCardComponent],
   styles: [`
     .token-card-grid {
       display: grid;
@@ -53,8 +53,8 @@ export class MatTypographyDirective {
         class="no-underline"
         style="color: inherit"
       >
-        <mat-card class="h-full cursor-pointer hover:shadow-md transition-shadow">
-          <mat-card-content class="flex flex-col gap-3 p-5">
+        <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
+          <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">token</mat-icon>
             </div>
@@ -62,8 +62,8 @@ export class MatTypographyDirective {
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
               Configure <code>AppShellComponent</code> — app name, logo, navigation, and auth visibility.
             </p>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </rhombus-card>
       </a>
 
       <a
@@ -71,8 +71,8 @@ export class MatTypographyDirective {
         class="no-underline"
         style="color: inherit"
       >
-        <mat-card class="h-full cursor-pointer hover:shadow-md transition-shadow">
-          <mat-card-content class="flex flex-col gap-3 p-5">
+        <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
+          <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">manage_search</mat-icon>
             </div>
@@ -80,8 +80,8 @@ export class MatTypographyDirective {
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
               TypeScript interface for page-level SEO metadata — title, description, og:image, canonical URL.
             </p>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </rhombus-card>
       </a>
 
       <a
@@ -89,8 +89,8 @@ export class MatTypographyDirective {
         class="no-underline"
         style="color: inherit"
       >
-        <mat-card class="h-full cursor-pointer hover:shadow-md transition-shadow">
-          <mat-card-content class="flex flex-col gap-3 p-5">
+        <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
+          <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">image</mat-icon>
             </div>
@@ -98,8 +98,8 @@ export class MatTypographyDirective {
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
               Describes a Firebase Storage media file for inline rendering inside Markdown content.
             </p>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </rhombus-card>
       </a>
     </div>
 

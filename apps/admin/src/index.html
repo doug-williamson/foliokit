@@ -11,7 +11,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Fonts are loaded by ThemePackService from the active pack. -->
-    <!-- Material Icons are registered as inlined SVGs by provideAdminKit(). No global font required. -->
+    <!-- Material Icons: existing FolioKit markup uses inlined SVGs via provideAdminKit();
+         the self-hosted Material Icons ligature font (material-icons.css, in the build
+         styles) is also loaded so RhombusKit components that render ligature icons work. -->
   </head>
   <body>
     <app-root>

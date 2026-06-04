@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  DocsPageHeaderComponent,
-  DocsCodeBlockComponent,
-} from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const basicUsage = `import { LinksPageComponent } from '@foliokit/cms-ui';
 
@@ -43,7 +41,7 @@ export interface LinksPage extends CmsPageBase {
   selector: 'docs-links-page-overview-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent],
   template: `
     <docs-page-header />
 
@@ -63,12 +61,12 @@ export interface LinksPage extends CmsPageBase {
         The component reads its page data from <code>ActivatedRoute.data['page']</code>.
         Provide it via a route resolver:
       </p>
-      <docs-code-block [code]="basicUsage" language="typescript" />
+      <rhombus-code-block [code]="basicUsage" language="typescript" />
     </section>
 
     <section class="mt-8">
       <h2 id="social-link" class="mat-headline-small">LinksLink Interface</h2>
-      <docs-code-block [code]="socialLinkInterface" language="typescript" />
+      <rhombus-code-block [code]="socialLinkInterface" language="typescript" />
     </section>
   `,
 })
