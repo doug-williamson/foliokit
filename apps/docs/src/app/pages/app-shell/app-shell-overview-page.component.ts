@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DocsPageHeaderComponent,
   DocsTabsComponent,
-  DocsCodeBlockComponent,
   DocsApiTableComponent,
   DocsTab,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const installTabs: DocsTab[] = [
   { label: 'npm',  content: 'npm install @foliokit/cms-ui' },
@@ -58,7 +58,7 @@ const slotsRows: ApiTableRow[] = [
   imports: [
     DocsPageHeaderComponent,
     DocsTabsComponent,
-    DocsCodeBlockComponent,
+    RhombusCodeBlockComponent,
     DocsApiTableComponent,
   ],
   template: `
@@ -81,7 +81,7 @@ const slotsRows: ApiTableRow[] = [
 
     <section class="mt-8">
       <h2 id="basic-usage" class="mat-headline-small">Basic Usage</h2>
-      <docs-code-block [code]="basicUsage" language="typescript" />
+      <rhombus-code-block [code]="basicUsage" language="typescript" />
     </section>
 
     <section class="mt-8">

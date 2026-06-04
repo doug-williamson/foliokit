@@ -11,16 +11,14 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDivider } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { filter } from 'rxjs/operators';
 import type { BlogPost } from '@foliokit/cms-core';
 import {
   RhombusConfirmService,
   RhombusDataTableComponent,
+  RhombusOverflowMenuComponent,
   type ColumnDef,
+  type OverflowMenuItem,
   type SortState,
 } from '@rhombuskit/core';
 import { PostsListStore, type PostsSortColumn } from './posts-list.store';
@@ -35,11 +33,8 @@ type Cell = { $implicit: BlogPost; index: number };
   imports: [
     DatePipe,
     DecimalPipe,
-    MatButtonModule,
-    MatDivider,
-    MatIconModule,
-    MatMenuModule,
     RhombusDataTableComponent,
+    RhombusOverflowMenuComponent,
   ],
   host: { class: 'block min-w-0' },
   styles: [`
@@ -144,33 +139,12 @@ type Cell = { $implicit: BlogPost; index: number };
     </ng-template>
 
     <ng-template #actionsCell let-row>
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="rowMenu"
-        aria-label="Post actions"
-        (click)="$event.stopPropagation()"
-      >
-        <mat-icon svgIcon="more_vert" />
-      </button>
-      <mat-menu #rowMenu>
-        <button mat-menu-item (click)="postSelected.emit(row.id)">Edit</button>
-        @if (row.status === 'published') {
-          <button mat-menu-item (click)="confirmUnpublish(row)">Unpublish</button>
-        }
-        @if (row.status !== 'archived') {
-          <button mat-menu-item (click)="confirmArchive(row)">Archive</button>
-        }
-        @if (row.status !== 'archived') {
-          <mat-divider />
-        }
-        <button
-          mat-menu-item
-          [style.color]="'var(--error)'"
-          (click)="confirmDelete(row)"
-        >
-          Delete…
-        </button>
-      </mat-menu>
+      <span (click)="$event.stopPropagation()">
+        <rhombus-overflow-menu
+          [items]="rowMenuItems(row)"
+          ariaLabel="Post actions"
+        />
+      </span>
     </ng-template>
   `,
 })
@@ -221,6 +195,26 @@ export class PostsTableComponent {
       { key: 'id', header: '', align: 'center', width: '40px', cellTemplate: this.actionsCell() },
     ];
   });
+
+  /** Row action menu, reactive to the row's current status. */
+  protected rowMenuItems(row: BlogPost): OverflowMenuItem[] {
+    const items: OverflowMenuItem[] = [
+      { label: 'Edit', action: () => this.postSelected.emit(row.id) },
+    ];
+    if (row.status === 'published') {
+      items.push({ label: 'Unpublish', action: () => this.confirmUnpublish(row) });
+    }
+    if (row.status !== 'archived') {
+      items.push({ label: 'Archive', action: () => this.confirmArchive(row) });
+    }
+    items.push({
+      label: 'Delete…',
+      action: () => this.confirmDelete(row),
+      variant: 'danger',
+      dividerBefore: row.status !== 'archived',
+    });
+    return items;
+  }
 
   protected onSortChange(sort: SortState): void {
     // Drive the store's two-state toggle; it owns direction, not Material.

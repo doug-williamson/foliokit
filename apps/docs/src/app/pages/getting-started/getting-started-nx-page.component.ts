@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const createWorkspace = `npx create-nx-workspace@latest my-app --preset=angular-monorepo --nxCloud=skip`;
 
@@ -28,28 +29,28 @@ const firebaseMultiSite = `{
   selector: 'docs-getting-started-nx-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent],
   template: `
     <docs-page-header />
 
     <section>
       <h2 id="create-workspace" class="mat-headline-small">Create Workspace</h2>
       <p class="mat-body-medium">Bootstrap a new Nx monorepo with Angular support:</p>
-      <docs-code-block [code]="createWorkspace" language="bash" />
+      <rhombus-code-block [code]="createWorkspace" language="bash" />
     </section>
 
     <section class="mt-8">
       <h2 id="add-angular" class="mat-headline-small">Add Angular</h2>
       <p class="mat-body-medium">Generate the Angular app inside the workspace:</p>
-      <docs-code-block [code]="addAngular" language="bash" />
+      <rhombus-code-block [code]="addAngular" language="bash" />
     </section>
 
     <section class="mt-8">
       <h2 id="add-firebase" class="mat-headline-small">Add Firebase</h2>
       <p class="mat-body-medium">Initialize Firebase in the Nx workspace:</p>
-      <docs-code-block [code]="addFirebase" language="bash" />
+      <rhombus-code-block [code]="addFirebase" language="bash" />
       <p class="mat-body-medium mt-4">Configure multi-site hosting in <code>firebase.json</code>:</p>
-      <docs-code-block [code]="firebaseMultiSite" language="json" />
+      <rhombus-code-block [code]="firebaseMultiSite" language="json" />
     </section>
   `,
 })

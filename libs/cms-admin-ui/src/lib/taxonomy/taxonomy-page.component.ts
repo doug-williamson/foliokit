@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Series } from '@foliokit/cms-core';
+import { RhombusButtonComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
 import { SeriesFormComponent } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
@@ -23,6 +24,8 @@ import { TaxonomyStore } from './taxonomy.store';
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    RhombusButtonComponent,
+    RhombusEmptyStateComponent,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
@@ -30,9 +33,9 @@ import { TaxonomyStore } from './taxonomy.store';
         <div class="page-header flex items-center justify-between border-b shrink-0"
              style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
           <h1 class="page-heading">Series</h1>
-          <button mat-flat-button (click)="openNewSeries()">
+          <rhombus-button variant="secondary" (click)="openNewSeries()">
             New Series
-          </button>
+          </rhombus-button>
         </div>
 
         <!-- Content -->
@@ -42,10 +45,10 @@ import { TaxonomyStore } from './taxonomy.store';
               <mat-spinner diameter="40" />
             </div>
           } @else if (store.series().length === 0) {
-            <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-              <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="collections_bookmark" />
-              <p>No series yet. Create one to get started.</p>
-            </div>
+            <rhombus-empty-state
+              icon="collections_bookmark"
+              heading="No series yet. Create one to get started."
+            />
           } @else {
             <div class="p-4 sm:p-6 flex flex-col gap-6">
               @if (store.error()) {

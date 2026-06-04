@@ -1,20 +1,23 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  RhombusOverflowMenuComponent,
+  type OverflowMenuItem,
+} from '@rhombuskit/core';
 import { BlogPost } from '@foliokit/cms-core';
 
 @Component({
   selector: 'cms-post-publish-button',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatProgressSpinnerModule],
+  imports: [MatButtonModule, MatProgressSpinnerModule, RhombusOverflowMenuComponent],
   styles: [
     `
       :host {
@@ -38,21 +41,12 @@ import { BlogPost } from '@foliokit/cms-core';
           Publish now
         }
       </button>
-      <button
-        mat-flat-button
-        type="button"
-        [disabled]="isSaving()"
-        [matMenuTriggerFor]="publishMenu"
-        style="border-radius: 0 4px 4px 0; min-width: 32px; padding: 0 4px"
-        aria-label="More publish options"
-      >
-        <mat-icon svgIcon="arrow_drop_down" style="margin: 0" />
-      </button>
+      <rhombus-overflow-menu
+        [items]="publishMenuItems()"
+        triggerIcon="arrow_drop_down"
+        ariaLabel="More publish options"
+      />
     </div>
-    <mat-menu #publishMenu>
-      <button mat-menu-item type="button" (click)="onPublishNow()">Publish now</button>
-      <button mat-menu-item type="button" (click)="onSchedule()">Schedule…</button>
-    </mat-menu>
   `,
 })
 export class PostPublishButtonComponent {
@@ -60,6 +54,15 @@ export class PostPublishButtonComponent {
   readonly isSaving = input<boolean>(false);
 
   readonly statusChange = output<BlogPost['status']>();
+
+  /** Dropdown publish options, disabled while a save is in flight. */
+  protected readonly publishMenuItems = computed<OverflowMenuItem[]>(() => {
+    const disabled = this.isSaving();
+    return [
+      { label: 'Publish now', disabled, action: () => this.onPublishNow() },
+      { label: 'Schedule…', disabled, action: () => this.onSchedule() },
+    ];
+  });
 
   onPublishNow(): void {
     this.statusChange.emit('published');

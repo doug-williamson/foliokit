@@ -5,6 +5,8 @@ import {
   inject,
   OnInit,
   signal,
+  TemplateRef,
+  viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -13,10 +15,18 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Author, AuthorService } from '@foliokit/cms-core';
+import {
+  RhombusButtonComponent,
+  RhombusDataTableComponent,
+  RhombusEmptyStateComponent,
+  type ColumnDef,
+} from '@rhombuskit/core';
+
+/** Per-row cell template context emitted by `<rhombus-data-table>`. */
+type Cell = { $implicit: Author; index: number };
 
 /**
  * Authors list page — shows all authors in a table with edit and delete
@@ -30,9 +40,11 @@ import { Author, AuthorService } from '@foliokit/cms-core';
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
-    MatTableModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    RhombusButtonComponent,
+    RhombusDataTableComponent,
+    RhombusEmptyStateComponent,
   ],
   styles: [
     `
@@ -41,13 +53,6 @@ import { Author, AuthorService } from '@foliokit/cms-core';
         flex-direction: column;
         height: 100%;
         overflow: hidden;
-      }
-      .avatar-cell {
-        width: 48px;
-      }
-      .actions-cell {
-        width: 100px;
-        text-align: right;
       }
     `,
   ],
@@ -58,9 +63,9 @@ import { Author, AuthorService } from '@foliokit/cms-core';
       <div class="page-header flex items-center justify-between border-b shrink-0"
            style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
         <h1 class="page-heading">Authors</h1>
-        <button mat-flat-button (click)="router.navigate(['/authors/new'])">
+        <rhombus-button variant="secondary" (click)="router.navigate(['/authors/new'])">
           New Author
-        </button>
+        </rhombus-button>
       </div>
 
       <!-- Content -->
@@ -70,74 +75,61 @@ import { Author, AuthorService } from '@foliokit/cms-core';
             <mat-spinner diameter="40" />
           </div>
         } @else if (!authors()?.length) {
-          <div class="flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-            <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="person_off" />
-            <p>No authors yet. Create one to get started.</p>
-          </div>
+          <rhombus-empty-state
+            icon="person_off"
+            heading="No authors yet. Create one to get started."
+          />
         } @else {
-          <mat-table [dataSource]="authors()!" class="w-full" style="min-width: 0">
-            <!-- Avatar column -->
-            <ng-container matColumnDef="avatar">
-              <mat-header-cell *matHeaderCellDef class="avatar-cell"></mat-header-cell>
-              <mat-cell *matCellDef="let author" class="avatar-cell">
-                @if (author.photoUrl) {
-                  <img
-                    [src]="author.photoUrl"
-                    [alt]="author.displayName"
-                    class="w-9 h-9 rounded-full object-cover"
-                  />
-                } @else {
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center"
-                       style="background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent)">
-                    <mat-icon style="font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: var(--mat-sys-primary)" svgIcon="person" />
-                  </div>
-                }
-              </mat-cell>
-            </ng-container>
-
-            <!-- Display name column -->
-            <ng-container matColumnDef="displayName">
-              <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-              <mat-cell *matCellDef="let author">
-                <span class="font-medium">{{ author.displayName }}</span>
-              </mat-cell>
-            </ng-container>
-
-            <!-- Email column -->
-            <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
-              <mat-cell *matCellDef="let author">
-                <span class="opacity-70 text-sm">{{ author.email ?? '—' }}</span>
-              </mat-cell>
-            </ng-container>
-
-            <!-- Actions column -->
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef class="actions-cell"></mat-header-cell>
-              <mat-cell *matCellDef="let author" class="actions-cell">
-                <button
-                  mat-icon-button
-                  matTooltip="Edit"
-                  (click)="router.navigate(['/authors', author.id, 'edit'])"
-                >
-                  <mat-icon svgIcon="edit" />
-                </button>
-                <button
-                  mat-icon-button
-                  matTooltip="Delete"
-                  (click)="confirmDelete(author)"
-                >
-                  <mat-icon svgIcon="delete" />
-                </button>
-              </mat-cell>
-            </ng-container>
-
-            <mat-header-row *matHeaderRowDef="displayedColumns()" />
-            <mat-row *matRowDef="let row; columns: displayedColumns();" />
-          </mat-table>
+          <rhombus-data-table
+            [data]="authors()!"
+            [columns]="columns()"
+            [paginated]="false"
+            (rowClick)="router.navigate(['/authors', $event.id, 'edit'])"
+          />
         }
       </div>
     </div>
+
+    <!-- ── Cell templates ───────────────────────────────────────────────── -->
+    <ng-template #avatarCell let-author>
+      @if (author.photoUrl) {
+        <img
+          [src]="author.photoUrl"
+          [alt]="author.displayName"
+          class="w-9 h-9 rounded-full object-cover"
+        />
+      } @else {
+        <div class="w-9 h-9 rounded-full flex items-center justify-center"
+             style="background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent)">
+          <mat-icon style="font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: var(--mat-sys-primary)" svgIcon="person" />
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #nameCell let-author>
+      <span class="font-medium">{{ author.displayName }}</span>
+    </ng-template>
+
+    <ng-template #emailCell let-author>
+      <span class="opacity-70 text-sm">{{ author.email ?? '—' }}</span>
+    </ng-template>
+
+    <ng-template #actionsCell let-author>
+      <button
+        mat-icon-button
+        matTooltip="Edit"
+        (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
+      >
+        <mat-icon svgIcon="edit" />
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="Delete"
+        (click)="$event.stopPropagation(); confirmDelete(author)"
+      >
+        <mat-icon svgIcon="delete" />
+      </button>
+    </ng-template>
   `,
 })
 export class AuthorsListComponent implements OnInit {
@@ -155,11 +147,28 @@ export class AuthorsListComponent implements OnInit {
     { initialValue: false }
   );
 
-  protected readonly displayedColumns = computed(() =>
-    this.isMobile()
-      ? ['avatar', 'displayName', 'actions']
-      : ['avatar', 'displayName', 'email', 'actions']
-  );
+  private readonly avatarCell = viewChild<TemplateRef<Cell>>('avatarCell');
+  private readonly nameCell = viewChild<TemplateRef<Cell>>('nameCell');
+  private readonly emailCell = viewChild<TemplateRef<Cell>>('emailCell');
+  private readonly actionsCell = viewChild<TemplateRef<Cell>>('actionsCell');
+
+  protected readonly columns = computed<ColumnDef<Author>[]>(() => {
+    const cols: ColumnDef<Author>[] = [
+      { key: 'photoUrl', header: '', width: '48px', cellTemplate: this.avatarCell() },
+      { key: 'displayName', header: 'Name', align: 'start', cellTemplate: this.nameCell() },
+    ];
+    if (!this.isMobile()) {
+      cols.push({ key: 'email', header: 'Email', align: 'start', cellTemplate: this.emailCell() });
+    }
+    cols.push({
+      key: 'actions',
+      header: '',
+      align: 'end',
+      width: '100px',
+      cellTemplate: this.actionsCell()!,
+    });
+    return cols;
+  });
 
   ngOnInit(): void {
     this.authorService.getAll().subscribe((list) => {

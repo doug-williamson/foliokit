@@ -17,7 +17,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID } from '@foliokit/cms-core';
 import type { TenantConfig } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../../provide-admin-kit';
-import { RhombusConfirmService } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusConfirmService } from '@rhombuskit/core';
 
 const CNAME_TARGET = 'foliokit-blog--foliokit-6f974.us-central1.hosted.app';
 const DOMAIN_RE = /^(www\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
@@ -29,7 +29,7 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
   selector: 'cms-domain-setup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, RhombusButtonComponent],
   template: `
     <!-- GATE_TODO: customDomain -->
     @if (!loaded()) {
@@ -48,14 +48,12 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
             (input)="domainInput.set($any($event.target).value)"
             (keydown.enter)="submitDomain()"
           />
-          <button
-            mat-flat-button
-            color="primary"
+          <rhombus-button
             (click)="submitDomain()"
             [disabled]="submitting() || !domainInput().trim()"
           >
             {{ submitting() ? 'Saving…' : 'Get DNS instructions' }}
-          </button>
+          </rhombus-button>
         </div>
         @if (domainError()) {
           <p class="ds-error">{{ domainError() }}</p>
@@ -108,17 +106,15 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
         </div>
 
         <div class="ds-action-row">
-          <button
-            mat-flat-button
-            color="primary"
+          <rhombus-button
             (click)="checkVerification()"
             [disabled]="verifyState() === 'checking'"
           >
             {{ verifyState() === 'checking' ? 'Checking DNS…' : 'Check DNS' }}
-          </button>
-          <button mat-button (click)="removeDomain()" class="ds-remove-btn">
+          </rhombus-button>
+          <rhombus-button appearance="text" variant="secondary" (click)="removeDomain()" class="ds-remove-btn">
             Remove domain
-          </button>
+          </rhombus-button>
         </div>
       </div>
     } @else {
@@ -129,9 +125,9 @@ type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
           <span class="ds-chip ds-chip--active">Active</span>
         </div>
         <p class="ds-active-note">Your custom domain is live and serving your site.</p>
-        <button mat-button (click)="removeDomain()" class="ds-remove-btn">
+        <rhombus-button appearance="text" variant="secondary" (click)="removeDomain()" class="ds-remove-btn">
           Remove domain
-        </button>
+        </rhombus-button>
       </div>
     }
   `,

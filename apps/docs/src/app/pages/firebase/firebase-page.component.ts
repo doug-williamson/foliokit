@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import {
   DocsPageHeaderComponent,
   DocsCalloutComponent,
-  DocsCodeBlockComponent,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const firestoreSchema = `// Firestore collections used by FolioKit
 
@@ -112,7 +112,7 @@ provideFolioKit({
     RouterLink,
     DocsPageHeaderComponent,
     DocsCalloutComponent,
-    DocsCodeBlockComponent,
+    RhombusCodeBlockComponent,
   ],
   template: `
     <docs-page-header />
@@ -142,11 +142,11 @@ provideFolioKit({
         Copy your Firebase config from the console (Project Settings → Your apps → SDK setup)
         into an environment file:
       </p>
-      <docs-code-block [code]="environmentCode" language="typescript" />
+      <rhombus-code-block [code]="environmentCode" language="typescript" />
       <p class="mat-body-medium mt-4">
         Wire it into <code>provideFolioKit()</code>:
       </p>
-      <docs-code-block [code]="providerCode" language="typescript" />
+      <rhombus-code-block [code]="providerCode" language="typescript" />
     </section>
 
     <section class="mt-8">
@@ -155,7 +155,7 @@ provideFolioKit({
         FolioKit reads from three Firestore collections. Create them manually in the
         console or let the admin UI create documents on first use:
       </p>
-      <docs-code-block [code]="firestoreSchema" language="typescript" />
+      <rhombus-code-block [code]="firestoreSchema" language="typescript" />
     </section>
 
     <section class="mt-8">
@@ -165,7 +165,7 @@ provideFolioKit({
         <code>firebase deploy --only firestore:rules</code>. Replace
         <code>your-admin&#64;example.com</code> with your actual admin email:
       </p>
-      <docs-code-block [code]="securityRules" language="typescript" />
+      <rhombus-code-block [code]="securityRules" language="typescript" />
       <docs-callout variant="warning">
         These rules are a starting point. For production, implement proper role-based
         access control — do not rely on email-matching alone.

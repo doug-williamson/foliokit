@@ -6,15 +6,15 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '@foliokit/cms-core';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
 @Component({
   selector: 'folio-admin-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule],
+  imports: [RhombusButtonComponent],
   styles: [
     `
       :host {
@@ -130,9 +130,9 @@ import { RhombusThemeService } from '@rhombuskit/theme-engine';
       <h1 class="login-heading">FolioKit Admin</h1>
       <p class="login-subtitle">Sign in to continue</p>
 
-      <button mat-flat-button class="login-btn" color="primary" (click)="signIn()">
+      <rhombus-button class="login-btn" (click)="signIn()">
         Sign in with Google
-      </button>
+      </rhombus-button>
 
       @if (error()) {
         <p class="login-error">{{ error() }}</p>

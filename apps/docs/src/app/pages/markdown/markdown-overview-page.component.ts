@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DocsPageHeaderComponent,
-  DocsCodeBlockComponent,
   DocsCalloutComponent,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const basicUsage = `import { MarkdownComponent } from '@foliokit/cms-markdown';
 
@@ -55,7 +55,7 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
   selector: 'docs-markdown-overview-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsCalloutComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, DocsCalloutComponent],
   template: `
     <docs-page-header />
 
@@ -75,7 +75,7 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
 
     <section class="mt-8">
       <h2 id="basic-usage" class="mat-headline-small">Basic Usage</h2>
-      <docs-code-block [code]="basicUsage" language="typescript" />
+      <rhombus-code-block [code]="basicUsage" language="typescript" />
     </section>
 
     <section class="mt-8">
@@ -85,7 +85,7 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
         your Markdown content. The token syntax is <code>Show Image: token-key</code> on
         its own line.
       </p>
-      <docs-code-block [code]="embeddedMediaUsage" language="typescript" />
+      <rhombus-code-block [code]="embeddedMediaUsage" language="typescript" />
     </section>
   `,
 })

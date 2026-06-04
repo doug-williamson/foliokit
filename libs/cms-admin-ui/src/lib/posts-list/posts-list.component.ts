@@ -15,8 +15,15 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  RhombusButtonComponent,
+  RhombusChipDirective,
+  RhombusChipGroupDirective,
+  RhombusEmptyStateComponent,
+  RhombusOverflowMenuComponent,
+  type OverflowMenuItem,
+} from '@rhombuskit/core';
 import { PostsListStore, type PostFilterStatus } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
 import { PostsSectionComponent } from './posts-section.component';
@@ -32,10 +39,14 @@ import { PostsSectionComponent } from './posts-section.component';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatMenuModule,
     MatProgressSpinnerModule,
     PostsTableComponent,
     PostsSectionComponent,
+    RhombusButtonComponent,
+    RhombusChipDirective,
+    RhombusChipGroupDirective,
+    RhombusEmptyStateComponent,
+    RhombusOverflowMenuComponent,
   ],
   host: { class: 'block h-full min-w-0 overflow-hidden' },
   styles: [`
@@ -93,7 +104,7 @@ import { PostsSectionComponent } from './posts-section.component';
           <h1 class="page-heading">Posts</h1>
         </div>
         <div class="page-header-actions">
-          <button mat-flat-button (click)="newPost()">New Post</button>
+          <rhombus-button variant="secondary" (click)="newPost()">New Post</rhombus-button>
         </div>
       </div>
 
@@ -106,10 +117,11 @@ import { PostsSectionComponent } from './posts-section.component';
           Failed to load posts. Please try again.
         </div>
       } @else if (store.posts().length === 0) {
-        <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 p-12 opacity-50 h-full">
-          <mat-icon style="font-size: 5rem; width: 5rem; height: 5rem" svgIcon="edit_note" />
-          <p>No posts yet. Create one to get started.</p>
-        </div>
+        <rhombus-empty-state
+          class="flex-1 min-h-0"
+          icon="edit_note"
+          heading="No posts yet. Create one to get started."
+        />
       } @else {
         <div class="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
         <div class="filter-bar shrink-0">
@@ -124,29 +136,27 @@ import { PostsSectionComponent } from './posts-section.component';
           </mat-form-field>
 
           <!-- Mobile: dropdown -->
-          <button mat-stroked-button class="status-menu-btn" [matMenuTriggerFor]="statusMenu">
-            {{ filterStatusLabel() }}
-          </button>
-          <mat-menu #statusMenu>
-            <button mat-menu-item (click)="store.setFilterStatus('all')">All</button>
-            <button mat-menu-item (click)="store.setFilterStatus('draft')">Draft</button>
-            <button mat-menu-item (click)="store.setFilterStatus('scheduled')">Scheduled</button>
-            <button mat-menu-item (click)="store.setFilterStatus('published')">Published</button>
-            <button mat-menu-item (click)="store.setFilterStatus('archived')">Archived</button>
-          </mat-menu>
+          <rhombus-overflow-menu
+            class="status-menu-btn"
+            [items]="statusMenuItems()"
+            triggerIcon="filter_list"
+            ariaLabel="Filter by status"
+          />
 
           <!-- Tablet+: chip strip -->
           <div class="chip-scroll">
             <mat-chip-listbox
+              rhombusChipGroup
+              selection="single"
               hideSingleSelectionIndicator
               [value]="store.filterStatus()"
               (change)="store.setFilterStatus($event.value)"
             >
-              <mat-chip-option value="all">All</mat-chip-option>
-              <mat-chip-option value="draft" class="badge-draft">Draft</mat-chip-option>
-              <mat-chip-option value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
-              <mat-chip-option value="published" class="badge-pub">Published</mat-chip-option>
-              <mat-chip-option value="archived" class="badge-arch">Archived</mat-chip-option>
+              <mat-chip-option rhombusChip variant="primary" value="all">All</mat-chip-option>
+              <mat-chip-option rhombusChip variant="primary" value="draft" class="badge-draft">Draft</mat-chip-option>
+              <mat-chip-option rhombusChip variant="primary" value="scheduled" class="badge-sched">Scheduled</mat-chip-option>
+              <mat-chip-option rhombusChip variant="primary" value="published" class="badge-pub">Published</mat-chip-option>
+              <mat-chip-option rhombusChip variant="primary" value="archived" class="badge-arch">Archived</mat-chip-option>
             </mat-chip-listbox>
           </div>
         </div>
@@ -191,7 +201,7 @@ import { PostsSectionComponent } from './posts-section.component';
           @if (store.filteredPosts().length === 0) {
             <div class="empty-filter-state shrink-0">
               No posts match your filter.
-              <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
+              <rhombus-button appearance="outlined" variant="secondary" (click)="clearFilters()">Clear filters</rhombus-button>
             </div>
           }
 
@@ -214,12 +224,6 @@ export class PostsListComponent implements OnInit {
   protected readonly inputValue = signal('');
   private readonly filterText$ = new Subject<string>();
 
-  protected readonly filterStatusLabel = computed(() => {
-    const s = this.store.filterStatus();
-    if (s === 'all') return 'Status: All';
-    return 'Status: ' + s.charAt(0).toUpperCase() + s.slice(1);
-  });
-
   protected readonly showSections = computed(
     () => this.store.filterStatus() === 'all' && !this.store.filterText().trim(),
   );
@@ -227,6 +231,20 @@ export class PostsListComponent implements OnInit {
   protected readonly trueDraftPosts = computed(() =>
     this.store.posts().filter((p) => p.status === 'draft'),
   );
+
+  protected readonly statusMenuItems = computed<OverflowMenuItem[]>(() => [
+    { label: 'All', action: () => this.store.setFilterStatus('all') },
+    { label: 'Draft', action: () => this.store.setFilterStatus('draft') },
+    {
+      label: 'Scheduled',
+      action: () => this.store.setFilterStatus('scheduled'),
+    },
+    {
+      label: 'Published',
+      action: () => this.store.setFilterStatus('published'),
+    },
+    { label: 'Archived', action: () => this.store.setFilterStatus('archived') },
+  ]);
 
   constructor() {
     this.filterText$

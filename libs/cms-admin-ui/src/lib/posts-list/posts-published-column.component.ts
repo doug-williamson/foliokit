@@ -9,19 +9,28 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { filter } from 'rxjs/operators';
 import { BlogPost } from '@foliokit/cms-core';
-import { RhombusConfirmService } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusCardComponent,
+  RhombusConfirmService,
+  RhombusEmptyStateComponent,
+  RhombusOverflowMenuComponent,
+  type OverflowMenuItem,
+} from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-posts-published-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [
+    DatePipe,
+    RhombusButtonComponent,
+    RhombusCardComponent,
+    RhombusEmptyStateComponent,
+    RhombusOverflowMenuComponent,
+  ],
   host: { class: 'contents' },
   styles: [`
     .column-header {
@@ -40,7 +49,7 @@ import { RhombusConfirmService } from '@rhombuskit/core';
     }
   `],
   template: `
-    <mat-card appearance="outlined" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 120ms">
+    <rhombus-card variant="outlined" [hasHeader]="false" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 120ms">
       <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
         <span class="text-sm font-semibold">Published</span>
         <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
@@ -61,25 +70,19 @@ import { RhombusConfirmService } from '@rhombuskit/core';
               <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
               <span class="shrink-0 text-xs opacity-50">{{ post.publishedAt | date: 'mediumDate' }}</span>
             </button>
-            <button
-              mat-icon-button
-              [matMenuTriggerFor]="cardMenu"
-              aria-label="Post actions"
-              class="shrink-0 mr-1"
-              (click)="$event.stopPropagation()"
-            >
-              <mat-icon svgIcon="more_vert" />
-            </button>
-            <mat-menu #cardMenu>
-              <button mat-menu-item (click)="confirmUnpublish(post)">Unpublish</button>
-            </mat-menu>
+            <span class="shrink-0 mr-1" (click)="$event.stopPropagation()">
+              <rhombus-overflow-menu
+                [items]="cardMenuItems(post)"
+                ariaLabel="Post actions"
+              />
+            </span>
           </div>
         } @empty {
-          <div class="empty-state">
-            <mat-icon class="empty-state-icon" svgIcon="check_circle_outline" />
-            <p class="empty-state-heading">Nothing published yet</p>
-            <p class="empty-state-body">Your live posts will appear here.</p>
-          </div>
+          <rhombus-empty-state
+            icon="check_circle_outline"
+            heading="Nothing published yet"
+            body="Your live posts will appear here."
+          />
         }
 
         @if (showArchived()) {
@@ -98,17 +101,18 @@ import { RhombusConfirmService } from '@rhombuskit/core';
 
       @if (archivedPosts().length > 0) {
         <div class="shrink-0 border-t border-[var(--mat-sys-outline-variant)] px-4 py-2">
-          <button
-            mat-button
+          <rhombus-button
+            appearance="text"
+            variant="secondary"
             class="w-full text-xs"
+            [leadingIcon]="showArchived() ? 'expand_less' : 'expand_more'"
             (click)="showArchived.set(!showArchived())"
           >
-            <mat-icon class="text-sm mr-1" [svgIcon]="showArchived() ? 'expand_less' : 'expand_more'" />
             {{ showArchived() ? 'Hide archived' : 'Show archived (' + archivedPosts().length + ')' }}
-          </button>
+          </rhombus-button>
         </div>
       }
-    </mat-card>
+    </rhombus-card>
   `,
 })
 export class PostsPublishedColumnComponent {
@@ -121,6 +125,11 @@ export class PostsPublishedColumnComponent {
   unpublishPost = output<string>();
 
   protected readonly showArchived = signal(false);
+
+  /** Card overflow menu for a published post. */
+  protected cardMenuItems(post: BlogPost): OverflowMenuItem[] {
+    return [{ label: 'Unpublish', action: () => this.confirmUnpublish(post) }];
+  }
 
   protected confirmUnpublish(post: BlogPost): void {
     const title = post.title?.trim() || '(Untitled)';

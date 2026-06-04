@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DocsPageHeaderComponent,
   DocsApiTableComponent,
-  DocsCodeBlockComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const shellConfigRows: ApiTableRow[] = [
   { name: 'appName',  type: 'string',    required: true,  description: 'Application name displayed in the header.' },
@@ -41,7 +41,7 @@ export class MyComponent {
   selector: 'docs-app-shell-api-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsApiTableComponent, DocsCodeBlockComponent],
+  imports: [DocsPageHeaderComponent, DocsApiTableComponent, RhombusCodeBlockComponent],
   template: `
     <docs-page-header />
 
@@ -66,7 +66,7 @@ export class MyComponent {
         programmatically set the theme or read the current resolved scheme. Register
         <code>provideFolioKitTheme()</code> (from <code>@foliokit/cms-ui</code>) in your app config.
       </p>
-      <docs-code-block [code]="themeServiceSnippet" language="typescript" />
+      <rhombus-code-block [code]="themeServiceSnippet" language="typescript" />
     </section>
   `,
 })

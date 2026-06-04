@@ -4,14 +4,14 @@ import {
   input,
   output,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-save-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatProgressSpinnerModule],
+  imports: [MatProgressSpinnerModule, RhombusButtonComponent],
   styles: [
     `
       .save-bar {
@@ -87,17 +87,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       aria-label="Unsaved changes"
     >
       <div class="save-bar__actions">
-        <button
-          mat-stroked-button
+        <rhombus-button
+          appearance="outlined"
+          variant="secondary"
           type="button"
           [disabled]="!isDirty() || isSaving()"
           (click)="discarded.emit()"
         >
           Discard
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
+        </rhombus-button>
+        <rhombus-button
           type="button"
           [disabled]="!isDirty() || isSaving() || saveDisabled()"
           (click)="saved.emit()"
@@ -108,7 +107,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
             }
             Save Changes
           </span>
-        </button>
+        </rhombus-button>
       </div>
     </div>
   `,

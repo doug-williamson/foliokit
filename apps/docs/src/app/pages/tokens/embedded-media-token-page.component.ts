@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import type { EmbeddedMediaEntry } from '@foliokit/cms-core';
 
@@ -113,7 +114,7 @@ This text appears below the image.
   selector: 'docs-embedded-media-token-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent, EmbeddedMediaPreviewComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, DocsPreviewComponent, EmbeddedMediaPreviewComponent],
   template: `
     <docs-page-header />
 
@@ -134,7 +135,7 @@ This text appears below the image.
         single Firebase Storage media file that can be embedded inside Markdown content via
         a token reference.
       </p>
-      <docs-code-block [code]="embeddedMediaInterface" language="typescript" />
+      <rhombus-code-block [code]="embeddedMediaInterface" language="typescript" />
     </section>
 
     <section class="mt-8">
@@ -144,12 +145,12 @@ This text appears below the image.
         <code>MarkdownComponent</code> resolves the token against the <code>embeddedMedia</code>
         record and renders the image inline.
       </p>
-      <docs-code-block [code]="tokenSyntax" language="typescript" />
+      <rhombus-code-block [code]="tokenSyntax" language="typescript" />
     </section>
 
     <section class="mt-8">
       <h2 id="usage" class="mat-headline-small">Usage</h2>
-      <docs-code-block [code]="usageCode" language="typescript" />
+      <rhombus-code-block [code]="usageCode" language="typescript" />
     </section>
   `,
 })

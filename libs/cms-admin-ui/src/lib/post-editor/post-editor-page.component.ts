@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -10,7 +11,11 @@ import {
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { RhombusConfirmService } from '@rhombuskit/core';
+import {
+  RhombusConfirmService,
+  RhombusOverflowMenuComponent,
+  type OverflowMenuItem,
+} from '@rhombuskit/core';
 import { BlogPost } from '@foliokit/cms-core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -28,8 +33,6 @@ import { SeoTabComponent } from './tabs/seo-tab.component';
 import { ArticlePreviewComponent } from './preview/article-preview.component';
 import { CardPreviewComponent } from './preview/card-preview.component';
 import { SeoPreviewComponent } from './preview/seo-preview.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDivider } from '@angular/material/divider';
 
 type LeftTab = 'Content' | 'Metadata' | 'SEO' | 'Media';
 type RightTab = 'Article' | 'Card' | 'SEO';
@@ -69,8 +72,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     ArticlePreviewComponent,
     CardPreviewComponent,
     SeoPreviewComponent,
-    MatMenuModule,
-    MatDivider,
+    RhombusOverflowMenuComponent,
   ],
   styles: [
     `
@@ -281,38 +283,11 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           }
 
           <!-- Overflow menu -->
-          <button
-            mat-icon-button
-            type="button"
-            class="toolbar-icon-btn shrink-0"
-            [matMenuTriggerFor]="moreMenu"
-            aria-label="More options"
-          >
-            <mat-icon svgIcon="more_vert" />
-          </button>
-
-          <mat-menu #moreMenu>
-            <a
-              mat-menu-item
-              [attr.href]="store.post()?.slug ? '/blog/' + store.post()!.slug : null"
-              [disabled]="!store.post()?.slug"
-              target="_blank"
-              rel="noopener"
-            >
-              <mat-icon svgIcon="open_in_new" />
-              View on site
-            </a>
-            <mat-divider />
-            <button
-              mat-menu-item
-              [style.color]="'var(--error)'"
-              [disabled]="store.isSaving()"
-              (click)="confirmDeletePost()"
-            >
-              <mat-icon svgIcon="delete" />
-              Delete post…
-            </button>
-          </mat-menu>
+          <rhombus-overflow-menu
+            class="shrink-0"
+            [items]="moreMenuItems()"
+            ariaLabel="More options"
+          />
         </div>
       </div>
 
@@ -408,6 +383,31 @@ export class PostEditorPageComponent implements OnInit {
 
   readonly leftTab = signal<LeftTab>('Content');
   readonly rightTab = signal<RightTab>('Article');
+
+  /** Toolbar overflow menu, reactive to post slug and saving state. */
+  protected readonly moreMenuItems = computed<OverflowMenuItem[]>(() => {
+    const slug = this.store.post()?.slug;
+    return [
+      {
+        label: 'View on site',
+        icon: 'open_in_new',
+        disabled: !slug,
+        action: () => {
+          if (slug) {
+            window.open(`/blog/${slug}`, '_blank', 'noopener');
+          }
+        },
+      },
+      {
+        label: 'Delete post…',
+        icon: 'delete',
+        variant: 'danger',
+        disabled: this.store.isSaving(),
+        dividerBefore: true,
+        action: () => this.confirmDeletePost(),
+      },
+    ];
+  });
 
   onStatusChange(status: BlogPost['status']): void {
     if (status === 'scheduled') {

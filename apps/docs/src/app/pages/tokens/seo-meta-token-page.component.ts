@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
+import { RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const seoPreviewCode = `import type { SeoMeta } from '@foliokit/cms-core';
 
@@ -101,7 +102,7 @@ const myPage: LinksPage = {
   selector: 'docs-seo-meta-token-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, DocsCodeBlockComponent, DocsPreviewComponent, SeoMetaPreviewComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, DocsPreviewComponent, SeoMetaPreviewComponent],
   template: `
     <docs-page-header />
 
@@ -119,13 +120,13 @@ const myPage: LinksPage = {
         All fields are optional. It is embedded in every <code>CmsPageBase</code> subtype
         (e.g. <code>LinksPage</code>, <code>AboutPage</code>).
       </p>
-      <docs-code-block [code]="seoMetaInterface" language="typescript" />
+      <rhombus-code-block [code]="seoMetaInterface" language="typescript" />
     </section>
 
     <section class="mt-8">
       <h2 id="usage" class="mat-headline-small">Usage</h2>
       <p class="mat-body-medium">Embed a <code>SeoMeta</code> object in the <code>seo</code> field of any page:</p>
-      <docs-code-block [code]="usageCode" language="typescript" />
+      <rhombus-code-block [code]="usageCode" language="typescript" />
     </section>
   `,
 })
