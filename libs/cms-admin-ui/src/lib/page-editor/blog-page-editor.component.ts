@@ -10,8 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RhombusSpinnerComponent } from '@rhombuskit/core';
 import type { SiteConfig } from '@foliokit/cms-core';
 import {
   SeoFieldsComponent,
@@ -30,8 +29,7 @@ const PAGE_DESCRIPTION =
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatProgressSpinnerModule,
-    MatButtonModule,
+    RhombusSpinnerComponent,
     MatSnackBarModule,
     ReactiveFormsModule,
     BlogPublishSettingsComponent,
@@ -59,7 +57,7 @@ const PAGE_DESCRIPTION =
 
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <div class="flex-1 overflow-y-auto">

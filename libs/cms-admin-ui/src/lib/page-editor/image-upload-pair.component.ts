@@ -8,13 +8,13 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RhombusProgressBarComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'admin-image-upload-pair',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [MatButtonModule, MatIconModule, RhombusProgressBarComponent],
   template: `
     <div class="flex flex-col gap-2">
       <span class="text-sm font-semibold">{{ label() }}</span>
@@ -91,10 +91,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
       <input #darkInput type="file" accept="image/*" class="hidden"
              (change)="onDarkFileChange($event)" />
       @if (lightUploading()) {
-        <mat-progress-bar mode="determinate" [value]="lightProgress()" class="max-w-[13rem]" />
+        <rhombus-progress-bar mode="determinate" [value]="lightProgress()" class="max-w-[13rem]" />
       }
       @if (darkUploading()) {
-        <mat-progress-bar mode="determinate" [value]="darkProgress()" class="max-w-[13rem]" />
+        <rhombus-progress-bar mode="determinate" [value]="darkProgress()" class="max-w-[13rem]" />
       }
       @if (lightError()) {
         <p class="text-xs text-red-500">{{ lightError() }}</p>

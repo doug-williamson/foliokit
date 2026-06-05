@@ -21,10 +21,13 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  RhombusButtonComponent,
+  RhombusSpinnerComponent,
+  RhombusTooltipDirective,
+} from '@rhombuskit/core';
 import { SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { ProfilePreviewComponent } from '../shared/profile-preview/profile-preview.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
@@ -68,10 +71,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     MatSelectModule,
     MatTabsModule,
-    MatTooltipModule,
+    RhombusButtonComponent,
+    RhombusSpinnerComponent,
+    RhombusTooltipDirective,
     MatSnackBarModule,
     SeoFieldsComponent,
     SaveBarComponent,
@@ -104,7 +108,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -180,10 +184,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <div class="flex flex-col gap-4 max-w-2xl mx-auto px-6 py-8">
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-semibold">Social Links</span>
-                  <button mat-stroked-button type="button" (click)="addAboutSocialLink()">
+                  <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="addAboutSocialLink()">
                     <mat-icon svgIcon="add" />
                     Add Link
-                  </button>
+                  </rhombus-button>
                 </div>
                 <p class="text-xs opacity-60 m-0">These links appear on your About page only. To manage your full links directory, go to the Links Page editor.</p>
 
@@ -208,7 +212,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                             mat-icon-button
                             type="button"
                             class="shrink-0 mt-1"
-                            matTooltip="Remove"
+                            rhombusTooltip="Remove"
                             (click)="removeAboutSocialLink($index)"
                           >
                             <mat-icon svgIcon="delete" />

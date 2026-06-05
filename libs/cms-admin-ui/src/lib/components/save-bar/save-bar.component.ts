@@ -4,14 +4,13 @@ import {
   input,
   output,
 } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-save-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatProgressSpinnerModule, RhombusButtonComponent],
+  imports: [RhombusButtonComponent, RhombusSpinnerComponent],
   styles: [
     `
       .save-bar {
@@ -103,7 +102,7 @@ import { RhombusButtonComponent } from '@rhombuskit/core';
         >
           <span class="save-bar__primary-inner">
             @if (isSaving()) {
-              <mat-spinner diameter="16" />
+              <rhombus-spinner [diameter]="16" />
             }
             Save Changes
           </span>

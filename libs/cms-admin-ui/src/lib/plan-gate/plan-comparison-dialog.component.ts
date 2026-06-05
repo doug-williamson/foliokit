@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 
 interface FeatureRow {
   label: string;
@@ -26,7 +27,7 @@ const FEATURE_ROWS: FeatureRow[] = [
   selector: 'cms-plan-comparison-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, MatDialogModule, MatIconModule],
+  imports: [RouterLink, MatButtonModule, MatDialogModule, MatIconModule, RhombusButtonComponent],
   template: `
     <h2 mat-dialog-title>FolioKit Plans</h2>
 
@@ -67,7 +68,7 @@ const FEATURE_ROWS: FeatureRow[] = [
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Close</button>
+      <rhombus-button appearance="text" variant="secondary" mat-dialog-close>Close</rhombus-button>
       <a mat-flat-button color="primary" routerLink="/settings" [mat-dialog-close]="true">
         Upgrade
       </a>

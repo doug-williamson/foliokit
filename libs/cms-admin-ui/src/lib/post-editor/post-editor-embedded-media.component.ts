@@ -9,9 +9,11 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {
+  RhombusButtonComponent,
+  RhombusProgressBarComponent,
+} from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { CollectionPaths, EmbeddedMediaEntry, FIREBASE_STORAGE } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
@@ -21,7 +23,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
   selector: 'folio-post-editor-embedded-media',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatProgressBarModule, PostEditorEmbeddedMediaItemComponent],
+  imports: [MatIconModule, RhombusButtonComponent, RhombusProgressBarComponent, PostEditorEmbeddedMediaItemComponent],
   styles: [
     `
       :host {
@@ -34,14 +36,14 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
       <!-- Header -->
       <div class="flex items-center justify-between">
         <span class="text-sm font-semibold">Embedded Media</span>
-        <button
-          mat-stroked-button
+        <rhombus-button
+          appearance="outlined"
           [disabled]="uploading()"
           (click)="isBrowser && fileInput.click()"
         >
           <mat-icon svgIcon="upload" />
           Upload Image
-        </button>
+        </rhombus-button>
       </div>
 
       <!-- Hidden file input -->
@@ -55,7 +57,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
 
       <!-- Upload progress -->
       @if (uploading()) {
-        <mat-progress-bar mode="indeterminate" />
+        <rhombus-progress-bar mode="indeterminate" />
       }
 
       <!-- Upload error -->

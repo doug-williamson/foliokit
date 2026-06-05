@@ -23,11 +23,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
+import {
+  RhombusButtonComponent,
+  RhombusProgressBarComponent,
+  RhombusTooltipDirective,
+} from '@rhombuskit/core';
 import { AuthorEditorStore } from './author-editor.store';
 
 const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
@@ -61,9 +64,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
     MatSelectModule,
-    MatTooltipModule,
+    RhombusButtonComponent,
+    RhombusProgressBarComponent,
+    RhombusTooltipDirective,
   ],
   styles: [
     `
@@ -126,7 +130,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         <button
           type="button"
           class="author-toolbar-back"
-          matTooltip="Back to authors"
+          rhombusTooltip="Back to authors"
           aria-label="Back to authors"
           (click)="router.navigate(['/authors'])"
         >
@@ -144,13 +148,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <span class="admin-meta opacity-40">Saved</span>
         }
 
-        <button
-          mat-flat-button
+        <rhombus-button
           [disabled]="form.invalid || store.isSaving()"
           (click)="onSave()"
         >
           Save
-        </button>
+        </rhombus-button>
       </div>
 
       <!-- Scrollable form -->
@@ -226,7 +229,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <input #photoDarkInput type="file" accept="image/*" class="hidden"
                    (change)="onPhotoSelected($any($event.target).files, 'dark')" />
             @if (uploading()) {
-              <mat-progress-bar mode="determinate" [value]="uploadProgress()" class="max-w-[13rem]" />
+              <rhombus-progress-bar mode="determinate" [value]="uploadProgress()" class="max-w-[13rem]" />
             }
             @if (uploadError()) {
               <p class="text-xs text-red-500">{{ uploadError() }}</p>
@@ -263,10 +266,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
               <span class="text-sm font-semibold">Social Links</span>
-              <button mat-stroked-button type="button" (click)="addSocialLink()">
+              <rhombus-button appearance="outlined" type="button" (click)="addSocialLink()">
                 <mat-icon svgIcon="add" />
                 Add Link
-              </button>
+              </rhombus-button>
             </div>
 
             <div formArrayName="socialLinks" class="flex flex-col gap-3">
@@ -287,7 +290,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       mat-icon-button
                       type="button"
                       class="shrink-0 mt-1"
-                      matTooltip="Remove"
+                      rhombusTooltip="Remove"
                       (click)="removeSocialLink($index)"
                     >
                       <mat-icon svgIcon="delete" />

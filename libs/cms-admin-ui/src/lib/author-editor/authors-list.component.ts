@@ -15,13 +15,13 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
   RhombusDataTableComponent,
   RhombusEmptyStateComponent,
+  RhombusSpinnerComponent,
+  RhombusTooltipDirective,
   type ColumnDef,
 } from '@rhombuskit/core';
 
@@ -40,11 +40,11 @@ type Cell = { $implicit: Author; index: number };
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
+    RhombusTooltipDirective,
     RhombusButtonComponent,
     RhombusDataTableComponent,
     RhombusEmptyStateComponent,
+    RhombusSpinnerComponent,
   ],
   styles: [
     `
@@ -72,7 +72,7 @@ type Cell = { $implicit: Author; index: number };
       <div class="flex-1 overflow-auto">
         @if (loading()) {
           <div class="flex items-center justify-center p-12">
-            <mat-spinner diameter="40" />
+            <rhombus-spinner [diameter]="40" />
           </div>
         } @else if (!authors()?.length) {
           <rhombus-empty-state
@@ -117,14 +117,14 @@ type Cell = { $implicit: Author; index: number };
     <ng-template #actionsCell let-author>
       <button
         mat-icon-button
-        matTooltip="Edit"
+        rhombusTooltip="Edit"
         (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
       >
         <mat-icon svgIcon="edit" />
       </button>
       <button
         mat-icon-button
-        matTooltip="Delete"
+        rhombusTooltip="Delete"
         (click)="$event.stopPropagation(); confirmDelete(author)"
       >
         <mat-icon svgIcon="delete" />

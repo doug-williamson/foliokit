@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -12,7 +12,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
   selector: 'folio-blog-publish-settings',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatSlideToggleModule],
+  imports: [RhombusButtonComponent, MatSlideToggleModule],
   template: `
     <div class="flex flex-col gap-3">
     @if (layout() === 'hub') {
@@ -44,11 +44,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     }
     <div class="flex flex-wrap gap-2">
       @if (layout() === 'hub') {
-        <button mat-stroked-button type="button" (click)="router.navigate(['/pages/blog'])">
+        <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="router.navigate(['/pages/blog'])">
           Blog settings
-        </button>
+        </rhombus-button>
       }
-      <button mat-stroked-button type="button" (click)="router.navigate(['/posts'])">Open posts</button>
+      <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="router.navigate(['/posts'])">Open posts</rhombus-button>
     </div>
     </div>
   `,

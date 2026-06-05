@@ -20,12 +20,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { RhombusButtonComponent, RhombusSpinnerComponent, RhombusTooltipDirective } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
 import { SaveBarComponent } from '../components/save-bar/save-bar.component';
@@ -47,11 +46,12 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     MatSelectModule,
     MatTabsModule,
     MatSnackBarModule,
-    MatTooltipModule,
+    RhombusTooltipDirective,
+    RhombusButtonComponent,
+    RhombusSpinnerComponent,
     SaveBarComponent,
   ],
   styles: [
@@ -83,7 +83,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <mat-tab-group
@@ -154,7 +154,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                       />
                       <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
                         @if (photoUploadState() === 'uploading') {
-                          <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
+                          <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
                         } @else {
                           Upload
                         }
@@ -185,7 +185,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                       />
                       <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
                         @if (photoDarkUploadState() === 'uploading') {
-                          <mat-spinner diameter="14" style="display: inline-block" /> Uploading…
+                          <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
                         } @else {
                           Upload
                         }
@@ -208,10 +208,10 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold opacity-70">Social Links</span>
-                  <button mat-stroked-button type="button" (click)="addProfileSocialLink()">
+                  <rhombus-button appearance="outlined" type="button" (click)="addProfileSocialLink()">
                     <mat-icon svgIcon="add" />
                     Add
-                  </button>
+                  </rhombus-button>
                 </div>
 
                 <div [formGroup]="profileSocialForm" class="flex flex-col gap-3">
@@ -235,7 +235,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                             mat-icon-button
                             type="button"
                             class="shrink-0 mt-1"
-                            matTooltip="Remove"
+                            rhombusTooltip="Remove"
                             (click)="removeProfileSocialLink($index)"
                           >
                             <mat-icon svgIcon="delete" />

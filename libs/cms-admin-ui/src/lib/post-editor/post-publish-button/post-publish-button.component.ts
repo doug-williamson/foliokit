@@ -5,10 +5,10 @@ import {
   input,
   output,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
+  RhombusButtonComponent,
   RhombusOverflowMenuComponent,
+  RhombusSpinnerComponent,
   type OverflowMenuItem,
 } from '@rhombuskit/core';
 import { BlogPost } from '@foliokit/cms-core';
@@ -17,7 +17,7 @@ import { BlogPost } from '@foliokit/cms-core';
   selector: 'cms-post-publish-button',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatProgressSpinnerModule, RhombusOverflowMenuComponent],
+  imports: [RhombusButtonComponent, RhombusSpinnerComponent, RhombusOverflowMenuComponent],
   styles: [
     `
       :host {
@@ -28,19 +28,18 @@ import { BlogPost } from '@foliokit/cms-core';
   ],
   template: `
     <div style="display: inline-flex; align-items: stretch;">
-      <button
-        mat-flat-button
+      <rhombus-button
         type="button"
         [disabled]="isSaving()"
         (click)="onPublishNow()"
         style="border-radius: 4px 0 0 4px; border-right: none"
       >
         @if (isSaving()) {
-          <mat-spinner diameter="16" style="display: inline-block" />
+          <rhombus-spinner [diameter]="16" style="display: inline-block" />
         } @else {
           Publish now
         }
-      </button>
+      </rhombus-button>
       <rhombus-overflow-menu
         [items]="publishMenuItems()"
         triggerIcon="arrow_drop_down"

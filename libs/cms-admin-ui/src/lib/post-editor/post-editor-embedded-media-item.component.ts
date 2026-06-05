@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { RhombusTooltipDirective } from '@rhombuskit/core';
 import { EmbeddedMediaEntry } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 
@@ -14,7 +14,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-embedded-media-item',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatButtonModule, MatIconModule, RhombusTooltipDirective],
   styles: [
     `
       :host {
@@ -45,7 +45,7 @@ import { PostEditorStore } from './post-editor.store';
           <button
             mat-icon-button
             style="color: white"
-            matTooltip="Insert at cursor"
+            rhombusTooltip="Insert at cursor"
             (click)="onInsert()"
           >
             <mat-icon svgIcon="add_photo_alternate" />
@@ -53,7 +53,7 @@ import { PostEditorStore } from './post-editor.store';
           <button
             mat-icon-button
             style="color: white"
-            matTooltip="Delete"
+            rhombusTooltip="Delete"
             (click)="onDelete()"
           >
             <mat-icon svgIcon="delete" />
