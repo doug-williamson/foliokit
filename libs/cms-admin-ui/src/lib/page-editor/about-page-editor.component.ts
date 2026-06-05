@@ -7,7 +7,6 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormArray,
   FormBuilder,
@@ -76,7 +75,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     RhombusButtonComponent,
     RhombusSpinnerComponent,
     RhombusTooltipDirective,
-    MatSnackBarModule,
     SeoFieldsComponent,
     SaveBarComponent,
     ProfilePreviewComponent,
@@ -256,12 +254,11 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 })
 export class AboutPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
   protected readonly platforms = SOCIAL_PLATFORMS;
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
   }
 
   protected readonly aboutPhotoUrl = signal<string | undefined>(undefined);

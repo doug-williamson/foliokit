@@ -23,7 +23,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RhombusButtonComponent, RhombusSpinnerComponent, RhombusTooltipDirective } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
@@ -48,7 +47,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatInputModule,
     MatSelectModule,
     MatTabsModule,
-    MatSnackBarModule,
     RhombusTooltipDirective,
     RhombusButtonComponent,
     RhombusSpinnerComponent,
@@ -309,7 +307,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 })
 export class SiteConfigPageComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly authorService = inject(AuthorService);
   private readonly fb = inject(FormBuilder);
 
@@ -363,7 +360,7 @@ export class SiteConfigPageComponent implements OnInit {
   });
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
   }
 
   ngOnInit(): void {

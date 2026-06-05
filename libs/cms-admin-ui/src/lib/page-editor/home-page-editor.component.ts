@@ -4,7 +4,6 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   FormControl,
@@ -44,7 +43,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatInputModule,
     MatSlideToggleModule,
     RhombusSpinnerComponent,
-    MatSnackBarModule,
     SeoFieldsComponent,
     SaveBarComponent,
   ],
@@ -148,11 +146,10 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 })
 export class HomePageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
   }
 
   protected readonly homeForm: FormGroup = this.fb.group({

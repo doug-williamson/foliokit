@@ -7,9 +7,10 @@ import {
 /**
  * Shared chrome for admin editor pages (toolbar title + scrollable body).
  *
- * For save/discard UX, use `folio-save-bar` at the page root and MatSnackBar
- * for completion feedback — see `wireSiteConfigSaveSnackbarFeedback` in
- * `site-config-save-snackbar.util.ts` for site-config stores.
+ * For save/discard UX, use `folio-save-bar` at the page root and
+ * `RhombusToastService` for completion feedback — see
+ * `wireSiteConfigSaveSnackbarFeedback` in `site-config-save-snackbar.util.ts`
+ * for site-config stores.
  */
 @Component({
   selector: 'folio-admin-editor-page',

@@ -4,7 +4,6 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   FormControl,
@@ -39,7 +38,6 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
     MatInputModule,
     MatIconModule,
     RhombusSpinnerComponent,
-    MatSnackBarModule,
     LinksEditorFormComponent,
     SaveBarComponent,
     ProfilePreviewComponent,
@@ -114,7 +112,6 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
 })
 export class LinksPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
   protected readonly linksSeoForm = this.fb.group({
@@ -123,7 +120,7 @@ export class LinksPageEditorComponent implements OnInit {
   });
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
   }
 
   ngOnInit(): void {
