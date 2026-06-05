@@ -28,9 +28,9 @@
     "@foliokit/cms-core": "^1.0.0",
     "@foliokit/cms-ui": "^1.0.0",
     "@ngrx/signals": "^21.0.1",
-    "@rhombuskit/core": "^0.8.0",
-    "@rhombuskit/theme-engine": "^0.8.0",
-    "@rhombuskit/tokens": "^0.8.0",
+    "@rhombuskit/core": "0.11.0",
+    "@rhombuskit/theme-engine": "0.11.0",
+    "@rhombuskit/tokens": "0.11.0",
     "firebase": "^11.10.0",
     "ngx-markdown": "^21.1.0",
     "rxjs": "~7.8.0"
