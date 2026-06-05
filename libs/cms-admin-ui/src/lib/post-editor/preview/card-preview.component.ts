@@ -6,13 +6,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Author, AuthorService, Tag, TagLabelPipe, TagService } from '@foliokit/cms-core';
+import { RhombusChipDirective } from '@rhombuskit/core';
 import { PostEditorStore } from '../post-editor.store';
 
 @Component({
   selector: 'folio-card-preview',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatCardModule, MatChipsModule, TagLabelPipe],
+  imports: [DatePipe, MatCardModule, MatChipsModule, TagLabelPipe, RhombusChipDirective],
   styles: [
     `
       :host {
@@ -67,7 +68,7 @@ import { PostEditorStore } from '../post-editor.store';
             @if (post.tags.length) {
               <div class="flex flex-wrap gap-1 mt-3">
                 @for (tag of post.tags; track tag) {
-                  <mat-chip class="!text-xs">{{ tag | tagLabel: tagLookup() }}</mat-chip>
+                  <mat-chip rhombusChip class="!text-xs">{{ tag | tagLabel: tagLookup() }}</mat-chip>
                 }
               </div>
             }

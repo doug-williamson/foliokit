@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SiteConfig } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusChipDirective,
   RhombusSpinnerComponent,
   RhombusSwitchComponent,
 } from '@rhombuskit/core';
@@ -35,6 +36,7 @@ type CardState = 'disabled' | 'empty' | 'published';
     MatChipsModule,
     MatIconModule,
     RhombusButtonComponent,
+    RhombusChipDirective,
     RhombusSpinnerComponent,
     RhombusSwitchComponent,
   ],
@@ -95,7 +97,7 @@ type CardState = 'disabled' | 'empty' | 'published';
                       </span>
                       @if (liveUrl) {
                         <mat-chip-set>
-                          <mat-chip>
+                          <mat-chip rhombusChip>
                             <a [href]="liveUrl" target="_blank" rel="noopener" class="text-xs no-underline">
                               {{ liveUrl }}
                             </a>

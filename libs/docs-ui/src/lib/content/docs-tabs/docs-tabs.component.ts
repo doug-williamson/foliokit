@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { RhombusCodeBlockComponent } from '@rhombuskit/core';
+import { RhombusCodeBlockComponent, RhombusTabGroupDirective } from '@rhombuskit/core';
 
 export interface DocsTab {
   label: string;
@@ -11,9 +11,9 @@ export interface DocsTab {
   selector: 'docs-tabs',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, RhombusCodeBlockComponent],
+  imports: [MatTabsModule, RhombusCodeBlockComponent, RhombusTabGroupDirective],
   template: `
-    <mat-tab-group>
+    <mat-tab-group rhombusTabGroup>
       @for (tab of tabs(); track tab.label) {
         <mat-tab [label]="tab.label">
           <div class="pt-4">

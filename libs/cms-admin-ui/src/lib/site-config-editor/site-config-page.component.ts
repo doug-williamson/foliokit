@@ -26,6 +26,7 @@ import {
   RhombusInputComponent,
   RhombusSelectComponent,
   RhombusSpinnerComponent,
+  RhombusTabGroupDirective,
   RhombusTextareaComponent,
   RhombusTooltipDirective,
   type SelectOption,
@@ -53,6 +54,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     RhombusInputComponent,
     RhombusSelectComponent,
     RhombusSpinnerComponent,
+    RhombusTabGroupDirective,
     RhombusTextareaComponent,
     RhombusTooltipDirective,
     SaveBarComponent,
@@ -90,6 +92,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
         </div>
       } @else {
         <mat-tab-group
+          rhombusTabGroup
           class="flex flex-col flex-1 overflow-hidden"
           [mat-stretch-tabs]="true"
           animationDuration="0"
