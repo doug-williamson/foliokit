@@ -29,3 +29,19 @@
   --error: #ef4444;
   --error-bg: #2a0a0a;
 }
+
+// ─── RhombusKit form-field layout ──────────────────────────────────────────────
+// RhombusKit's input/textarea/select render a <mat-form-field> tagged with the
+// .rhombus-form-field hook class. Material form-fields are inline-flex (content
+// width); FolioKit's forms always want full-width fields — previously carried by a
+// per-instance `w-full` on every <mat-form-field>. Stretch them once here so the
+// migrated fields fill their flex/grid containers exactly like the ones they
+// replaced. Per-instance width overrides (e.g. `flex-1` on the host) still win.
+rhombus-input,
+rhombus-textarea,
+rhombus-select {
+  display: block;
+}
+.rhombus-form-field {
+  width: 100%;
+}

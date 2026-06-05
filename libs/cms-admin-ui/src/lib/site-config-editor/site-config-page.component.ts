@@ -2,28 +2,34 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
-import { RhombusButtonComponent, RhombusSpinnerComponent, RhombusTooltipDirective } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusInputComponent,
+  RhombusSelectComponent,
+  RhombusSpinnerComponent,
+  RhombusTextareaComponent,
+  RhombusTooltipDirective,
+  type SelectOption,
+} from '@rhombuskit/core';
 import { SiteConfigEditorStore } from './site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from './site-config-save-snackbar.util';
 import { SaveBarComponent } from '../components/save-bar/save-bar.component';
@@ -39,17 +45,16 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     MatTabsModule,
-    RhombusTooltipDirective,
     RhombusButtonComponent,
+    RhombusInputComponent,
+    RhombusSelectComponent,
     RhombusSpinnerComponent,
+    RhombusTextareaComponent,
+    RhombusTooltipDirective,
     SaveBarComponent,
   ],
   styles: [
@@ -91,38 +96,36 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
         >
           <mat-tab label="General">
             <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-              <form [formGroup]="generalForm" class="flex flex-col gap-5">
-                <mat-form-field appearance="outline">
-                  <mat-label>Site Name</mat-label>
-                  <input matInput formControlName="siteName" placeholder="My Blog" />
-                  @if (generalForm.get('siteName')?.hasError('required') && generalForm.get('siteName')?.touched) {
-                    <mat-error>Site name is required</mat-error>
-                  }
-                </mat-form-field>
+              <form class="flex flex-col gap-5" (submit)="$event.preventDefault()">
+                <rhombus-input
+                  label="Site Name"
+                  placeholder="My Blog"
+                  [control]="asFc(generalForm.get('siteName'))"
+                >
+                  <span rhombusError>Site name is required</span>
+                </rhombus-input>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Site URL</mat-label>
-                  <input matInput formControlName="siteUrl" placeholder="https://example.com" />
-                  @if (generalForm.get('siteUrl')?.hasError('required') && generalForm.get('siteUrl')?.touched) {
-                    <mat-error>Site URL is required</mat-error>
-                  }
-                </mat-form-field>
+                <rhombus-input
+                  label="Site URL"
+                  placeholder="https://example.com"
+                  [control]="asFc(generalForm.get('siteUrl'))"
+                >
+                  <span rhombusError>Site URL is required</span>
+                </rhombus-input>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Default Author</mat-label>
-                  <mat-select formControlName="defaultAuthorId">
-                    <mat-option [value]="null">— None —</mat-option>
-                    @for (author of authors(); track author.id) {
-                      <mat-option [value]="author.id">{{ author.displayName }}</mat-option>
-                    }
-                  </mat-select>
+                <div>
+                  <rhombus-select
+                    label="Default Author"
+                    [options]="authorOptions()"
+                    [control]="asFc(generalForm.get('defaultAuthorId'))"
+                  />
                   @if (!authors().length) {
-                    <mat-hint>
+                    <p class="text-xs opacity-60 mt-1 mb-0">
                       No authors yet.
                       <a routerLink="/authors/new" class="underline">Create one</a>
-                    </mat-hint>
+                    </p>
                   }
-                </mat-form-field>
+                </div>
               </form>
 
               <div class="flex flex-col gap-4">
@@ -192,16 +195,18 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                   </div>
                 </div>
 
-                <form [formGroup]="profileForm" class="flex flex-col gap-4">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Display Name</mat-label>
-                    <input matInput formControlName="displayName" placeholder="Jane Smith" />
-                  </mat-form-field>
+                <form class="flex flex-col gap-4" (submit)="$event.preventDefault()">
+                  <rhombus-input
+                    label="Display Name"
+                    placeholder="Jane Smith"
+                    [control]="asFc(profileForm.get('displayName'))"
+                  />
 
-                  <mat-form-field appearance="outline">
-                    <mat-label>Photo Alt Text</mat-label>
-                    <input matInput formControlName="photoAlt" placeholder="Headshot of Jane Smith" />
-                  </mat-form-field>
+                  <rhombus-input
+                    label="Photo Alt Text"
+                    placeholder="Headshot of Jane Smith"
+                    [control]="asFc(profileForm.get('photoAlt'))"
+                  />
                 </form>
 
                 <div class="flex items-center justify-between">
@@ -212,49 +217,48 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                   </rhombus-button>
                 </div>
 
-                <div [formGroup]="profileSocialForm" class="flex flex-col gap-3">
-                  <div formArrayName="socialLinks" class="flex flex-col gap-3">
-                    @for (ctrl of profileSocialLinksArray.controls; track $index) {
-                      <div
-                        [formGroupName]="$index"
-                        class="flex flex-col gap-2 p-3 rounded-lg border"
-                        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-                      >
-                        <div class="flex items-start gap-2">
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>Platform</mat-label>
-                            <mat-select formControlName="platform">
-                              @for (p of platforms; track p.value) {
-                                <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                              }
-                            </mat-select>
-                          </mat-form-field>
-                          <button
-                            mat-icon-button
-                            type="button"
-                            class="shrink-0 mt-1"
-                            rhombusTooltip="Remove"
-                            (click)="removeProfileSocialLink($index)"
-                          >
-                            <mat-icon svgIcon="delete" />
-                          </button>
-                        </div>
-                        <div class="flex gap-2">
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>Label</mat-label>
-                            <input matInput formControlName="label" placeholder="Optional" />
-                          </mat-form-field>
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>URL</mat-label>
-                            <input matInput formControlName="url" placeholder="https://…" />
-                          </mat-form-field>
-                        </div>
+                <div class="flex flex-col gap-3">
+                  @for (group of profileSocialLinksArray.controls; track $index) {
+                    <div
+                      class="flex flex-col gap-2 p-3 rounded-lg border"
+                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+                    >
+                      <div class="flex items-start gap-2">
+                        <rhombus-select
+                          class="flex-1"
+                          label="Platform"
+                          [options]="platforms"
+                          [control]="asFc(group.get('platform'))"
+                        />
+                        <button
+                          mat-icon-button
+                          type="button"
+                          class="shrink-0 mt-1"
+                          rhombusTooltip="Remove"
+                          (click)="removeProfileSocialLink($index)"
+                        >
+                          <mat-icon svgIcon="delete" />
+                        </button>
                       </div>
-                    }
-                    @if (!profileSocialLinksArray.length) {
-                      <p class="text-sm opacity-50 text-center py-2 m-0">No social links yet.</p>
-                    }
-                  </div>
+                      <div class="flex gap-2">
+                        <rhombus-input
+                          class="flex-1"
+                          label="Label"
+                          placeholder="Optional"
+                          [control]="asFc(group.get('label'))"
+                        />
+                        <rhombus-input
+                          class="flex-1"
+                          label="URL"
+                          placeholder="https://…"
+                          [control]="asFc(group.get('url'))"
+                        />
+                      </div>
+                    </div>
+                  }
+                  @if (!profileSocialLinksArray.length) {
+                    <p class="text-sm opacity-50 text-center py-2 m-0">No social links yet.</p>
+                  }
                 </div>
               </div>
             </div>
@@ -262,31 +266,31 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
           <mat-tab label="SEO">
             <div class="flex flex-col gap-6 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-              <form [formGroup]="seoForm" class="flex flex-col gap-5">
-                <mat-form-field appearance="outline">
-                  <mat-label>Meta Title</mat-label>
-                  <input matInput formControlName="title" placeholder="My Awesome Blog" />
-                </mat-form-field>
+              <form class="flex flex-col gap-5" (submit)="$event.preventDefault()">
+                <rhombus-input
+                  label="Meta Title"
+                  placeholder="My Awesome Blog"
+                  [control]="asFc(seoForm.get('title'))"
+                />
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Meta Description</mat-label>
-                  <textarea
-                    matInput
-                    formControlName="description"
-                    rows="3"
-                    placeholder="A brief description of your site…"
-                  ></textarea>
-                </mat-form-field>
+                <rhombus-textarea
+                  label="Meta Description"
+                  placeholder="A brief description of your site…"
+                  [rows]="3"
+                  [control]="asFc(seoForm.get('description'))"
+                />
 
-                <mat-form-field appearance="outline">
-                  <mat-label>OG Image URL</mat-label>
-                  <input matInput formControlName="ogImage" placeholder="https://…/og.jpg" />
-                </mat-form-field>
+                <rhombus-input
+                  label="OG Image URL"
+                  placeholder="https://…/og.jpg"
+                  [control]="asFc(seoForm.get('ogImage'))"
+                />
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Canonical URL</mat-label>
-                  <input matInput formControlName="canonicalUrl" placeholder="https://example.com" />
-                </mat-form-field>
+                <rhombus-input
+                  label="Canonical URL"
+                  placeholder="https://example.com"
+                  [control]="asFc(seoForm.get('canonicalUrl'))"
+                />
               </form>
             </div>
           </mat-tab>
@@ -311,6 +315,12 @@ export class SiteConfigPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   protected readonly authors = toSignal(this.authorService.getAll(), { initialValue: [] });
+
+  /** Default-author options: a leading "none" entry plus one per author. */
+  protected readonly authorOptions = computed<SelectOption<string | null>[]>(() => [
+    { value: null, label: '— None —' },
+    ...this.authors().map((a) => ({ value: a.id, label: a.displayName })),
+  ]);
 
   private readonly paths = inject(CollectionPaths);
 
@@ -344,6 +354,11 @@ export class SiteConfigPageComponent implements OnInit {
 
   get profileSocialLinksArray(): FormArray {
     return this.profileSocialForm.get('socialLinks') as FormArray;
+  }
+
+  /** Narrow an `AbstractControl` to `FormControl` for RhombusKit's `[control]` input. */
+  protected asFc(control: AbstractControl | null): FormControl {
+    return control as FormControl;
   }
 
   protected readonly generalForm: FormGroup = this.fb.group({

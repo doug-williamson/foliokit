@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { FormControl, FormGroup } from '@angular/forms';
+import { RhombusInputComponent, RhombusTextareaComponent } from '@rhombuskit/core';
 /**
  * Reactive group for the four `SeoFields` keys from `@foliokit/cms-core`.
  * Control values use `null` for empty; map to/from optional `string` on `SeoFields` when persisting.
@@ -17,38 +16,35 @@ export type SeoFieldsFormGroup = FormGroup<{
   selector: 'folio-seo-fields',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule],
+  imports: [RhombusInputComponent, RhombusTextareaComponent],
   template: `
-    <div [formGroup]="group()" class="flex flex-col gap-4">
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Meta Title</mat-label>
-        <input matInput formControlName="metaTitle" placeholder="Defaults to post title" />
-      </mat-form-field>
+    <div class="flex flex-col gap-4">
+      <rhombus-input
+        label="Meta Title"
+        placeholder="Defaults to post title"
+        [control]="group().controls.metaTitle"
+      />
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Meta Description</mat-label>
-        <textarea matInput rows="3" formControlName="metaDescription" placeholder="Defaults to excerpt"></textarea>
-      </mat-form-field>
+      <rhombus-textarea
+        label="Meta Description"
+        placeholder="Defaults to excerpt"
+        [rows]="3"
+        [control]="group().controls.metaDescription"
+      />
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>OG Image URL</mat-label>
-        <input
-          matInput
-          type="url"
-          formControlName="ogImageUrl"
-          placeholder="https://example.com/og-image.png"
-        />
-      </mat-form-field>
+      <rhombus-input
+        label="OG Image URL"
+        type="url"
+        placeholder="https://example.com/og-image.png"
+        [control]="group().controls.ogImageUrl"
+      />
 
-      <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" floatLabel="always">
-        <mat-label>Canonical URL</mat-label>
-        <input
-          matInput
-          type="url"
-          formControlName="canonicalUrl"
-          placeholder="https://example.com/blog/my-post"
-        />
-      </mat-form-field>
+      <rhombus-input
+        label="Canonical URL"
+        type="url"
+        placeholder="https://example.com/blog/my-post"
+        [control]="group().controls.canonicalUrl"
+      />
     </div>
   `,
 })

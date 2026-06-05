@@ -6,17 +6,20 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { from, last } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { RhombusButtonComponent, RhombusToastService } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusCheckboxComponent,
+  RhombusToastService,
+} from '@rhombuskit/core';
 import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-nav.store';
 
 @Component({
   selector: 'admin-setup-prompt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCheckboxModule, RhombusButtonComponent],
+  imports: [RhombusButtonComponent, RhombusCheckboxComponent],
   styles: [
     `
       :host {
@@ -77,16 +80,9 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         border-bottom: none;
       }
 
-      .page-row mat-checkbox {
+      .page-row rhombus-checkbox {
         flex: 1;
         min-width: 0;
-      }
-
-      .page-row-label {
-        flex: 1;
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--text-primary);
       }
 
       .required-page-row {
@@ -154,20 +150,18 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
               <span class="required-pill">Required</span>
             </div>
             <div class="page-row">
-              <mat-checkbox
+              <rhombus-checkbox
+                label="About page"
                 [checked]="aboutEnabled()"
-                (change)="onAboutChange($event)"
-              >
-                <span class="page-row-label">About page</span>
-              </mat-checkbox>
+                (checkedChange)="aboutEnabled.set($event)"
+              />
             </div>
             <div class="page-row">
-              <mat-checkbox
+              <rhombus-checkbox
+                label="Links page"
                 [checked]="linksEnabled()"
-                (change)="onLinksChange($event)"
-              >
-                <span class="page-row-label">Links page</span>
-              </mat-checkbox>
+                (checkedChange)="linksEnabled.set($event)"
+              />
             </div>
           </div>
 
@@ -196,14 +190,6 @@ export class SetupPromptComponent {
     if (!this.store.isLoaded()) return false;
     return !this.store.config()?.onboardingComplete;
   });
-
-  onAboutChange(event: MatCheckboxChange): void {
-    this.aboutEnabled.set(event.checked);
-  }
-
-  onLinksChange(event: MatCheckboxChange): void {
-    this.linksEnabled.set(event.checked);
-  }
 
   save(): void {
     const keys: EnablePageKey[] = ['home', 'blog'];

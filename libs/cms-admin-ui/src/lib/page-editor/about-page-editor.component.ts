@@ -6,25 +6,24 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   RhombusButtonComponent,
+  RhombusInputComponent,
+  RhombusSelectComponent,
   RhombusSpinnerComponent,
+  RhombusTextareaComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
 import { SocialLink, SocialPlatform } from '@foliokit/cms-core';
@@ -63,17 +62,15 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
-    RouterLink,
     MatButtonModule,
     MatExpansionModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     MatTabsModule,
     RhombusButtonComponent,
+    RhombusInputComponent,
+    RhombusSelectComponent,
     RhombusSpinnerComponent,
+    RhombusTextareaComponent,
     RhombusTooltipDirective,
     SeoFieldsComponent,
     SaveBarComponent,
@@ -138,33 +135,30 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   settingsRoute="/settings"
                 />
 
-                <form [formGroup]="aboutForm" class="flex flex-col gap-5">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Headline</mat-label>
-                    <input matInput formControlName="headline" placeholder="Hi, I'm Jane" />
-                    @if (aboutForm.get('headline')?.hasError('required') && aboutForm.get('headline')?.touched) {
-                      <mat-error>Headline is required</mat-error>
-                    }
-                  </mat-form-field>
+                <form class="flex flex-col gap-5" (submit)="$event.preventDefault()">
+                  <rhombus-input
+                    label="Headline"
+                    placeholder="Hi, I'm Jane"
+                    [control]="asFc(aboutForm.get('headline'))"
+                  >
+                    <span rhombusError>Headline is required</span>
+                  </rhombus-input>
 
-                  <mat-form-field appearance="outline">
-                    <mat-label>Subheadline</mat-label>
-                    <input matInput formControlName="subheadline" placeholder="Software engineer & writer" />
-                  </mat-form-field>
+                  <rhombus-input
+                    label="Subheadline"
+                    placeholder="Software engineer & writer"
+                    [control]="asFc(aboutForm.get('subheadline'))"
+                  />
 
-                  <mat-form-field appearance="outline">
-                    <mat-label>Bio</mat-label>
-                    <textarea
-                      matInput
-                      formControlName="bio"
-                      rows="5"
-                      placeholder="Write your bio in Markdown…"
-                    ></textarea>
-                    <mat-hint>Supports Markdown</mat-hint>
-                    @if (aboutForm.get('bio')?.hasError('required') && aboutForm.get('bio')?.touched) {
-                      <mat-error>Bio is required</mat-error>
-                    }
-                  </mat-form-field>
+                  <rhombus-textarea
+                    label="Bio"
+                    placeholder="Write your bio in Markdown…"
+                    hint="Supports Markdown"
+                    [rows]="5"
+                    [control]="asFc(aboutForm.get('bio'))"
+                  >
+                    <span rhombusError>Bio is required</span>
+                  </rhombus-textarea>
                 </form>
 
                 <mat-expansion-panel class="!shadow-none">
@@ -189,51 +183,50 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                 </div>
                 <p class="text-xs opacity-60 m-0">These links appear on your About page only. To manage your full links directory, go to the Links Page editor.</p>
 
-                <div [formGroup]="aboutSocialForm" class="flex flex-col gap-3">
-                  <div formArrayName="socialLinks" class="flex flex-col gap-3">
-                    @for (ctrl of aboutSocialLinksArray.controls; track $index) {
-                      <div
-                        [formGroupName]="$index"
-                        class="flex flex-col gap-2 p-3 rounded-lg border"
-                        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-                      >
-                        <div class="flex items-start gap-2">
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>Platform</mat-label>
-                            <mat-select formControlName="platform">
-                              @for (p of platforms; track p.value) {
-                                <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                              }
-                            </mat-select>
-                          </mat-form-field>
-                          <button
-                            mat-icon-button
-                            type="button"
-                            class="shrink-0 mt-1"
-                            rhombusTooltip="Remove"
-                            (click)="removeAboutSocialLink($index)"
-                          >
-                            <mat-icon svgIcon="delete" />
-                          </button>
-                        </div>
-                        <div class="flex gap-2">
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>Label</mat-label>
-                            <input matInput formControlName="label" placeholder="Optional label" />
-                          </mat-form-field>
-                          <mat-form-field appearance="outline" class="flex-1">
-                            <mat-label>URL</mat-label>
-                            <input matInput formControlName="url" placeholder="https://…" />
-                          </mat-form-field>
-                        </div>
+                <div class="flex flex-col gap-3">
+                  @for (group of aboutSocialLinksArray.controls; track $index) {
+                    <div
+                      class="flex flex-col gap-2 p-3 rounded-lg border"
+                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
+                    >
+                      <div class="flex items-start gap-2">
+                        <rhombus-select
+                          class="flex-1"
+                          label="Platform"
+                          [options]="platforms"
+                          [control]="asFc(group.get('platform'))"
+                        />
+                        <button
+                          mat-icon-button
+                          type="button"
+                          class="shrink-0 mt-1"
+                          rhombusTooltip="Remove"
+                          (click)="removeAboutSocialLink($index)"
+                        >
+                          <mat-icon svgIcon="delete" />
+                        </button>
                       </div>
-                    }
-                    @if (!aboutSocialLinksArray.length) {
-                      <p class="text-sm opacity-50 text-center py-4 m-0">
-                        No social links yet.
-                      </p>
-                    }
-                  </div>
+                      <div class="flex gap-2">
+                        <rhombus-input
+                          class="flex-1"
+                          label="Label"
+                          placeholder="Optional label"
+                          [control]="asFc(group.get('label'))"
+                        />
+                        <rhombus-input
+                          class="flex-1"
+                          label="URL"
+                          placeholder="https://…"
+                          [control]="asFc(group.get('url'))"
+                        />
+                      </div>
+                    </div>
+                  }
+                  @if (!aboutSocialLinksArray.length) {
+                    <p class="text-sm opacity-50 text-center py-4 m-0">
+                      No social links yet.
+                    </p>
+                  }
                 </div>
               </div>
             </mat-tab>
@@ -286,6 +279,11 @@ export class AboutPageEditorComponent implements OnInit {
 
   get aboutSocialLinksArray(): FormArray {
     return this.aboutSocialForm.get('socialLinks') as FormArray;
+  }
+
+  /** Narrow an `AbstractControl` to `FormControl` for RhombusKit's `[control]` input. */
+  protected asFc(control: AbstractControl | null): FormControl {
+    return control as FormControl;
   }
 
   ngOnInit(): void {

@@ -1,15 +1,22 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  Validators,
+} from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import type { Series } from '@foliokit/cms-core';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusInputComponent,
+  RhombusSwitchComponent,
+  RhombusTextareaComponent,
+} from '@rhombuskit/core';
 
 export interface SeriesFormDialogData {
   series?: Series;
@@ -27,40 +34,41 @@ function toSlug(name: string): string {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSlideToggleModule,
     RhombusButtonComponent,
+    RhombusInputComponent,
+    RhombusSwitchComponent,
+    RhombusTextareaComponent,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.series ? 'Edit Series' : 'New Series' }}</h2>
     <mat-dialog-content>
-      <form [formGroup]="form" class="flex flex-col gap-4 pt-2" style="min-width: 360px">
-        <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input matInput formControlName="name" placeholder="e.g. Intro to Angular" />
-          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-            <mat-error>Name is required</mat-error>
-          }
-        </mat-form-field>
+      <form class="flex flex-col gap-4 pt-2" style="min-width: 360px" (submit)="$event.preventDefault()">
+        <rhombus-input
+          label="Name"
+          placeholder="e.g. Intro to Angular"
+          [control]="asFc(form.get('name'))"
+        >
+          <span rhombusError>Name is required</span>
+        </rhombus-input>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Slug</mat-label>
-          <input matInput formControlName="slug" placeholder="e.g. intro-to-angular" />
-          @if (form.get('slug')?.hasError('required') && form.get('slug')?.touched) {
-            <mat-error>Slug is required</mat-error>
-          }
-        </mat-form-field>
+        <rhombus-input
+          label="Slug"
+          placeholder="e.g. intro-to-angular"
+          [control]="asFc(form.get('slug'))"
+        >
+          <span rhombusError>Slug is required</span>
+        </rhombus-input>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="2" placeholder="Optional"></textarea>
-        </mat-form-field>
+        <rhombus-textarea
+          label="Description"
+          placeholder="Optional"
+          [rows]="2"
+          [control]="asFc(form.get('description'))"
+        />
 
         <div class="flex items-center gap-3">
-          <mat-slide-toggle formControlName="isActive">Active</mat-slide-toggle>
+          <rhombus-switch label="Active" [control]="asFc(form.get('isActive'))" />
         </div>
       </form>
     </mat-dialog-content>
@@ -83,6 +91,11 @@ export class SeriesFormComponent implements OnInit {
     description: [''],
     isActive: [true],
   });
+
+  /** Narrow an `AbstractControl` to `FormControl` for RhombusKit's `[control]` input. */
+  protected asFc(control: AbstractControl | null): FormControl {
+    return control as FormControl;
+  }
 
   ngOnInit(): void {
     if (this.data.series) {

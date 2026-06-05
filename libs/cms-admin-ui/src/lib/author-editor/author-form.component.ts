@@ -12,23 +12,24 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusInputComponent,
   RhombusProgressBarComponent,
+  RhombusSelectComponent,
+  RhombusTextareaComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
 import { AuthorEditorStore } from './author-editor.store';
@@ -59,14 +60,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     RhombusButtonComponent,
+    RhombusInputComponent,
     RhombusProgressBarComponent,
+    RhombusSelectComponent,
+    RhombusTextareaComponent,
     RhombusTooltipDirective,
   ],
   styles: [
@@ -158,7 +158,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 
       <!-- Scrollable form -->
       <div class="flex-1 overflow-y-auto">
-        <form [formGroup]="form" class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+        <form class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8" (submit)="$event.preventDefault()">
           <!-- Photo upload (light + dark) -->
           <div class="flex flex-col gap-2">
             <span class="text-sm font-semibold">Profile Photo</span>
@@ -237,30 +237,29 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           </div>
 
           <!-- Display name -->
-          <mat-form-field appearance="outline">
-            <mat-label>Display Name</mat-label>
-            <input matInput formControlName="displayName" placeholder="Jane Doe" />
-            @if (form.get('displayName')?.hasError('required') && form.get('displayName')?.touched) {
-              <mat-error>Display name is required</mat-error>
-            }
-          </mat-form-field>
+          <rhombus-input
+            label="Display Name"
+            placeholder="Jane Doe"
+            [control]="asFc(form.get('displayName'))"
+          >
+            <span rhombusError>Display name is required</span>
+          </rhombus-input>
 
           <!-- Email -->
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" type="email" placeholder="jane@example.com" />
-          </mat-form-field>
+          <rhombus-input
+            label="Email"
+            type="email"
+            placeholder="jane@example.com"
+            [control]="asFc(form.get('email'))"
+          />
 
           <!-- Bio -->
-          <mat-form-field appearance="outline">
-            <mat-label>Bio</mat-label>
-            <textarea
-              matInput
-              formControlName="bio"
-              rows="4"
-              placeholder="A short biography…"
-            ></textarea>
-          </mat-form-field>
+          <rhombus-textarea
+            label="Bio"
+            placeholder="A short biography…"
+            [rows]="4"
+            [control]="asFc(form.get('bio'))"
+          />
 
           <!-- Social links -->
           <div class="flex flex-col gap-3">
@@ -272,20 +271,17 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               </rhombus-button>
             </div>
 
-            <div formArrayName="socialLinks" class="flex flex-col gap-3">
-              @for (ctrl of socialLinksArray.controls; track $index) {
-                <div [formGroupName]="$index"
-                     class="flex flex-col gap-2 p-3 rounded-lg border"
+            <div class="flex flex-col gap-3">
+              @for (group of socialLinksArray.controls; track $index) {
+                <div class="flex flex-col gap-2 p-3 rounded-lg border"
                      style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
                   <div class="flex items-start gap-2">
-                    <mat-form-field appearance="outline" class="flex-1">
-                      <mat-label>Platform</mat-label>
-                      <mat-select formControlName="platform">
-                        @for (p of platforms; track p.value) {
-                          <mat-option [value]="p.value">{{ p.label }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
+                    <rhombus-select
+                      class="flex-1"
+                      label="Platform"
+                      [options]="platforms"
+                      [control]="asFc(group.get('platform'))"
+                    />
                     <button
                       mat-icon-button
                       type="button"
@@ -297,14 +293,18 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     </button>
                   </div>
                   <div class="flex gap-2">
-                    <mat-form-field appearance="outline" class="flex-1">
-                      <mat-label>Label</mat-label>
-                      <input matInput formControlName="label" placeholder="Optional label" />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" class="flex-1">
-                      <mat-label>URL</mat-label>
-                      <input matInput formControlName="url" placeholder="https://…" />
-                    </mat-form-field>
+                    <rhombus-input
+                      class="flex-1"
+                      label="Label"
+                      placeholder="Optional label"
+                      [control]="asFc(group.get('label'))"
+                    />
+                    <rhombus-input
+                      class="flex-1"
+                      label="URL"
+                      placeholder="https://…"
+                      [control]="asFc(group.get('url'))"
+                    />
                   </div>
                 </div>
               }
@@ -347,6 +347,11 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
 
   get socialLinksArray(): FormArray {
     return this.form.get('socialLinks') as FormArray;
+  }
+
+  /** Narrow an `AbstractControl` to `FormControl` for RhombusKit's `[control]` input. */
+  protected asFc(control: AbstractControl | null): FormControl {
+    return control as FormControl;
   }
 
   ngOnInit(): void {

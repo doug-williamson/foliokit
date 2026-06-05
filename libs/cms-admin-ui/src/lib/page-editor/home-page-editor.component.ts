@@ -5,19 +5,20 @@ import {
   inject,
 } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { startWith } from 'rxjs/operators';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RhombusSpinnerComponent } from '@rhombuskit/core';
+import {
+  RhombusCheckboxComponent,
+  RhombusInputComponent,
+  RhombusSpinnerComponent,
+  RhombusSwitchComponent,
+} from '@rhombuskit/core';
 import type { SiteConfig } from '@foliokit/cms-core';
 import {
   SeoFieldsComponent,
@@ -36,13 +37,11 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
-    MatCheckboxModule,
     MatExpansionModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSlideToggleModule,
+    RhombusCheckboxComponent,
+    RhombusInputComponent,
     RhombusSpinnerComponent,
+    RhombusSwitchComponent,
     SeoFieldsComponent,
     SaveBarComponent,
   ],
@@ -76,7 +75,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
               Configure the hero visitors see on your public home page.
             </p>
 
-            <form [formGroup]="homeForm" class="flex flex-col gap-5">
+            <form class="flex flex-col gap-5" (submit)="$event.preventDefault()">
               <div class="flex items-center justify-between gap-4">
                 <div class="min-w-0">
                   <p class="text-sm font-medium m-0">Show home hero</p>
@@ -84,40 +83,45 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                     When off, your theme may still show a minimal landing.
                   </p>
                 </div>
-                <mat-slide-toggle formControlName="enabled" aria-label="Enable home hero" />
+                <rhombus-switch
+                  aria-label="Enable home hero"
+                  [control]="asFc(homeForm.get('enabled'))"
+                />
               </div>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Hero headline</mat-label>
-                <input matInput formControlName="heroHeadline" placeholder="Hey, I'm Jane" />
-                @if (homeForm.get('heroHeadline')?.hasError('required') && homeForm.get('heroHeadline')?.touched) {
-                  <mat-error>Headline is required when the hero is on</mat-error>
-                }
-              </mat-form-field>
+              <rhombus-input
+                label="Hero headline"
+                placeholder="Hey, I'm Jane"
+                [control]="asFc(homeForm.get('heroHeadline'))"
+              >
+                <span rhombusError>Headline is required when the hero is on</span>
+              </rhombus-input>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Subheadline</mat-label>
-                <input
-                  matInput
-                  formControlName="heroSubheadline"
-                  placeholder="Thoughts on building products and writing software."
-                />
-              </mat-form-field>
+              <rhombus-input
+                label="Subheadline"
+                placeholder="Thoughts on building products and writing software."
+                [control]="asFc(homeForm.get('heroSubheadline'))"
+              />
 
               <div class="flex flex-col sm:flex-row gap-4">
-                <mat-form-field appearance="outline" class="flex-1">
-                  <mat-label>CTA label</mat-label>
-                  <input matInput formControlName="ctaLabel" placeholder="Read Posts" />
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="flex-1">
-                  <mat-label>CTA URL</mat-label>
-                  <input matInput formControlName="ctaUrl" placeholder="/posts" />
-                </mat-form-field>
+                <rhombus-input
+                  class="flex-1"
+                  label="CTA label"
+                  placeholder="Read Posts"
+                  [control]="asFc(homeForm.get('ctaLabel'))"
+                />
+                <rhombus-input
+                  class="flex-1"
+                  label="CTA URL"
+                  placeholder="/posts"
+                  [control]="asFc(homeForm.get('ctaUrl'))"
+                />
               </div>
 
-              <mat-checkbox formControlName="showRecentPosts">
-                Show recent post below the hero
-              </mat-checkbox>
+              <rhombus-checkbox
+                label="Show recent post below the hero"
+                [control]="asFc(homeForm.get('showRecentPosts'))"
+              />
 
               <mat-expansion-panel [expanded]="false" togglePosition="after" class="!shadow-none mt-2"
                 style="border: 1px solid color-mix(in srgb, currentColor 12%, transparent); border-radius: 8px">
@@ -169,6 +173,11 @@ export class HomePageEditorComponent implements OnInit {
 
   protected get seoGroup(): SeoFieldsFormGroup {
     return this.homeForm.get('seo') as SeoFieldsFormGroup;
+  }
+
+  /** Narrow an `AbstractControl` to `FormControl` for RhombusKit's `[control]` input. */
+  protected asFc(control: AbstractControl | null): FormControl {
+    return control as FormControl;
   }
 
   ngOnInit(): void {

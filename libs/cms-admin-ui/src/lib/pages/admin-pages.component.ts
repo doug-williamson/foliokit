@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { SiteConfig } from '@foliokit/cms-core';
-import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusSpinnerComponent,
+  RhombusSwitchComponent,
+} from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 interface FeatureCardConfig {
@@ -29,11 +32,11 @@ type CardState = 'disabled' | 'empty' | 'published';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatCardModule,
-    MatSlideToggleModule,
     MatChipsModule,
     MatIconModule,
     RhombusButtonComponent,
     RhombusSpinnerComponent,
+    RhombusSwitchComponent,
   ],
   styles: [`
     .status-icon {
@@ -62,10 +65,10 @@ type CardState = 'disabled' | 'empty' | 'published';
                   <span class="text-base font-semibold leading-snug">{{ card.label }}</span>
                   <span class="text-xs text-gray-500 mt-1 leading-snug">{{ card.description }}</span>
                 </div>
-                <mat-slide-toggle
+                <rhombus-switch
                   [checked]="enabled"
                   [disabled]="store.isSaving()"
-                  (change)="toggle(card.flag, $event.checked)"
+                  (checkedChange)="toggle(card.flag, $event)"
                   class="shrink-0 mt-0.5"
                 />
               </div>
