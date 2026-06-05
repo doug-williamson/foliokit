@@ -11,12 +11,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RhombusTabGroupDirective } from '@rhombuskit/core';
 
 @Component({
   selector: 'docs-preview',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, MatIconButton, MatIconModule],
+  imports: [MatTabsModule, MatIconButton, MatIconModule, RhombusTabGroupDirective],
   templateUrl: './docs-preview.component.html',
   styleUrl: './docs-preview.component.scss',
 })

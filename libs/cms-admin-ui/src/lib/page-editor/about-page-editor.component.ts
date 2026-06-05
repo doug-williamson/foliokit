@@ -23,6 +23,7 @@ import {
   RhombusInputComponent,
   RhombusSelectComponent,
   RhombusSpinnerComponent,
+  RhombusTabGroupDirective,
   RhombusTextareaComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
@@ -70,6 +71,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     RhombusInputComponent,
     RhombusSelectComponent,
     RhombusSpinnerComponent,
+    RhombusTabGroupDirective,
     RhombusTextareaComponent,
     RhombusTooltipDirective,
     SeoFieldsComponent,
@@ -123,6 +125,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           }
 
           <mat-tab-group
+            rhombusTabGroup
             class="flex flex-col flex-1 min-h-0 overflow-hidden about-tabs px-0"
             [mat-stretch-tabs]="true"
             color="accent"
