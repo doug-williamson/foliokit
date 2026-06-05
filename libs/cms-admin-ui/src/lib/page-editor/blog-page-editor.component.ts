@@ -6,7 +6,6 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -30,7 +29,6 @@ const PAGE_DESCRIPTION =
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RhombusSpinnerComponent,
-    MatSnackBarModule,
     ReactiveFormsModule,
     BlogPublishSettingsComponent,
     SeoFieldsComponent,
@@ -89,7 +87,6 @@ export class BlogPageEditorComponent implements OnInit {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly blogSeoForm: SeoFieldsFormGroup = new FormGroup({
     metaTitle: new FormControl<string | null>(null),
@@ -99,7 +96,7 @@ export class BlogPageEditorComponent implements OnInit {
   });
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
     effect(() => {
       const c = this.store.config();
       if (!c) return;

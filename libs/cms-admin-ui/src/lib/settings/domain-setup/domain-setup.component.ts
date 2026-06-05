@@ -12,12 +12,11 @@ import { filter } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID } from '@foliokit/cms-core';
 import type { TenantConfig } from '@foliokit/cms-core';
 import { FUNCTIONS_BASE_URL } from '../../provide-admin-kit';
-import { RhombusButtonComponent, RhombusConfirmService } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusConfirmService, RhombusToastService } from '@rhombuskit/core';
 
 const CNAME_TARGET = 'foliokit-blog--foliokit-6f974.us-central1.hosted.app';
 const DOMAIN_RE = /^(www\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
@@ -318,7 +317,7 @@ export class DomainSetupComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly functionsBaseUrl = inject(FUNCTIONS_BASE_URL);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly toast = inject(RhombusToastService);
   private readonly confirm = inject(RhombusConfirmService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -426,27 +425,28 @@ export class DomainSetupComponent implements OnInit {
           break;
         case 'pending':
           this.verifyState.set('pending');
-          this.snackBar.open('DNS is still propagating — check back in a few hours.', 'OK', {
+          this.toast.info('DNS is still propagating — check back in a few hours.', {
+            action: 'OK',
             duration: 5000,
           });
           break;
         case 'wrong_target':
           this.verifyState.set('wrong_target');
-          this.snackBar.open(
-            `CNAME points to wrong target. Expected: ${CNAME_TARGET}`,
-            'OK',
-            { duration: 8000 },
-          );
+          this.toast.error(`CNAME points to wrong target. Expected: ${CNAME_TARGET}`, {
+            action: 'OK',
+            duration: 8000,
+          });
           break;
         default:
           this.verifyState.set('error');
-          this.snackBar.open('Could not verify DNS records. Try again later.', 'OK', {
+          this.toast.error('Could not verify DNS records. Try again later.', {
+            action: 'OK',
             duration: 5000,
           });
       }
     } catch {
       this.verifyState.set('error');
-      this.snackBar.open('Network error. Please try again.', 'OK', { duration: 5000 });
+      this.toast.error('Network error. Please try again.', { action: 'OK', duration: 5000 });
     }
   }
 
@@ -474,7 +474,7 @@ export class DomainSetupComponent implements OnInit {
           this.cnameHostname.set('www');
           this.copiedField.set(null);
         } catch {
-          this.snackBar.open('Failed to remove domain. Please try again.', 'OK', { duration: 5000 });
+          this.toast.error('Failed to remove domain. Please try again.', { action: 'OK', duration: 5000 });
         }
       });
   }

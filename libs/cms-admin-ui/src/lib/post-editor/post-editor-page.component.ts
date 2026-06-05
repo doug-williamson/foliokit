@@ -15,6 +15,7 @@ import {
   RhombusButtonComponent,
   RhombusConfirmService,
   RhombusOverflowMenuComponent,
+  RhombusToastService,
   RhombusTooltipDirective,
   type OverflowMenuItem,
 } from '@rhombuskit/core';
@@ -24,7 +25,6 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PostEditorStore } from './post-editor.store';
 import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
 import { ContentTabComponent } from './tabs/content-tab.component';
@@ -63,7 +63,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
-    MatSnackBarModule,
     PostPublishButtonComponent,
     ContentTabComponent,
     MediaTabComponent,
@@ -359,14 +358,12 @@ export class PostEditorPageComponent implements OnInit {
   readonly store = inject(PostEditorStore);
   private readonly confirm = inject(RhombusConfirmService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly toast = inject(RhombusToastService);
   private readonly router = inject(Router);
 
   protected backToPosts(): void {
     this.router.navigate(['/posts']);
   }
-
-  private static readonly errorSnackbarPanelClass = ['save-error-snackbar'];
 
   /** Route parameter: existing post ID, or absent to create a new draft. */
   readonly id = input<string | undefined>(undefined);
@@ -441,14 +438,11 @@ export class PostEditorPageComponent implements OnInit {
     op$.subscribe({
       next: () => {
         if (options.successMessage) {
-          this.snackBar.open(options.successMessage, undefined, { duration: 3000 });
+          this.toast.success(options.successMessage, { duration: 3000 });
         }
       },
       error: () => {
-        this.snackBar.open('Failed to save — please try again', 'Dismiss', {
-          duration: 5000,
-          panelClass: PostEditorPageComponent.errorSnackbarPanelClass,
-        });
+        this.toast.error('Failed to save — please try again', { action: 'Dismiss' });
       },
     });
   }

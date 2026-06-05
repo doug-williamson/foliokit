@@ -7,17 +7,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { from, last } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusToastService } from '@rhombuskit/core';
 import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-nav.store';
 
 @Component({
   selector: 'admin-setup-prompt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCheckboxModule, MatSnackBarModule, RhombusButtonComponent],
+  imports: [MatCheckboxModule, RhombusButtonComponent],
   styles: [
     `
       :host {
@@ -187,7 +186,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
 export class SetupPromptComponent {
   private readonly store = inject(SiteConfigNavStore);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly toast = inject(RhombusToastService);
 
   readonly aboutEnabled = signal(false);
   readonly linksEnabled = signal(false);
@@ -218,7 +217,7 @@ export class SetupPromptComponent {
       )
       .subscribe({
         next: () => {
-          this.snackBar.open('Site setup complete', undefined, { duration: 3000 });
+          this.toast.success('Site setup complete', { duration: 3000 });
           this.router.navigate(['/dashboard']);
         },
         error: () => void 0,

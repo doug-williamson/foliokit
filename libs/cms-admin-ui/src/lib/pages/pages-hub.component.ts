@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RhombusButtonComponent, RhombusCardComponent } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
@@ -15,7 +14,6 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
     RhombusButtonComponent,
     RhombusCardComponent,
     MatSlideToggleModule,
-    MatSnackBarModule,
     BlogPublishSettingsComponent,
   ],
   template: `
@@ -132,7 +130,6 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
 export class PagesHubComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   protected readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
 
   readonly aboutEnabled = computed(
     () => this.store.config()?.pages?.about?.enabled === true,
@@ -146,7 +143,7 @@ export class PagesHubComponent implements OnInit {
   );
 
   constructor() {
-    wireSiteConfigSaveSnackbarFeedback(this.store, this.snackBar);
+    wireSiteConfigSaveSnackbarFeedback(this.store);
   }
 
   ngOnInit(): void {
