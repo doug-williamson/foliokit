@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RhombusButtonComponent, RhombusCardComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusCardComponent,
+  RhombusSwitchComponent,
+} from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
 import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settings.component';
@@ -13,7 +16,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
   imports: [
     RhombusButtonComponent,
     RhombusCardComponent,
-    MatSlideToggleModule,
+    RhombusSwitchComponent,
     BlogPublishSettingsComponent,
   ],
   template: `
@@ -41,9 +44,9 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                   Your public landing page with hero section and calls to action.
                 </p>
               </div>
-              <mat-slide-toggle
+              <rhombus-switch
                 [checked]="homeEnabled()"
-                (change)="store.togglePageEnabled('home', $event.checked)"
+                (checkedChange)="store.togglePageEnabled('home', $event)"
                 aria-label="Enable Home page on the public site"
               />
             </div>
@@ -72,9 +75,9 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                   A dedicated about page with your bio, photo, and social links.
                 </p>
               </div>
-              <mat-slide-toggle
+              <rhombus-switch
                 [checked]="aboutEnabled()"
-                (change)="store.togglePageEnabled('about', $event.checked)"
+                (checkedChange)="store.togglePageEnabled('about', $event)"
                 aria-label="Enable About page on the public site"
               />
             </div>
@@ -99,9 +102,9 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
                   A link-in-bio style page to highlight destinations for your visitors.
                 </p>
               </div>
-              <mat-slide-toggle
+              <rhombus-switch
                 [checked]="linksEnabled()"
-                (change)="store.togglePageEnabled('links', $event.checked)"
+                (checkedChange)="store.togglePageEnabled('links', $event)"
                 aria-label="Enable Links page on the public site"
               />
             </div>

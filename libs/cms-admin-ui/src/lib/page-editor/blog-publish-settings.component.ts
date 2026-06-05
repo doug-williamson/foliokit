@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusSwitchComponent } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 /**
@@ -12,7 +11,7 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
   selector: 'folio-blog-publish-settings',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RhombusButtonComponent, MatSlideToggleModule],
+  imports: [RhombusButtonComponent, RhombusSwitchComponent],
   template: `
     <div class="flex flex-col gap-3">
     @if (layout() === 'hub') {
@@ -23,9 +22,9 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
             Your posts feed — enables Posts, Authors, and Series in the admin sidebar.
           </p>
         </div>
-        <mat-slide-toggle
+        <rhombus-switch
           [checked]="blogPageEnabled()"
-          (change)="store.togglePageEnabled('blog', $event.checked)"
+          (checkedChange)="store.togglePageEnabled('blog', $event)"
           aria-label="Enable Blog on the public site"
         />
       </div>
@@ -34,10 +33,10 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
         <p class="text-sm opacity-70 m-0 flex-1 min-w-0">
           Turns on Posts, Authors, and Series in the admin sidebar. Use the toggle to enable or disable the whole publish section.
         </p>
-        <mat-slide-toggle
+        <rhombus-switch
           class="shrink-0"
           [checked]="blogPageEnabled()"
-          (change)="store.togglePageEnabled('blog', $event.checked)"
+          (checkedChange)="store.togglePageEnabled('blog', $event)"
           aria-label="Enable Blog on the public site"
         />
       </div>

@@ -4,16 +4,14 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { RhombusSpinnerComponent } from '@rhombuskit/core';
+import {
+  RhombusInputComponent,
+  RhombusSpinnerComponent,
+  RhombusTextareaComponent,
+} from '@rhombuskit/core';
 import { LinksEditorFormComponent } from './links-editor-form.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
@@ -32,11 +30,10 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
     MatExpansionModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatIconModule,
+    RhombusInputComponent,
+    RhombusTextareaComponent,
     RhombusSpinnerComponent,
     LinksEditorFormComponent,
     SaveBarComponent,
@@ -84,17 +81,18 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
               <mat-expansion-panel-header>
                 <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="flex flex-col gap-4 pt-2" [formGroup]="linksSeoForm">
-                <mat-form-field appearance="outline">
-                  <mat-label>Meta Title</mat-label>
-                  <input matInput formControlName="metaTitle" placeholder="My Links" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Meta Description</mat-label>
-                  <textarea matInput rows="3"
-                    formControlName="metaDescription"
-                    placeholder="Short description…"></textarea>
-                </mat-form-field>
+              <div class="flex flex-col gap-4 pt-2">
+                <rhombus-input
+                  label="Meta Title"
+                  placeholder="My Links"
+                  [control]="linksSeoForm.controls.metaTitle"
+                />
+                <rhombus-textarea
+                  label="Meta Description"
+                  placeholder="Short description…"
+                  [rows]="3"
+                  [control]="linksSeoForm.controls.metaDescription"
+                />
               </div>
             </mat-expansion-panel>
           </div>

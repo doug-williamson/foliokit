@@ -6,12 +6,12 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Series } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
   RhombusEmptyStateComponent,
   RhombusSpinnerComponent,
+  RhombusSwitchComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
 import { SeriesFormComponent } from './series-form.component';
@@ -24,10 +24,10 @@ import { TaxonomyStore } from './taxonomy.store';
   imports: [
     MatButtonModule,
     MatIconModule,
-    MatSlideToggleModule,
     RhombusButtonComponent,
     RhombusEmptyStateComponent,
     RhombusSpinnerComponent,
+    RhombusSwitchComponent,
     RhombusTooltipDirective,
   ],
   template: `
@@ -67,9 +67,9 @@ import { TaxonomyStore } from './taxonomy.store';
                     style="border-color: color-mix(in srgb, currentColor 8%, transparent)"
                   >
                     <span class="flex-1 font-medium">{{ s.name }}</span>
-                    <mat-slide-toggle
+                    <rhombus-switch
                       [checked]="s.isActive"
-                      (change)="store.setSeriesActive(s.id, $event.checked)"
+                      (checkedChange)="store.setSeriesActive(s.id, $event)"
                       rhombusTooltip="Active"
                     />
                     <button mat-icon-button rhombusTooltip="Edit" (click)="openEditSeries(s)">
