@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -10,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import type { Series } from '@foliokit/cms-core';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 
 export interface SeriesFormDialogData {
   series?: Series;
@@ -28,11 +28,11 @@ function toSlug(name: string): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSlideToggleModule,
+    RhombusButtonComponent,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.series ? 'Edit Series' : 'New Series' }}</h2>
@@ -65,10 +65,10 @@ function toSlug(name: string): string {
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-flat-button [disabled]="form.invalid" (click)="submit()">
+      <rhombus-button appearance="text" variant="secondary" mat-dialog-close>Cancel</rhombus-button>
+      <rhombus-button [disabled]="form.invalid" (click)="submit()">
         {{ data.series ? 'Save' : 'Create' }}
-      </button>
+      </rhombus-button>
     </mat-dialog-actions>
   `,
 })

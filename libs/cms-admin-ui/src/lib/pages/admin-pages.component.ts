@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SiteConfig } from '@foliokit/cms-core';
+import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 
 interface FeatureCardConfig {
@@ -31,10 +30,10 @@ type CardState = 'disabled' | 'empty' | 'published';
   imports: [
     MatCardModule,
     MatSlideToggleModule,
-    MatButtonModule,
     MatChipsModule,
     MatIconModule,
-    MatProgressSpinnerModule,
+    RhombusButtonComponent,
+    RhombusSpinnerComponent,
   ],
   styles: [`
     .status-icon {
@@ -107,10 +106,10 @@ type CardState = 'disabled' | 'empty' | 'published';
 
               <mat-card-actions>
                 @if (state !== 'disabled') {
-                  <button mat-button color="primary" (click)="navigate(card.editRoute)">
+                  <rhombus-button appearance="text" (click)="navigate(card.editRoute)">
                     Edit page
                     <mat-icon iconPositionEnd svgIcon="arrow_forward" />
-                  </button>
+                  </rhombus-button>
                 }
               </mat-card-actions>
             </mat-card>
@@ -123,7 +122,7 @@ type CardState = 'disabled' | 'empty' | 'published';
       </div>
     } @else {
       <div class="flex items-center justify-center h-64">
-        <mat-spinner diameter="40" />
+        <rhombus-spinner [diameter]="40" />
       </div>
     }
   `,

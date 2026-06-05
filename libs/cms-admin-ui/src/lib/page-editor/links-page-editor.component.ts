@@ -14,7 +14,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RhombusSpinnerComponent } from '@rhombuskit/core';
 import { LinksEditorFormComponent } from './links-editor-form.component';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
 import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-config-save-snackbar.util';
@@ -38,7 +38,7 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatProgressSpinnerModule,
+    RhombusSpinnerComponent,
     MatSnackBarModule,
     LinksEditorFormComponent,
     SaveBarComponent,
@@ -70,7 +70,7 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
 
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <div class="links-scroll">

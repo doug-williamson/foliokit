@@ -6,18 +6,18 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { from, last } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-nav.store';
 
 @Component({
   selector: 'admin-setup-prompt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatCheckboxModule, MatSnackBarModule],
+  imports: [MatCheckboxModule, MatSnackBarModule, RhombusButtonComponent],
   styles: [
     `
       :host {
@@ -172,15 +172,13 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
             </div>
           </div>
 
-          <button
-            mat-flat-button
-            color="primary"
+          <rhombus-button
             class="save-btn"
             (click)="save()"
             [disabled]="isSaving()"
           >
             Save and continue
-          </button>
+          </rhombus-button>
         </div>
       </div>
     }

@@ -17,8 +17,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RhombusSpinnerComponent } from '@rhombuskit/core';
 import type { SiteConfig } from '@foliokit/cms-core';
 import {
   SeoFieldsComponent,
@@ -42,8 +42,8 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     MatSlideToggleModule,
+    RhombusSpinnerComponent,
     MatSnackBarModule,
     SeoFieldsComponent,
     SaveBarComponent,
@@ -69,7 +69,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <div class="flex-1 overflow-y-auto">

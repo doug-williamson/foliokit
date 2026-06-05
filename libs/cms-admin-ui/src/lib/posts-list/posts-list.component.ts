@@ -10,18 +10,17 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   RhombusButtonComponent,
   RhombusChipDirective,
   RhombusChipGroupDirective,
   RhombusEmptyStateComponent,
   RhombusOverflowMenuComponent,
+  RhombusSpinnerComponent,
   type OverflowMenuItem,
 } from '@rhombuskit/core';
 import { PostsListStore, type PostFilterStatus } from './posts-list.store';
@@ -34,12 +33,10 @@ import { PostsSectionComponent } from './posts-section.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PostsListStore],
   imports: [
-    MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     PostsTableComponent,
     PostsSectionComponent,
     RhombusButtonComponent,
@@ -47,6 +44,7 @@ import { PostsSectionComponent } from './posts-section.component';
     RhombusChipGroupDirective,
     RhombusEmptyStateComponent,
     RhombusOverflowMenuComponent,
+    RhombusSpinnerComponent,
   ],
   host: { class: 'block h-full min-w-0 overflow-hidden' },
   styles: [`
@@ -110,7 +108,7 @@ import { PostsSectionComponent } from './posts-section.component';
 
       @if (store.loading()) {
         <div class="flex-1 min-h-0 flex items-center justify-center">
-          <mat-spinner diameter="40" />
+          <rhombus-spinner [diameter]="40" />
         </div>
       } @else if (store.error()) {
         <div class="flex-1 min-h-0 flex items-center justify-center opacity-60 text-sm">

@@ -6,11 +6,14 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { Series } from '@foliokit/cms-core';
-import { RhombusButtonComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusEmptyStateComponent,
+  RhombusSpinnerComponent,
+  RhombusTooltipDirective,
+} from '@rhombuskit/core';
 import { SeriesFormComponent } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
@@ -21,11 +24,11 @@ import { TaxonomyStore } from './taxonomy.store';
   imports: [
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
     MatSlideToggleModule,
-    MatTooltipModule,
     RhombusButtonComponent,
     RhombusEmptyStateComponent,
+    RhombusSpinnerComponent,
+    RhombusTooltipDirective,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
@@ -42,7 +45,7 @@ import { TaxonomyStore } from './taxonomy.store';
         <div class="flex-1 overflow-y-auto">
           @if (store.loading()) {
             <div class="flex items-center justify-center p-12">
-              <mat-spinner diameter="40" />
+              <rhombus-spinner [diameter]="40" />
             </div>
           } @else if (store.series().length === 0) {
             <rhombus-empty-state
@@ -67,12 +70,12 @@ import { TaxonomyStore } from './taxonomy.store';
                     <mat-slide-toggle
                       [checked]="s.isActive"
                       (change)="store.setSeriesActive(s.id, $event.checked)"
-                      matTooltip="Active"
+                      rhombusTooltip="Active"
                     />
-                    <button mat-icon-button matTooltip="Edit" (click)="openEditSeries(s)">
+                    <button mat-icon-button rhombusTooltip="Edit" (click)="openEditSeries(s)">
                       <mat-icon svgIcon="edit" />
                     </button>
-                    <button mat-icon-button matTooltip="Delete" (click)="deleteSeries(s)">
+                    <button mat-icon-button rhombusTooltip="Delete" (click)="deleteSeries(s)">
                       <mat-icon svgIcon="delete" />
                     </button>
                   </div>

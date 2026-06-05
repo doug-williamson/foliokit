@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { RhombusButtonComponent, RhombusTooltipDirective } from '@rhombuskit/core';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -43,7 +43,8 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatTooltipModule,
+    RhombusButtonComponent,
+    RhombusTooltipDirective,
     DragDropModule,
   ],
   styles: [
@@ -107,10 +108,10 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
         <div class="flex flex-col gap-3">
           <div class="flex items-center justify-between">
             <span class="text-sm font-semibold">Links</span>
-            <button mat-stroked-button (click)="addLink(cfg.links ?? [])">
+            <rhombus-button appearance="outlined" variant="secondary" (click)="addLink(cfg.links ?? [])">
               <mat-icon svgIcon="add" />
               Add Link
-            </button>
+            </rhombus-button>
           </div>
 
           <div
@@ -131,7 +132,7 @@ const PLATFORM_OPTIONS: LinksLink['platform'][] = [
                     [checked]="!!link.highlighted"
                     (change)="updateLink(cfg.links ?? [], link.id, 'highlighted', $event.checked)"
                     class="shrink-0"
-                    matTooltip="Highlighted"
+                    rhombusTooltip="Highlighted"
                   />
                   <button mat-icon-button (click)="deleteLink(cfg.links ?? [], link.id)" title="Delete link">
                     <mat-icon svgIcon="delete" />

@@ -12,8 +12,10 @@ import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
+  RhombusButtonComponent,
   RhombusConfirmService,
   RhombusOverflowMenuComponent,
+  RhombusTooltipDirective,
   type OverflowMenuItem,
 } from '@rhombuskit/core';
 import { BlogPost } from '@foliokit/cms-core';
@@ -23,7 +25,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostEditorStore } from './post-editor.store';
 import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
 import { ContentTabComponent } from './tabs/content-tab.component';
@@ -63,7 +64,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatIconModule,
     MatSidenavModule,
     MatSnackBarModule,
-    MatTooltipModule,
     PostPublishButtonComponent,
     ContentTabComponent,
     MediaTabComponent,
@@ -72,7 +72,9 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     ArticlePreviewComponent,
     CardPreviewComponent,
     SeoPreviewComponent,
+    RhombusButtonComponent,
     RhombusOverflowMenuComponent,
+    RhombusTooltipDirective,
   ],
   styles: [
     `
@@ -199,7 +201,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             type="button"
             class="toolbar-icon-btn shrink-0"
             (click)="backToPosts()"
-            matTooltip="Back to Posts"
+            rhombusTooltip="Back to Posts"
             aria-label="Back to Posts"
           >
             <mat-icon svgIcon="arrow_back" />
@@ -233,7 +235,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               type="button"
               class="toolbar-icon-btn shrink-0"
               (click)="togglePreview()"
-              [matTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
+              [rhombusTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
               [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
             >
               <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
@@ -244,33 +246,33 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               class="toolbar-icon-btn shrink-0"
               (click)="onManualSave()"
               [disabled]="store.isSaving() || !store.isDirty()"
-              [matTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
-              matTooltipPosition="below"
+              [rhombusTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
+              rhombusTooltipPosition="below"
             >
               <mat-icon svgIcon="save" />
             </button>
           } @else {
-            <button
-              mat-stroked-button
+            <rhombus-button
+              appearance="outlined"
               type="button"
               (click)="onManualSave()"
               [disabled]="store.isSaving() || !store.isDirty()"
-              [matTooltip]="store.isDirty() ? 'Save changes' : 'No changes to save'"
+              [rhombusTooltip]="store.isDirty() ? 'Save changes' : 'No changes to save'"
             >
               Save
-            </button>
+            </rhombus-button>
           }
           @if (store.post(); as post) {
             @if (post.status === 'published') {
-              <button
-                mat-stroked-button
+              <rhombus-button
+                appearance="outlined"
                 type="button"
                 class="shrink-0"
                 [disabled]="store.isSaving()"
                 (click)="confirmUnpublish()"
               >
                 Unpublish
-              </button>
+              </rhombus-button>
             } @else {
               <span class="shrink-0 min-w-0 post-editor-publish-wrap">
                 <cms-post-publish-button

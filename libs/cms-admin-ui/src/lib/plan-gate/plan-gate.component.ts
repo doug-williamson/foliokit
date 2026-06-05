@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PlanGatingService } from '@foliokit/cms-core';
 import type { PlatformFeatures } from '@foliokit/cms-core';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { PlanComparisonDialogComponent } from './plan-comparison-dialog.component';
 
@@ -23,7 +24,7 @@ const UPGRADE_FRAGMENT = 'billing';
   selector: 'cms-plan-gate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule],
+  imports: [RouterLink, MatButtonModule, RhombusButtonComponent],
   template: `
     @if (isEnabled()) {
       <ng-content />
@@ -63,15 +64,13 @@ const UPGRADE_FRAGMENT = 'billing';
           @if (checkoutError()) {
             <p class="pg-error" role="alert">{{ checkoutError() }}</p>
           }
-          <button
-            mat-flat-button
-            color="primary"
+          <rhombus-button
             type="button"
             [disabled]="checkoutLoading()"
             (click)="startCheckout()"
           >
             {{ checkoutLoading() ? 'Starting checkout…' : ('Upgrade to ' + planLabel()) }}
-          </button>
+          </rhombus-button>
           <a
             mat-button
             class="pg-settings-link"

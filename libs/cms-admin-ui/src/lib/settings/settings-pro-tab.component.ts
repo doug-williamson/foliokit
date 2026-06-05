@@ -8,10 +8,10 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser, DatePipe } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
 import { doc, getDoc } from 'firebase/firestore';
 import { AuthService, FIRESTORE, SITE_ID, getPlanFeatures } from '@foliokit/cms-core';
 import type { BillingRecord, BillingStatus } from '@foliokit/cms-core';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { FUNCTIONS_BASE_URL } from '../provide-admin-kit';
 import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { DomainSetupComponent } from './domain-setup/domain-setup.component';
@@ -20,7 +20,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
   selector: 'folio-settings-pro-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, DatePipe, DomainSetupComponent],
+  imports: [RhombusButtonComponent, DatePipe, DomainSetupComponent],
   template: `
     <div class="settings-pro-tab">
       @if (loadState() === 'loading') {
@@ -65,26 +65,24 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
                 Add a custom domain, unlock all page types, and publish without limits.
               </p>
               <p class="upgrade-price">$9 / month</p>
-              <button
-                mat-flat-button
-                color="primary"
+              <rhombus-button
                 (click)="upgradeToPro()"
                 [disabled]="checkoutState() === 'redirecting'"
               >
                 {{ checkoutState() === 'redirecting' ? 'Redirecting to checkout…' : 'Upgrade to Pro' }}
-              </button>
+              </rhombus-button>
             </div>
           }
 
           @if (record?.plan === 'pro' || record?.plan === 'agency') {
             <div class="manage-row">
-              <button
-                mat-stroked-button
+              <rhombus-button
+                appearance="outlined"
                 (click)="openBillingPortal()"
                 [disabled]="portalState() === 'redirecting'"
               >
                 {{ portalState() === 'redirecting' ? 'Opening billing portal…' : 'Manage Billing' }}
-              </button>
+              </rhombus-button>
             </div>
           }
         </section>
@@ -105,9 +103,9 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             <p class="settings-section-body">
               Point your own domain to your FolioKit site.
             </p>
-            <button mat-stroked-button color="primary">
+            <rhombus-button appearance="outlined">
               Upgrade to Pro to unlock
-            </button>
+            </rhombus-button>
           </section>
         }
 
@@ -125,9 +123,9 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             <p class="settings-section-body">
               Replace the FolioKit header mark with your own logo.
             </p>
-            <button mat-stroked-button color="primary">
+            <rhombus-button appearance="outlined">
               Upgrade to Pro to unlock
-            </button>
+            </rhombus-button>
           </section>
         }
       }

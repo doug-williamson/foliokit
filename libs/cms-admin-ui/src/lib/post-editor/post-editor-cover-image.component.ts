@@ -10,7 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RhombusProgressBarComponent } from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { CollectionPaths, FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
@@ -19,7 +19,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-cover-image',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [MatButtonModule, MatIconModule, RhombusProgressBarComponent],
   styles: [
     `
       :host {
@@ -111,7 +111,7 @@ import { PostEditorStore } from './post-editor.store';
 
       <!-- Progress bar -->
       @if (uploading()) {
-        <mat-progress-bar mode="determinate" [value]="uploadProgress()" />
+        <rhombus-progress-bar mode="determinate" [value]="uploadProgress()" />
       }
 
       <!-- Error message -->
