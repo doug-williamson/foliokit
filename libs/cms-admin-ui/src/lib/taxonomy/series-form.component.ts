@@ -5,14 +5,12 @@ import {
   FormControl,
   Validators,
 } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { Series } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusDialogActionsDirective,
+  RhombusDialogComponent,
   RhombusInputComponent,
   RhombusSwitchComponent,
   RhombusTextareaComponent,
@@ -21,6 +19,9 @@ import {
 export interface SeriesFormDialogData {
   series?: Series;
 }
+
+/** Result emitted when the series form is submitted. */
+export type SeriesFormResult = Omit<Series, 'id' | 'createdAt' | 'updatedAt'>;
 
 function toSlug(name: string): string {
   return name
@@ -34,15 +35,15 @@ function toSlug(name: string): string {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatDialogModule,
     RhombusButtonComponent,
+    RhombusDialogActionsDirective,
+    RhombusDialogComponent,
     RhombusInputComponent,
     RhombusSwitchComponent,
     RhombusTextareaComponent,
   ],
   template: `
-    <h2 mat-dialog-title>{{ data.series ? 'Edit Series' : 'New Series' }}</h2>
-    <mat-dialog-content>
+    <rhombus-dialog [title]="data.series ? 'Edit Series' : 'New Series'">
       <form class="flex flex-col gap-4 pt-2" style="min-width: 360px" (submit)="$event.preventDefault()">
         <rhombus-input
           label="Name"
@@ -71,18 +72,21 @@ function toSlug(name: string): string {
           <rhombus-switch label="Active" [control]="asFc(form.get('isActive'))" />
         </div>
       </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <rhombus-button appearance="text" variant="secondary" mat-dialog-close>Cancel</rhombus-button>
-      <rhombus-button [disabled]="form.invalid" (click)="submit()">
-        {{ data.series ? 'Save' : 'Create' }}
-      </rhombus-button>
-    </mat-dialog-actions>
+
+      <div rhombusDialogActions>
+        <rhombus-button appearance="text" variant="secondary" (click)="dialogRef.close()">
+          Cancel
+        </rhombus-button>
+        <rhombus-button [disabled]="form.invalid" (click)="submit()">
+          {{ data.series ? 'Save' : 'Create' }}
+        </rhombus-button>
+      </div>
+    </rhombus-dialog>
   `,
 })
 export class SeriesFormComponent implements OnInit {
   protected readonly data = inject<SeriesFormDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject(MatDialogRef<SeriesFormComponent>);
+  protected readonly dialogRef = inject(MatDialogRef<SeriesFormComponent, SeriesFormResult>);
   private readonly fb = inject(FormBuilder);
 
   readonly form = this.fb.group({
@@ -117,7 +121,7 @@ export class SeriesFormComponent implements OnInit {
   protected submit(): void {
     if (this.form.invalid) return;
     const { name, slug, description, isActive } = this.form.getRawValue();
-    const result: Omit<Series, 'id' | 'createdAt' | 'updatedAt'> = {
+    const result: SeriesFormResult = {
       name: name!,
       slug: slug!,
       description: description || undefined,

@@ -4,17 +4,17 @@ import {
   inject,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Series } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusDialogService,
   RhombusEmptyStateComponent,
   RhombusSpinnerComponent,
   RhombusSwitchComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
-import { SeriesFormComponent } from './series-form.component';
+import { SeriesFormComponent, type SeriesFormResult } from './series-form.component';
 import { TaxonomyStore } from './taxonomy.store';
 
 @Component({
@@ -89,7 +89,7 @@ import { TaxonomyStore } from './taxonomy.store';
 })
 export class TaxonomyPageComponent {
   protected readonly store = inject(TaxonomyStore);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(RhombusDialogService);
 
   constructor() {
     this.store.loadAll();
@@ -97,7 +97,7 @@ export class TaxonomyPageComponent {
 
   protected openNewSeries(): void {
     this.dialog
-      .open(SeriesFormComponent, { data: {} })
+      .open<SeriesFormResult>(SeriesFormComponent, { data: {} })
       .afterClosed()
       .subscribe((result) => {
         if (result) this.store.createSeries(result);
@@ -106,7 +106,7 @@ export class TaxonomyPageComponent {
 
   protected openEditSeries(s: Series): void {
     this.dialog
-      .open(SeriesFormComponent, { data: { series: s } })
+      .open<SeriesFormResult>(SeriesFormComponent, { data: { series: s } })
       .afterClosed()
       .subscribe((result) => {
         if (result) this.store.updateSeries(s.id, result);
