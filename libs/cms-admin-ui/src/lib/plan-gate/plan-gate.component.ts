@@ -10,10 +10,9 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { PlanGatingService } from '@foliokit/cms-core';
 import type { PlatformFeatures } from '@foliokit/cms-core';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusDialogService } from '@rhombuskit/core';
 import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { PlanComparisonDialogComponent } from './plan-comparison-dialog.component';
 
@@ -275,7 +274,7 @@ export class PlanGateComponent {
   readonly featureDescription = input.required<string>();
 
   private readonly planGatingService = inject(PlanGatingService);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(RhombusDialogService);
   private readonly billingCheckout = inject(BillingCheckoutService);
   private readonly platformId = inject(PLATFORM_ID);
 

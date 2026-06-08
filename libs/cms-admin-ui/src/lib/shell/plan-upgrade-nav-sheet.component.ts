@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { RhombusDialogService } from '@rhombuskit/core';
 import { PlanComparisonDialogComponent } from '../plan-gate/plan-comparison-dialog.component';
 
 const UPGRADE_URL = '/settings';
@@ -71,7 +71,7 @@ const UPGRADE_FRAGMENT = 'billing';
 })
 export class PlanUpgradeNavSheetComponent {
   private readonly sheetRef = inject(MatBottomSheetRef<PlanUpgradeNavSheetComponent>);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(RhombusDialogService);
 
   protected readonly upgradeUrl = UPGRADE_URL;
   protected readonly upgradeFragment = UPGRADE_FRAGMENT;

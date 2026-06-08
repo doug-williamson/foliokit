@@ -13,7 +13,6 @@ import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
@@ -38,7 +37,6 @@ type Cell = { $implicit: Author; index: number };
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatDialogModule,
     MatIconModule,
     RhombusTooltipDirective,
     RhombusButtonComponent,
@@ -135,7 +133,6 @@ type Cell = { $implicit: Author; index: number };
 export class AuthorsListComponent implements OnInit {
   protected readonly router = inject(Router);
   private readonly authorService = inject(AuthorService);
-  private readonly dialog = inject(MatDialog);
 
   protected readonly loading = signal(true);
   protected readonly authors = signal<Author[] | null>(null);

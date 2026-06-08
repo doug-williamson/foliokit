@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusDialogActionsDirective,
+  RhombusDialogComponent,
+} from '@rhombuskit/core';
 
 interface FeatureRow {
   label: string;
@@ -27,11 +30,14 @@ const FEATURE_ROWS: FeatureRow[] = [
   selector: 'cms-plan-comparison-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, MatDialogModule, MatIconModule, RhombusButtonComponent],
+  imports: [
+    MatIconModule,
+    RhombusButtonComponent,
+    RhombusDialogComponent,
+    RhombusDialogActionsDirective,
+  ],
   template: `
-    <h2 mat-dialog-title>FolioKit Plans</h2>
-
-    <mat-dialog-content>
+    <rhombus-dialog title="FolioKit Plans">
       <table class="pcd-table">
         <thead>
           <tr>
@@ -65,14 +71,14 @@ const FEATURE_ROWS: FeatureRow[] = [
       <p class="pcd-note">
         Agency plan ($29/mo) includes everything in Pro, plus Custom CSS, Multiple authors, and additional page types.
       </p>
-    </mat-dialog-content>
 
-    <mat-dialog-actions align="end">
-      <rhombus-button appearance="text" variant="secondary" mat-dialog-close>Close</rhombus-button>
-      <a mat-flat-button color="primary" routerLink="/settings" [mat-dialog-close]="true">
-        Upgrade
-      </a>
-    </mat-dialog-actions>
+      <div rhombusDialogActions>
+        <rhombus-button appearance="text" variant="secondary" (click)="dialogRef.close()">
+          Close
+        </rhombus-button>
+        <rhombus-button (click)="upgrade()">Upgrade</rhombus-button>
+      </div>
+    </rhombus-dialog>
   `,
   styles: [`
     .pcd-table {
@@ -139,4 +145,12 @@ const FEATURE_ROWS: FeatureRow[] = [
 })
 export class PlanComparisonDialogComponent {
   protected readonly rows: FeatureRow[] = FEATURE_ROWS;
+  protected readonly dialogRef = inject(MatDialogRef<PlanComparisonDialogComponent>);
+  private readonly router = inject(Router);
+
+  /** Close the dialog and head to billing/settings to upgrade. */
+  protected upgrade(): void {
+    this.dialogRef.close();
+    this.router.navigate(['/settings']);
+  }
 }
