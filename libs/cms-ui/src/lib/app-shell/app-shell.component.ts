@@ -2,26 +2,35 @@ import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
-  effect,
+  computed,
   inject,
-  signal,
 } from '@angular/core';
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { filter, map } from 'rxjs/operators';
-import { ActivationEnd, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgTemplateOutlet } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import {
+  RhombusAppShellComponent,
+  RhombusShellNavFooterDirective,
+} from '@rhombuskit/core';
 import { SHELL_CONFIG } from '../shell-config.token';
 import { FolioThemeControlComponent } from '../theming/theme-control/theme-control.component';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
 
+/** Overlay-drawer breakpoint used when the host config omits `sidenavMobileMaxPx`. */
 const DEFAULT_MOBILE_MAX_PX = 767;
-const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
 
+/**
+ * Application shell layout.
+ *
+ * Wraps RhombusKit's `rhombus-app-shell` (responsive drawer + header) and keeps
+ * FolioKit's config-driven contract: a brand block, theme control, and the
+ * `[shellNav]` / `[shellNavFooter]` / `[shellHeaderActions]` / `[shellAuthSlot]`
+ * content-projection slots that consumer apps already rely on. Consumer content
+ * is re-projected into the matching rhombus slots.
+ *
+ * The responsive drawer (overlay below `sidenavMobileMaxPx`, docked above) and
+ * the drawer toggle are owned by `rhombus-app-shell`; the previous bespoke
+ * `BreakpointObserver`/icon-rail logic has been removed.
+ */
 @Component({
   selector: 'folio-app-shell',
   templateUrl: './app-shell.component.html',
@@ -29,11 +38,9 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    MatSidenavModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
+    RhombusAppShellComponent,
+    RhombusShellNavFooterDirective,
+    NgTemplateOutlet,
     RouterLink,
     FolioThemeControlComponent,
   ],
@@ -41,64 +48,15 @@ const ICON_RAIL_BP = '(min-width: 768px) and (max-width: 1023.98px)';
 export class AppShellComponent {
   protected readonly config = inject(SHELL_CONFIG);
 
-  @ContentChild(ShellNavFooterDirective) protected navFooter?: ShellNavFooterDirective;
+  @ContentChild(ShellNavFooterDirective)
+  protected navFooter?: ShellNavFooterDirective;
 
-  protected readonly isMobile = signal(false);
-  readonly isIconRail = signal(false);
-  protected readonly sidenavOpen = signal(false);
-
-  private _isMobileInitialized = false;
-
-  private readonly breakpointObserver = inject(BreakpointObserver);
-  private readonly router = inject(Router);
-
-  /** Current route title, read from route data['title']. Updated on each navigation. */
-  protected readonly routeTitle = toSignal(
-    this.router.events.pipe(
-      filter((e): e is ActivationEnd => e instanceof ActivationEnd),
-      map((e) => e.snapshot.data['title'] as string | undefined),
-      filter((t): t is string => t !== undefined),
-      takeUntilDestroyed(),
-    ),
-    { initialValue: '' },
+  /** Overlay-drawer breakpoint forwarded to `rhombus-app-shell`. */
+  protected readonly sidenavMobileMaxPx = computed(
+    () => this.config().sidenavMobileMaxPx ?? DEFAULT_MOBILE_MAX_PX,
   );
 
-  constructor() {
-    effect((onCleanup) => {
-      const maxPx = this.config().sidenavMobileMaxPx ?? DEFAULT_MOBILE_MAX_PX;
-      const overlayBp = `(max-width: ${maxPx}.98px)`;
-      const useIconRail = maxPx <= DEFAULT_MOBILE_MAX_PX;
-      const queries = useIconRail ? [overlayBp, ICON_RAIL_BP] : [overlayBp];
-      const sub = this.breakpointObserver.observe(queries).subscribe((state) => {
-        const mobile = !!state.breakpoints[overlayBp];
-        const iconRail = useIconRail ? !!state.breakpoints[ICON_RAIL_BP] : false;
-        const mobileChanged = mobile !== this.isMobile();
-        const iconRailChanged = iconRail !== this.isIconRail();
-        this.isMobile.set(mobile);
-        this.isIconRail.set(iconRail);
-        if (!this._isMobileInitialized || mobileChanged || iconRailChanged) {
-          this._isMobileInitialized = true;
-          this.sidenavOpen.set(!mobile && !iconRail);
-        }
-      });
-      onCleanup(() => sub.unsubscribe());
-    });
-
-    this.router.events
-      .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        takeUntilDestroyed(),
-      )
-      .subscribe(() => {
-        if (this.isMobile() || this.isIconRail()) {
-          this.sidenavOpen.set(false);
-        }
-      });
-  }
-
-  protected toggleSidenav(): void {
-    this.sidenavOpen.update((v) => !v);
-  }
+  private readonly router = inject(Router);
 
   protected navigateToNewPost(): void {
     this.router.navigate(['/posts/new']);
