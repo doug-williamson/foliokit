@@ -1,343 +1,8 @@
-:host {
-  display: block;
-  height: 100%;
-}
+// rhombus-app-shell owns the drawer/header chrome; this stylesheet only carries
+// the FolioKit brand block, the header-actions group, and the powered-by footer.
 
-.folio-shell-container {
-  height: 100%;
-}
-
-mat-sidenav-container {
-  height: 100%;
-  background: var(--bg);
-}
-
-mat-sidenav {
-  width: 220px;
-  background: var(--surface-1);
-  border-right: var(--border-width) solid var(--border);
-  --mat-sidenav-container-shape: 0px;
-  border-radius: 0;
-  transition: width 0.18s ease;
-}
-
-// ─── Icon-rail (768–1023px) ───────────────────────────────────────────────────
-
-mat-sidenav.icon-rail {
-  width: 52px;
-  overflow-x: hidden;
-}
-
-::ng-deep mat-sidenav.icon-rail .nav-item.active-link {
-  margin: 1px 4px;
-
-  &::before {
-    display: none;
-  }
-}
-
-::ng-deep mat-sidenav.icon-rail .nav-label {
-  display: none;
-}
-
-::ng-deep mat-sidenav.icon-rail .nav-group-label {
-  display: none;
-}
-
-::ng-deep mat-sidenav.icon-rail .nav-item {
-  padding: 0 !important;
-  justify-content: center;
-}
-
-::ng-deep mat-sidenav.icon-rail .folio-nav-footer {
-  padding: 4px 0;
-}
-
-::ng-deep mat-sidenav.icon-rail .folio-nav-footer > div {
-  justify-content: center;
-  padding: 0;
-}
-
-::ng-deep mat-sidenav.icon-rail .folio-nav-footer span {
-  display: none;
-}
-
-// ─── Nav wrapper layout ───────────────────────────────────────────────────────
-
-.folio-nav-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.folio-nav-body {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: visible; // cap pseudo-element paints left of content box; mat-sidenav clips
-  padding-top: 8px;
-}
-
-.folio-nav-footer {
-  border-top: var(--border-width) solid var(--border);
-  padding: 8px;
-}
-
-// Plain button (not mat-icon-button) so MDC does not force a ~24px icon.
-::ng-deep mat-sidenav .folio-nav-footer .nav-footer-signout {
-  flex-shrink: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--r-sm);
-  transition: background 0.12s, color 0.12s;
-
-  &:hover {
-    background: var(--surface-2);
-    color: var(--text-primary);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--text-accent);
-    outline-offset: 2px;
-  }
-}
-
-::ng-deep mat-sidenav .folio-nav-footer .nav-footer-signout .nav-icon {
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
-  line-height: 18px !important;
-}
-
-::ng-deep mat-sidenav .folio-nav-footer .nav-footer-signout .nav-icon svg {
-  width: 18px !important;
-  height: 18px !important;
-  display: block;
-}
-
-.folio-nav-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 16px 12px;
-}
-
-// ─── Nav group labels ─────────────────────────────────────────────────────────
-
-::ng-deep mat-sidenav .nav-group-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 0 16px;
-  margin-bottom: 3px;
-  margin-top: 18px;
-  display: block;
-
-  &:first-child {
-    margin-top: 0;
-  }
-}
-
-// ─── Nav items ────────────────────────────────────────────────────────────────
-
-::ng-deep mat-sidenav .nav-item,
-::ng-deep mat-sidenav .mat-mdc-list-item {
-  position: relative;
-  height: 40px;
-  padding: 0 16px;
-  gap: 10px;
-  display: flex !important;
-  align-items: center;
-  font-size: 12px;
-  font-family: var(--font-body);
-  letter-spacing: normal;
-  color: var(--text-secondary);
-  text-decoration: none;
-  border-left: none;
-  transition: background 0.12s, color 0.12s;
-
-  &:hover {
-    background: var(--surface-2);
-    color: var(--text-primary);
-  }
-
-  .nav-icon {
-    font-size: 18px !important;
-    width: 18px !important;
-    height: 18px !important;
-    flex-shrink: 0;
-  }
-
-  &.active-link {
-    background: var(--nav-active-bg);
-    color: var(--nav-active-text);
-    font-weight: 700;
-    border-radius: 8px;
-    margin: 1px 8px;
-    overflow: hidden; // clips MDC state layer/ripple to pill boundary
-  }
-}
-
-::ng-deep mat-sidenav .nav-item.nav-child {
-  // no padding adjustment needed for active-link — pill style handles inset via margin
-  padding-left: 28px;
-  height: 36px;
-
-  .nav-icon {
-    font-size: 16px !important;
-    width: 16px !important;
-    height: 16px !important;
-  }
-}
-
-::ng-deep mat-sidenav .nav-item.nav-item--disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-
-// ─── Plan tier badges on nav items ───────────────────────────────────────────
-
-::ng-deep mat-sidenav .nav-plan-badge {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  padding: 1px 6px;
-  border-radius: 100px;
-  margin-left: auto;
-  flex-shrink: 0;
-  line-height: 1.6;
-}
-
-[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
-  background: var(--teal-100);
-  color: var(--teal-700);
-}
-
-[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--pro {
-  background: color-mix(in srgb, var(--teal-500) 20%, transparent);
-  color: var(--teal-200);
-}
-
-[data-theme="light"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
-  background: var(--amber-100);
-  color: var(--amber-600);
-}
-
-[data-theme="dark"] ::ng-deep mat-sidenav .nav-plan-badge--agency {
-  background: color-mix(in srgb, var(--amber-600) 20%, transparent);
-  color: var(--amber-400);
-}
-
-// Hide plan badges in icon-rail mode (no space for text)
-::ng-deep mat-sidenav.icon-rail .nav-plan-badge {
-  display: none;
-}
-
-// ─── Logo mark ────────────────────────────────────────────────────────────────
-
-.folio-logo-mark {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  background: var(--logo-bg);
-  border-radius: var(--r-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.25s;
-  flex-shrink: 0;
-
-  span {
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 900;
-    color: var(--logo-text);
-    line-height: 1;
-    transition: color 0.25s;
-  }
-}
-
-.folio-logo-dot {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--logo-dot);
-  transition: background 0.25s;
-}
-
-.folio-app-name {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: 0.04em;
-  margin-left: 6px;
-  white-space: nowrap;
-
-  em {
-    font-style: italic;
-    color: var(--text-secondary);
-    font-weight: 400;
-  }
-}
-
-// ─── Route title ─────────────────────────────────────────────────────────────
-
-.route-title {
-  flex: 1;
-  margin-left: 16px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-// ─── Toolbar ─────────────────────────────────────────────────────────────────
-
-.folio-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 56px;
-  background: var(--surface-1);
-  border-bottom: var(--border-width) solid var(--border);
-  gap: 4px;
-  color: var(--text-primary);
-
-  /* Extra air between sidenav toggle and brand (menu is only first child when shown). */
-  > button.mat-mdc-icon-button:first-child {
-    margin-inline-end: 8px;
-  }
-
-  /* All icon buttons in the toolbar inherit primary text color */
-  button.mat-mdc-icon-button {
-    color: var(--text-primary);
-  }
-
-  /* Theme toggle (last icon button) uses the accent color */
-  button.mat-mdc-icon-button:last-of-type {
-    color: var(--text-accent);
-  }
-}
-
-.folio-toolbar-brand {
+// ─── Shell brand (projected into [shellBrand]) ────────────────────────────────
+.folio-shell-brand {
   display: inline-flex;
   align-items: center;
   min-width: 0;
@@ -353,35 +18,92 @@ mat-sidenav.icon-rail {
   &:hover .folio-app-name {
     color: var(--text-accent);
   }
+
+  .folio-logo-mark {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    background: var(--logo-bg);
+    border-radius: var(--r-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.25s;
+  }
+
+  .folio-logo-mark-f {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--logo-text);
+    line-height: 1;
+  }
+
+  .folio-logo-dot {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--logo-dot);
+  }
+
+  .folio-app-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    margin-left: 6px;
+    white-space: nowrap;
+    transition: color 0.25s;
+  }
+
+  .folio-custom-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+  }
 }
 
-// ─── Content area ─────────────────────────────────────────────────────────────
-
-.folio-content {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  overflow: hidden !important;
+// ─── Header actions group (projected into [shellHeaderActions]) ───────────────
+.folio-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.shell-main {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+.folio-new-post {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: background 0.12s;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-border);
+    outline-offset: 2px;
+  }
 }
 
-// ─── Custom logo (pro tenants with logo set) ──────────────────────────────
-
-.folio-custom-logo {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-  flex-shrink: 0;
-}
-
-// ─── Powered-by footer (starter tenants) ─────────────────────────────────
-
+// ─── Powered-by footer (starter tenants) ──────────────────────────────────────
 .folio-powered-footer {
   flex-shrink: 0;
   display: flex;
@@ -401,12 +123,5 @@ mat-sidenav.icon-rail {
     &:hover {
       text-decoration: underline;
     }
-  }
-}
-
-// ─── Mobile drawer max-width fix ──────────────────────────────────────────────
-@media (max-width: 768px) {
-  mat-sidenav {
-    max-width: min(280px, 85vw);
   }
 }

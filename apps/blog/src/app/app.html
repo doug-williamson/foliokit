@@ -1,24 +1,20 @@
 <folio-app-shell>
-  <mat-nav-list shellNav>
-    @if (navPending()) {
-      @for (row of [1, 2, 3, 4]; track row) {
-        <div mat-list-item style="height: 48px; display: flex; align-items: center; padding: 0 16px">
-          <folio-skeleton width="5.5rem" height="1rem" borderRadius="var(--r-md)" />
-        </div>
-      }
-    } @else {
-      @for (item of navItems(); track item.url) {
-        <a
-          mat-list-item
-          [routerLink]="item.url"
-          routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      }
-    }
-  </mat-nav-list>
+  <nav shellNav class="blog-nav">
+    @if (navPending()) { @for (row of [1, 2, 3, 4]; track row) {
+    <div class="nav-item nav-skeleton">
+      <folio-skeleton width="5.5rem" height="1rem" borderRadius="var(--r-md)" />
+    </div>
+    } } @else { @for (item of navItems(); track item.url) {
+    <a
+      class="nav-item"
+      [routerLink]="item.url"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+    } }
+  </nav>
 
   <router-outlet />
 </folio-app-shell>

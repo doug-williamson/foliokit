@@ -10,14 +10,15 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
 import { doc, getDoc } from 'firebase/firestore';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { SiteConfig } from '@foliokit/cms-core';
 
-interface NavItem { label: string; url: string; }
+interface NavItem {
+  label: string;
+  url: string;
+}
 import {
   FIRESTORE,
   SITE_ID,
@@ -26,7 +27,12 @@ import {
   isBlogPageNavEnabled,
 } from '@foliokit/cms-core';
 import type { BillingRecord } from '@foliokit/cms-core';
-import { AppShellComponent, FolioSkeletonComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
+import {
+  AppShellComponent,
+  FolioSkeletonComponent,
+  SHELL_CONFIG,
+  ShellConfig,
+} from '@foliokit/cms-ui';
 
 const DEFAULT_NAV: NavItem[] = [
   { label: 'Home', url: '/' },
@@ -47,9 +53,49 @@ type NavLoadState =
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    MatListModule,
-    MatIconModule,
     FolioSkeletonComponent,
+  ],
+  styles: [
+    `
+      .blog-nav {
+        display: block;
+        padding-top: 8px;
+      }
+
+      .blog-nav .nav-item {
+        position: relative;
+        height: 40px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-family: var(--font-body);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition:
+          background 0.12s,
+          color 0.12s;
+
+        &:hover {
+          background: var(--surface-2);
+          color: var(--text-primary);
+        }
+
+        &.active-link {
+          background: var(--nav-active-bg);
+          color: var(--nav-active-text);
+          font-weight: 700;
+          border-radius: 8px;
+          margin: 1px 8px;
+          overflow: hidden;
+        }
+      }
+
+      .blog-nav .nav-skeleton {
+        pointer-events: none;
+      }
+    `,
   ],
   providers: [
     {
@@ -61,7 +107,8 @@ type NavLoadState =
 export class App implements OnInit {
   private readonly siteConfigService = inject(SiteConfigService);
   private readonly firestore = inject(FIRESTORE);
-  private readonly siteId = inject(SITE_ID, { optional: true }) ?? 'foliokitcms';
+  private readonly siteId =
+    inject(SITE_ID, { optional: true }) ?? 'foliokitcms';
   private readonly platformId = inject(PLATFORM_ID);
   private readonly billingRecord = signal<BillingRecord | null>(null);
 
@@ -85,25 +132,25 @@ export class App implements OnInit {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    const homeOn  = config?.pages?.home?.enabled === true;
-    const blogOn  = isBlogPageNavEnabled(config);
+    const homeOn = config?.pages?.home?.enabled === true;
+    const blogOn = isBlogPageNavEnabled(config);
     const aboutOn = config?.pages?.about?.enabled === true;
     const linksOn = config?.pages?.links?.enabled === true;
 
     const rawBase = DEFAULT_NAV;
     const base = rawBase.filter((item) => {
-      if (item.url === '/'      && !homeOn)  return false;
-      if (item.url === '/posts' && !blogOn)  return false;
+      if (item.url === '/' && !homeOn) return false;
+      if (item.url === '/posts' && !blogOn) return false;
       if (item.url === '/about' && !aboutOn) return false;
       if (item.url === '/links' && !linksOn) return false;
       return true;
     });
     const extra: NavItem[] = [];
-    if (homeOn)  extra.push({ label: 'Home',   url: '/'       });
-    if (blogOn)  extra.push({ label: 'Blog',   url: '/posts'  });
-    if (blogOn)  extra.push({ label: 'Series', url: '/series' });
-    if (aboutOn) extra.push({ label: 'About',  url: '/about'  });
-    if (linksOn) extra.push({ label: 'Links',  url: '/links'  });
+    if (homeOn) extra.push({ label: 'Home', url: '/' });
+    if (blogOn) extra.push({ label: 'Blog', url: '/posts' });
+    if (blogOn) extra.push({ label: 'Series', url: '/series' });
+    if (aboutOn) extra.push({ label: 'About', url: '/about' });
+    if (linksOn) extra.push({ label: 'Links', url: '/links' });
     const existingUrls = new Set(base.map((i) => i.url));
     return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });

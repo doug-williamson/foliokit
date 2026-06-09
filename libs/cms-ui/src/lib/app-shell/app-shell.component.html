@@ -1,100 +1,83 @@
-<div class="folio-shell-container">
-  <mat-sidenav-container>
-    <mat-sidenav
-      [mode]="isMobile() || isIconRail() ? 'over' : 'side'"
-      [opened]="sidenavOpen()"
-      (openedChange)="sidenavOpen.set($event)"
+<rhombus-app-shell
+  [mobileBreakpoint]="sidenavMobileMaxPx()"
+  [closeOnNavigate]="true"
+>
+  <!-- Brand → rhombus [shellBrand]; links to toolbarHomeRoute when set. -->
+  @if (config().toolbarHomeRoute; as home) {
+    <a
+      shellBrand
+      class="folio-shell-brand"
+      [routerLink]="home"
+      [attr.aria-label]="'Go to home — ' + config().appName"
     >
-      <div class="folio-nav-wrapper">
-        <div class="folio-nav-body">
-          <ng-content select="[shellNav]" />
-        </div>
-        @if (navFooter) {
-          <div class="folio-nav-footer">
-            <ng-content select="[shellNavFooter]" />
-          </div>
-        }
-      </div>
-    </mat-sidenav>
+      <ng-container *ngTemplateOutlet="brandInner" />
+    </a>
+  } @else {
+    <span shellBrand class="folio-shell-brand">
+      <ng-container *ngTemplateOutlet="brandInner" />
+    </span>
+  }
 
-    <mat-sidenav-content class="folio-content">
-      <mat-toolbar class="folio-toolbar">
-        @if (isMobile() || isIconRail()) {
-          <button mat-icon-button aria-label="Toggle navigation" (click)="toggleSidenav()">
-            <mat-icon svgIcon="menu" />
-          </button>
-        }
+  <!-- Header actions → rhombus [shellHeaderActions]: consumer actions, optional
+       auth slot, optional new-post button, then the theme control. -->
+  <span shellHeaderActions class="folio-header-actions">
+    <ng-content select="[shellHeaderActions]" />
+    @if (config().showAuth) {
+      <ng-content select="[shellAuthSlot]" />
+    }
+    @if (config().showNewPostButton) {
+      <button
+        type="button"
+        class="folio-new-post"
+        aria-label="New post"
+        (click)="navigateToNewPost()"
+      >
+        +
+      </button>
+    }
+    <folio-theme-control />
+  </span>
 
-        @if (config().toolbarHomeRoute; as home) {
-          <a
-            class="folio-toolbar-brand"
-            [routerLink]="home"
-            [attr.aria-label]="'Go to home — ' + config().appName"
-          >
-            @if (config().logoUrl) {
-              <img
-                class="folio-custom-logo"
-                [src]="config().logoUrl"
-                [alt]="config().appName"
-              />
-            } @else {
-              <div class="folio-logo-mark">
-                <span class="folio-logo-mark-f">F</span>
-                <div class="folio-logo-dot"></div>
-              </div>
-            }
-            <span class="folio-app-name">{{ config().appName }}</span>
-          </a>
-        } @else {
-          @if (config().logoUrl) {
-            <img
-              class="folio-custom-logo"
-              [src]="config().logoUrl"
-              [alt]="config().appName"
-            />
-          } @else {
-            <div class="folio-logo-mark">
-              <span class="folio-logo-mark-f">F</span>
-              <div class="folio-logo-dot"></div>
-            </div>
-          }
-          <span class="folio-app-name">{{ config().appName }}</span>
-        }
+  <!-- Nav → rhombus [shellNav]. -->
+  <nav shellNav>
+    <ng-content select="[shellNav]" />
+  </nav>
 
-        <span class="flex-1"></span>
+  <!-- Nav footer → rhombus [shellNavFooter], rendered only when a consumer
+       projects footer content (detected via ShellNavFooterDirective). -->
+  @if (navFooter) {
+    <ng-container shellNavFooter>
+      <ng-content select="[shellNavFooter]" />
+    </ng-container>
+  }
 
-        <ng-content select="[shellHeaderActions]" />
+  <!-- Default slot = main content + powered-by footer. -->
+  <ng-content />
+  @if (!config().features?.removeBranding && !config().showNewPostButton) {
+    <footer class="folio-powered-footer">
+      <span>Powered by </span>
+      <a
+        href="https://blog.foliokitcms.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        >FolioKit</a
+      >
+    </footer>
+  }
+</rhombus-app-shell>
 
-        @if (config().showAuth) {
-          <ng-content select="[shellAuthSlot]" />
-        }
-
-        <!-- New post shortcut — admin only (showNewPostButton flag) -->
-        @if (config().showNewPostButton) {
-          <button
-            mat-icon-button
-            aria-label="New post"
-            matTooltip="New post"
-            (click)="navigateToNewPost()"
-          >
-            <mat-icon svgIcon="add" />
-          </button>
-        }
-
-        <folio-theme-control />
-      </mat-toolbar>
-
-      <main class="shell-main">
-        <ng-content />
-      </main>
-
-      <!-- showNewPostButton doubles as the "is admin shell" flag — suppresses branding in admin -->
-      @if (!config().features?.removeBranding && !config().showNewPostButton) {
-        <footer class="folio-powered-footer">
-          <span>Powered by </span>
-          <a href="https://blog.foliokitcms.com" target="_blank" rel="noopener noreferrer">FolioKit</a>
-        </footer>
-      }
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</div>
+<ng-template #brandInner>
+  @if (config().logoUrl) {
+    <img
+      class="folio-custom-logo"
+      [src]="config().logoUrl"
+      [alt]="config().appName"
+    />
+  } @else {
+    <div class="folio-logo-mark">
+      <span class="folio-logo-mark-f">F</span>
+      <div class="folio-logo-dot"></div>
+    </div>
+  }
+  <span class="folio-app-name">{{ config().appName }}</span>
+</ng-template>
