@@ -85,14 +85,6 @@ interface LinkRowValue {
       .cdk-drag-animating {
         transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
       }
-      .drop-zone {
-        border: 2px dashed color-mix(in srgb, currentColor 25%, transparent);
-        border-radius: 8px;
-      }
-      .drop-zone.drag-over {
-        border-color: var(--mat-sys-primary);
-        background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
-      }
     `,
   ],
   template: `
