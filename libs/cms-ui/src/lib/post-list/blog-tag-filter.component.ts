@@ -6,108 +6,92 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { MatChipsModule } from '@angular/material/chips';
+import {
+  RhombusButtonComponent,
+  RhombusChipDirective,
+  RhombusChipGroupDirective,
+} from '@rhombuskit/core';
 import type { Tag } from '@foliokit/cms-core';
 
 @Component({
   selector: 'folio-tag-filter',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
+  imports: [
+    MatChipsModule,
+    RhombusChipDirective,
+    RhombusChipGroupDirective,
+    RhombusButtonComponent,
+  ],
   template: `
-    <div class="flex flex-wrap gap-2">
-      <button
-        class="tag-chip"
-        [class.tag-chip--active]="activeTag() === null"
-        (click)="select(null)"
+    <div class="tag-filter-row">
+      <mat-chip-listbox
+        rhombusChipGroup
+        selection="single"
+        hideSingleSelectionIndicator
+        aria-label="Filter posts by tag"
+        [value]="selectedValue()"
+        (change)="onChange($event.value)"
       >
-        All
-      </button>
-      @for (tag of visibleTags(); track tag.id) {
-        <button
-          class="tag-chip"
-          [class.tag-chip--active]="activeTag() === tag.id"
-          (click)="select(tag.id)"
+        <mat-chip-option rhombusChip variant="primary" [value]="ALL"
+          >All</mat-chip-option
         >
-          {{ tag.label }}
-        </button>
-      }
+        @for (tag of visibleTags(); track tag.id) {
+          <mat-chip-option rhombusChip variant="primary" [value]="tag.id">
+            {{ tag.label }}
+          </mat-chip-option>
+        }
+      </mat-chip-listbox>
+
       @if (tags().length > 8) {
-        <button
-          class="tag-chip tag-chip--control"
+        <rhombus-button
+          appearance="text"
+          variant="secondary"
+          size="sm"
           [attr.aria-expanded]="showAllTags()"
           (click)="showAllTags.set(!showAllTags())"
         >
           {{ showAllTags() ? 'Show less' : 'Show all (' + tags().length + ')' }}
-        </button>
+        </rhombus-button>
       }
     </div>
   `,
-  styles: [`
-    :host { display: block; }
-
-    .tag-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.3125rem 0.875rem;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--surface-1);
-      color: var(--text-secondary);
-      font-size: 0.7rem;
-      font-family: var(--font-mono);
-      font-weight: 500;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
-      line-height: 1;
-
-      &:hover {
-        background: var(--surface-2);
-        color: var(--text-primary);
-        border-color: var(--border-accent);
+  styles: [
+    `
+      :host {
+        display: block;
       }
 
-      &.tag-chip--active {
-        background-color: var(--teal-50);
-        border-color: var(--border-accent);
-        color: var(--text-accent);
-
-        &:hover {
-          background-color: var(--teal-50);
-          border-color: var(--border-accent);
-          color: var(--text-accent);
-        }
+      .tag-filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
       }
-
-      &.tag-chip--control {
-        color: var(--text-muted);
-        background: var(--surface-2);
-        border-color: var(--border);
-
-        &:hover {
-          color: var(--text-primary);
-          background: var(--surface-2);
-          border-color: var(--border-accent);
-        }
-      }
-    }
-
-    :host-context([data-theme="dark"]) .tag-chip.tag-chip--active,
-    :host-context([data-theme="dark"]) .tag-chip.tag-chip--active:hover {
-      background-color: rgba(42, 151, 151, 0.12);
-    }
-  `],
+    `,
+  ],
 })
 export class BlogTagFilterComponent {
   readonly tags = input.required<Tag[]>();
   readonly postCounts = input<Map<string, number>>(new Map());
   readonly tagSelected = output<string | null>();
 
+  /** Sentinel for the "All" chip — Material single-select needs a non-null value to track. */
+  protected readonly ALL = '__all__';
+
   protected readonly activeTag = signal<string | null>(null);
   protected readonly showAllTags = signal(false);
 
+  /** Listbox value mirrors {@link activeTag}, mapping `null` (All) onto the sentinel. */
+  protected readonly selectedValue = computed(
+    () => this.activeTag() ?? this.ALL,
+  );
+
   protected readonly sortedTags = computed(() =>
     [...this.tags()].sort((a, b) => {
-      const diff = (this.postCounts().get(b.id) ?? 0) - (this.postCounts().get(a.id) ?? 0);
+      const diff =
+        (this.postCounts().get(b.id) ?? 0) - (this.postCounts().get(a.id) ?? 0);
       return diff !== 0 ? diff : a.label.localeCompare(b.label);
     }),
   );
@@ -115,6 +99,11 @@ export class BlogTagFilterComponent {
   protected readonly visibleTags = computed(() =>
     this.showAllTags() ? this.sortedTags() : this.sortedTags().slice(0, 8),
   );
+
+  /** Map the listbox change (sentinel or a deselect → `null`) onto the public contract. */
+  protected onChange(value: string | null | undefined): void {
+    this.select(value && value !== this.ALL ? value : null);
+  }
 
   protected select(tag: string | null): void {
     this.activeTag.set(tag);
