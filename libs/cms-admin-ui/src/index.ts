@@ -1,5 +1,3 @@
-export * from './lib/cms-admin-ui/cms-admin-ui';
-
 // ── Stores ────────────────────────────────────────────────────────────────────
 export * from './lib/author-editor/author-editor.store';
 export * from './lib/stores/site-config-nav.store';
