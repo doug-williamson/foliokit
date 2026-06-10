@@ -1,22 +1,34 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import {
+  RhombusInputComponent,
+  RhombusSelectComponent,
+  RhombusTextareaComponent,
+  type SelectOption,
+} from '@rhombuskit/core';
 import { take } from 'rxjs/operators';
-import { Author, AuthorService, BlogPost, Series, SeriesService, SiteConfigService } from '@foliokit/cms-core';
+import {
+  Author,
+  AuthorService,
+  BlogPost,
+  Series,
+  SeriesService,
+  SiteConfigService,
+} from '@foliokit/cms-core';
 import { PostEditorStore } from '../post-editor.store';
 
 function slugify(title: string): string {
@@ -27,19 +39,29 @@ function slugify(title: string): string {
     .replace(/\s+/g, '-');
 }
 
+/**
+ * Valid when empty (the slug is auto-generated from the title) or when it
+ * contains only lowercase letters, numbers, and hyphens.
+ */
+function slugValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value as string;
+  if (!value) return null;
+  return /^[a-z0-9-]+$/.test(value) ? null : { slug: true };
+}
+
 @Component({
   selector: 'folio-metadata-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    MatButtonModule,
     MatChipsModule,
     MatDatepickerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatSelectModule,
+    RhombusInputComponent,
+    RhombusSelectComponent,
+    RhombusTextareaComponent,
   ],
   styles: [
     `
@@ -55,29 +77,21 @@ function slugify(title: string): string {
     @if (store.post(); as post) {
       <div class="flex flex-col gap-4 p-4">
         <!-- Excerpt -->
-        <mat-form-field class="w-full">
-          <mat-label>Excerpt</mat-label>
-          <textarea
-            matInput
-            rows="3"
-            [value]="post.excerpt ?? ''"
-            (input)="store.updateField('excerpt', $any($event.target).value)"
-            placeholder="Short description shown in post cards"
-          ></textarea>
-        </mat-form-field>
+        <rhombus-textarea
+          label="Excerpt"
+          placeholder="Short description shown in post cards"
+          [rows]="3"
+          [control]="excerptControl"
+        />
 
         <!-- Subtitle -->
-        <mat-form-field class="w-full">
-          <mat-label>Subtitle</mat-label>
-          <input
-            matInput
-            [value]="post.subtitle ?? ''"
-            (input)="store.updateField('subtitle', $any($event.target).value)"
-            placeholder="Optional subtitle displayed below the title"
-          />
-        </mat-form-field>
+        <rhombus-input
+          label="Subtitle"
+          placeholder="Optional subtitle displayed below the title"
+          [control]="subtitleControl"
+        />
 
-        <!-- Tags -->
+        <!-- Tags (Material chip-grid) -->
         <mat-form-field class="w-full">
           <mat-label>Tags</mat-label>
           <mat-chip-grid #chipGrid>
@@ -99,49 +113,30 @@ function slugify(title: string): string {
         </mat-form-field>
 
         <!-- Author -->
-        <mat-form-field class="w-full">
-          <mat-label>Author</mat-label>
-          <mat-select
-            [value]="post.authorId ?? ''"
-            (valueChange)="store.updateField('authorId', $event)"
-          >
-            @for (author of authors(); track author.id) {
-              <mat-option [value]="author.id">{{ author.displayName }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <rhombus-select
+          label="Author"
+          [options]="authorOptions()"
+          [control]="authorControl"
+        />
 
         <!-- Series -->
-        <mat-form-field class="w-full">
-          <mat-label>Series</mat-label>
-          <mat-select
-            [value]="post.seriesId ?? ''"
-            (valueChange)="onSeriesChange($event)"
-          >
-            <mat-option value="">(none)</mat-option>
-            @for (s of series(); track s.id) {
-              <mat-option [value]="s.id">{{ s.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <rhombus-select
+          label="Series"
+          [options]="seriesOptions()"
+          [control]="seriesControl"
+        />
 
         <!-- Series Order — only when a series is selected -->
         @if (post.seriesId) {
-          <mat-form-field class="w-full">
-            <mat-label>Series order</mat-label>
-            <input
-              matInput
-              type="number"
-              min="1"
-              step="1"
-              [value]="post.seriesOrder ?? ''"
-              (input)="onSeriesOrderInput($any($event.target).value)"
-            />
-            <mat-hint>Position within the series (1 = first)</mat-hint>
-          </mat-form-field>
+          <rhombus-input
+            label="Series order"
+            type="number"
+            hint="Position within the series (1 = first)"
+            [control]="seriesOrderControl"
+          />
         }
 
-        <!-- Published At — only when status is published -->
+        <!-- Published At — only when status is published (Material datepicker) -->
         @if (post.status === 'published') {
           <mat-form-field class="w-full">
             <mat-label>Published At</mat-label>
@@ -180,32 +175,26 @@ function slugify(title: string): string {
         }
 
         <!-- Slug -->
-        <mat-form-field class="w-full">
-          <mat-label>Slug</mat-label>
-          <input
-            matInput
-            [value]="post.slug"
-            (input)="store.updateField('slug', $any($event.target).value)"
-            placeholder="auto-generated-from-title"
-          />
-          @if (post.slug && !isValidSlug(post.slug)) {
-            <mat-error>Slug may only contain lowercase letters, numbers, and hyphens.</mat-error>
-          }
-          <mat-hint>Auto-generated from title; edit to override.</mat-hint>
-        </mat-form-field>
+        <rhombus-input
+          label="Slug"
+          placeholder="auto-generated-from-title"
+          hint="Auto-generated from title; edit to override."
+          [control]="slugControl"
+        >
+          <span rhombusError
+            >Slug may only contain lowercase letters, numbers, and
+            hyphens.</span
+          >
+        </rhombus-input>
 
         <!-- Internal Notes — local state only, not persisted -->
-        <mat-form-field class="w-full">
-          <mat-label>Internal Notes</mat-label>
-          <textarea
-            matInput
-            rows="4"
-            [value]="internalNotes()"
-            (input)="internalNotes.set($any($event.target).value)"
-            placeholder="Private notes — not saved to the post"
-          ></textarea>
-          <mat-hint>Not persisted</mat-hint>
-        </mat-form-field>
+        <rhombus-textarea
+          label="Internal Notes"
+          placeholder="Private notes — not saved to the post"
+          hint="Not persisted"
+          [rows]="4"
+          [control]="internalNotesControl"
+        />
       </div>
     }
   `,
@@ -213,9 +202,27 @@ function slugify(title: string): string {
 export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
   readonly separatorKeys = [ENTER, COMMA];
-  readonly internalNotes = signal('');
   protected readonly scheduledDate = signal<Date | null>(null);
   protected readonly scheduledTime = signal<string>('09:00');
+
+  /** Store-backed controls (synced bidirectionally with `store.post()`). */
+  protected readonly excerptControl = new FormControl('', {
+    nonNullable: true,
+  });
+  protected readonly subtitleControl = new FormControl('', {
+    nonNullable: true,
+  });
+  protected readonly authorControl = new FormControl('', { nonNullable: true });
+  protected readonly seriesControl = new FormControl('', { nonNullable: true });
+  protected readonly seriesOrderControl = new FormControl<number | null>(null);
+  protected readonly slugControl = new FormControl('', {
+    nonNullable: true,
+    validators: [slugValidator],
+  });
+  /** Local-only scratch notes; never written to the store. */
+  protected readonly internalNotesControl = new FormControl('', {
+    nonNullable: true,
+  });
 
   readonly authors = toSignal(inject(AuthorService).getAll(), {
     initialValue: [] as Author[],
@@ -225,30 +232,92 @@ export class MetadataTabComponent {
     initialValue: [] as Series[],
   });
 
+  protected readonly authorOptions = computed<SelectOption[]>(() =>
+    this.authors().map((a) => ({ value: a.id, label: a.displayName })),
+  );
+
+  protected readonly seriesOptions = computed<SelectOption[]>(() => [
+    { value: '', label: '(none)' },
+    ...this.series().map((s) => ({ value: s.id, label: s.name })),
+  ]);
+
   private readonly siteConfig = toSignal(
     inject(SiteConfigService).getDefaultSiteConfig().pipe(take(1)),
     { initialValue: null },
   );
 
   constructor() {
+    // Store → controls. Value-diff guard both propagates mid-edit store writes
+    // (auto-slug / auto-author) to the controls and breaks the feedback loop:
+    // a control whose value already matches the store is left untouched, so the
+    // setValue below never re-triggers the valueChanges → store path.
+    effect(() => {
+      const post = this.store.post();
+      if (!post) return;
+      this.syncControl(this.excerptControl, post.excerpt ?? '');
+      this.syncControl(this.subtitleControl, post.subtitle ?? '');
+      this.syncControl(this.authorControl, post.authorId ?? '');
+      this.syncControl(this.seriesControl, post.seriesId ?? '');
+      this.syncControl(this.seriesOrderControl, post.seriesOrder ?? null);
+      this.syncControl(this.slugControl, post.slug);
+    });
+
+    // Controls → store.
+    this.excerptControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.store.updateField('excerpt', v));
+    this.subtitleControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.store.updateField('subtitle', v));
+    this.authorControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.store.updateField('authorId', v));
+    this.seriesControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.onSeriesChange(v));
+    this.seriesOrderControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) =>
+        this.store.updateField(
+          'seriesOrder',
+          typeof v === 'number' && v > 0 ? v : undefined,
+        ),
+      );
+    this.slugControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.store.updateField('slug', v));
+
     // Auto-set authorId from site default on new posts
     effect(() => {
       const post = this.store.post();
       const config = this.siteConfig();
-      if (this.store.mode() !== 'new' || !post || post.authorId || !config?.defaultAuthorId) return;
+      if (
+        this.store.mode() !== 'new' ||
+        !post ||
+        post.authorId ||
+        !config?.defaultAuthorId
+      )
+        return;
       this.store.updateField('authorId', config.defaultAuthorId);
     });
 
     // Auto-generate slug from title on new posts (only when slug is empty)
     effect(() => {
       const post = this.store.post();
-      if (!post || post.slug !== '' || this.store.mode() !== 'new' || !post.title) return;
+      if (
+        !post ||
+        post.slug !== '' ||
+        this.store.mode() !== 'new' ||
+        !post.title
+      )
+        return;
       this.store.updateField('slug', slugify(post.title));
     });
 
     effect(() => {
       const post = this.store.post();
-      if (!post || post.status !== 'scheduled' || !post.scheduledPublishAt) return;
+      if (!post || post.status !== 'scheduled' || !post.scheduledPublishAt)
+        return;
       const d = new Date(post.scheduledPublishAt);
       this.scheduledDate.set(d);
       const hh = String(d.getHours()).padStart(2, '0');
@@ -257,8 +326,9 @@ export class MetadataTabComponent {
     });
   }
 
-  isValidSlug(slug: string): boolean {
-    return /^[a-z0-9-]+$/.test(slug);
+  /** Patch a control from the store without re-emitting to the store. */
+  private syncControl<T>(control: FormControl<T>, want: T): void {
+    if (control.value !== want) control.setValue(want, { emitEvent: false });
   }
 
   addTag(event: MatChipInputEvent, currentTags: string[]): void {
@@ -292,11 +362,6 @@ export class MetadataTabComponent {
     } else {
       this.store.updateField('seriesId', seriesId);
     }
-  }
-
-  onSeriesOrderInput(raw: string): void {
-    const n = parseInt(raw, 10);
-    this.store.updateField('seriesOrder', Number.isFinite(n) && n > 0 ? n : undefined);
   }
 
   protected onScheduledDateChange(date: Date | null): void {
