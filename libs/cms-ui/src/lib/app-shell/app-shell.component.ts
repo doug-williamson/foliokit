@@ -10,9 +10,9 @@ import { Router, RouterLink } from '@angular/router';
 import {
   RhombusAppShellComponent,
   RhombusShellNavFooterDirective,
+  RhombusThemeMenuComponent,
 } from '@rhombuskit/core';
 import { SHELL_CONFIG } from '../shell-config.token';
-import { FolioThemeControlComponent } from '../theming/theme-control/theme-control.component';
 import { ShellNavFooterDirective } from './shell-nav-footer.directive';
 
 /** Overlay-drawer breakpoint used when the host config omits `sidenavMobileMaxPx`. */
@@ -42,7 +42,7 @@ const DEFAULT_MOBILE_MAX_PX = 767;
     RhombusShellNavFooterDirective,
     NgTemplateOutlet,
     RouterLink,
-    FolioThemeControlComponent,
+    RhombusThemeMenuComponent,
   ],
 })
 export class AppShellComponent {
