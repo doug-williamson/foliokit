@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
@@ -33,7 +34,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, ProfileAvatarComponent],
+  imports: [MatIconModule, MatButtonModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -72,55 +73,24 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       margin-top: 24px;
     }
 
-    .link-btn {
+    .link-row {
       width: 100%;
-      margin-top: 0;
+      justify-content: flex-start;
       margin-bottom: 8px;
-      background: var(--surface-0);
-      border: 1px solid var(--border);
-      border-radius: var(--r-xl);
-      padding: 13px 18px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: box-shadow 0.18s, transform 0.18s, border-color 0.12s;
+    }
 
-      &:hover {
-        border-color: var(--border-accent);
-        box-shadow: var(--shadow-lg);
-        transform: translateY(-2px);
+    .link-row .link-label {
+      flex: 1;
+      text-align: left;
+      font-weight: 500;
+    }
 
-        .link-icon {
-          color: var(--text-accent);
-        }
-      }
+    .link-row .link-icon {
+      color: var(--text-accent);
+    }
 
-      .link-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: var(--text-accent);
-        flex-shrink: 0;
-        transition: color 0.12s;
-      }
-
-      .link-label {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text-primary);
-        flex: 1;
-      }
-
-      .link-chevron {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: var(--text-muted);
-        flex-shrink: 0;
-      }
+    .link-row .link-chevron {
+      color: var(--text-muted);
     }
   `],
   template: `
@@ -144,7 +114,8 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
         <nav class="links-nav">
           @for (link of sortedLinks(); track link.id) {
             <a
-              class="link-btn"
+              matButton="outlined"
+              class="link-row"
               [href]="link.url"
               target="_blank"
               rel="noopener noreferrer"
