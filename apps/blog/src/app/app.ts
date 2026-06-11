@@ -65,7 +65,9 @@ type NavLoadState =
       .blog-nav .nav-item {
         position: relative;
         height: 40px;
-        padding: 0 16px;
+        margin: 0 8px;
+        padding: 0 8px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -86,9 +88,6 @@ type NavLoadState =
           background: var(--nav-active-bg);
           color: var(--nav-active-text);
           font-weight: 700;
-          border-radius: 8px;
-          margin: 1px 8px;
-          overflow: hidden;
         }
       }
 

@@ -19,7 +19,25 @@ import { BLOG_SEO_SERVICE, SiteConfigService } from '@foliokit/cms-core';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, NgTemplateOutlet],
-  styles: [':host { display: block; background: var(--bg); min-height: 100%; }'],
+  styles: [`
+    :host { display: block; background: var(--bg); min-height: 100%; }
+
+    .series-card {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 16px;
+      background: var(--surface-0);
+      text-decoration: none;
+      transition: box-shadow 0.15s, transform 0.15s, border-color 0.12s;
+    }
+
+    .series-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+  `],
   template: `
     <div class="w-full max-w-[900px] mx-auto px-4 md:px-6 py-8 lg:py-12">
       <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary)">Series</h1>
@@ -40,23 +58,20 @@ import { BLOG_SEO_SERVICE, SiteConfigService } from '@foliokit/cms-core';
     </div>
 
     <ng-template #seriesCard let-s>
-      <a
-        [routerLink]="['/series', s.slug]"
-        class="block border rounded-xl p-4 no-underline"
-        style="border-color: var(--border); background: var(--surface-0); transition: box-shadow 0.15s, transform 0.15s;"
-        onmouseenter="this.style.boxShadow='var(--shadow-md)';this.style.transform='translateY(-1px)'"
-        onmouseleave="this.style.boxShadow='';this.style.transform=''"
-      >
-        <div class="flex items-start justify-between gap-2">
-          <h3 class="text-base font-semibold" style="color: var(--text-primary)">{{ s.name }}</h3>
-          <span class="text-xs shrink-0 mt-0.5" style="color: var(--text-muted)">
-            {{ s.postCount }} {{ s.postCount === 1 ? 'post' : 'posts' }}
-          </span>
-        </div>
-        @if (s.description) {
-          <p class="text-sm mt-1" style="color: var(--text-secondary)">{{ s.description }}</p>
-        }
-      </a>
+    <a
+      [routerLink]="['/series', s.slug]"
+      class="series-card"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-base font-semibold" style="color: var(--text-primary)">{{ s.name }}</h3>
+        <span class="text-xs shrink-0 mt-0.5" style="color: var(--text-muted)">
+          {{ s.postCount }} {{ s.postCount === 1 ? 'post' : 'posts' }}
+        </span>
+      </div>
+      @if (s.description) {
+        <p class="text-sm mt-1" style="color: var(--text-secondary)">{{ s.description }}</p>
+      }
+    </a>
     </ng-template>
   `,
 })

@@ -47,7 +47,7 @@ import type { Tag } from '@foliokit/cms-core';
       @if (tags().length > 8) {
         <rhombus-button
           appearance="text"
-          variant="secondary"
+          variant="primary"
           size="sm"
           [attr.aria-expanded]="showAllTags()"
           (click)="showAllTags.set(!showAllTags())"

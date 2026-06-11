@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { BlogPost, SiteConfig } from '@foliokit/cms-core';
@@ -16,7 +17,7 @@ type HomeLoadState =
   selector: 'folio-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, FolioSkeletonComponent],
+  imports: [RouterLink, MatButtonModule, FolioSkeletonComponent],
   styles: [`
     :host { display: block; height: 100%; }
 
@@ -126,48 +127,6 @@ type HomeLoadState =
       align-self: center;
     }
 
-    .btn-primary {
-      display: inline-block;
-      background: var(--btn-primary-bg);
-      color: var(--btn-primary-text);
-      font-family: var(--font-body);
-      font-size: 15px;
-      font-weight: 600;
-      padding: 13px 28px;
-      border: 0;
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-sm);
-      text-decoration: none;
-      transition: background 0.12s, box-shadow 0.12s, transform 0.12s;
-
-      &:hover {
-        background: var(--btn-primary-hover);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
-      }
-    }
-
-    .btn-secondary {
-      display: inline-block;
-      background: var(--surface-1);
-      color: var(--text-primary);
-      font-family: var(--font-body);
-      font-size: 15px;
-      font-weight: 600;
-      padding: 13px 28px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-sm);
-      text-decoration: none;
-      transition: background 0.12s, box-shadow 0.12s, transform 0.12s;
-
-      &:hover {
-        background: var(--surface-2);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
-      }
-    }
-
     .recent-post-strip {
       width: 100%;
       max-width: 480px;
@@ -274,9 +233,9 @@ type HomeLoadState =
           }
 
           <div class="hero-cta-row">
-            <a class="btn-primary" [routerLink]="ctaUrl()">{{ ctaLabel() }}</a>
+            <a matButton="filled" [routerLink]="ctaUrl()">{{ ctaLabel() }}</a>
             @if (secondaryCtaUrl()) {
-              <a class="btn-secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
+              <a matButton="outlined" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
             }
           </div>
 

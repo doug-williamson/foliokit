@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
 import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
@@ -32,7 +33,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'folio-blog-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatIconModule, ProfileAvatarComponent],
+  imports: [MarkdownComponent, MatIconModule, MatButtonModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -78,38 +79,6 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
       }
     }
 
-    .social-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--r-lg);
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: var(--font-body);
-      color: var(--text-primary);
-      background: var(--surface-1);
-      text-decoration: none;
-      box-shadow: var(--shadow-sm);
-      transition: background 0.12s, box-shadow 0.12s, transform 0.12s, border-color 0.12s;
-
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: var(--text-accent);
-      }
-
-      &:hover {
-        background: var(--surface-2);
-        border-color: var(--border-accent);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
-      }
-    }
-
     .about-divider {
       width: 100%;
       border: none;
@@ -142,7 +111,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
           <div class="social-links">
             @for (link of about()!.socialLinks; track link.url) {
               <a
-                class="social-link"
+                matButton="outlined"
                 [href]="link.url"
                 target="_blank"
                 rel="noopener noreferrer"

@@ -364,7 +364,6 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
                     [routerLink]="['/posts']"
                     [queryParams]="{ tag: tag }"
                     [class]="i === 0 ? 'chip chip--primary' : 'chip'"
-                    style="position: relative; z-index: 20;"
                   >{{ tag | tagLabel: tagLookupForLabels() }}</a>
                 }
               </div>
