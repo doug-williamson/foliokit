@@ -4,5 +4,5 @@
   "libs/cms-markdown": "1.0.4",
   "libs/cms-admin-ui": "1.1.0",
   "libs/docs-ui": "0.1.4",
-  "libs/cms-ssr": "0.2.0"
+  "libs/cms-ssr": "0.1.0"
 }
