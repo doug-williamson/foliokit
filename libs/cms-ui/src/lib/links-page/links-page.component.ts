@@ -75,13 +75,10 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
 
     .link-row {
       width: 100%;
-      justify-content: flex-start;
       margin-bottom: 8px;
     }
 
     .link-row .link-label {
-      flex: 1;
-      text-align: left;
       font-weight: 500;
     }
 
@@ -90,6 +87,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
     }
 
     .link-row .link-chevron {
+      margin-left: auto;
       color: var(--text-muted);
     }
   `],
@@ -122,7 +120,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
             >
               <mat-icon class="link-icon" [svgIcon]="getIcon(link)" />
               <span class="link-label">{{ link.label }}</span>
-              <mat-icon class="link-chevron" svgIcon="chevron_right" />
+              <mat-icon class="link-chevron" iconPositionEnd svgIcon="chevron_right" />
             </a>
           }
         </nav>
