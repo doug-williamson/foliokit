@@ -12,7 +12,6 @@ import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownComponent } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
@@ -20,7 +19,7 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatIconModule, MatButtonModule, ProfileAvatarComponent],
+  imports: [MarkdownComponent, MatIconModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -60,6 +59,32 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
       margin-top: 20px;
     }
 
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-md);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface-0);
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        background: var(--surface-2);
+        color: var(--text-primary);
+      }
+    }
+
     .about-prose {
       width: 100%;
       margin-top: 32px;
@@ -92,7 +117,7 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
           <div class="social-links">
             @for (link of about()!.socialLinks; track link.url) {
               <a
-                matButton="outlined"
+                class="social-link"
                 [href]="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
