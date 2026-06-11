@@ -1,8 +1,8 @@
 {
   "libs/cms-core": "1.2.0",
-  "libs/cms-ui": "1.0.3",
-  "libs/cms-markdown": "1.0.1",
-  "libs/cms-admin-ui": "1.0.5",
-  "libs/docs-ui": "0.1.0",
+  "libs/cms-ui": "1.0.9",
+  "libs/cms-markdown": "1.0.4",
+  "libs/cms-admin-ui": "1.0.10",
+  "libs/docs-ui": "0.1.4",
   "libs/cms-ssr": "0.1.0"
 }

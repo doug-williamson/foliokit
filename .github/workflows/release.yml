@@ -11,7 +11,62 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.rp.outputs.releases_created }}
+      paths_released: ${{ steps.rp.outputs.paths_released }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: rp
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path: ${{ fromJson(needs.release-please.outputs.paths_released) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      - name: Resolve component + version
+        id: meta
+        env:
+          MATRIX_PATH: ${{ matrix.path }}
+        run: |
+          COMPONENT="${MATRIX_PATH##*/}"          # libs/cms-core -> cms-core
+          VERSION=$(node -p "require('./${MATRIX_PATH}/package.json').version")
+          echo "component=$COMPONENT" >> "$GITHUB_OUTPUT"
+          echo "pkg=@foliokit/$COMPONENT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if version already on npm (idempotent re-runs)
+        id: guard
+        env:
+          PKG: ${{ steps.meta.outputs.pkg }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          if npm view "${PKG}@${VERSION}" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::${PKG}@${VERSION} already published — skipping."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build & publish
+        if: ${{ steps.guard.outputs.publish == 'true' }}
+        run: npm run publish:${{ steps.meta.outputs.component }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
