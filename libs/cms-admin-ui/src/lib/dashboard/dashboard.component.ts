@@ -28,7 +28,7 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 @Component({
-  selector: 'cms-dashboard',
+  selector: 'admin-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, RhombusButtonComponent, MatIconModule, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent],
@@ -281,7 +281,14 @@ const PLAN_LABELS: Record<string, string> = {
           />
         } @else {
           @for (post of recentFive(); track post.id) {
-            <div class="post-row" (click)="navigateToPost(post.id)">
+            <div
+              class="post-row"
+              role="button"
+              tabindex="0"
+              (click)="navigateToPost(post.id)"
+              (keydown.enter)="navigateToPost(post.id)"
+              (keydown.space)="$event.preventDefault(); navigateToPost(post.id)"
+            >
               <div class="post-row-main">
                 <span class="post-title">{{ post.title || '(Untitled)' }}</span>
                 <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>

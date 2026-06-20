@@ -27,7 +27,7 @@ const FEATURE_ROWS: FeatureRow[] = [
 ];
 
 @Component({
-  selector: 'cms-plan-comparison-dialog',
+  selector: 'admin-plan-comparison-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
