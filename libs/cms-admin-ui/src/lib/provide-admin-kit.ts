@@ -132,6 +132,7 @@ export function provideAdminKit(config: AdminKitConfig): EnvironmentProviders {
           try {
             const snap = await getDoc(doc(firestore, 'tenants', siteId));
             if (snap.exists()) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Firestore snap.data() is untyped DocumentData; shape is validated downstream.
               ref.config = { tenantId: snap.id, ...snap.data() } as any;
             }
           } catch {

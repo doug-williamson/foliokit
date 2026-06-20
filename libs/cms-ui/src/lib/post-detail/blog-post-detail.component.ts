@@ -17,7 +17,7 @@ import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
-import type { BlogPost, Tag, PostRouteData, Series, SeriesNavItem } from '@foliokit/cms-core';
+import type { Tag, PostRouteData, Series, SeriesNavItem } from '@foliokit/cms-core';
 import {
   TagService,
   BLOG_SEO_SERVICE,
