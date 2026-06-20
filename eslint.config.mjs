@@ -49,6 +49,18 @@ export default [
       '**/*.mjs',
     ],
     // Override or add rules here
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      // form.get(name)!, @ViewChild()!, and test-fixture access make non-null
+      // assertions idiomatic in Angular; keep them out of the warning stream.
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
   },
 ];

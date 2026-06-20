@@ -350,7 +350,7 @@ export class MetadataTabComponent {
     return ms ? new Date(ms) : null;
   }
 
-  onPublishedAtChange(date: Date | null, post: BlogPost): void {
+  onPublishedAtChange(date: Date | null, _post: BlogPost): void {
     if (!date) return;
     this.store.updateField('publishedAt', date.getTime());
   }

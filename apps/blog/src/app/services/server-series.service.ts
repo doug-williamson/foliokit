@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ISeriesService, resolveCollectionPath, SeriesService, SITE_ID } from '@foliokit/cms-core';
+import { ISeriesService, resolveCollectionPath, SITE_ID } from '@foliokit/cms-core';
 import type { Series } from '@foliokit/cms-core';
 
 function normalizeTimestamp(value: unknown): number {

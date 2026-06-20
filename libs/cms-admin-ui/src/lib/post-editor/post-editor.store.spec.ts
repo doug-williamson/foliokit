@@ -512,7 +512,7 @@ describe('PostEditorStore.insertMediaAtCursor(token)', () => {
 // ---------------------------------------------------------------------------
 
 describe('PostEditorStore.removeEmbeddedMedia(token)', () => {
-  const fakeTs = { seconds: 1_700_000_000, nanoseconds: 0 } as unknown as BlogPost['publishedAt'];
+  const _fakeTs = { seconds: 1_700_000_000, nanoseconds: 0 } as unknown as BlogPost['publishedAt'];
 
   function makeEntry(token: string) {
     return {
