@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   OnInit,
@@ -10,7 +11,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -133,6 +134,7 @@ type Cell = { $implicit: Author; index: number };
 export class AuthorsListComponent implements OnInit {
   protected readonly router = inject(Router);
   private readonly authorService = inject(AuthorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
   protected readonly authors = signal<Author[] | null>(null);
@@ -168,10 +170,13 @@ export class AuthorsListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.authorService.getAll().subscribe((list) => {
-      this.authors.set(list);
-      this.loading.set(false);
-    });
+    this.authorService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((list) => {
+        this.authors.set(list);
+        this.loading.set(false);
+      });
   }
 
   protected confirmDelete(author: Author): void {

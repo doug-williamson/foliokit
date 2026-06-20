@@ -95,7 +95,7 @@ import { DomainSetupComponent } from './domain-setup/domain-setup.component';
             <p class="settings-section-body">
               Point your own domain to your FolioKit site. Enter your domain below to get DNS setup instructions.
             </p>
-            <cms-domain-setup />
+            <admin-domain-setup />
           </section>
         } @else {
           <section class="settings-section settings-section--gated">

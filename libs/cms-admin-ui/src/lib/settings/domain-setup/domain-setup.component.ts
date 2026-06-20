@@ -25,7 +25,7 @@ type Step = 'enter' | 'dns_pending' | 'active';
 type VerifyState = 'idle' | 'checking' | 'pending' | 'wrong_target' | 'error';
 
 @Component({
-  selector: 'cms-domain-setup',
+  selector: 'admin-domain-setup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule, RhombusButtonComponent],

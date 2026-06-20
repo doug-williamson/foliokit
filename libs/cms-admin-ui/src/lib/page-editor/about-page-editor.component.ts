@@ -1,11 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormArray,
@@ -251,10 +254,23 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 export class AboutPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly platforms = SOCIAL_PLATFORMS;
+  /** Guards one-time form population + watcher wiring once config resolves. */
+  private populated = false;
 
   constructor() {
     wireSiteConfigSaveSnackbarFeedback(this.store);
+
+    // Populate the forms and wire change-watchers once, when the store's config
+    // first resolves. Replaces a setInterval(50ms) poll.
+    effect(() => {
+      const config = this.store.config();
+      if (!config || this.populated) return;
+      this.populated = true;
+      this.populateForms(config);
+      this.watchForms();
+    });
   }
 
   protected readonly aboutPhotoUrl = signal<string | undefined>(undefined);
@@ -291,14 +307,6 @@ export class AboutPageEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.load();
-
-    const pollInterval = setInterval(() => {
-      const config = this.store.config();
-      if (!config) return;
-      clearInterval(pollInterval);
-      this.populateForms(config);
-      this.watchForms();
-    }, 50);
   }
 
   protected addAboutSocialLink(): void {
@@ -366,9 +374,15 @@ export class AboutPageEditorComponent implements OnInit {
   }
 
   private watchForms(): void {
-    this.aboutForm.valueChanges.subscribe(() => this.flushAboutToStore());
-    this.aboutSocialForm.valueChanges.subscribe(() => this.flushAboutToStore());
-    this.aboutSeoForm.valueChanges.subscribe(() => this.flushAboutToStore());
+    this.aboutForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushAboutToStore());
+    this.aboutSocialForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushAboutToStore());
+    this.aboutSeoForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushAboutToStore());
   }
 
   private flushAboutToStore(): void {

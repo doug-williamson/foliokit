@@ -20,7 +20,7 @@ const UPGRADE_URL = '/settings';
 const UPGRADE_FRAGMENT = 'billing';
 
 @Component({
-  selector: 'cms-plan-gate',
+  selector: 'admin-plan-gate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, MatButtonModule, RhombusButtonComponent],

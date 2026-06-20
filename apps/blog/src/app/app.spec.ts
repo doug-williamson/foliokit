@@ -3,7 +3,6 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { App } from './app';
 import { FIRESTORE } from '@foliokit/cms-core';
-import { firestoreStub } from '../../../../libs/cms-core/testing/firestore.stub';
 
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn(() => ({})),
@@ -16,6 +15,9 @@ vi.mock('firebase/firestore', () => ({
   orderBy: vi.fn(() => ({})),
   where: vi.fn(() => ({})),
 }));
+
+/** Minimal Firestore stub — this smoke test never touches Firestore methods. */
+const firestoreStub = {};
 
 describe('App', () => {
   beforeAll(() => {

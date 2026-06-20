@@ -26,6 +26,7 @@ const angularApp = new AngularNodeAppEngine();
 // Firestore paths for this binary use BLOG_STATIC_SITE_ID so SSR matches providesFolioKit().
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- augmenting Express.Request requires namespace syntax.
   namespace Express {
     interface Request {
       tenantId?: string;

@@ -3,9 +3,9 @@ import {
   Component,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
 import { from, last } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import {
@@ -150,18 +150,10 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
               <span class="required-pill">Required</span>
             </div>
             <div class="page-row">
-              <rhombus-checkbox
-                label="About page"
-                [checked]="aboutEnabled()"
-                (checkedChange)="aboutEnabled.set($event)"
-              />
+              <rhombus-checkbox label="About page" [control]="aboutControl" />
             </div>
             <div class="page-row">
-              <rhombus-checkbox
-                label="Links page"
-                [checked]="linksEnabled()"
-                (checkedChange)="linksEnabled.set($event)"
-              />
+              <rhombus-checkbox label="Links page" [control]="linksControl" />
             </div>
           </div>
 
@@ -182,8 +174,8 @@ export class SetupPromptComponent {
   private readonly router = inject(Router);
   private readonly toast = inject(RhombusToastService);
 
-  readonly aboutEnabled = signal(false);
-  readonly linksEnabled = signal(false);
+  readonly aboutControl = new FormControl(false, { nonNullable: true });
+  readonly linksControl = new FormControl(false, { nonNullable: true });
   readonly isSaving = this.store.isSaving;
 
   readonly hasIncompleteItems = computed(() => {
@@ -193,8 +185,8 @@ export class SetupPromptComponent {
 
   save(): void {
     const keys: EnablePageKey[] = ['home', 'blog'];
-    if (this.aboutEnabled()) keys.push('about');
-    if (this.linksEnabled()) keys.push('links');
+    if (this.aboutControl.value) keys.push('about');
+    if (this.linksControl.value) keys.push('links');
 
     from(keys)
       .pipe(

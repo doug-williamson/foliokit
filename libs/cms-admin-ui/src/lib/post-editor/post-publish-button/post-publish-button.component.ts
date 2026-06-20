@@ -14,7 +14,7 @@ import {
 import { BlogPost } from '@foliokit/cms-core';
 
 @Component({
-  selector: 'cms-post-publish-button',
+  selector: 'admin-post-publish-button',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RhombusButtonComponent, RhombusSpinnerComponent, RhombusOverflowMenuComponent],

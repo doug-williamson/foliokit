@@ -27,6 +27,16 @@ export default [
     },
   },
   {
+    // SSR Node entry: legitimately imports server-only firebase-admin code from
+    // cms-core internals (kept out of the browser barrel). Exempt it from the
+    // browser-oriented module-boundary rule (this also avoids an nx-plugin
+    // autofix crash on the @foliokit/cms-core/utils/* wildcard path mapping).
+    files: ['**/server.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     // Override or add rules here
     rules: {},

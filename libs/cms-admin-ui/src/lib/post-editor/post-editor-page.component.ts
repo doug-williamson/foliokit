@@ -274,7 +274,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               </rhombus-button>
             } @else {
               <span class="shrink-0 min-w-0 post-editor-publish-wrap">
-                <cms-post-publish-button
+                <admin-post-publish-button
                   [currentStatus]="post.status"
                   [isSaving]="store.isSaving()"
                   (statusChange)="onStatusChange($event)"
@@ -448,10 +448,10 @@ export class PostEditorPageComponent implements OnInit {
   }
 
   protected editorStatusLabel(status: BlogPost['status']): string {
-    if (status === 'published') return 'PUBLISHED';
-    if (status === 'archived') return 'ARCHIVED';
-    if (status === 'scheduled') return 'SCHEDULED';
-    return 'DRAFT';
+    if (status === 'published') return 'Published';
+    if (status === 'archived') return 'Archived';
+    if (status === 'scheduled') return 'Scheduled';
+    return 'Draft';
   }
 
   togglePreview(): void {

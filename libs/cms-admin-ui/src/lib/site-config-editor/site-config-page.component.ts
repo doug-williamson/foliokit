@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -15,7 +17,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -316,6 +318,9 @@ export class SiteConfigPageComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   private readonly authorService = inject(AuthorService);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  /** Guards one-time form population + watcher wiring once config resolves. */
+  private populated = false;
 
   protected readonly authors = toSignal(this.authorService.getAll(), { initialValue: [] });
 
@@ -379,18 +384,20 @@ export class SiteConfigPageComponent implements OnInit {
 
   constructor() {
     wireSiteConfigSaveSnackbarFeedback(this.store);
+
+    // Populate the forms and wire change-watchers once, when the store's config
+    // first resolves. Replaces a setInterval(50ms) poll.
+    effect(() => {
+      const config = this.store.config();
+      if (!config || this.populated) return;
+      this.populated = true;
+      this.populateForms(config);
+      this.watchForms();
+    });
   }
 
   ngOnInit(): void {
     this.store.load();
-
-    const pollInterval = setInterval(() => {
-      const config = this.store.config();
-      if (!config) return;
-      clearInterval(pollInterval);
-      this.populateForms(config);
-      this.watchForms();
-    }, 50);
   }
 
   protected hasInvalidForms(): boolean {
@@ -454,23 +461,31 @@ export class SiteConfigPageComponent implements OnInit {
   }
 
   private watchForms(): void {
-    this.generalForm.valueChanges.subscribe((val) => {
-      this.store.updateField('siteName', val.siteName ?? '');
-      this.store.updateField('siteUrl', val.siteUrl ?? '');
-      this.store.updateField('defaultAuthorId', val.defaultAuthorId ?? undefined);
-    });
-
-    this.seoForm.valueChanges.subscribe((val) => {
-      this.store.updateField('defaultSeo', {
-        title: val.title || undefined,
-        description: val.description || undefined,
-        ogImage: val.ogImage || undefined,
-        canonicalUrl: val.canonicalUrl || undefined,
+    this.generalForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        this.store.updateField('siteName', val.siteName ?? '');
+        this.store.updateField('siteUrl', val.siteUrl ?? '');
+        this.store.updateField('defaultAuthorId', val.defaultAuthorId ?? undefined);
       });
-    });
 
-    this.profileForm.valueChanges.subscribe(() => this.flushProfileToStore());
-    this.profileSocialForm.valueChanges.subscribe(() => this.flushProfileToStore());
+    this.seoForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        this.store.updateField('defaultSeo', {
+          title: val.title || undefined,
+          description: val.description || undefined,
+          ogImage: val.ogImage || undefined,
+          canonicalUrl: val.canonicalUrl || undefined,
+        });
+      });
+
+    this.profileForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushProfileToStore());
+    this.profileSocialForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushProfileToStore());
   }
 
   private flushProfileToStore(): void {

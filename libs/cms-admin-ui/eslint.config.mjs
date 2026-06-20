@@ -10,6 +10,12 @@ export default [
         'error',
         {
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
+          ignoredDependencies: [
+            // SCSS-only token package + build-time schematic dep, not runtime peers.
+            '@rhombuskit/tokens',
+            '@angular-devkit/schematics',
+            'vitest',
+          ],
         },
       ],
     },

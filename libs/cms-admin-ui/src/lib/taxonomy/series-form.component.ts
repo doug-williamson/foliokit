@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -88,6 +95,7 @@ export class SeriesFormComponent implements OnInit {
   protected readonly data = inject<SeriesFormDialogData>(MAT_DIALOG_DATA);
   protected readonly dialogRef = inject(MatDialogRef<SeriesFormComponent, SeriesFormResult>);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -111,11 +119,14 @@ export class SeriesFormComponent implements OnInit {
       });
     }
 
-    this.form.get('name')?.valueChanges.subscribe((name) => {
-      if (this.form.get('slug')?.pristine) {
-        this.form.get('slug')?.setValue(toSlug(name ?? ''), { emitEvent: false });
-      }
-    });
+    this.form
+      .get('name')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((name) => {
+        if (this.form.get('slug')?.pristine) {
+          this.form.get('slug')?.setValue(toSlug(name ?? ''), { emitEvent: false });
+        }
+      });
   }
 
   protected submit(): void {

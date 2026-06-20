@@ -1,9 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
+  effect,
   inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -111,6 +114,9 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
 export class LinksPageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  /** Guards one-time form population once the store's config first resolves. */
+  private populated = false;
 
   protected readonly linksSeoForm = this.fb.group({
     metaTitle: new FormControl<string | null>(null),
@@ -119,18 +125,23 @@ export class LinksPageEditorComponent implements OnInit {
 
   constructor() {
     wireSiteConfigSaveSnackbarFeedback(this.store);
+
+    // Populate the SEO form once, when the store's config first resolves.
+    // Replaces a setInterval(50ms) poll; patchValue uses emitEvent:false so
+    // it never feeds back into the flush subscription.
+    effect(() => {
+      if (!this.store.config() || this.populated) return;
+      this.populated = true;
+      this.patchLinksSeoFromStore();
+    });
   }
 
   ngOnInit(): void {
     this.store.load();
 
-    const pollInterval = setInterval(() => {
-      const config = this.store.config();
-      if (!config) return;
-      clearInterval(pollInterval);
-      this.patchLinksSeoFromStore();
-      this.linksSeoForm.valueChanges.subscribe(() => this.flushLinksSeoToStore());
-    }, 50);
+    this.linksSeoForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushLinksSeoToStore());
   }
 
   protected onSave(): void {

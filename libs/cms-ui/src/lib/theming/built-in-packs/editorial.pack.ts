@@ -6,16 +6,13 @@ export const EDITORIAL_PACK: ThemePack = {
   version: '1.0.0',
   description: 'The default FolioKit design system',
   typography: {
-    display: "'Fraunces', Georgia, serif",
-    body: "'Plus Jakarta Sans', system-ui, sans-serif",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    display: "'Fraunces Variable', 'Fraunces', Georgia, serif",
+    body: "'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif",
+    mono: "'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', monospace",
   },
-  fonts: [
-    {
-      type: 'google',
-      url: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
-    },
-  ],
+  // Fonts are self-hosted via Fontsource and loaded globally through each app's
+  // build `styles` array (apps/*/project.json) — present at first paint, no CDN,
+  // CSP-safe. No runtime <link> injection needed for the default pack.
   tokens: {
     light: {
       '--bg':             '#F8FAFD',

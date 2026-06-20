@@ -1,15 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
   ViewChild,
+  effect,
   inject,
   input,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 import {
   AbstractControl,
@@ -322,6 +325,9 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
   private readonly paths = inject(CollectionPaths);
   private readonly fb = inject(FormBuilder);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
+  /** Guards one-time store→form sync once the author first resolves. */
+  private populated = false;
 
   /** Route parameter: existing author ID, or absent to create a new author. */
   readonly id = input<string | undefined>(undefined);
@@ -354,6 +360,53 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
     return control as FormControl;
   }
 
+  constructor() {
+    // Sync store → form once the author first resolves, then wire form → store.
+    // Replaces a setInterval(50ms) poll. The valueChanges subscription is wired
+    // only after the seed patch, so it never echoes the initial values back to
+    // the store, and it is torn down with the component.
+    effect(() => {
+      const author = this.store.author();
+      if (!author || this.populated) return;
+      this.populated = true;
+
+      this.form.patchValue({
+        displayName: author.displayName ?? '',
+        email: author.email ?? '',
+        bio: author.bio ?? '',
+      });
+
+      this.socialLinksArray.clear();
+      for (const link of author.socialLinks ?? []) {
+        this.socialLinksArray.push(
+          this.fb.group({
+            platform: [link.platform],
+            label: [link.label ?? ''],
+            url: [link.url ?? ''],
+          }),
+        );
+      }
+
+      this.form.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((val) => {
+          this.store.updateField('displayName', val.displayName ?? '');
+          this.store.updateField('email', val.email ?? undefined);
+          this.store.updateField('bio', val.bio ?? undefined);
+          this.store.updateField(
+            'socialLinks',
+            (val.socialLinks ?? []).map(
+              (s: { platform: string; label: string; url: string }) => ({
+                platform: s.platform as SocialPlatform,
+                label: s.label || undefined,
+                url: s.url,
+              }),
+            ),
+          );
+        });
+    });
+  }
+
   ngOnInit(): void {
     const id = this.id();
     if (id) {
@@ -361,45 +414,6 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
     } else {
       this.store.initNew();
     }
-
-    // Sync store → form once author loads
-    const syncInterval = setInterval(() => {
-      const author = this.store.author();
-      if (author) {
-        clearInterval(syncInterval);
-        this.form.patchValue({
-          displayName: author.displayName ?? '',
-          email: author.email ?? '',
-          bio: author.bio ?? '',
-        });
-
-        // Populate social links
-        this.socialLinksArray.clear();
-        for (const link of author.socialLinks ?? []) {
-          this.socialLinksArray.push(
-            this.fb.group({
-              platform: [link.platform],
-              label: [link.label ?? ''],
-              url: [link.url ?? ''],
-            }),
-          );
-        }
-
-        // Watch form changes → update store
-        this.form.valueChanges.subscribe((val) => {
-          this.store.updateField('displayName', val.displayName ?? '');
-          this.store.updateField('email', val.email ?? undefined);
-          this.store.updateField('bio', val.bio ?? undefined);
-          this.store.updateField('socialLinks', (val.socialLinks ?? []).map(
-            (s: { platform: string; label: string; url: string }) => ({
-              platform: s.platform as SocialPlatform,
-              label: s.label || undefined,
-              url: s.url,
-            }),
-          ));
-        });
-      }
-    }, 50);
   }
 
   ngOnDestroy(): void {
