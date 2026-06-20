@@ -1,4 +1,5 @@
 import type { FirebaseOptions } from 'firebase/app';
+// eslint-disable-next-line @nx/enforce-module-boundaries -- dev-only: shares the emulator projectId with the seed tool; replaced by environment.prod.ts in prod builds.
 import { FIREBASE_EMULATOR_PROJECT_ID } from '../../../../tools/seed/emulator-config';
 
 export interface Environment {

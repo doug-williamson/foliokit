@@ -14,7 +14,13 @@ export default [
           //  - @rhombuskit/tokens: CSS-only (consumed via styles), no TS import,
           //    but a legitimate peerDependency consumers must install.
           //  - vitest: dev/test tool used via globals; must NOT be a published peer.
-          ignoredDependencies: ['@rhombuskit/tokens', 'vitest'],
+          ignoredDependencies: [
+            // SCSS-only / transitive Material peer the rule can't see from TS.
+            '@angular/cdk',
+            '@rhombuskit/material-preset',
+            '@rhombuskit/tokens',
+            'vitest',
+          ],
         },
       ],
     },
@@ -31,7 +37,7 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'lib',
+          prefix: ['lib', 'folio', 'blog', 'cms'],
           style: 'camelCase',
         },
       ],
@@ -39,7 +45,7 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'lib',
+          prefix: ['lib', 'folio', 'blog', 'cms'],
           style: 'kebab-case',
         },
       ],

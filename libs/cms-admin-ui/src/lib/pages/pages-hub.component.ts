@@ -10,7 +10,7 @@ import { wireSiteConfigSaveSnackbarFeedback } from '../site-config-editor/site-c
 import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settings.component';
 
 @Component({
-  selector: 'cms-pages-hub',
+  selector: 'admin-pages-hub',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

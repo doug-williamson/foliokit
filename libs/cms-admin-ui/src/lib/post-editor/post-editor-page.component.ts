@@ -274,7 +274,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               </rhombus-button>
             } @else {
               <span class="shrink-0 min-w-0 post-editor-publish-wrap">
-                <cms-post-publish-button
+                <admin-post-publish-button
                   [currentStatus]="post.status"
                   [isSaving]="store.isSaving()"
                   (statusChange)="onStatusChange($event)"
