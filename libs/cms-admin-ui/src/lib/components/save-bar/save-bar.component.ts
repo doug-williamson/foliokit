@@ -18,12 +18,12 @@ import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/cor
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 100;
+        z-index: var(--z-modal);
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding: 12px 16px;
-        padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+        gap: var(--space-md);
+        padding: var(--space-md) var(--space-lg);
+        padding-bottom: max(var(--space-md), env(safe-area-inset-bottom, 0px));
         background: var(--mat-sys-surface-container-high, var(--mat-sys-surface));
         border-top: var(--border-width) solid var(--border);
         box-shadow: 0 -4px 12px color-mix(in srgb, currentColor 8%, transparent);
@@ -42,7 +42,7 @@ import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/cor
       .save-bar__actions {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: var(--space-sm);
         width: 100%;
       }
 
@@ -74,7 +74,7 @@ import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/cor
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: var(--space-sm);
       }
     `,
   ],

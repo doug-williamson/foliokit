@@ -183,69 +183,59 @@
   }
 }
 
-/* ── Admin-scoped mobile-first retro skin (no public site impact) ───────── */
+/* ── Admin-scoped enterprise skin ────────────────────────────────────────────
+   Clean, modern SaaS-admin styling. Inherits the root radii/shadow tokens
+   (soft corners, layered shadows) rather than overriding them down to hard
+   square edges. Only the responsive page padding and a few structural
+   refinements are admin-specific. No public-site impact. */
 
 .folio-admin {
-  --r-xs: 0px;
-  --r-sm: 1px;
-  --r-md: 2px;
-  --r-lg: 2px;
-  --r-xl: 2px;
-  --r-2xl: 4px;
-  --mat-form-field-container-shape: 1px;
-  --admin-page-padding-x: clamp(12px, 4vw, 24px);
+  --admin-page-padding-x: clamp(16px, 4vw, 32px);
 }
 
-.folio-admin .folio-content {
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0,
-      transparent 15px,
-      color-mix(in srgb, var(--border) 34%, transparent) 15px,
-      color-mix(in srgb, var(--border) 34%, transparent) 16px
-    ),
-    var(--bg);
-}
-
+/* Soft, lightly-floating sidebar instead of a hard ruled divider. */
 .folio-admin mat-sidenav {
-  border-right: var(--border-width) solid var(--border-strong);
+  border-right: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .folio-admin .folio-nav-footer {
-  border-top: var(--border-width) solid var(--border-strong);
+  border-top: var(--border-width) solid var(--border);
 }
 
 .folio-admin .page-heading,
 .folio-admin .admin-page-title {
   font-family: var(--font-display);
   font-size: clamp(1.125rem, 2.8vw, 1.375rem);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
 
 .folio-admin .admin-page-title--greeting {
-  font-size: clamp(1.125rem, 3.3vw, 1.5rem);
+  font-size: clamp(1.25rem, 3.3vw, 1.625rem);
 }
 
+/* Refined sans eyebrow labels (were mono ALL-CAPS 700 — the "retro" tell). */
 .folio-admin .section-label,
 .folio-admin .admin-section-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
+/* Inline metadata (dates, counts) — quiet sans, sentence case. */
 .folio-admin .admin-meta {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
 }
 
 .folio-admin .page-header {
@@ -261,41 +251,19 @@
   padding-inline: var(--admin-page-padding-x);
 }
 
-/* Admin-only badge treatment so blog keeps existing visuals.
-   Colors come from shared --status-* tokens defined per theme pack. */
+/* Clean, flat status pills — solid tinted fill, sentence case, no hard outline.
+   Background/text come from the shared --status-* tokens (set per theme pack),
+   applied by the base .badge-* classes; no admin-specific color rules needed. */
 .folio-admin .badge {
+  border: none;
   border-radius: 999px;
-  border: var(--border-width) solid var(--border-strong);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
   padding-inline: 10px;
-  min-height: 28px;
+  min-height: 22px;
   align-items: center;
   justify-content: center;
-}
-
-.folio-admin .badge-pub {
-  background: var(--status-published-bg);
-  color: var(--status-published-text);
-  border-color: color-mix(in srgb, var(--status-published-text) 40%, var(--border));
-}
-
-.folio-admin .badge-draft {
-  background: var(--status-draft-bg);
-  color: var(--status-draft-text);
-  border-color: var(--border);
-}
-
-.folio-admin .badge-sched {
-  background: var(--status-scheduled-bg);
-  color: var(--status-scheduled-text);
-  border-color: color-mix(in srgb, var(--status-scheduled-text) 40%, var(--border));
-}
-
-.folio-admin .badge-arch {
-  background: var(--status-archived-bg);
-  color: var(--status-archived-text);
-  border-color: color-mix(in srgb, var(--status-archived-text) 30%, var(--border));
 }

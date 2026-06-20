@@ -24,7 +24,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       flex-direction: column;
       height: 100%;
       position: relative;
-      transition: box-shadow 0.18s, transform 0.18s;
+      transition: box-shadow var(--motion-standard), transform var(--motion-standard);
 
       &:hover {
         box-shadow: var(--shadow-lg);
@@ -35,7 +35,16 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
     .card-link-overlay {
       position: absolute;
       inset: 0;
-      z-index: 10;
+      z-index: var(--z-dropdown);
+    }
+
+    /* The link is a transparent overlay clipped by the card's overflow:hidden,
+       so surface its keyboard focus ring on the card itself (WCAG 2.1 AA). */
+    .card-link-overlay:focus-visible {
+      box-shadow: none;
+    }
+    .card:has(.card-link-overlay:focus-visible) {
+      box-shadow: var(--shadow-lg), 0 0 0 3px var(--focus-ring), 0 0 0 1px var(--focus-border);
     }
 
     .card-thumb {
@@ -89,7 +98,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       color: var(--text-secondary);
       white-space: nowrap;
       position: relative;
-      z-index: 20;
+      z-index: var(--z-sticky);
     }
 
     .chip--primary {
@@ -198,11 +207,23 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       overflow: hidden;
       border-radius: var(--r-lg);
       box-shadow: var(--shadow-md);
-      transition: box-shadow 0.18s;
+      transition: box-shadow var(--motion-standard);
 
       &:hover .hero-thumb {
         transform: scale(1.03);
       }
+    }
+
+    .hero-link {
+      position: absolute;
+      inset: 0;
+      z-index: var(--z-dropdown);
+    }
+    .hero-link:focus-visible {
+      box-shadow: none;
+    }
+    .hero-card:has(.hero-link:focus-visible) {
+      box-shadow: var(--shadow-md), 0 0 0 3px var(--focus-ring), 0 0 0 1px var(--focus-border);
     }
 
     .hero-thumb-wrap {
@@ -217,7 +238,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
+      transition: transform var(--motion-slow) ease;
     }
 
     .hero-thumb-fallback {
@@ -255,9 +276,9 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       background: var(--hero-chip-bg);
       color: white;
       backdrop-filter: blur(4px);
-      transition: background 0.12s;
+      transition: background var(--motion-fast);
       position: relative;
-      z-index: 20;
+      z-index: var(--z-sticky);
 
       &:hover { background: var(--hero-chip-bg-hover); }
     }
@@ -284,7 +305,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       <div class="hero-card">
         <a
           [routerLink]="['/posts', post().slug]"
-          class="absolute inset-0 z-10"
+          class="hero-link"
           [attr.aria-label]="post().title"
         ></a>
         <div class="hero-thumb-wrap">

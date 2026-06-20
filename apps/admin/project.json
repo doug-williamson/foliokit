@@ -22,6 +22,9 @@
         ],
         "styles": [
           "node_modules/material-icons/iconfont/material-icons.css",
+          "node_modules/@fontsource-variable/fraunces/index.css",
+          "node_modules/@fontsource-variable/plus-jakarta-sans/index.css",
+          "node_modules/@fontsource-variable/jetbrains-mono/index.css",
           "apps/admin/src/styles.scss"
         ]
       },

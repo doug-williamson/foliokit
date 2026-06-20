@@ -448,10 +448,10 @@ export class PostEditorPageComponent implements OnInit {
   }
 
   protected editorStatusLabel(status: BlogPost['status']): string {
-    if (status === 'published') return 'PUBLISHED';
-    if (status === 'archived') return 'ARCHIVED';
-    if (status === 'scheduled') return 'SCHEDULED';
-    return 'DRAFT';
+    if (status === 'published') return 'Published';
+    if (status === 'archived') return 'Archived';
+    if (status === 'scheduled') return 'Scheduled';
+    return 'Draft';
   }
 
   togglePreview(): void {

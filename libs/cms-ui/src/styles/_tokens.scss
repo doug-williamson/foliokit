@@ -97,9 +97,9 @@
   --color-sky-text:   #FFF8E7;
 
   /* Typography — defaults match editorial pack; packs override via ThemePackService. */
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --font-body:    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', monospace;
   /* CONTRACT aliases consumed by @rhombuskit/* — map onto FolioKit-owned fonts. */
   --font-sans:    var(--font-body);
   --font-prose:   var(--font-body);
@@ -110,6 +110,27 @@
   --r-lg:  10px;
   --r-xl:  14px;
   --r-2xl: 20px;
+  /* Spacing scale — 4px base grid. Use via var(--space-*) instead of magic px. */
+  --space-2xs: 2px;
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  12px;
+  --space-lg:  16px;
+  --space-xl:  24px;
+  --space-2xl: 32px;
+  --space-3xl: 40px;
+  /* Z-index scale — single source of stacking order. */
+  --z-base:     1;
+  --z-dropdown: 10;
+  --z-sticky:   20;
+  --z-overlay:  50;
+  --z-modal:    100;
+  --z-toast:    1000;
+  /* Motion — shared durations + standard easing. Respect prefers-reduced-motion. */
+  --motion-fast:     0.12s;
+  --motion-standard: 0.18s;
+  --motion-slow:     0.5s;
+  --motion-ease:     cubic-bezier(0.22, 1, 0.36, 1);
   /* Code block (always dark regardless of theme) */
   --code-block-bg:   #141920;
   --code-block-text: #CDD9E8;
