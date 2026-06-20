@@ -139,6 +139,8 @@ type Cell = { $implicit: BlogPost; index: number };
     </ng-template>
 
     <ng-template #actionsCell let-row>
+      <!-- Non-interactive wrapper: stops the menu click from triggering row navigation. -->
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
       <span (click)="$event.stopPropagation()">
         <rhombus-overflow-menu
           [items]="rowMenuItems(row)"

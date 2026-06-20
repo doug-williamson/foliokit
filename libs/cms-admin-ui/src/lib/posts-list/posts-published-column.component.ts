@@ -70,6 +70,8 @@ import {
               <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>
               <span class="shrink-0 text-xs opacity-50">{{ post.publishedAt | date: 'mediumDate' }}</span>
             </button>
+            <!-- Non-interactive wrapper: stops the menu click from selecting the row. -->
+            <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
             <span class="shrink-0 mr-1" (click)="$event.stopPropagation()">
               <rhombus-overflow-menu
                 [items]="cardMenuItems(post)"
