@@ -1,9 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
+  effect,
   inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -151,9 +154,22 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
 export class HomePageEditorComponent implements OnInit {
   readonly store = inject(SiteConfigEditorStore);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  /** Guards one-time form population once the store's config first resolves. */
+  private populated = false;
 
   constructor() {
     wireSiteConfigSaveSnackbarFeedback(this.store);
+
+    // Populate the form once, when the store's config first becomes available.
+    // Replaces a setInterval(50ms) poll. populateFromConfig patches with
+    // emitEvent:false, so this never feeds back into the flush subscription.
+    effect(() => {
+      const config = this.store.config();
+      if (!config || this.populated) return;
+      this.populated = true;
+      this.populateFromConfig(config);
+    });
   }
 
   protected readonly homeForm: FormGroup = this.fb.group({
@@ -185,7 +201,10 @@ export class HomePageEditorComponent implements OnInit {
 
     this.homeForm
       .get('enabled')!
-      .valueChanges.pipe(startWith(this.homeForm.get('enabled')!.value))
+      .valueChanges.pipe(
+        startWith(this.homeForm.get('enabled')!.value),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((on: boolean) => {
         const h = this.homeForm.get('heroHeadline');
         if (on) {
@@ -196,13 +215,9 @@ export class HomePageEditorComponent implements OnInit {
         h?.updateValueAndValidity({ emitEvent: false });
       });
 
-    const pollInterval = setInterval(() => {
-      const config = this.store.config();
-      if (!config) return;
-      clearInterval(pollInterval);
-      this.populateFromConfig(config);
-      this.homeForm.valueChanges.subscribe(() => this.flushToStore());
-    }, 50);
+    this.homeForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushToStore());
   }
 
   protected onSave(): void {

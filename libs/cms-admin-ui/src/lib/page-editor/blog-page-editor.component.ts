@@ -87,6 +87,8 @@ export class BlogPageEditorComponent implements OnInit {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly destroyRef = inject(DestroyRef);
+  /** Guards one-time SEO form population once the store's config first resolves. */
+  private populated = false;
 
   protected readonly blogSeoForm: SeoFieldsFormGroup = new FormGroup({
     metaTitle: new FormControl<string | null>(null),
@@ -104,6 +106,15 @@ export class BlogPageEditorComponent implements OnInit {
       const suffix = site && site.length > 0 ? site : 'Admin';
       this.title.setTitle(`Publish | ${suffix}`);
     });
+
+    // Populate the SEO form once, when the store's config first resolves.
+    // Replaces a setInterval(50ms) poll.
+    effect(() => {
+      const config = this.store.config();
+      if (!config || this.populated) return;
+      this.populated = true;
+      this.populateBlogSeoFromConfig(config);
+    });
   }
 
   ngOnInit(): void {
@@ -112,15 +123,9 @@ export class BlogPageEditorComponent implements OnInit {
     this.meta.updateTag({ name: 'description', content: PAGE_DESCRIPTION });
     this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
 
-    const pollInterval = setInterval(() => {
-      const config = this.store.config();
-      if (!config) return;
-      clearInterval(pollInterval);
-      this.populateBlogSeoFromConfig(config);
-      this.blogSeoForm.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.flushBlogToStore());
-    }, 50);
+    this.blogSeoForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.flushBlogToStore());
   }
 
   protected onSave(): void {
