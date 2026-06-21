@@ -55,13 +55,14 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
          and ships no nav-item styling; admin-nav owns this markup, so these rules now
          live here and travel with the component regardless of the host shell. */
       .nav-group-label {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        letter-spacing: 0.12em;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
         color: var(--text-muted);
         padding: 0 16px;
-        margin-bottom: 3px;
+        margin-bottom: 4px;
         margin-top: 18px;
         display: block;
 
@@ -104,8 +105,8 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
         &.active-link {
           background: var(--nav-active-bg);
           color: var(--nav-active-text);
-          font-weight: 700;
-          border-radius: 8px;
+          font-weight: 600;
+          border-radius: var(--r-md);
           margin: 1px 8px;
           overflow: hidden;
         }
@@ -128,11 +129,11 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
       }
 
       .nav-plan-badge {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        padding: 1px 6px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        padding: 1px 7px;
         border-radius: 100px;
         margin-left: auto;
         flex-shrink: 0;

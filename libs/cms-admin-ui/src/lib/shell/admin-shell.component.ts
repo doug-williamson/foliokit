@@ -86,6 +86,19 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   ],
   styles: [
     `
+      /* ── Fill the shell content area ─────────────────────────────────────
+         rhombus-app-shell's <main class="rhombus-app-shell__main"> sets only
+         min-width — it passes the routed page no height, so editor pages that
+         use :host { height: 100% } collapse to content height. Give __main a
+         definite full height + flex column so those pages fill the viewport;
+         natural-height pages still overflow-scroll via the shell's __body.
+         Admin-scoped through this component's :host. */
+      :host ::ng-deep .rhombus-app-shell__main {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
       /* ── Shell brand (projected into rhombus-app-shell [shellBrand]) ──
          Re-homed from folio-app-shell's toolbar brand styling. */
       .folio-shell-brand {
