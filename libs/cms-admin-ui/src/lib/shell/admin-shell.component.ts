@@ -6,13 +6,12 @@ import {
 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
   RhombusAppShellComponent,
   RhombusShellNavFooterDirective,
+  RhombusTooltipDirective,
 } from '@rhombuskit/core';
 import { FolioThemeControlComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
 import { AuthService } from '@foliokit/cms-core';
@@ -74,11 +73,10 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   imports: [
     RhombusAppShellComponent,
     RhombusShellNavFooterDirective,
+    RhombusTooltipDirective,
     RouterLink,
     RouterOutlet,
-    MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
     MatToolbarModule,
     AdminNavComponent,
     MatBottomSheetModule,
@@ -338,8 +336,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         </nav>
         <ng-container shellNavFooter>
           <div class="flex items-center justify-between pl-3 pr-1 py-1">
-            <span class="text-xs truncate" style="color: var(--text-muted)" [matTooltip]="auth.user()?.email ?? ''" [matTooltipDisabled]="true" matTooltipPosition="right">{{ auth.user()?.email }}</span>
-            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" matTooltip="Sign out" matTooltipPosition="right" [matTooltipDisabled]="true">
+            <span class="text-xs truncate" style="color: var(--text-muted)" [rhombusTooltip]="auth.user()?.email ?? ''" [rhombusTooltipDisabled]="true" rhombusTooltipPosition="right">{{ auth.user()?.email }}</span>
+            <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" rhombusTooltip="Sign out" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
               <mat-icon class="nav-icon" svgIcon="logout" />
             </button>
           </div>

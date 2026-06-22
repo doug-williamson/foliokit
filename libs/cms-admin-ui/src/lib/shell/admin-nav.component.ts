@@ -7,7 +7,7 @@ import {
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { RhombusTooltipDirective } from '@rhombuskit/core';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -47,13 +47,20 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'folio-admin-nav' },
-  imports: [RouterLink, RouterLinkActive, MatIconModule, MatTooltipModule],
+  imports: [RouterLink, RouterLinkActive, MatIconModule, RhombusTooltipDirective],
   styles: [
     `
       /* Nav-content styling re-homed from folio-app-shell's app-shell.component.scss
          (formerly '::ng-deep mat-sidenav .nav-*'). rhombus-app-shell is structure-only
          and ships no nav-item styling; admin-nav owns this markup, so these rules now
          live here and travel with the component regardless of the host shell. */
+      :host {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 16px 12px;
+      }
+
       .nav-group-label {
         font-family: var(--font-body);
         font-size: 11px;
@@ -61,9 +68,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: var(--text-muted);
-        padding: 0 16px;
-        margin-bottom: 4px;
-        margin-top: 18px;
+        margin: 16px 12px 4px;
         display: block;
 
         &:first-child {
@@ -77,17 +82,17 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 
       .nav-item {
         position: relative;
-        height: 40px;
-        padding: 0 16px;
-        gap: 10px;
-        display: flex !important;
+        display: flex;
         align-items: center;
-        font-size: 12px;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 400;
         font-family: var(--font-body);
         letter-spacing: normal;
         color: var(--text-secondary);
         text-decoration: none;
-        border-left: none;
         transition: background 0.12s, color 0.12s;
 
         &:hover {
@@ -96,30 +101,16 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
         }
 
         .nav-icon {
-          font-size: 18px !important;
-          width: 18px !important;
-          height: 18px !important;
+          font-size: 20px !important;
+          width: 20px !important;
+          height: 20px !important;
           flex-shrink: 0;
         }
 
         &.active-link {
-          background: var(--nav-active-bg);
-          color: var(--nav-active-text);
-          font-weight: 600;
-          border-radius: var(--r-md);
-          margin: 1px 8px;
-          overflow: hidden;
-        }
-
-        &.nav-child {
-          padding-left: 28px;
-          height: 36px;
-
-          .nav-icon {
-            font-size: 16px !important;
-            width: 16px !important;
-            height: 16px !important;
-          }
+          background: color-mix(in srgb, var(--text-accent) 12%, transparent);
+          color: var(--text-accent);
+          font-weight: 500;
         }
 
         &.nav-item--disabled {
@@ -191,9 +182,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [routerLink]="row.route"
               routerLinkActive="active-link"
               [routerLinkActiveOptions]="rlaOpts(row)"
-              [matTooltip]="row.label"
-              matTooltipPosition="right"
-              [matTooltipDisabled]="true"
+              [rhombusTooltip]="row.label"
+              rhombusTooltipPosition="right"
+              [rhombusTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -208,9 +199,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [class.nav-child]="row.id !== 'dashboard'"
               [attr.aria-disabled]="true"
               (click)="onDisabledTap(row)"
-              [matTooltip]="row.label"
-              matTooltipPosition="right"
-              [matTooltipDisabled]="true"
+              [rhombusTooltip]="row.label"
+              rhombusTooltipPosition="right"
+              [rhombusTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -221,9 +212,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
                 <mat-icon
                   class="folio-admin-nav__hint-icon"
                   svgIcon="info"
-                  matTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
-                  matTooltipPosition="right"
-                  [matTooltipDisabled]="true"
+                  rhombusTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
+                  rhombusTooltipPosition="right"
+                  [rhombusTooltipDisabled]="true"
                 />
               }
             </button>
@@ -233,7 +224,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right" [matTooltipDisabled]="true">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" rhombusTooltip="Settings" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>

@@ -7,7 +7,6 @@ import {
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatIconModule } from '@angular/material/icon';
 import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
 import { RhombusButtonComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
 import { SetupPromptComponent } from './setup-prompt.component';
@@ -31,7 +30,7 @@ const PLAN_LABELS: Record<string, string> = {
   selector: 'admin-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, RhombusButtonComponent, MatIconModule, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent],
+  imports: [DatePipe, RhombusButtonComponent, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent],
   styles: [
     `
       :host {

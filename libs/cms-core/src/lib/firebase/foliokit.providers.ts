@@ -42,6 +42,25 @@ import { SITE_CONFIG_SERVICE } from '../tokens/site-config-service.token';
 export const SITE_ID = new InjectionToken<string>('SITE_ID');
 
 /**
+ * Injection token controlling whether plan-gating is bypassed.
+ *
+ * **Provided by {@link provideFolioKit}** from the `planGatingBypass` config
+ * field (default `false`). When `true`, {@link PlanGatingService} reports the
+ * `agency_internal` tier and unlocks all features — used for internal/dev
+ * builds.
+ *
+ * Library code must inject this token rather than reading `import.meta.env`
+ * directly: `cms-core` is compiled by ng-packagr, which does not run the
+ * application builder's `import.meta.env` substitution, so a raw
+ * `import.meta.env` read is `undefined` at runtime. The application layer
+ * (e.g. `apps/admin/src/environments`) reads the env var and passes the
+ * resolved boolean through `provideFolioKit()`.
+ */
+export const PLAN_GATING_BYPASS = new InjectionToken<boolean>(
+  'PLAN_GATING_BYPASS',
+);
+
+/**
  * Configuration object accepted by {@link provideFolioKit}.
  */
 export interface FolioKitConfig {
@@ -94,6 +113,19 @@ export interface FolioKitConfig {
    * @default false
    */
   useEmulator?: boolean;
+
+  /**
+   * When `true`, bypasses plan-gating: {@link PlanGatingService} reports the
+   * `agency_internal` tier and all features unlock. Intended for internal /
+   * development builds.
+   *
+   * The application is responsible for resolving this value (e.g. from an
+   * environment variable) and passing it in — library code never reads build
+   * env vars directly.
+   *
+   * @default false
+   */
+  planGatingBypass?: boolean;
 }
 
 /**
@@ -157,6 +189,13 @@ export function provideFolioKit(config: FolioKitConfig): EnvironmentProviders {
   if (config.siteId !== undefined) {
     providers.push({ provide: SITE_ID, useValue: config.siteId });
   }
+
+  // Plan-gating bypass flag (default false). Always provided so the service
+  // can inject it without an { optional: true } fallback ambiguity.
+  providers.push({
+    provide: PLAN_GATING_BYPASS,
+    useValue: config.planGatingBypass ?? false,
+  });
 
   // Optionally apply a Firebase Auth tenant ID for multi-tenant projects.
   // Uses APP_INITIALIZER to run after the Auth instance is created.

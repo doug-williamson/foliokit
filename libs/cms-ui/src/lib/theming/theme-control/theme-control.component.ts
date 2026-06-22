@@ -27,8 +27,6 @@ const GLYPH_PATH: Record<FolioThemePreference, string> = {
     'M20 3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H4V5h16v11z',
 };
 
-const CHECK_PATH = 'M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z';
-
 const PREFERENCE_LABELS: Record<FolioThemePreference, string> = {
   light: 'Light',
   dark: 'Dark',
@@ -72,16 +70,14 @@ function asFolioPreference(value: ThemePreference): FolioThemePreference {
           (click)="theme.setTheme(opt.value)"
           [attr.aria-current]="theme.preference() === opt.value ? 'true' : null"
         >
-          <span class="folio-theme-item">
+          <span
+            class="folio-theme-item"
+            [class.folio-theme-item--active]="theme.preference() === opt.value"
+          >
             <svg class="folio-theme-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path [attr.d]="glyphPath(opt.value)" />
             </svg>
             <span class="folio-theme-item-label">{{ opt.label }}</span>
-            @if (theme.preference() === opt.value) {
-              <svg class="folio-theme-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path [attr.d]="checkPath" />
-              </svg>
-            }
           </span>
         </button>
       }
@@ -106,18 +102,16 @@ function asFolioPreference(value: ThemePreference): FolioThemePreference {
       .folio-theme-item-label {
         flex: 1;
       }
-      .folio-theme-check {
-        width: 20px;
-        height: 20px;
-        fill: currentColor;
-        opacity: 0.85;
+      /* Active preference: tint glyph + label with the accent (RhombusKit theme-menu
+         pattern). The glyph uses fill: currentColor, so colouring the row covers both. */
+      .folio-theme-item--active {
+        color: var(--text-accent);
       }
     `,
   ],
 })
 export class FolioThemeControlComponent {
   protected readonly theme = inject(RhombusThemeService);
-  protected readonly checkPath = CHECK_PATH;
 
   protected readonly options: ReadonlyArray<{ value: FolioThemePreference; label: string }> = [
     { value: 'light', label: PREFERENCE_LABELS.light },

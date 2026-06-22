@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RhombusProgressBarComponent } from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 
@@ -200,7 +201,7 @@ export class PostEditorCoverImageComponent {
     this.uploadProgress.set(0);
     this.uploadError.set(null);
 
-    const task = uploadBytesResumable(fileRef, file);
+    const task = uploadBytesResumable(fileRef, file, IMAGE_UPLOAD_METADATA);
 
     task.on(
       'state_changed',

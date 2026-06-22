@@ -26,6 +26,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
@@ -467,7 +468,7 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
     this.uploadError.set(null);
 
     const fileRef = ref(this.storage, path);
-    const task = uploadBytesResumable(fileRef, file);
+    const task = uploadBytesResumable(fileRef, file, IMAGE_UPLOAD_METADATA);
     this.activeUploadTask = task;
 
     task.on(
