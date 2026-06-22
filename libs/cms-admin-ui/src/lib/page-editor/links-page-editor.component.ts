@@ -12,6 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import {
   RhombusInputComponent,
+  RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
   RhombusTextareaComponent,
 } from '@rhombuskit/core';
@@ -36,6 +37,7 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
     MatExpansionModule,
     MatIconModule,
     RhombusInputComponent,
+    RhombusPageHeaderComponent,
     RhombusTextareaComponent,
     RhombusSpinnerComponent,
     LinksEditorFormComponent,
@@ -59,13 +61,6 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
-      <div
-        class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-      >
-        <h1 class="page-heading flex-1">Links Page</h1>
-      </div>
-
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
           <rhombus-spinner [diameter]="40" />
@@ -73,6 +68,7 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
       } @else {
         <div class="links-scroll">
           <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <rhombus-page-header title="Links Page" />
             <folio-profile-preview
               [profile]="store.config()?.profile ?? null"
               settingsRoute="/settings"

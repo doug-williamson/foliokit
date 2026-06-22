@@ -19,6 +19,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import {
   RhombusCheckboxComponent,
   RhombusInputComponent,
+  RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
   RhombusSwitchComponent,
 } from '@rhombuskit/core';
@@ -43,6 +44,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
     MatExpansionModule,
     RhombusCheckboxComponent,
     RhombusInputComponent,
+    RhombusPageHeaderComponent,
     RhombusSpinnerComponent,
     RhombusSwitchComponent,
     SeoFieldsComponent,
@@ -60,13 +62,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
-      <div
-        class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-      >
-        <h1 class="page-heading flex-1">Home</h1>
-      </div>
-
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
           <rhombus-spinner [diameter]="40" />
@@ -74,9 +69,10 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
       } @else {
         <div class="flex-1 overflow-y-auto">
           <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
-            <p class="text-sm opacity-60 m-0">
-              Configure the hero visitors see on your public home page.
-            </p>
+            <rhombus-page-header
+              title="Home"
+              description="Configure the hero visitors see on your public home page."
+            />
 
             <form class="flex flex-col gap-5" (submit)="$event.preventDefault()">
               <div class="flex items-center justify-between gap-4">

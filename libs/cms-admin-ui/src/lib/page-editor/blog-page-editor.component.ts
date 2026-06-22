@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RhombusSpinnerComponent } from '@rhombuskit/core';
+import { RhombusPageHeaderComponent, RhombusSpinnerComponent } from '@rhombuskit/core';
 import type { SiteConfig } from '@foliokit/cms-core';
 import {
   SeoFieldsComponent,
@@ -28,6 +28,7 @@ const PAGE_DESCRIPTION =
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RhombusPageHeaderComponent,
     RhombusSpinnerComponent,
     ReactiveFormsModule,
     BlogPublishSettingsComponent,
@@ -46,13 +47,6 @@ const PAGE_DESCRIPTION =
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
-      <div
-        class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-        style="border-color: color-mix(in srgb, currentColor 12%, transparent)"
-      >
-        <h1 class="page-heading flex-1">Blog</h1>
-      </div>
-
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
           <rhombus-spinner [diameter]="40" />
@@ -60,6 +54,7 @@ const PAGE_DESCRIPTION =
       } @else {
         <div class="flex-1 overflow-y-auto">
           <div class="flex flex-col gap-6 max-w-2xl mx-auto px-6 py-8">
+            <rhombus-page-header title="Blog" />
             <folio-blog-publish-settings layout="page" />
 
             <div class="flex flex-col gap-2">
