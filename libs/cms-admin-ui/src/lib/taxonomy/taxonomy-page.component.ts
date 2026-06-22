@@ -10,6 +10,7 @@ import {
   RhombusButtonComponent,
   RhombusDialogService,
   RhombusEmptyStateComponent,
+  RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
   RhombusSwitchComponent,
   RhombusTooltipDirective,
@@ -26,23 +27,20 @@ import { TaxonomyStore } from './taxonomy.store';
     MatIconModule,
     RhombusButtonComponent,
     RhombusEmptyStateComponent,
+    RhombusPageHeaderComponent,
     RhombusSpinnerComponent,
     RhombusSwitchComponent,
     RhombusTooltipDirective,
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden">
-        <!-- Header -->
-        <div class="page-header flex items-center justify-between border-b shrink-0"
-             style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-          <h1 class="page-heading">Series</h1>
-          <rhombus-button variant="secondary" (click)="openNewSeries()">
-            New Series
-          </rhombus-button>
-        </div>
-
-        <!-- Content -->
         <div class="flex-1 overflow-y-auto">
+          <div class="p-4 sm:p-6">
+          <rhombus-page-header title="Series">
+            <rhombus-button slot="actions" variant="secondary" (click)="openNewSeries()">
+              New Series
+            </rhombus-button>
+          </rhombus-page-header>
           @if (store.loading()) {
             <div class="flex items-center justify-center p-12">
               <rhombus-spinner [diameter]="40" />
@@ -53,7 +51,7 @@ import { TaxonomyStore } from './taxonomy.store';
               heading="No series yet. Create one to get started."
             />
           } @else {
-            <div class="p-4 sm:p-6 flex flex-col gap-6">
+            <div class="flex flex-col gap-6">
               @if (store.error()) {
                 <p class="text-sm text-red-600">{{ store.error() }}</p>
               }
@@ -83,6 +81,7 @@ import { TaxonomyStore } from './taxonomy.store';
               </div>
             </div>
           }
+          </div>
         </div>
     </div>
   `,
