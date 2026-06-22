@@ -120,11 +120,11 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
       }
 
       .nav-plan-badge {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        padding: 1px 6px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        padding: 1px 7px;
         border-radius: 100px;
         margin-left: auto;
         flex-shrink: 0;
