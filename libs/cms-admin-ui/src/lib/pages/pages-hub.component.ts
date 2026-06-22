@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
   RhombusButtonComponent,
   RhombusCardComponent,
+  RhombusPageHeaderComponent,
   RhombusSwitchComponent,
 } from '@rhombuskit/core';
 import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.store';
@@ -16,26 +17,24 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
   imports: [
     RhombusButtonComponent,
     RhombusCardComponent,
+    RhombusPageHeaderComponent,
     RhombusSwitchComponent,
     BlogPublishSettingsComponent,
   ],
   template: `
     <div class="flex flex-col h-full min-h-0 overflow-y-auto">
-      <header class="page-header flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
-              style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="page-heading flex-1">Configuration</h1>
-      </header>
+      <div class="max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
+        <rhombus-page-header
+          title="Configuration"
+          description="Enable or disable your site's pages. Changes take effect immediately on both the public site and the admin sidebar."
+        />
 
       @if (!store.config()) {
-        <div class="flex flex-1 items-center justify-center p-8">
+        <div class="flex items-center justify-center p-8">
           <span class="text-sm opacity-50">Loading…</span>
         </div>
       } @else {
-        <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6">
-          <p class="text-sm opacity-60 m-0">
-            Enable or disable your site's pages. Changes take effect immediately on both the public site and the admin sidebar.
-          </p>
-
+        <div class="flex flex-col gap-4 w-full">
           <rhombus-card variant="outlined" [hasHeader]="false" class="p-4 flex flex-col gap-3">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
@@ -127,6 +126,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
           <!-- GATE_TODO: stream -->
         </div>
       }
+      </div>
     </div>
   `,
 })
