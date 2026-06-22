@@ -7,7 +7,7 @@ import {
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { RhombusTooltipDirective } from '@rhombuskit/core';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -47,7 +47,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'folio-admin-nav' },
-  imports: [RouterLink, RouterLinkActive, MatIconModule, MatTooltipModule],
+  imports: [RouterLink, RouterLinkActive, MatIconModule, RhombusTooltipDirective],
   styles: [
     `
       /* Nav-content styling re-homed from folio-app-shell's app-shell.component.scss
@@ -190,9 +190,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [routerLink]="row.route"
               routerLinkActive="active-link"
               [routerLinkActiveOptions]="rlaOpts(row)"
-              [matTooltip]="row.label"
-              matTooltipPosition="right"
-              [matTooltipDisabled]="true"
+              [rhombusTooltip]="row.label"
+              rhombusTooltipPosition="right"
+              [rhombusTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -207,9 +207,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               [class.nav-child]="row.id !== 'dashboard'"
               [attr.aria-disabled]="true"
               (click)="onDisabledTap(row)"
-              [matTooltip]="row.label"
-              matTooltipPosition="right"
-              [matTooltipDisabled]="true"
+              [rhombusTooltip]="row.label"
+              rhombusTooltipPosition="right"
+              [rhombusTooltipDisabled]="true"
             >
               <mat-icon class="nav-icon" [svgIcon]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
@@ -220,9 +220,9 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
                 <mat-icon
                   class="folio-admin-nav__hint-icon"
                   svgIcon="info"
-                  matTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
-                  matTooltipPosition="right"
-                  [matTooltipDisabled]="true"
+                  rhombusTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
+                  rhombusTooltipPosition="right"
+                  [rhombusTooltipDisabled]="true"
                 />
               }
             </button>
@@ -232,7 +232,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
     }
 
     <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" matTooltip="Settings" matTooltipPosition="right" [matTooltipDisabled]="true">
+    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" rhombusTooltip="Settings" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
       <mat-icon class="nav-icon" svgIcon="tune" />
       <span class="nav-label">Settings</span>
     </a>

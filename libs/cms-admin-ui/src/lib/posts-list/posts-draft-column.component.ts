@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { BlogPost } from '@foliokit/cms-core';
 import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
 
@@ -8,7 +7,7 @@ import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/co
   selector: 'folio-posts-draft-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatIconModule, RhombusCardComponent, RhombusEmptyStateComponent],
+  imports: [DatePipe, RhombusCardComponent, RhombusEmptyStateComponent],
   host: { class: 'contents' },
   styles: [`
     .column-header {
