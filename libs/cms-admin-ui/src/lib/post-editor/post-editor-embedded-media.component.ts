@@ -15,6 +15,7 @@ import {
   RhombusProgressBarComponent,
 } from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, EmbeddedMediaEntry, FIREBASE_STORAGE } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-media-item.component';
@@ -117,7 +118,7 @@ export class PostEditorEmbeddedMediaComponent {
     this.uploading.set(true);
     this.uploadError.set(null);
 
-    const task = uploadBytesResumable(fileRef, file);
+    const task = uploadBytesResumable(fileRef, file, IMAGE_UPLOAD_METADATA);
 
     task.on(
       'state_changed',

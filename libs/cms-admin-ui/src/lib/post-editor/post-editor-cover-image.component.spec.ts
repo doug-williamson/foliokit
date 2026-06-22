@@ -234,6 +234,21 @@ describe('PostEditorCoverImageComponent — onFileSelected', () => {
     expect(component.uploading()).toBe(false);
   });
 
+  it('uploads with public cache-control so OG/social crawlers can cache the cover image', () => {
+    const { component } = setup();
+    const task = makeUploadTask();
+    vi.mocked(uploadBytesResumable).mockReturnValue(task as never);
+
+    const file = new File(['x'], 'a.jpg', { type: 'image/jpeg' });
+    component.onFileSelected(makeFileList(file));
+
+    expect(vi.mocked(uploadBytesResumable)).toHaveBeenCalledWith(
+      expect.anything(),
+      file,
+      expect.objectContaining({ cacheControl: expect.stringContaining('public') }),
+    );
+  });
+
   it('uses "draft-temp" as postId when post.id is empty', () => {
     const { component } = setup({ id: '' });
     const task = makeUploadTask();

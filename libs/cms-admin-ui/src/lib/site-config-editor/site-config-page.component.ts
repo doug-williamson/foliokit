@@ -19,6 +19,7 @@ import {
 } from '@angular/forms';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -536,7 +537,7 @@ export class SiteConfigPageComponent implements OnInit {
     try {
       const ext = file.name.split('.').pop() ?? 'jpg';
       const path = this.paths.storagePath(`profile/avatar-${variant}.${ext}`);
-      const snapshot = await uploadBytes(ref(getStorage(), path), file);
+      const snapshot = await uploadBytes(ref(getStorage(), path), file, IMAGE_UPLOAD_METADATA);
       const url = await getDownloadURL(snapshot.ref);
       if (variant === 'light') {
         this.profilePhotoUrl.set(url);
