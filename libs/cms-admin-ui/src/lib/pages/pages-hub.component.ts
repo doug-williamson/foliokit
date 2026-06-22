@@ -51,7 +51,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               />
             </div>
             <rhombus-button
-              appearance="outlined"
+              appearance="filled"
               variant="secondary"
               type="button"
               class="self-start"
@@ -82,7 +82,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               />
             </div>
             <rhombus-button
-              appearance="outlined"
+              appearance="filled"
               variant="secondary"
               type="button"
               class="self-start"
@@ -109,7 +109,7 @@ import { BlogPublishSettingsComponent } from '../page-editor/blog-publish-settin
               />
             </div>
             <rhombus-button
-              appearance="outlined"
+              appearance="filled"
               variant="secondary"
               type="button"
               class="self-start"

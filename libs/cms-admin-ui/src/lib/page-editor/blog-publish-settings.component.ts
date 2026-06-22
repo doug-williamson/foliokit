@@ -43,11 +43,11 @@ import { SiteConfigEditorStore } from '../site-config-editor/site-config-editor.
     }
     <div class="flex flex-wrap gap-2">
       @if (layout() === 'hub') {
-        <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="router.navigate(['/pages/blog'])">
+        <rhombus-button appearance="filled" variant="secondary" type="button" (click)="router.navigate(['/pages/blog'])">
           Blog settings
         </rhombus-button>
       }
-      <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="router.navigate(['/posts'])">Open posts</rhombus-button>
+      <rhombus-button appearance="filled" variant="secondary" type="button" (click)="router.navigate(['/posts'])">Open posts</rhombus-button>
     </div>
     </div>
   `,
