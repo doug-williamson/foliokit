@@ -15,6 +15,7 @@ import {
   RhombusButtonComponent,
   RhombusConfirmService,
   RhombusOverflowMenuComponent,
+  RhombusTabGroupDirective,
   RhombusToastService,
   RhombusTooltipDirective,
   type OverflowMenuItem,
@@ -25,6 +26,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorStore } from './post-editor.store';
 import { PostPublishButtonComponent } from './post-publish-button/post-publish-button.component';
 import { ContentTabComponent } from './tabs/content-tab.component';
@@ -63,6 +65,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
+    MatTabsModule,
     PostPublishButtonComponent,
     ContentTabComponent,
     MediaTabComponent,
@@ -73,10 +76,21 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     SeoPreviewComponent,
     RhombusButtonComponent,
     RhombusOverflowMenuComponent,
+    RhombusTabGroupDirective,
     RhombusTooltipDirective,
   ],
   styles: [
     `
+      /* Fill the shell's flex-column <main> (rhombus-app-shell__main) so the
+       * sidenav split + tab panes get a definite height to flex into. */
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
       /*
        * Force sidenav content to participate in flex height layout.
        */
@@ -98,13 +112,33 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         border-radius: 0;
       }
 
-      /* Tab content area */
+      /* Tab content area (custom strips replaced by rhombusTabGroup) */
       .tab-content {
         display: flex;
         flex-direction: column;
         flex: 1;
         overflow-y: auto;
         min-height: 0;
+      }
+
+      /* rhombusTabGroup panes must fill the sidenav split; each tab's own
+         content (markdown editor flexes to fill; metadata/seo self-scroll). */
+      mat-tab-group {
+        flex: 1;
+        min-height: 0;
+      }
+      ::ng-deep .mat-mdc-tab-body-wrapper {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+      ::ng-deep .mat-mdc-tab-body {
+        height: 100%;
+      }
+      ::ng-deep .mat-mdc-tab-body-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       .toolbar-icon-btn {
@@ -302,52 +336,49 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           [opened]="isDesktop() || previewOpen()"
           (closedStart)="previewOpen.set(false)"
         >
-          <div class="flex flex-col h-full overflow-hidden">
-            <!-- Right tab strip -->
-            <div class="tab-strip tab-strip--equal">
-              @for (tab of rightTabs; track tab) {
-                <button
-                  class="tab-btn"
-                  [class.active]="rightTab() === tab"
-                  (click)="rightTab.set(tab)"
-                >{{ tab }}</button>
-              }
-            </div>
-            <!-- Right tab content -->
-            <div class="tab-content">
-              @switch (rightTab()) {
-                @case ('Article') { <folio-article-preview /> }
-                @case ('Card') { <folio-card-preview /> }
-                @case ('SEO') { <folio-seo-preview /> }
-              }
-            </div>
-          </div>
+          <mat-tab-group
+            rhombusTabGroup
+            class="flex flex-col h-full overflow-hidden"
+            [mat-stretch-tabs]="true"
+            animationDuration="0"
+            [selectedIndex]="rightTabIndex()"
+            (selectedIndexChange)="onRightTabChange($event)"
+          >
+            <mat-tab label="Article">
+              <ng-template matTabContent><folio-article-preview /></ng-template>
+            </mat-tab>
+            <mat-tab label="Card">
+              <ng-template matTabContent><folio-card-preview /></ng-template>
+            </mat-tab>
+            <mat-tab label="SEO">
+              <ng-template matTabContent><folio-seo-preview /></ng-template>
+            </mat-tab>
+          </mat-tab-group>
         </mat-sidenav>
 
         <!-- Main editor pane -->
         <mat-sidenav-content>
-          <div class="flex flex-col h-full overflow-hidden">
-            <!-- Left tab strip -->
-            <div class="tab-strip tab-strip--equal">
-              @for (tab of leftTabs; track tab) {
-                <button
-                  type="button"
-                  class="tab-btn"
-                  [class.active]="leftTab() === tab"
-                  (click)="leftTab.set(tab)"
-                >{{ tab }}</button>
-              }
-            </div>
-            <!-- Left tab content -->
-            <div class="tab-content">
-              @switch (leftTab()) {
-                @case ('Content') { <folio-content-tab /> }
-                @case ('Metadata') { <folio-metadata-tab /> }
-                @case ('SEO') { <folio-seo-tab /> }
-                @case ('Media') { <folio-media-tab /> }
-              }
-            </div>
-          </div>
+          <mat-tab-group
+            rhombusTabGroup
+            class="flex flex-col h-full overflow-hidden"
+            [mat-stretch-tabs]="true"
+            animationDuration="0"
+            [selectedIndex]="leftTabIndex()"
+            (selectedIndexChange)="onLeftTabChange($event)"
+          >
+            <mat-tab label="Content">
+              <ng-template matTabContent><folio-content-tab /></ng-template>
+            </mat-tab>
+            <mat-tab label="Metadata">
+              <ng-template matTabContent><folio-metadata-tab /></ng-template>
+            </mat-tab>
+            <mat-tab label="SEO">
+              <ng-template matTabContent><folio-seo-tab /></ng-template>
+            </mat-tab>
+            <mat-tab label="Media">
+              <ng-template matTabContent><folio-media-tab /></ng-template>
+            </mat-tab>
+          </mat-tab-group>
         </mat-sidenav-content>
       </mat-sidenav-container>
 
@@ -382,6 +413,17 @@ export class PostEditorPageComponent implements OnInit {
 
   readonly leftTab = signal<LeftTab>('Content');
   readonly rightTab = signal<RightTab>('Article');
+
+  /** Bridge the tab signals to rhombusTabGroup's index-based selection. */
+  readonly leftTabIndex = computed(() => this.leftTabs.indexOf(this.leftTab()));
+  readonly rightTabIndex = computed(() => this.rightTabs.indexOf(this.rightTab()));
+
+  protected onLeftTabChange(index: number): void {
+    this.leftTab.set(this.leftTabs[index]);
+  }
+  protected onRightTabChange(index: number): void {
+    this.rightTab.set(this.rightTabs[index]);
+  }
 
   /** Toolbar overflow menu, reactive to post slug and saving state. */
   protected readonly moreMenuItems = computed<OverflowMenuItem[]>(() => {
