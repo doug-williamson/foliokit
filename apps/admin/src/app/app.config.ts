@@ -19,6 +19,7 @@ export const appConfig: ApplicationConfig = {
       firebaseConfig: environment.firebase,
       siteId: 'foliokitcms',
       useEmulator: environment.useEmulator,
+      planGatingBypass: environment.bypassGating,
     }),
     provideAdminKit({
       adminEmail: environment.adminEmail,

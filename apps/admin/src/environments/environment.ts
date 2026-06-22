@@ -4,6 +4,7 @@ import type { FirebaseOptions } from 'firebase/app';
 export interface Environment {
   isProd: boolean;
   useEmulator: boolean;
+  bypassGating: boolean;
   adminEmail: string;
   firebase: FirebaseOptions;
   stripe: {
@@ -17,6 +18,7 @@ export interface Environment {
 export const environment: Environment = {
   isProd: false,
   useEmulator: true,
+  bypassGating: import.meta.env['NG_APP_BYPASS_GATING'] === 'true',
   adminEmail: 'dev.foliokit@gmail.com',
   firebase: {
     apiKey: import.meta.env['NG_APP_FIREBASE_API_KEY'],
