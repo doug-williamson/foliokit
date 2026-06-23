@@ -24,6 +24,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import {
   RhombusButtonComponent,
   RhombusInputComponent,
+  RhombusPageHeaderComponent,
   RhombusSelectComponent,
   RhombusSpinnerComponent,
   RhombusTabGroupDirective,
@@ -72,6 +73,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     MatTabsModule,
     RhombusButtonComponent,
     RhombusInputComponent,
+    RhombusPageHeaderComponent,
     RhombusSelectComponent,
     RhombusSpinnerComponent,
     RhombusTabGroupDirective,
@@ -101,17 +103,15 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   ],
   template: `
     <div class="flex flex-col h-full overflow-hidden relative">
-      <div class="flex items-center gap-3 px-6 py-4 border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="page-heading flex-1">About Page</h1>
-      </div>
-
       @if (!store.config()) {
         <div class="flex items-center justify-center flex-1">
           <rhombus-spinner [diameter]="40" />
         </div>
       } @else {
         <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div class="shrink-0 px-6 pt-6 max-w-2xl w-full mx-auto">
+            <rhombus-page-header title="About Page" />
+          </div>
           @if (isAboutNew()) {
             <div class="shrink-0 px-6 pt-6 max-w-2xl w-full mx-auto">
               <div class="flex items-start gap-3 p-4 rounded-lg border"

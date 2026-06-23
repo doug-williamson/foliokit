@@ -20,6 +20,7 @@ import {
   RhombusButtonComponent,
   RhombusDataTableComponent,
   RhombusEmptyStateComponent,
+  RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
   RhombusTooltipDirective,
   type ColumnDef,
@@ -43,6 +44,7 @@ type Cell = { $implicit: Author; index: number };
     RhombusButtonComponent,
     RhombusDataTableComponent,
     RhombusEmptyStateComponent,
+    RhombusPageHeaderComponent,
     RhombusSpinnerComponent,
   ],
   styles: [
@@ -58,17 +60,13 @@ type Cell = { $implicit: Author; index: number };
   template: `
     <div class="flex flex-col h-full overflow-hidden">
       <!-- GATE_TODO: multipleAuthors -->
-      <!-- Header -->
-      <div class="page-header flex items-center justify-between border-b shrink-0"
-           style="border-color: color-mix(in srgb, currentColor 12%, transparent)">
-        <h1 class="page-heading">Authors</h1>
-        <rhombus-button variant="secondary" (click)="router.navigate(['/authors/new'])">
-          New Author
-        </rhombus-button>
-      </div>
-
-      <!-- Content -->
       <div class="flex-1 overflow-auto">
+        <div class="p-4 sm:p-6">
+        <rhombus-page-header title="Authors">
+          <rhombus-button slot="actions" variant="secondary" (click)="router.navigate(['/authors/new'])">
+            New Author
+          </rhombus-button>
+        </rhombus-page-header>
         @if (loading()) {
           <div class="flex items-center justify-center p-12">
             <rhombus-spinner [diameter]="40" />
@@ -86,6 +84,7 @@ type Cell = { $implicit: Author; index: number };
             (rowClick)="router.navigate(['/authors', $event.id, 'edit'])"
           />
         }
+        </div>
       </div>
     </div>
 

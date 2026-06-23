@@ -32,16 +32,11 @@ export * from './lib/dashboard/dashboard.component';
 export * from './lib/post-editor/post-editor-page.component';
 export * from './lib/author-editor/authors-list.component';
 export * from './lib/author-editor/author-form.component';
-export * from './lib/pages/admin-pages.component';
-export * from './lib/pages/admin-pages-section.component';
 export * from './lib/pages/pages-shell.component';
 export * from './lib/pages/pages-hub.component';
 export * from './lib/site-config-editor/site-config-page.component';
 export * from './lib/page-editor/links-page-editor.component';
 export * from './lib/page-editor/about-page-editor.component';
-export * from './lib/settings/settings-page.component';
-export * from './lib/settings/settings-pro-tab.component';
-export * from './lib/settings/domain-setup/domain-setup.component';
 
 // ── Plan gating ───────────────────────────────────────────────────────────────
 export * from './lib/plan-gate/plan-gate.component';
@@ -50,9 +45,6 @@ export * from './lib/plan-gate/plan-comparison-dialog.component';
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
 export * from './lib/taxonomy/taxonomy-page.component';
 export * from './lib/taxonomy/series-form.component';
-
-// ── Shared editor layout ──────────────────────────────────────────────────────
-export * from './lib/layout/admin-editor-page-layout.component';
 
 // ── Editor sub-components ─────────────────────────────────────────────────────
 export * from './lib/page-editor/links-editor-form.component';
