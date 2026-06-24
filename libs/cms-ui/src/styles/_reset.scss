@@ -23,7 +23,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.25s ease, color 0.25s ease;
+  transition: background var(--motion-duration-slow) var(--motion-ease-standard), color var(--motion-duration-slow) var(--motion-ease-standard);
   min-height: 100vh;
 }
 

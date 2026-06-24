@@ -6,10 +6,10 @@ import {
 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
   RhombusAppShellComponent,
+  RhombusIconComponent,
   RhombusShellNavFooterDirective,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
@@ -72,11 +72,11 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RhombusAppShellComponent,
+    RhombusIconComponent,
     RhombusShellNavFooterDirective,
     RhombusTooltipDirective,
     RouterLink,
     RouterOutlet,
-    MatIconModule,
     MatToolbarModule,
     AdminNavComponent,
     MatBottomSheetModule,
@@ -182,7 +182,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         width: 40px;
         height: 40px;
         border-radius: var(--r-sm);
-        transition: background 0.12s, color 0.12s;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard);
 
         &:hover {
           background: var(--surface-2);
@@ -195,16 +195,8 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
         }
 
         .nav-icon {
-          font-size: 18px !important;
-          width: 18px !important;
-          height: 18px !important;
-          line-height: 18px !important;
-
-          svg {
-            width: 18px !important;
-            height: 18px !important;
-            display: block;
-          }
+          --rhombus-icon-size: 18px;
+          line-height: 18px;
         }
       }
 
@@ -338,7 +330,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           <div class="flex items-center justify-between pl-3 pr-1 py-1">
             <span class="text-xs truncate" style="color: var(--text-muted)" [rhombusTooltip]="auth.user()?.email ?? ''" [rhombusTooltipDisabled]="true" rhombusTooltipPosition="right">{{ auth.user()?.email }}</span>
             <button type="button" class="nav-footer-signout" (click)="logout()" aria-label="Sign out" rhombusTooltip="Sign out" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
-              <mat-icon class="nav-icon" svgIcon="logout" />
+              <rhombus-icon class="nav-icon" name="logout" />
             </button>
           </div>
         </ng-container>

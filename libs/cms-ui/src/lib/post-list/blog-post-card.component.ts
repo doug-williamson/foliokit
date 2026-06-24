@@ -24,7 +24,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       flex-direction: column;
       height: 100%;
       position: relative;
-      transition: box-shadow var(--motion-standard), transform var(--motion-standard);
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard);
 
       &:hover {
         box-shadow: var(--shadow-lg);
@@ -207,7 +207,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       overflow: hidden;
       border-radius: var(--r-lg);
       box-shadow: var(--shadow-md);
-      transition: box-shadow var(--motion-standard);
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard);
 
       &:hover .hero-thumb {
         transform: scale(1.03);
@@ -238,7 +238,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform var(--motion-slow) ease;
+      transition: transform var(--motion-duration-slow) var(--motion-ease-standard);
     }
 
     .hero-thumb-fallback {
@@ -276,7 +276,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       background: var(--hero-chip-bg);
       color: white;
       backdrop-filter: blur(4px);
-      transition: background var(--motion-fast);
+      transition: background var(--motion-duration-fast) var(--motion-ease-standard);
       position: relative;
       z-index: var(--z-sticky);
 

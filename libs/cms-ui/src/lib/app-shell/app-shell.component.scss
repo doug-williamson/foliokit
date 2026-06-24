@@ -29,7 +29,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.25s;
+    transition: background var(--motion-duration-slow) var(--motion-ease-standard);
   }
 
   .folio-logo-mark-f {
@@ -58,7 +58,7 @@
     letter-spacing: 0.04em;
     margin-left: 6px;
     white-space: nowrap;
-    transition: color 0.25s;
+    transition: color var(--motion-duration-slow) var(--motion-ease-standard);
   }
 
   .folio-custom-logo {
@@ -91,7 +91,7 @@
   line-height: 1;
   cursor: pointer;
   border-radius: var(--r-sm);
-  transition: background 0.12s;
+  transition: background var(--motion-duration-fast) var(--motion-ease-standard);
 
   &:hover {
     background: var(--surface-2);

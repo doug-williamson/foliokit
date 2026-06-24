@@ -13,9 +13,9 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import {
   RhombusButtonComponent,
+  RhombusIconComponent,
   RhombusInputComponent,
   RhombusSelectComponent,
   RhombusSwitchComponent,
@@ -53,8 +53,8 @@ interface LinkRowValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatIconModule,
     RhombusButtonComponent,
+    RhombusIconComponent,
     RhombusInputComponent,
     RhombusSelectComponent,
     RhombusSwitchComponent,
@@ -83,7 +83,7 @@ interface LinkRowValue {
         opacity: 0.3;
       }
       .cdk-drag-animating {
-        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+        transition: transform var(--motion-duration-slow) var(--motion-ease-decelerate);
       }
     `,
   ],
@@ -117,7 +117,7 @@ interface LinkRowValue {
               variant="secondary"
               (click)="addLink()"
             >
-              <mat-icon svgIcon="add" />
+              <rhombus-icon name="add" />
               Add Link
             </rhombus-button>
           </div>
@@ -134,11 +134,11 @@ interface LinkRowValue {
                 style="background: color-mix(in srgb, currentColor 5%, transparent); border: 1px solid color-mix(in srgb, currentColor 10%, transparent)"
               >
                 <div class="flex items-center gap-2">
-                  <mat-icon
+                  <rhombus-icon
                     cdkDragHandle
+                    name="drag_indicator"
                     class="drag-handle opacity-40 shrink-0"
                     style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem"
-                    svgIcon="drag_indicator"
                   />
                   <span class="flex-1 text-sm font-medium truncate">{{
                     asFc(group.get('label')).value || '(untitled)'
@@ -153,7 +153,7 @@ interface LinkRowValue {
                     (click)="removeLink($index)"
                     rhombusTooltip="Delete link"
                   >
-                    <mat-icon svgIcon="delete" />
+                    <rhombus-icon name="delete" ariaLabel="Delete link" />
                   </button>
                 </div>
 

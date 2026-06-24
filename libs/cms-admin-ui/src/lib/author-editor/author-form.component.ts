@@ -24,12 +24,12 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusIconComponent,
   RhombusInputComponent,
   RhombusProgressBarComponent,
   RhombusSelectComponent,
@@ -65,8 +65,8 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatIconModule,
     RhombusButtonComponent,
+    RhombusIconComponent,
     RhombusInputComponent,
     RhombusProgressBarComponent,
     RhombusSelectComponent,
@@ -97,7 +97,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         color: inherit;
         cursor: pointer;
         border-radius: 50%;
-        transition: background-color 0.15s ease;
+        transition: background-color var(--motion-duration-base) var(--motion-ease-standard);
       }
 
       .author-toolbar-back:hover {
@@ -109,20 +109,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
         outline-offset: 2px;
       }
 
-      .author-toolbar-back mat-icon {
+      .author-toolbar-back rhombus-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+        --rhombus-icon-size: 24px;
         line-height: 0;
-      }
-
-      .author-toolbar-back mat-icon svg {
-        width: 24px;
-        height: 24px;
-        display: block;
       }
     `,
   ],
@@ -138,7 +130,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           aria-label="Back to authors"
           (click)="router.navigate(['/authors'])"
         >
-          <mat-icon svgIcon="arrow_back" />
+          <rhombus-icon name="arrow_back" />
         </button>
         <h1 class="page-heading flex-1">
           {{ store.isNew() ? 'New Author' : 'Edit Author' }}
@@ -175,10 +167,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
-                        <mat-icon svgIcon="swap_horiz" />
+                        <rhombus-icon name="swap_horiz" ariaLabel="Replace photo" />
                       </button>
                       <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('light')">
-                        <mat-icon svgIcon="delete" />
+                        <rhombus-icon name="delete" ariaLabel="Remove photo" />
                       </button>
                     </div>
                   </div>
@@ -191,7 +183,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     (click)="isBrowser && photoInput.click()"
                     (keydown.enter)="isBrowser && photoInput.click()"
                   >
-                    <mat-icon class="opacity-40" svgIcon="upload" />
+                    <rhombus-icon class="opacity-40" name="upload" />
                     <span class="text-xs opacity-40">Upload</span>
                   </div>
                 }
@@ -205,10 +197,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoDarkInput.click()">
-                        <mat-icon svgIcon="swap_horiz" />
+                        <rhombus-icon name="swap_horiz" ariaLabel="Replace photo" />
                       </button>
                       <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('dark')">
-                        <mat-icon svgIcon="delete" />
+                        <rhombus-icon name="delete" ariaLabel="Remove photo" />
                       </button>
                     </div>
                   </div>
@@ -221,7 +213,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     (click)="isBrowser && photoDarkInput.click()"
                     (keydown.enter)="isBrowser && photoDarkInput.click()"
                   >
-                    <mat-icon class="opacity-40" svgIcon="upload" />
+                    <rhombus-icon class="opacity-40" name="upload" />
                     <span class="text-xs opacity-40">Upload</span>
                   </div>
                 }
@@ -270,7 +262,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <div class="flex items-center justify-between">
               <span class="text-sm font-semibold">Social Links</span>
               <rhombus-button appearance="outlined" type="button" (click)="addSocialLink()">
-                <mat-icon svgIcon="add" />
+                <rhombus-icon name="add" />
                 Add Link
               </rhombus-button>
             </div>
@@ -293,7 +285,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       rhombusTooltip="Remove"
                       (click)="removeSocialLink($index)"
                     >
-                      <mat-icon svgIcon="delete" />
+                      <rhombus-icon name="delete" ariaLabel="Remove link" />
                     </button>
                   </div>
                   <div class="flex gap-2">

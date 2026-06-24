@@ -126,11 +126,11 @@
   --z-overlay:  50;
   --z-modal:    100;
   --z-toast:    1000;
-  /* Motion — shared durations + standard easing. Respect prefers-reduced-motion. */
-  --motion-fast:     0.12s;
-  --motion-standard: 0.18s;
-  --motion-slow:     0.5s;
-  --motion-ease:     cubic-bezier(0.22, 1, 0.36, 1);
+  /* Motion — durations + easings now come from @rhombuskit/tokens primitives
+     (--motion-duration-{fast,base,slow}, --motion-ease-{standard,decelerate,…}),
+     emitted at :root via `@use '@rhombuskit/tokens/scss'`. Reference those
+     directly in component styles. prefers-reduced-motion is handled globally in
+     _reset.scss (and @rhombuskit/tokens' own reset). */
   /* Code block (always dark regardless of theme) */
   --code-block-bg:   #141920;
   --code-block-text: #CDD9E8;

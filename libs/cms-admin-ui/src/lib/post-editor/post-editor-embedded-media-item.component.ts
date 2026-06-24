@@ -5,8 +5,10 @@ import {
   input,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusTooltipDirective } from '@rhombuskit/core';
+import {
+  RhombusIconComponent,
+  RhombusTooltipDirective,
+} from '@rhombuskit/core';
 import { EmbeddedMediaEntry } from '@foliokit/cms-core';
 import { PostEditorStore } from './post-editor.store';
 
@@ -14,7 +16,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-embedded-media-item',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, RhombusTooltipDirective],
+  imports: [MatButtonModule, RhombusIconComponent, RhombusTooltipDirective],
   styles: [
     `
       :host {
@@ -25,7 +27,7 @@ import { PostEditorStore } from './post-editor.store';
       }
       .hover-overlay {
         opacity: 0;
-        transition: opacity 0.15s;
+        transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
       }
     `,
   ],
@@ -48,7 +50,7 @@ import { PostEditorStore } from './post-editor.store';
             rhombusTooltip="Insert at cursor"
             (click)="onInsert()"
           >
-            <mat-icon svgIcon="add_photo_alternate" />
+            <rhombus-icon name="add_photo_alternate" ariaLabel="Insert at cursor" />
           </button>
           <button
             mat-icon-button
@@ -56,7 +58,7 @@ import { PostEditorStore } from './post-editor.store';
             rhombusTooltip="Delete"
             (click)="onDelete()"
           >
-            <mat-icon svgIcon="delete" />
+            <rhombus-icon name="delete" ariaLabel="Delete" />
           </button>
         </div>
       </div>

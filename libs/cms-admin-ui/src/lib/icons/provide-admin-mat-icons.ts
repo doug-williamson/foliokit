@@ -1,6 +1,12 @@
-import { ENVIRONMENT_INITIALIZER, inject, Provider } from '@angular/core';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  Provider,
+} from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { provideRhombusIcons } from '@rhombuskit/core';
 import { ICON_SVG_MAP } from './icon-svg-map';
 
 /**
@@ -29,4 +35,18 @@ export function provideAdminMatIcons(): Provider {
       };
     },
   };
+}
+
+/**
+ * Registers the same admin icon set with RhombusKit's `RhombusIconRegistry`, so
+ * `<rhombus-icon name="…">` renders each entry as an inline `currentColor` SVG
+ * (no Material Icons font). `ICON_SVG_MAP` is a `name → SVG-literal` map — the
+ * exact shape `provideRhombusIcons` consumes — so it ports across unchanged.
+ *
+ * Wired into {@link provideAdminKit} alongside {@link provideAdminMatIcons}
+ * during the `<mat-icon svgIcon>` → `<rhombus-icon>` migration; once no
+ * `<mat-icon svgIcon>` remains, the `MatIconRegistry` variant is dropped.
+ */
+export function provideAdminRhombusIcons(): EnvironmentProviders {
+  return provideRhombusIcons(ICON_SVG_MAP);
 }

@@ -7,8 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusButtonComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
 import type { BlogPost } from '@foliokit/cms-core';
 import type { PostFilterStatus } from './posts-list.store';
 import { PostsTableComponent } from './posts-table.component';
@@ -19,7 +18,7 @@ const DEFAULT_LIMIT = 5;
   selector: 'folio-posts-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, RhombusButtonComponent, PostsTableComponent],
+  imports: [MatButtonModule, RhombusButtonComponent, RhombusIconComponent, PostsTableComponent],
   styles: [`
     :host {
       display: block;
@@ -86,7 +85,7 @@ const DEFAULT_LIMIT = 5;
             [attr.aria-label]="isOpen() ? 'Collapse ' + label() : 'Expand ' + label()"
             (click)="toggle()"
           >
-            <mat-icon [svgIcon]="isOpen() ? 'expand_less' : 'expand_more'" />
+            <rhombus-icon [name]="isOpen() ? 'expand_less' : 'expand_more'" />
           </button>
         }
       </header>

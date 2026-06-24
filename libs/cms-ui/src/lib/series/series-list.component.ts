@@ -29,7 +29,7 @@ import { BLOG_SEO_SERVICE, SiteConfigService } from '@foliokit/cms-core';
       padding: 16px;
       background: var(--surface-0);
       text-decoration: none;
-      transition: box-shadow 0.15s, transform 0.15s, border-color 0.12s;
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard), border-color var(--motion-duration-fast) var(--motion-ease-standard);
     }
 
     .series-card:hover {

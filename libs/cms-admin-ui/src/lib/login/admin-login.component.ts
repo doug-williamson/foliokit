@@ -54,7 +54,7 @@ import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
       @media (prefers-reduced-motion: no-preference) {
         .login-card {
-          animation: loginCardEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+          animation: loginCardEnter var(--motion-duration-slow) var(--motion-ease-decelerate) both;
         }
       }
 

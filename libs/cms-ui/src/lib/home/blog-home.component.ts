@@ -154,7 +154,7 @@ type HomeLoadState =
       background: var(--surface-0);
       padding: 14px 16px;
       text-decoration: none;
-      transition: box-shadow 0.18s, transform 0.18s;
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard);
 
       &:hover {
         transform: translateY(-2px);

@@ -12,9 +12,9 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import {
+  RhombusIconComponent,
   RhombusInputComponent,
   RhombusSelectComponent,
   RhombusTextareaComponent,
@@ -57,8 +57,8 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
     MatChipsModule,
     MatDatepickerModule,
     MatFormFieldModule,
-    MatIconModule,
     MatInputModule,
+    RhombusIconComponent,
     RhombusInputComponent,
     RhombusSelectComponent,
     RhombusTextareaComponent,
@@ -99,7 +99,7 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
               <mat-chip-row (removed)="removeTag(tag, post.tags)">
                 {{ tag }}
                 <button matChipRemove aria-label="Remove tag">
-                  <mat-icon svgIcon="cancel" />
+                  <rhombus-icon name="cancel" />
                 </button>
               </mat-chip-row>
             }

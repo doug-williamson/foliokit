@@ -7,14 +7,16 @@ import {
   output,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusProgressBarComponent } from '@rhombuskit/core';
+import {
+  RhombusIconComponent,
+  RhombusProgressBarComponent,
+} from '@rhombuskit/core';
 
 @Component({
   selector: 'admin-image-upload-pair',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, RhombusProgressBarComponent],
+  imports: [MatButtonModule, RhombusIconComponent, RhombusProgressBarComponent],
   template: `
     <div class="flex flex-col gap-2">
       <span class="text-sm font-semibold">{{ label() }}</span>
@@ -29,11 +31,11 @@ import { RhombusProgressBarComponent } from '@rhombuskit/core';
                    style="background: rgba(0,0,0,0.5)">
                 <button mat-icon-button style="color:white" title="Replace" type="button"
                         (click)="lightInput.click()">
-                  <mat-icon svgIcon="swap_horiz" />
+                  <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
                 </button>
                 <button mat-icon-button style="color:white" title="Remove" type="button"
                         (click)="lightRemoved.emit()">
-                  <mat-icon svgIcon="delete" />
+                  <rhombus-icon name="delete" ariaLabel="Remove image" />
                 </button>
               </div>
             </div>
@@ -46,7 +48,7 @@ import { RhombusProgressBarComponent } from '@rhombuskit/core';
               (click)="lightInput.click()"
               (keydown.enter)="lightInput.click()"
             >
-              <mat-icon class="opacity-40" svgIcon="upload" />
+              <rhombus-icon class="opacity-40" name="upload" />
               <span class="text-xs opacity-40">Upload</span>
             </div>
           }
@@ -62,11 +64,11 @@ import { RhombusProgressBarComponent } from '@rhombuskit/core';
                    style="background: rgba(0,0,0,0.5)">
                 <button mat-icon-button style="color:white" title="Replace" type="button"
                         (click)="darkInput.click()">
-                  <mat-icon svgIcon="swap_horiz" />
+                  <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
                 </button>
                 <button mat-icon-button style="color:white" title="Remove" type="button"
                         (click)="darkRemoved.emit()">
-                  <mat-icon svgIcon="delete" />
+                  <rhombus-icon name="delete" ariaLabel="Remove image" />
                 </button>
               </div>
             </div>
@@ -79,7 +81,7 @@ import { RhombusProgressBarComponent } from '@rhombuskit/core';
               (click)="darkInput.click()"
               (keydown.enter)="darkInput.click()"
             >
-              <mat-icon class="opacity-40" svgIcon="upload" />
+              <rhombus-icon class="opacity-40" name="upload" />
               <span class="text-xs opacity-40">Upload</span>
             </div>
           }

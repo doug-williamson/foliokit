@@ -14,6 +14,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   RhombusButtonComponent,
   RhombusConfirmService,
+  RhombusIconComponent,
   RhombusOverflowMenuComponent,
   RhombusTabGroupDirective,
   RhombusToastService,
@@ -24,7 +25,6 @@ import { BlogPost } from '@foliokit/cms-core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorStore } from './post-editor.store';
@@ -63,7 +63,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatIconModule,
     MatSidenavModule,
     MatTabsModule,
     PostPublishButtonComponent,
@@ -75,6 +74,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     CardPreviewComponent,
     SeoPreviewComponent,
     RhombusButtonComponent,
+    RhombusIconComponent,
     RhombusOverflowMenuComponent,
     RhombusTabGroupDirective,
     RhombusTooltipDirective,
@@ -147,12 +147,11 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         justify-content: center;
       }
 
-      .toolbar-icon-btn mat-icon {
+      .toolbar-icon-btn rhombus-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
+        --rhombus-icon-size: 24px;
         line-height: 0;
       }
 
@@ -237,7 +236,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
             rhombusTooltip="Back to Posts"
             aria-label="Back to Posts"
           >
-            <mat-icon svgIcon="arrow_back" />
+            <rhombus-icon name="arrow_back" />
           </button>
           <input
             class="post-editor-toolbar-title post-editor-title-input"
@@ -271,7 +270,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               [rhombusTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
               [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
             >
-              <mat-icon [svgIcon]="previewOpen() ? 'close' : 'preview'" />
+              <rhombus-icon [name]="previewOpen() ? 'close' : 'preview'" />
             </button>
             <button
               mat-icon-button
@@ -282,7 +281,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
               [rhombusTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
               rhombusTooltipPosition="below"
             >
-              <mat-icon svgIcon="save" />
+              <rhombus-icon name="save" />
             </button>
           } @else {
             <rhombus-button

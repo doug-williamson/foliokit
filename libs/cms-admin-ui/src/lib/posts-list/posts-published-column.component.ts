@@ -41,7 +41,7 @@ import {
       border-left-color: var(--green-400);
     }
     .post-item {
-      transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.12s;
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard), background-color var(--motion-duration-fast) var(--motion-ease-standard);
     }
     .post-item:hover {
       box-shadow: var(--shadow-sm);
