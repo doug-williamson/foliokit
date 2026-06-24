@@ -14,12 +14,12 @@ import { map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
   RhombusDataTableComponent,
   RhombusEmptyStateComponent,
+  RhombusIconComponent,
   RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
   RhombusTooltipDirective,
@@ -39,7 +39,7 @@ type Cell = { $implicit: Author; index: number };
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
-    MatIconModule,
+    RhombusIconComponent,
     RhombusTooltipDirective,
     RhombusButtonComponent,
     RhombusDataTableComponent,
@@ -99,7 +99,7 @@ type Cell = { $implicit: Author; index: number };
       } @else {
         <div class="w-9 h-9 rounded-full flex items-center justify-center"
              style="background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent)">
-          <mat-icon style="font-size: 1.2rem; width: 1.2rem; height: 1.2rem; color: var(--mat-sys-primary)" svgIcon="person" />
+          <rhombus-icon name="person" ariaLabel="No photo" style="--rhombus-icon-size: 1.2rem; color: var(--mat-sys-primary)" />
         </div>
       }
     </ng-template>
@@ -118,14 +118,14 @@ type Cell = { $implicit: Author; index: number };
         rhombusTooltip="Edit"
         (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
       >
-        <mat-icon svgIcon="edit" />
+        <rhombus-icon name="edit" ariaLabel="Edit" />
       </button>
       <button
         mat-icon-button
         rhombusTooltip="Delete"
         (click)="$event.stopPropagation(); confirmDelete(author)"
       >
-        <mat-icon svgIcon="delete" />
+        <rhombus-icon name="delete" ariaLabel="Delete" />
       </button>
     </ng-template>
   `,

@@ -308,7 +308,7 @@ interface PostShareLinks {
       border: none;
       background: transparent;
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition: background var(--motion-duration-base) var(--motion-ease-standard), color var(--motion-duration-base) var(--motion-ease-standard);
     }
 
     .share-menu-item:hover {
@@ -336,7 +336,7 @@ interface PostShareLinks {
       border-radius: 100px;
       background: var(--teal-50);
       border: 1px solid var(--border-accent);
-      transition: opacity 0.15s;
+      transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
       &:hover { opacity: 0.85; }
     }
 

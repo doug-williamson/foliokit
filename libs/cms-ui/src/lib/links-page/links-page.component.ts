@@ -9,8 +9,8 @@ import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { RhombusIconComponent } from '@rhombuskit/core';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
@@ -34,7 +34,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, MatButtonModule, ProfileAvatarComponent],
+  imports: [RhombusIconComponent, MatButtonModule, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -118,9 +118,9 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <mat-icon class="link-icon" [svgIcon]="getIcon(link)" />
+              <rhombus-icon class="link-icon" [name]="getIcon(link)" />
               <span class="link-label">{{ link.label }}</span>
-              <mat-icon class="link-chevron" iconPositionEnd svgIcon="chevron_right" />
+              <rhombus-icon class="link-chevron" name="chevron_right" />
             </a>
           }
         </nav>

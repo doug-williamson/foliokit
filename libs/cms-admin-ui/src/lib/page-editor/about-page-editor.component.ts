@@ -19,10 +19,10 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   RhombusButtonComponent,
+  RhombusIconComponent,
   RhombusInputComponent,
   RhombusPageHeaderComponent,
   RhombusSelectComponent,
@@ -69,9 +69,9 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   imports: [
     MatButtonModule,
     MatExpansionModule,
-    MatIconModule,
     MatTabsModule,
     RhombusButtonComponent,
+    RhombusIconComponent,
     RhombusInputComponent,
     RhombusPageHeaderComponent,
     RhombusSelectComponent,
@@ -116,7 +116,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
             <div class="shrink-0 px-6 pt-6 max-w-2xl w-full mx-auto">
               <div class="flex items-start gap-3 p-4 rounded-lg border"
                    style="border-color: color-mix(in srgb, currentColor 20%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent)">
-                <mat-icon class="shrink-0 opacity-60" svgIcon="info" />
+                <rhombus-icon class="shrink-0 opacity-60" name="info" />
                 <p class="text-sm opacity-70 m-0">
                   No About page exists yet. Fill in the form below and save to create one.
                   The blog's <code>/about</code> route will redirect to <code>/not-found</code>
@@ -183,7 +183,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-semibold">Social Links</span>
                   <rhombus-button appearance="outlined" variant="secondary" type="button" (click)="addAboutSocialLink()">
-                    <mat-icon svgIcon="add" />
+                    <rhombus-icon name="add" />
                     Add Link
                   </rhombus-button>
                 </div>
@@ -209,7 +209,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           rhombusTooltip="Remove"
                           (click)="removeAboutSocialLink($index)"
                         >
-                          <mat-icon svgIcon="delete" />
+                          <rhombus-icon name="delete" ariaLabel="Remove link" />
                         </button>
                       </div>
                       <div class="flex gap-2">

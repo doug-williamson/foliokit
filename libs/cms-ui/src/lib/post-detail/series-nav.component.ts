@@ -135,7 +135,7 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       line-height: 1.45;
       color: var(--text-secondary);
       text-decoration: none;
-      transition: color 0.15s, background 0.15s;
+      transition: color var(--motion-duration-base) var(--motion-ease-standard), background var(--motion-duration-base) var(--motion-ease-standard);
     }
 
     .series-toc-item.is-current .series-toc-link {
@@ -170,7 +170,7 @@ import type { Series, SeriesNavItem } from '@foliokit/cms-core';
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      transition: color 0.15s;
+      transition: color var(--motion-duration-base) var(--motion-ease-standard);
     }
 
     .series-pn-link:hover {

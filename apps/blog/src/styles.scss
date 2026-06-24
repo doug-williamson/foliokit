@@ -40,13 +40,3 @@ folio-app-shell .rhombus-app-shell__main > :not(.folio-powered-footer) {
 folio-app-shell .folio-powered-footer {
   margin-top: auto;
 }
-
-/* Workaround for @rhombuskit/core 0.11.0: rhombus-icon ships un-stripped Sass
-   `//` comments that invalidate its own `vertical-align: middle`, leaving inline
-   icons baseline-aligned (a few px too high) beside menu-item text. Restore the
-   intended rule. Targets the theme-menu panel, which Material teleports into the
-   cdk-overlay (outside folio-app-shell), so it can't be scoped by the shell.
-   Remove once the upstream //-comment bug is fixed. */
-.rhombus-theme-menu__panel rhombus-icon {
-  vertical-align: middle;
-}

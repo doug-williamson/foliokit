@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownComponent } from 'ngx-markdown';
-import { MatIconModule } from '@angular/material/icon';
+import { RhombusIconComponent } from '@rhombuskit/core';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
@@ -19,7 +19,7 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatIconModule, ProfileAvatarComponent],
+  imports: [MarkdownComponent, RhombusIconComponent, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -71,12 +71,10 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
       color: var(--text-secondary);
       background: var(--surface-0);
       text-decoration: none;
-      transition: background 0.12s, color 0.12s;
+      transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard);
 
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+      rhombus-icon {
+        --rhombus-icon-size: 18px;
       }
 
       &:hover {
@@ -122,7 +120,7 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <mat-icon svgIcon="link" />
+                <rhombus-icon name="link" />
                 {{ link.label || link.platform }}
               </a>
             }

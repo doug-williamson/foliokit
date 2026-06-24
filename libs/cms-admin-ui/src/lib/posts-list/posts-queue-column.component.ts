@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -9,13 +8,13 @@ import {
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { BlogPost } from '@foliokit/cms-core';
-import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
+import { RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-posts-queue-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatIconModule, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder, RhombusCardComponent, RhombusEmptyStateComponent],
+  imports: [DatePipe, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder, RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent],
   host: { class: 'contents' },
   styles: [`
     .cdk-drag-preview {
@@ -24,9 +23,9 @@ import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/co
       background: var(--mat-sys-surface-container-high);
     }
     .cdk-drag-placeholder { opacity: 0.3; }
-    .cdk-drag-animating { transition: transform 250ms cubic-bezier(0,0,0.2,1); }
+    .cdk-drag-animating { transition: transform var(--motion-duration-slow) var(--motion-ease-decelerate); }
     .post-list.cdk-drop-list-dragging .post-row:not(.cdk-drag-placeholder) {
-      transition: transform 250ms cubic-bezier(0,0,0.2,1);
+      transition: transform var(--motion-duration-slow) var(--motion-ease-decelerate);
     }
     .column-header {
       border-left: 3px solid var(--blue-600);
@@ -36,7 +35,7 @@ import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/co
       border-left-color: var(--blue-400);
     }
     .post-item {
-      transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.12s;
+      transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard), background-color var(--motion-duration-fast) var(--motion-ease-standard);
     }
     .post-item:hover {
       box-shadow: var(--shadow-sm);
@@ -65,7 +64,7 @@ import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/co
               cdkDragHandle
               aria-label="Drag to reorder"
             >
-              <mat-icon class="text-[1.1rem] leading-none" svgIcon="drag_indicator" />
+              <rhombus-icon class="leading-none [--rhombus-icon-size:1.1rem]" name="drag_indicator" />
             </button>
 
             <button

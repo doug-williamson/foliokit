@@ -9,8 +9,10 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusProgressBarComponent } from '@rhombuskit/core';
+import {
+  RhombusIconComponent,
+  RhombusProgressBarComponent,
+} from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, FIREBASE_STORAGE, PostService } from '@foliokit/cms-core';
@@ -20,7 +22,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-cover-image',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, RhombusProgressBarComponent],
+  imports: [MatButtonModule, RhombusIconComponent, RhombusProgressBarComponent],
   styles: [
     `
       :host {
@@ -29,7 +31,7 @@ import { PostEditorStore } from './post-editor.store';
       .drop-zone {
         border: 2px dashed color-mix(in srgb, currentColor 25%, transparent);
         border-radius: 8px;
-        transition: border-color 0.15s, background 0.15s;
+        transition: border-color var(--motion-duration-base) var(--motion-ease-standard), background var(--motion-duration-base) var(--motion-ease-standard);
       }
       .drop-zone.drag-over {
         border-color: var(--mat-sys-primary);
@@ -43,7 +45,7 @@ import { PostEditorStore } from './post-editor.store';
       }
       .hover-overlay {
         opacity: 0;
-        transition: opacity 0.15s;
+        transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
       }
     `,
   ],
@@ -71,7 +73,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Replace image"
                 (click)="isBrowser && fileInput.click()"
               >
-                <mat-icon svgIcon="swap_horiz" />
+                <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
               </button>
               <button
                 mat-icon-button
@@ -79,7 +81,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Delete image"
                 (click)="onDeleteCover()"
               >
-                <mat-icon svgIcon="delete" />
+                <rhombus-icon name="delete" ariaLabel="Delete image" />
               </button>
             </div>
           </div>
@@ -96,7 +98,7 @@ import { PostEditorStore } from './post-editor.store';
           (dragleave)="isBrowser && onDragLeave()"
           (drop)="isBrowser && onDrop($event)"
         >
-          <mat-icon class="opacity-40" style="font-size: 2.5rem; width: 2.5rem; height: 2.5rem" svgIcon="upload_file" />
+          <rhombus-icon class="opacity-40" [size]="40" name="upload_file" />
           <span class="text-sm opacity-50">Upload cover image</span>
         </div>
       }

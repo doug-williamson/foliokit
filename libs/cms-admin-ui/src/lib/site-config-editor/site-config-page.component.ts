@@ -21,11 +21,11 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
+  RhombusIconComponent,
   RhombusInputComponent,
   RhombusPageHeaderComponent,
   RhombusSelectComponent,
@@ -52,9 +52,9 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   imports: [
     RouterLink,
     MatButtonModule,
-    MatIconModule,
     MatTabsModule,
     RhombusButtonComponent,
+    RhombusIconComponent,
     RhombusInputComponent,
     RhombusPageHeaderComponent,
     RhombusSelectComponent,
@@ -216,7 +216,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold opacity-70">Social Links</span>
                   <rhombus-button appearance="outlined" type="button" (click)="addProfileSocialLink()">
-                    <mat-icon svgIcon="add" />
+                    <rhombus-icon name="add" />
                     Add
                   </rhombus-button>
                 </div>
@@ -241,7 +241,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                           rhombusTooltip="Remove"
                           (click)="removeProfileSocialLink($index)"
                         >
-                          <mat-icon svgIcon="delete" />
+                          <rhombus-icon name="delete" ariaLabel="Remove link" />
                         </button>
                       </div>
                       <div class="flex gap-2">

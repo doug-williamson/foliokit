@@ -9,9 +9,9 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import {
   RhombusButtonComponent,
+  RhombusIconComponent,
   RhombusProgressBarComponent,
 } from '@rhombuskit/core';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
@@ -24,7 +24,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
   selector: 'folio-post-editor-embedded-media',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, RhombusButtonComponent, RhombusProgressBarComponent, PostEditorEmbeddedMediaItemComponent],
+  imports: [RhombusButtonComponent, RhombusIconComponent, RhombusProgressBarComponent, PostEditorEmbeddedMediaItemComponent],
   styles: [
     `
       :host {
@@ -42,7 +42,7 @@ import { PostEditorEmbeddedMediaItemComponent } from './post-editor-embedded-med
           [disabled]="uploading()"
           (click)="isBrowser && fileInput.click()"
         >
-          <mat-icon svgIcon="upload" />
+          <rhombus-icon name="upload" />
           Upload Image
         </rhombus-button>
       </div>

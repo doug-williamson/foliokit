@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
 import {
   RhombusButtonComponent,
   RhombusDialogActionsDirective,
   RhombusDialogComponent,
+  RhombusIconComponent,
 } from '@rhombuskit/core';
 
 interface FeatureRow {
@@ -31,10 +31,10 @@ const FEATURE_ROWS: FeatureRow[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatIconModule,
     RhombusButtonComponent,
     RhombusDialogComponent,
     RhombusDialogActionsDirective,
+    RhombusIconComponent,
   ],
   template: `
     <rhombus-dialog title="FolioKit Plans">
@@ -51,15 +51,15 @@ const FEATURE_ROWS: FeatureRow[] = [
             <tr>
               <td class="pcd-label">{{ row.label }}</td>
               <td class="pcd-check">
-                <mat-icon
-                  [svgIcon]="row.starter ? 'check_circle' : 'cancel'"
+                <rhombus-icon
+                  [name]="row.starter ? 'check_circle' : 'cancel'"
                   [class.pcd-check--yes]="row.starter"
                   [class.pcd-check--no]="!row.starter"
                 />
               </td>
               <td class="pcd-check">
-                <mat-icon
-                  [svgIcon]="row.pro ? 'check_circle' : 'cancel'"
+                <rhombus-icon
+                  [name]="row.pro ? 'check_circle' : 'cancel'"
                   [class.pcd-check--yes]="row.pro"
                   [class.pcd-check--no]="!row.pro"
                 />
@@ -119,10 +119,8 @@ const FEATURE_ROWS: FeatureRow[] = [
     .pcd-check {
       text-align: center;
 
-      mat-icon {
-        font-size: 18px !important;
-        width: 18px !important;
-        height: 18px !important;
+      rhombus-icon {
+        --rhombus-icon-size: 18px;
         vertical-align: middle;
       }
     }

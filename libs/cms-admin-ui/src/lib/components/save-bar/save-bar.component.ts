@@ -28,7 +28,7 @@ import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/cor
         border-top: var(--border-width) solid var(--border);
         box-shadow: 0 -4px 12px color-mix(in srgb, currentColor 8%, transparent);
         transform: translateY(100%);
-        transition: transform 200ms ease;
+        transition: transform var(--motion-duration-slow) var(--motion-ease-standard);
         pointer-events: none;
         visibility: hidden;
       }

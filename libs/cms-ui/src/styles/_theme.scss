@@ -61,8 +61,8 @@ html[data-theme='light'] {
   --mat-sys-headline-small-font:  var(--font-display);
 
   // ── Brand motion timing (nudges Material animations) ─────────────────────
-  --mat-sys-motion-duration-short1: 120ms;
-  --mat-sys-motion-duration-medium1: 180ms;
+  --mat-sys-motion-duration-short1: var(--motion-duration-fast);
+  --mat-sys-motion-duration-medium1: var(--motion-duration-base);
 
   // ── Form field overrides (OPTION A) ──────────────────────────────────────
   --mat-form-field-container-shape: var(--r-md);
@@ -124,8 +124,8 @@ html[data-theme='dark'] {
   --mat-sys-headline-small-font:  var(--font-display);
 
   // ── Brand motion timing ───────────────────────────────────────────────────
-  --mat-sys-motion-duration-short1: 120ms;
-  --mat-sys-motion-duration-medium1: 180ms;
+  --mat-sys-motion-duration-short1: var(--motion-duration-fast);
+  --mat-sys-motion-duration-medium1: var(--motion-duration-base);
 
   // ── Form field overrides (OPTION A) ──────────────────────────────────────
   --mat-form-field-container-shape: var(--r-md);

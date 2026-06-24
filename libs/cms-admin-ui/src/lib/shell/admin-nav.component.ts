@@ -6,8 +6,7 @@ import {
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusTooltipDirective } from '@rhombuskit/core';
+import { RhombusIconComponent, RhombusTooltipDirective } from '@rhombuskit/core';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -47,7 +46,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'folio-admin-nav' },
-  imports: [RouterLink, RouterLinkActive, MatIconModule, RhombusTooltipDirective],
+  imports: [RouterLink, RouterLinkActive, RhombusIconComponent, RhombusTooltipDirective],
   styles: [
     `
       /* Nav-content styling re-homed from folio-app-shell's app-shell.component.scss
@@ -93,7 +92,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
         letter-spacing: normal;
         color: var(--text-secondary);
         text-decoration: none;
-        transition: background 0.12s, color 0.12s;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard);
 
         &:hover {
           background: var(--surface-2);
@@ -101,9 +100,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
         }
 
         .nav-icon {
-          font-size: 20px !important;
-          width: 20px !important;
-          height: 20px !important;
+          --rhombus-icon-size: 20px;
           flex-shrink: 0;
         }
 
@@ -186,7 +183,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               rhombusTooltipPosition="right"
               [rhombusTooltipDisabled]="true"
             >
-              <mat-icon class="nav-icon" [svgIcon]="row.icon" />
+              <rhombus-icon class="nav-icon" [name]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
               @if (row.proTier === 'pro') {
                 <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
@@ -203,15 +200,15 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
               rhombusTooltipPosition="right"
               [rhombusTooltipDisabled]="true"
             >
-              <mat-icon class="nav-icon" [svgIcon]="row.icon" />
+              <rhombus-icon class="nav-icon" [name]="row.icon" />
               <span class="nav-label">{{ row.label }}</span>
               @if (row.proTier === 'pro') {
                 <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
               }
               @if (row.showPageBeforePlanHint) {
-                <mat-icon
+                <rhombus-icon
                   class="folio-admin-nav__hint-icon"
-                  svgIcon="info"
+                  name="info"
                   rhombusTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
                   rhombusTooltipPosition="right"
                   [rhombusTooltipDisabled]="true"
@@ -225,7 +222,7 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 
     <span class="nav-group-label">Configure</span>
     <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" rhombusTooltip="Settings" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
-      <mat-icon class="nav-icon" svgIcon="tune" />
+      <rhombus-icon class="nav-icon" name="tune" />
       <span class="nav-label">Settings</span>
     </a>
   `,

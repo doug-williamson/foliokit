@@ -101,7 +101,7 @@ const PLAN_LABELS: Record<string, string> = {
         padding: 10px 12px;
         border-radius: var(--r-sm);
         cursor: pointer;
-        transition: background 0.12s;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard);
         margin: 0 -12px;
         &:hover { background: var(--surface-2); }
       }
@@ -218,7 +218,7 @@ const PLAN_LABELS: Record<string, string> = {
         cursor: pointer;
         font-family: var(--font-body);
         text-align: center;
-        transition: filter 0.12s, transform 0.12s;
+        transition: filter var(--motion-duration-fast) var(--motion-ease-standard), transform var(--motion-duration-fast) var(--motion-ease-standard);
         &:hover {
           filter: brightness(1.05);
         }
