@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
-import { RhombusThemeService, type ThemePreference } from '@rhombuskit/theme-engine';
+import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
 // NOTE: the 'light'/'dark' ThemeRegistry augmentation (so setTheme('light'|'dark')
 // type-checks) is provided program-wide by ./theme-registry, imported from
@@ -11,9 +11,9 @@ import { RhombusThemeService, type ThemePreference } from '@rhombuskit/theme-eng
 // ("Cannot destructure property 'pos' of file.referencedFiles[index]").
 
 /**
- * FolioKit's configured preferences. ThemePreference is wider (it still includes the
- * built-in 'rhombus-*' names from ThemeRegistry), but provideFolioKitTheme() configures
- * only light/dark, so at runtime preference() is always one of these three.
+ * The three mode choices this control offers. Distinct from preference()/current(), which
+ * can now be a palette theme name (e.g. 'slate-dark') once the visitor picks a palette — this
+ * control speaks only in light/dark/system and drives setMode(), which preserves the palette.
  */
 type FolioThemePreference = 'light' | 'dark' | 'system';
 
@@ -33,18 +33,14 @@ const PREFERENCE_LABELS: Record<FolioThemePreference, string> = {
   system: 'System',
 };
 
-/** Narrow the wider ThemePreference to FolioKit's three; default to 'system'. */
-function asFolioPreference(value: ThemePreference): FolioThemePreference {
-  return value === 'light' || value === 'dark' ? value : 'system';
-}
-
 /**
  * Shared 3-state theme control: a compact icon-button menu (Light / Dark / System).
  *
- * The trigger glyph reflects the user's PREFERENCE (sun / moon / monitor), never the
- * resolved theme — so a system-following user reads as "System", not a pinned light/dark.
- * Items call RhombusThemeService.setTheme() directly (not the 3-state toggle()), so any
- * preference is reachable in one click and `system` (live OS-follow) stays accessible.
+ * The trigger glyph reflects the active MODE (sun / moon / monitor) — system-following reads
+ * as "System", and a non-editorial palette (e.g. 'slate-dark') still reads as "Dark".
+ * Items call RhombusThemeService.setMode() (not setTheme()/toggle()), so switching light↔dark
+ * PRESERVES the active palette, every choice is reachable in one click, and `system`
+ * (live OS-follow) stays accessible.
  *
  * Self-contained: inline currentColor SVGs (no Material icon font, no svgIcon registry),
  * so it renders identically in every shell — including admin, which ships no icon font.
@@ -59,7 +55,7 @@ function asFolioPreference(value: ThemePreference): FolioThemePreference {
   template: `
     <button mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="triggerLabel()">
       <svg class="folio-theme-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path [attr.d]="glyphPath(theme.preference())" />
+        <path [attr.d]="glyphPath(activeMode())" />
       </svg>
     </button>
 
@@ -67,12 +63,12 @@ function asFolioPreference(value: ThemePreference): FolioThemePreference {
       @for (opt of options; track opt.value) {
         <button
           mat-menu-item
-          (click)="theme.setTheme(opt.value)"
-          [attr.aria-current]="theme.preference() === opt.value ? 'true' : null"
+          (click)="theme.setMode(opt.value)"
+          [attr.aria-current]="activeMode() === opt.value ? 'true' : null"
         >
           <span
             class="folio-theme-item"
-            [class.folio-theme-item--active]="theme.preference() === opt.value"
+            [class.folio-theme-item--active]="activeMode() === opt.value"
           >
             <svg class="folio-theme-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path [attr.d]="glyphPath(opt.value)" />
@@ -119,11 +115,17 @@ export class FolioThemeControlComponent {
     { value: 'system', label: PREFERENCE_LABELS.system },
   ];
 
-  protected readonly triggerLabel = computed(
-    () => `Theme: ${PREFERENCE_LABELS[asFolioPreference(this.theme.preference())]} — change theme`,
+  /** The mode the control reflects: 'system' when following the OS, else the resolved
+   *  light/dark mode — so a palette theme name (e.g. 'slate-dark') still reads as "Dark". */
+  protected readonly activeMode = computed<FolioThemePreference>(() =>
+    this.theme.preference() === 'system' ? 'system' : this.theme.mode(),
   );
 
-  protected glyphPath(value: ThemePreference): string {
-    return GLYPH_PATH[asFolioPreference(value)];
+  protected readonly triggerLabel = computed(
+    () => `Theme: ${PREFERENCE_LABELS[this.activeMode()]} — change theme`,
+  );
+
+  protected glyphPath(value: FolioThemePreference): string {
+    return GLYPH_PATH[value];
   }
 }

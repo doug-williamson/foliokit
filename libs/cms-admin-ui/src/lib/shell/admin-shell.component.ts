@@ -11,9 +11,10 @@ import {
   RhombusAppShellComponent,
   RhombusIconComponent,
   RhombusShellNavFooterDirective,
+  RhombusThemeMenuComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
-import { FolioThemeControlComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
+import { SHELL_CONFIG } from '@foliokit/cms-ui';
 import { AuthService } from '@foliokit/cms-core';
 import { AdminNavComponent } from './admin-nav.component';
 import { SiteConfigNavStore } from '../stores/site-config-nav.store';
@@ -25,7 +26,7 @@ import { SiteConfigNavStore } from '../stores/site-config-nav.store';
  * - **Pages-first** nav via {@link AdminNavComponent} (Pages, Publish, Configure)
  *   projected into the shell's `[shellNav]` slot
  * - Brand (logo + "FolioKit Admin") in `[shellBrand]`, linking to `/dashboard`
- * - A theme control in `[shellHeaderActions]`
+ * - A theme + palette menu (`rhombus-theme-menu`) in `[shellHeaderActions]`
  * - Footer row with the signed-in user's email and a logout button in
  *   `[shellNavFooter]`
  *
@@ -80,7 +81,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     MatToolbarModule,
     AdminNavComponent,
     MatBottomSheetModule,
-    FolioThemeControlComponent,
+    RhombusThemeMenuComponent,
   ],
   styles: [
     `
@@ -298,7 +299,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
             <span class="folio-app-name">FolioKit Admin</span>
           </a>
           <span class="flex-1"></span>
-          <folio-theme-control />
+          <rhombus-theme-menu />
         </mat-toolbar>
         <main class="onboarding-main">
           <router-outlet />
@@ -322,7 +323,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           }
           <span class="folio-app-name">{{ appName }}</span>
         </a>
-        <folio-theme-control shellHeaderActions />
+        <rhombus-theme-menu shellHeaderActions />
         <nav shellNav>
           <folio-admin-nav />
         </nav>

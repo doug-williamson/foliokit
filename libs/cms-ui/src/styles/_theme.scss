@@ -1,16 +1,20 @@
 // FolioKit Angular Material M3 Theme
-// Single shared theme config for all FolioKit apps.
+// Single shared theme config for all FolioKit apps + palettes.
 // Standardized on mat.theme() — replaces per-app M3 configs.
 
 @use '@angular/material' as mat;
 
-// ─── Light Theme ─────────────────────────────────────────────────────────────
-
-html,
-html[data-theme='light'] {
+// ─── FolioKit → M3 system-token bridge ──────────────────────────────────────────
+// One mixin, applied per mode. Every colour token references a FolioKit *semantic*
+// token (--btn-primary-bg, --surface-0, …), so the SAME bridge themes every palette:
+// each [data-theme="<name>"] block in _tokens.scss redefines the semantic layer and
+// Material (and RhombusKit, which consumes the same M3 tokens) follows automatically.
+// Only secondary/tertiary use the shared teal/violet accents (palette-agnostic
+// primitives from :root); primary/surfaces/text/outline all follow the active palette.
+@mixin folio-mat-bridge($theme-type) {
   @include mat.theme((
     color: (
-      theme-type: light,
+      theme-type: $theme-type,
       primary: mat.$cyan-palette,
       tertiary: mat.$cyan-palette,
     ),
@@ -18,32 +22,44 @@ html[data-theme='light'] {
     density: 0,
   ));
 
-  // FolioKit → M3 system token bridge — all references semantic vars so
-  // Material surfaces follow the active theme pack.
+  // Primary + surfaces + outline — all via FolioKit semantic tokens.
   --mat-sys-primary:                 var(--btn-primary-bg);
   --mat-sys-on-primary:              var(--btn-primary-text);
   --mat-sys-primary-container:       var(--btn-primary-hover);
   --mat-sys-on-primary-container:    var(--text-primary);
-  --mat-sys-secondary:               var(--teal-700);
-  --mat-sys-on-secondary:            var(--text-on-accent);
-  --mat-sys-secondary-container:     var(--teal-200);
-  --mat-sys-on-secondary-container:  var(--teal-900);
-  --mat-sys-tertiary:                var(--violet-500);
-  --mat-sys-on-tertiary:             var(--text-on-accent);
-  --mat-sys-tertiary-container:      var(--violet-100);
-  --mat-sys-on-tertiary-container:   var(--text-primary);
   --mat-sys-surface:                 var(--surface-0);
   --mat-sys-on-surface:              var(--text-primary);
   --mat-sys-surface-container:       var(--surface-1);
   --mat-sys-surface-container-high:  var(--surface-2);
   --mat-sys-outline:                 var(--border-strong);
   --mat-sys-outline-variant:         var(--border);
-  --mat-sys-background: var(--bg);
+  --mat-sys-background:              var(--bg);
 
-  // ── Typography token bridge ─────────────────────────────────────────────
-  // mat.theme() with a string typography emits an unquoted multi-word
-  // font-family, which browsers parse as separate (invalid) names.
-  // Bridge M3 typescale tokens to Folio's quoted CSS custom properties.
+  // Secondary / tertiary — shared editorial teal/violet accents (palette-agnostic).
+  @if $theme-type == light {
+    --mat-sys-secondary:               var(--teal-700);
+    --mat-sys-on-secondary:            var(--text-on-accent);
+    --mat-sys-secondary-container:     var(--teal-200);
+    --mat-sys-on-secondary-container:  var(--teal-900);
+    --mat-sys-tertiary:                var(--violet-500);
+    --mat-sys-on-tertiary:             var(--text-on-accent);
+    --mat-sys-tertiary-container:      var(--violet-100);
+    --mat-sys-on-tertiary-container:   var(--text-primary);
+  } @else {
+    --mat-sys-secondary:               var(--teal-300);
+    --mat-sys-on-secondary:            var(--slate-950);
+    --mat-sys-secondary-container:     var(--teal-700);
+    --mat-sys-on-secondary-container:  var(--teal-100);
+    --mat-sys-tertiary:                var(--violet-400);
+    --mat-sys-on-tertiary:             var(--slate-950);
+    --mat-sys-tertiary-container:      var(--violet-600);
+    --mat-sys-on-tertiary-container:   var(--violet-100);
+  }
+
+  // ── Typography token bridge ─────────────────────────────────────────────────
+  // mat.theme() with a string typography emits an unquoted multi-word font-family,
+  // which browsers parse as separate (invalid) names. Bridge M3 typescale tokens to
+  // Folio's quoted CSS custom properties.
   --mat-sys-body-large-font:     var(--font-body);
   --mat-sys-body-medium-font:    var(--font-body);
   --mat-sys-body-small-font:     var(--font-body);
@@ -60,76 +76,31 @@ html[data-theme='light'] {
   --mat-sys-headline-medium-font: var(--font-display);
   --mat-sys-headline-small-font:  var(--font-display);
 
-  // ── Brand motion timing (nudges Material animations) ─────────────────────
+  // ── Brand motion timing (nudges Material animations) ─────────────────────────
   --mat-sys-motion-duration-short1: var(--motion-duration-fast);
   --mat-sys-motion-duration-medium1: var(--motion-duration-base);
 
-  // ── Form field overrides (OPTION A) ──────────────────────────────────────
+  // ── Form field overrides (OPTION A) ──────────────────────────────────────────
   --mat-form-field-container-shape: var(--r-md);
   --mat-form-field-outlined-idle-outline-color: var(--border-strong);
   --mat-form-field-outlined-hover-outline-color: var(--border-accent);
   --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
 }
 
-// ─── Dark Theme ──────────────────────────────────────────────────────────────
+// ─── Light palettes ──────────────────────────────────────────────────────────────
+// Bare `html` keeps the pre-script fallback. mat.theme() is emitted once for the
+// whole group; the per-palette colours come from the semantic tokens each
+// [data-theme] block defines, so this stays palette-agnostic.
+html,
+html[data-theme='light'],
+html[data-theme='slate-light'],
+html[data-theme='sandstone-light'] {
+  @include folio-mat-bridge(light);
+}
 
-html[data-theme='dark'] {
-  @include mat.theme((
-    color: (
-      theme-type: dark,
-      primary: mat.$cyan-palette,
-      tertiary: mat.$cyan-palette,
-    ),
-    typography: 'Plus Jakarta Sans',
-    density: 0,
-  ));
-
-  // FolioKit → M3 system token bridge — all references semantic vars so
-  // Material surfaces follow the active theme pack.
-  --mat-sys-primary:                 var(--btn-primary-bg);
-  --mat-sys-on-primary:              var(--btn-primary-text);
-  --mat-sys-primary-container:       var(--btn-primary-hover);
-  --mat-sys-on-primary-container:    var(--text-primary);
-  --mat-sys-secondary:               var(--teal-300);
-  --mat-sys-on-secondary:            var(--slate-950);
-  --mat-sys-secondary-container:     var(--teal-700);
-  --mat-sys-on-secondary-container:  var(--teal-100);
-  --mat-sys-tertiary:                var(--violet-400);
-  --mat-sys-on-tertiary:             var(--slate-950);
-  --mat-sys-tertiary-container:      var(--violet-600);
-  --mat-sys-on-tertiary-container:   var(--violet-100);
-  --mat-sys-surface:                 var(--surface-0);
-  --mat-sys-on-surface:              var(--text-primary);
-  --mat-sys-surface-container:       var(--surface-1);
-  --mat-sys-surface-container-high:  var(--surface-2);
-  --mat-sys-outline:                 var(--border-strong);
-  --mat-sys-outline-variant:         var(--border);
-  --mat-sys-background: var(--bg);
-
-  // ── Typography token bridge (same as light — see comment above) ─────────
-  --mat-sys-body-large-font:     var(--font-body);
-  --mat-sys-body-medium-font:    var(--font-body);
-  --mat-sys-body-small-font:     var(--font-body);
-  --mat-sys-label-large-font:    var(--font-body);
-  --mat-sys-label-medium-font:   var(--font-body);
-  --mat-sys-label-small-font:    var(--font-body);
-  --mat-sys-title-medium-font:   var(--font-body);
-  --mat-sys-title-small-font:    var(--font-body);
-  --mat-sys-title-large-font:    var(--font-display);
-  --mat-sys-display-large-font:  var(--font-display);
-  --mat-sys-display-medium-font: var(--font-display);
-  --mat-sys-display-small-font:  var(--font-display);
-  --mat-sys-headline-large-font:  var(--font-display);
-  --mat-sys-headline-medium-font: var(--font-display);
-  --mat-sys-headline-small-font:  var(--font-display);
-
-  // ── Brand motion timing ───────────────────────────────────────────────────
-  --mat-sys-motion-duration-short1: var(--motion-duration-fast);
-  --mat-sys-motion-duration-medium1: var(--motion-duration-base);
-
-  // ── Form field overrides (OPTION A) ──────────────────────────────────────
-  --mat-form-field-container-shape: var(--r-md);
-  --mat-form-field-outlined-idle-outline-color: var(--border-strong);
-  --mat-form-field-outlined-hover-outline-color: var(--border-accent);
-  --mdc-outlined-text-field-focus-outline-color: var(--focus-border);
+// ─── Dark palettes ───────────────────────────────────────────────────────────────
+html[data-theme='dark'],
+html[data-theme='slate-dark'],
+html[data-theme='sandstone-dark'] {
+  @include folio-mat-bridge(dark);
 }

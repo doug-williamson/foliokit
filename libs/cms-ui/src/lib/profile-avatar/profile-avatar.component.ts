@@ -47,7 +47,7 @@ export class ProfileAvatarComponent {
   protected readonly resolvedSrc = computed(() => {
     const light = this.photoUrl()?.trim() || null;
     const dark = this.photoUrlDark()?.trim() || null;
-    if (this.theme.current() === 'dark' && dark) return dark;
+    if (this.theme.mode() === 'dark' && dark) return dark;
     return light;
   });
 

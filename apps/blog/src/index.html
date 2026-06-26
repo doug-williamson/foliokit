@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <!-- Pre-paint theme (prevents FOUC). Keep in sync with FOLIOKIT_THEME_INIT_SCRIPT in @foliokit/cms-ui (theme-init-script.ts). -->
-    <script>(function(){try{var K='rhombuskit:theme-preference';if(localStorage.getItem(K)===null){var g=localStorage.getItem('folio-theme');if(g==='light'||g==='dark'){localStorage.setItem(K,g);}}}catch(e){}})();(function(){try{var L='light',D='dark',d='system';var s=localStorage.getItem('rhombuskit:theme-preference');var p=(s===L||s===D||s==='system')?s:d;var r=p==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?D:L):p;document.documentElement.setAttribute('data-theme',r);}catch(e){}})();</script>
+    <script>(function(){try{var K='rhombuskit:theme-preference';if(localStorage.getItem(K)===null){var g=localStorage.getItem('folio-theme');if(g==='light'||g==='dark'){localStorage.setItem(K,g);}}}catch(e){}})();(function(){try{var L='light',D='dark',d='system',R=["light","dark","slate-light","slate-dark","sandstone-light","sandstone-dark"];var s=localStorage.getItem('rhombuskit:theme-preference');var p=(s===L||s===D||s==='system'||R.indexOf(s)>=0)?s:d;var r=p==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?D:L):p;document.documentElement.setAttribute('data-theme',r);}catch(e){}})();</script>
     <title>FolioKit Blog</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

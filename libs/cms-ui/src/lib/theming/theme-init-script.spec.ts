@@ -1,5 +1,6 @@
 import { getThemeInitScript } from '@rhombuskit/theme-engine';
 import { FOLIOKIT_THEME_INIT_SCRIPT } from './theme-init-script';
+import { FOLIOKIT_REGISTERED_THEMES } from './registered-themes';
 
 const RHOMBUS_KEY = 'rhombuskit:theme-preference';
 const LEGACY_KEY = 'folio-theme';
@@ -88,11 +89,15 @@ describe('FOLIOKIT_THEME_INIT_SCRIPT', () => {
 
   describe('drift guard', () => {
     it('embeds the verbatim rhombus resolution body for the FolioKit config', () => {
-      const body = getThemeInitScript({ light: 'light', dark: 'dark', default: 'system' })
+      const body = getThemeInitScript(
+        { light: 'light', dark: 'dark', default: 'system' },
+        FOLIOKIT_REGISTERED_THEMES,
+      )
         .replace(/^<script>/, '')
         .replace(/<\/script>$/, '');
-      // If RhombusKit changes its resolution algorithm or storage key, this fails,
-      // signaling that theme-init-script.ts AND the three index.html must be updated.
+      // If RhombusKit changes its resolution algorithm or storage key, or the registered
+      // themes change, this fails — signaling that theme-init-script.ts AND the three
+      // index.html must be re-synced from the package output.
       expect(FOLIOKIT_THEME_INIT_SCRIPT).toContain(body);
     });
   });
