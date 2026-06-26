@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { RhombusIconComponent } from '@rhombuskit/core';
 
 type CalloutVariant = 'info' | 'warning' | 'tip' | 'danger';
 
@@ -14,12 +14,10 @@ const VARIANT_ICONS: Record<CalloutVariant, string> = {
   selector: 'docs-callout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule],
+  imports: [RhombusIconComponent],
   template: `
     <aside class="docs-callout docs-callout--{{ variant() }}" role="note">
-      <mat-icon class="docs-callout__icon shrink-0" aria-hidden="true">
-        {{ icon() }}
-      </mat-icon>
+      <rhombus-icon class="docs-callout__icon shrink-0" [name]="icon()" />
       <div class="docs-callout__content min-w-0">
         <ng-content />
       </div>

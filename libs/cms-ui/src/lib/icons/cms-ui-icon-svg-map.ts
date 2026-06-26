@@ -1,5 +1,6 @@
 /**
- * SVG literals for `<mat-icon svgIcon="…">` used by @foliokit/cms-ui.
+ * SVG literals registered with RhombusKit's `RhombusIconRegistry` (via
+ * `provideCmsUiRhombusIcons`) for `<rhombus-icon name="…">` used by @foliokit/cms-ui.
  * Source: @material-design-icons/svg (filled), aligned with cms-admin-ui icon map.
  */
 export const CMS_UI_ICON_SVG_MAP: Record<string, string> = {

@@ -14,7 +14,7 @@
         [title]="copied() ? 'Copied!' : 'Copy code'"
         (click)="copy()"
       >
-        <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+        <rhombus-icon [name]="copied() ? 'check' : 'content_copy'" />
       </button>
       <pre class="docs-preview__pre"><code
         class="hljs"

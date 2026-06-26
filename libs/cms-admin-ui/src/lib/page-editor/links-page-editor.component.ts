@@ -9,7 +9,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
 import {
   RhombusInputComponent,
   RhombusPageHeaderComponent,
@@ -35,7 +34,6 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatExpansionModule,
-    MatIconModule,
     RhombusInputComponent,
     RhombusPageHeaderComponent,
     RhombusTextareaComponent,

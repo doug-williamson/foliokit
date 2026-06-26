@@ -19,10 +19,7 @@ import {
 } from '@foliokit/cms-core';
 import { doc, getDoc } from 'firebase/firestore';
 import { SiteConfigEditorStore } from './site-config-editor/site-config-editor.store';
-import {
-  provideAdminMatIcons,
-  provideAdminRhombusIcons,
-} from './icons/provide-admin-mat-icons';
+import { provideAdminRhombusIcons } from './icons/provide-admin-mat-icons';
 
 /**
  * Base URL for Cloud Function calls (e.g. createCheckoutSession, createBillingPortalSession).
@@ -91,9 +88,7 @@ export interface AdminKitConfig {
  * - `provideAnimationsAsync()` — required by Angular Material
  * - `provideNativeDateAdapter()` — required by Material date pickers
  * - `SiteConfigEditorStore` — global NgRx Signals store for site config
- * - `provideAdminMatIcons()` — registers all Material Icons used by admin
- *   components as inlined SVGs so the host app does not need the font
- * - `provideAdminRhombusIcons()` — registers the same set with RhombusKit's
+ * - `provideAdminRhombusIcons()` — registers the admin icon set with RhombusKit's
  *   `RhombusIconRegistry` so `<rhombus-icon>` renders them inline (no font)
  * - `provideMarkdown()` — required by the post editor's markdown preview
  *   (skip with `markdown: false` if you configure it yourself)
@@ -107,7 +102,6 @@ export function provideAdminKit(config: AdminKitConfig): EnvironmentProviders {
   const providers: Parameters<typeof makeEnvironmentProviders>[0] = [
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    provideAdminMatIcons(),
     provideAdminRhombusIcons(),
     SiteConfigEditorStore,
 

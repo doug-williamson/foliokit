@@ -21,11 +21,15 @@
 // L25-26, rhombus-dark L68-69). All other FolioKit tokens stay FolioKit-local.
 // NOTE: the @use above MUST stay the first line — its global reset/focus rules are
 // neutralized only because FolioKit's @forward 'reset'/'focus' emit afterward.
-[data-theme='light'] {
+[data-theme='light'],
+[data-theme='slate-light'],
+[data-theme='sandstone-light'] {
   --error: #dc2626;
   --error-bg: #fef2f2;
 }
-[data-theme='dark'] {
+[data-theme='dark'],
+[data-theme='slate-dark'],
+[data-theme='sandstone-dark'] {
   --error: #ef4444;
   --error-bg: #2a0a0a;
 }

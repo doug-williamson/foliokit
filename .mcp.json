@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rhombuskit": {
+      "command": "npx",
+      "args": ["-y", "@rhombuskit/mcp"]
+    }
+  }
+}

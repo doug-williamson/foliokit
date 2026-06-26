@@ -1,8 +1,9 @@
 import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
-import { provideRhombusTheme } from '@rhombuskit/theme-engine';
+import { provideRhombusTheme, provideRhombusThemes } from '@rhombuskit/theme-engine';
 
-// Side-effect import: registers the 'light'/'dark' ThemeRegistry augmentation.
+// Side-effect import: registers the 'light'/'dark'/'slate-*'/'sandstone-*' ThemeRegistry augmentation.
 import './theme-registry';
+import { FOLIOKIT_REGISTERED_THEMES } from './registered-themes';
 
 /**
  * FolioKit's theme wrapper around RhombusThemeService. Preserves FolioKit's
@@ -25,5 +26,10 @@ import './theme-registry';
 export function provideFolioKitTheme(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideRhombusTheme({ light: 'light', dark: 'dark', default: 'system' }),
+    // Register FolioKit's palettes (Editorial / Slate / Sandstone × light+dark) so
+    // RhombusThemeService exposes palettes()/setPalette()/setMode() and the registry-aware
+    // pre-paint init script honours a stored palette theme. Colours for each registered
+    // theme live in CSS under [data-theme="<name>"] (libs/cms-ui/src/styles).
+    provideRhombusThemes(...FOLIOKIT_REGISTERED_THEMES),
   ]);
 }

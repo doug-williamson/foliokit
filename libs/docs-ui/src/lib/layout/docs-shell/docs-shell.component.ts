@@ -11,14 +11,14 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgTemplateOutlet } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 import {
   RhombusAppShellComponent,
+  RhombusIconComponent,
+  RhombusIconRegistry,
   RhombusShellAsideDirective,
+  RhombusThemeMenuComponent,
 } from '@rhombuskit/core';
-import { FolioThemeControlComponent } from '@foliokit/cms-ui';
-// Side-effect import: registers docs-ui's 'light'/'dark' ThemeRegistry augmentation.
+// Side-effect import: registers docs-ui's FolioKit ThemeRegistry augmentation.
 import '../../theme-registry';
 import { DOCS_ROUTE_MANIFEST } from '../../tokens/docs-tokens';
 import { DocsNavComponent } from '../../nav/docs-nav/docs-nav.component';
@@ -39,13 +39,13 @@ const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
     NgTemplateOutlet,
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule,
     RhombusAppShellComponent,
+    RhombusIconComponent,
     RhombusShellAsideDirective,
     DocsNavComponent,
     DocsPageHeaderComponent,
     DocsAnchorNavComponent,
-    FolioThemeControlComponent,
+    RhombusThemeMenuComponent,
   ],
   templateUrl: './docs-shell.component.html',
   styleUrl: './docs-shell.component.scss',
@@ -54,8 +54,7 @@ export class DocsShellComponent {
   readonly manifest = inject(DOCS_ROUTE_MANIFEST);
 
   readonly #router = inject(Router);
-  readonly #iconRegistry = inject(MatIconRegistry);
-  readonly #sanitizer = inject(DomSanitizer);
+  readonly #rhombusIcons = inject(RhombusIconRegistry);
   readonly #breakpointObserver = inject(BreakpointObserver);
 
   readonly #url = toSignal(
@@ -81,9 +80,9 @@ export class DocsShellComponent {
   );
 
   constructor() {
-    this.#iconRegistry.addSvgIconLiteral(
-      'github',
-      this.#sanitizer.bypassSecurityTrustHtml(GITHUB_ICON_SVG),
-    );
+    // Register the custom GitHub glyph for <rhombus-icon name="github">. Material
+    // ligature names used elsewhere in docs need no registration — rhombus-icon
+    // falls back to the Material font for names it doesn't recognise.
+    this.#rhombusIcons.register('github', GITHUB_ICON_SVG);
   }
 }

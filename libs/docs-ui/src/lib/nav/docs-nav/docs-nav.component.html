@@ -7,8 +7,8 @@
         routerLinkActive="nav-l1--active"
         (click)="node.children ? toggle(node.path) : null"
       >
-        @if (node.icon) {
-          <mat-icon class="nav-l1-icon">{{ node.icon }}</mat-icon>
+        @if (node.icon; as icon) {
+          <rhombus-icon class="nav-l1-icon" [name]="icon" />
         }
         <span class="nav-l1-label">{{ node.label }}</span>
         @if (node.badge) {

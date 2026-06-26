@@ -74,6 +74,40 @@
   --amber-500: #D4892A;
   --amber-400: #E09A40;
   --amber-100: #FBF0DC;
+  /* Azure — Slate palette accent (cool blue) */
+  --azure-900: #0E2A47;
+  --azure-800: #123862;
+  --azure-700: #18497E;
+  --azure-600: #1F5E9E;
+  --azure-500: #2F80CE;
+  --azure-400: #5C9FDD;
+  --azure-300: #8FC1EC;
+  --azure-200: #BEDCF6;
+  --azure-100: #E3F0FB;
+  --azure-50:  #F1F7FD;
+  /* Sand — Sandstone palette neutral (warm tan) */
+  --sand-950: #1B150F;
+  --sand-900: #2E2820;
+  --sand-800: #463C2E;
+  --sand-700: #645643;
+  --sand-600: #8A795F;
+  --sand-500: #A8967A;
+  --sand-400: #C2B299;
+  --sand-300: #D8C9B0;
+  --sand-200: #E8DCC8;
+  --sand-100: #F3ECE0;
+  --sand-50:  #FAF6EF;
+  /* Clay — Sandstone palette accent (warm terracotta) */
+  --clay-900: #43180D;
+  --clay-800: #642715;
+  --clay-700: #85371D;
+  --clay-600: #A2492A;
+  --clay-500: #C2693D;
+  --clay-400: #D5895C;
+  --clay-300: #E4AC86;
+  --clay-200: #F0CEB3;
+  --clay-100: #F8E7D8;
+  --clay-50:  #FCF4EC;
   /* Ink — pure neutral for color-mix darkening — do not remove */
   --ink-950: #050608;
 
@@ -293,6 +327,207 @@
   --warning:          var(--amber-400);
   --warning-subtle:   rgba(122, 74, 0, 0.18);
   /* Status pills */
+  --status-draft-bg:        color-mix(in srgb, var(--text-muted) 12%, transparent);
+  --status-draft-text:      var(--text-muted);
+  --status-published-bg:    color-mix(in srgb, var(--green-600) 20%, transparent);
+  --status-published-text:  var(--green-100);
+  --status-scheduled-bg:    color-mix(in srgb, var(--blue-600) 20%, transparent);
+  --status-scheduled-text:  var(--blue-100);
+  --status-archived-bg:     color-mix(in srgb, var(--amber-600) 20%, transparent);
+  --status-archived-text:   var(--amber-400);
+  color-scheme: dark;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Added palettes (RhombusKit registry) — same semantic token set as the editorial
+// light/dark blocks above, derived by swapping the accent (and, for Sandstone, the
+// neutrals). Registered in registered-themes.ts; selected via setPalette(). Material
+// + RhombusKit components follow automatically through the _theme.scss bridge.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Slate — cool blue-grey, azure accent ──────────────────────────────────────
+[data-theme="slate-light"] {
+  --bg:             var(--slate-50);
+  --bg-subtle:      var(--slate-100);
+  --surface-0:      var(--cloud-0);
+  --surface-1:      var(--slate-50);
+  --surface-2:      var(--slate-100);
+  --surface-3:      var(--slate-200);
+  --border:         var(--slate-200);
+  --border-strong:  var(--slate-300);
+  --border-accent:  var(--azure-300);
+  --border-width:   1px;
+  --text-primary:   var(--slate-900);
+  --text-secondary: var(--slate-600);
+  --text-muted:     var(--slate-400);
+  --text-disabled:  var(--slate-300);
+  --text-accent:    var(--azure-600);
+  --text-on-accent: #FFFFFF;
+  --text-on-dark:   #E8EDF5;
+  --btn-primary-bg:    var(--azure-500);
+  --btn-primary-text:  #FFFFFF;
+  --btn-primary-hover: var(--azure-600);
+  --logo-bg:   var(--slate-900);
+  --logo-text: var(--cloud-0);
+  --logo-dot:  var(--azure-400);
+  --focus-ring:   rgba(47, 128, 206, 0.22);
+  --focus-border: var(--azure-500);
+  --shadow-sm: 0 1px 3px rgba(12,15,20,0.07), 0 1px 2px rgba(12,15,20,0.04);
+  --shadow-md: 0 3px 10px rgba(12,15,20,0.08), 0 1px 4px rgba(12,15,20,0.05);
+  --shadow-lg: 0 8px 28px rgba(12,15,20,0.10), 0 2px 8px rgba(12,15,20,0.06);
+  --shadow-xl: 0 20px 56px rgba(12,15,20,0.12), 0 4px 16px rgba(12,15,20,0.07);
+  --shadow-btn-primary: var(--shadow-sm);
+  --nav-active-bg:    var(--azure-50);
+  --nav-active-text:  var(--azure-800);
+  --nav-active-color: var(--nav-active-text);
+  --overlay-dark: rgba(0, 0, 0, 0.45);
+  --warning:          var(--amber-600);
+  --warning-subtle:   var(--amber-100);
+  --status-draft-bg:        var(--slate-100);
+  --status-draft-text:      var(--slate-600);
+  --status-published-bg:    var(--green-100);
+  --status-published-text:  var(--green-700);
+  --status-scheduled-bg:    var(--blue-100);
+  --status-scheduled-text:  var(--blue-700);
+  --status-archived-bg:     var(--amber-100);
+  --status-archived-text:   var(--amber-600);
+  color-scheme: light;
+}
+
+[data-theme="slate-dark"] {
+  --bg:             #161B26;
+  --bg-subtle:      #1A2030;
+  --surface-0:      #1F2738;
+  --surface-1:      #252E42;
+  --surface-2:      #2D3850;
+  --surface-3:      #38445F;
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-accent:  rgba(92, 159, 221, 0.40);
+  --border-width:   1px;
+  --text-primary:   #E8EDF5;
+  --text-secondary: #9AACBF;
+  --text-muted:     #5F7490;
+  --text-disabled:  #3D4F63;
+  --text-accent:    var(--azure-300);
+  --text-on-accent: var(--slate-950);
+  --text-on-dark:   #E8EDF5;
+  --btn-primary-bg:    var(--azure-400);
+  --btn-primary-text:  var(--slate-950);
+  --btn-primary-hover: var(--azure-300);
+  --logo-bg:   var(--azure-500);
+  --logo-text: #FFFFFF;
+  --logo-dot:  var(--azure-200);
+  --focus-ring:   rgba(92, 159, 221, 0.28);
+  --focus-border: var(--azure-400);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
+  --shadow-md: 0 3px 10px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,0.40);
+  --shadow-xl: 0 20px 56px rgba(0,0,0,0.50);
+  --shadow-btn-primary: var(--shadow-sm);
+  --nav-active-bg:    rgba(92, 159, 221, 0.14);
+  --nav-active-text:  #E8EDF5;
+  --nav-active-color: var(--nav-active-text);
+  --overlay-dark: rgba(0, 0, 0, 0.55);
+  --warning:          var(--amber-400);
+  --warning-subtle:   rgba(122, 74, 0, 0.18);
+  --status-draft-bg:        color-mix(in srgb, var(--text-muted) 12%, transparent);
+  --status-draft-text:      var(--text-muted);
+  --status-published-bg:    color-mix(in srgb, var(--green-600) 20%, transparent);
+  --status-published-text:  var(--green-100);
+  --status-scheduled-bg:    color-mix(in srgb, var(--blue-600) 20%, transparent);
+  --status-scheduled-text:  var(--blue-100);
+  --status-archived-bg:     color-mix(in srgb, var(--amber-600) 20%, transparent);
+  --status-archived-text:   var(--amber-400);
+  color-scheme: dark;
+}
+
+// ─── Sandstone — warm tan neutrals, terracotta (clay) accent ────────────────────
+[data-theme="sandstone-light"] {
+  --bg:             var(--sand-100);
+  --bg-subtle:      var(--sand-200);
+  --surface-0:      var(--sand-50);
+  --surface-1:      var(--sand-100);
+  --surface-2:      var(--sand-200);
+  --surface-3:      var(--sand-300);
+  --border:         var(--sand-300);
+  --border-strong:  var(--sand-400);
+  --border-accent:  var(--clay-300);
+  --border-width:   1px;
+  --text-primary:   var(--sand-900);
+  --text-secondary: var(--sand-700);
+  --text-muted:     var(--sand-600);
+  --text-disabled:  var(--sand-400);
+  --text-accent:    var(--clay-600);
+  --text-on-accent: #FFFFFF;
+  --text-on-dark:   var(--sand-100);
+  --btn-primary-bg:    var(--clay-500);
+  --btn-primary-text:  #FFFFFF;
+  --btn-primary-hover: var(--clay-600);
+  --logo-bg:   var(--sand-900);
+  --logo-text: var(--sand-50);
+  --logo-dot:  var(--clay-400);
+  --focus-ring:   rgba(194, 105, 61, 0.22);
+  --focus-border: var(--clay-500);
+  --shadow-sm: 0 1px 3px rgba(46,40,32,0.08), 0 1px 2px rgba(46,40,32,0.05);
+  --shadow-md: 0 3px 10px rgba(46,40,32,0.09), 0 1px 4px rgba(46,40,32,0.06);
+  --shadow-lg: 0 8px 28px rgba(46,40,32,0.11), 0 2px 8px rgba(46,40,32,0.07);
+  --shadow-xl: 0 20px 56px rgba(46,40,32,0.13), 0 4px 16px rgba(46,40,32,0.08);
+  --shadow-btn-primary: var(--shadow-sm);
+  --nav-active-bg:    var(--clay-50);
+  --nav-active-text:  var(--clay-700);
+  --nav-active-color: var(--nav-active-text);
+  --overlay-dark: rgba(0, 0, 0, 0.45);
+  --warning:          var(--amber-600);
+  --warning-subtle:   var(--amber-100);
+  --status-draft-bg:        var(--sand-200);
+  --status-draft-text:      var(--sand-700);
+  --status-published-bg:    var(--green-100);
+  --status-published-text:  var(--green-700);
+  --status-scheduled-bg:    var(--blue-100);
+  --status-scheduled-text:  var(--blue-700);
+  --status-archived-bg:     var(--amber-100);
+  --status-archived-text:   var(--amber-600);
+  color-scheme: light;
+}
+
+[data-theme="sandstone-dark"] {
+  --bg:             #1E1813;
+  --bg-subtle:      #241C16;
+  --surface-0:      #2A2119;
+  --surface-1:      #322820;
+  --surface-2:      #3C3026;
+  --surface-3:      #483A2D;
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-accent:  rgba(213, 137, 92, 0.40);
+  --border-width:   1px;
+  --text-primary:   var(--sand-100);
+  --text-secondary: #C9B8A0;
+  --text-muted:     #91806A;
+  --text-disabled:  #5C4D3C;
+  --text-accent:    var(--clay-300);
+  --text-on-accent: var(--sand-950);
+  --text-on-dark:   var(--sand-100);
+  --btn-primary-bg:    var(--clay-400);
+  --btn-primary-text:  var(--sand-950);
+  --btn-primary-hover: var(--clay-300);
+  --logo-bg:   var(--clay-500);
+  --logo-text: #FFFFFF;
+  --logo-dot:  var(--clay-200);
+  --focus-ring:   rgba(213, 137, 92, 0.28);
+  --focus-border: var(--clay-400);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
+  --shadow-md: 0 3px 10px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,0.40);
+  --shadow-xl: 0 20px 56px rgba(0,0,0,0.50);
+  --shadow-btn-primary: var(--shadow-sm);
+  --nav-active-bg:    rgba(213, 137, 92, 0.14);
+  --nav-active-text:  var(--sand-100);
+  --nav-active-color: var(--nav-active-text);
+  --overlay-dark: rgba(0, 0, 0, 0.55);
+  --warning:          var(--amber-400);
+  --warning-subtle:   rgba(122, 74, 0, 0.18);
   --status-draft-bg:        color-mix(in srgb, var(--text-muted) 12%, transparent);
   --status-draft-text:      var(--text-muted);
   --status-published-bg:    color-mix(in srgb, var(--green-600) 20%, transparent);

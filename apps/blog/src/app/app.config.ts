@@ -13,7 +13,6 @@ import {
   providesFolioKit,
 } from '@foliokit/cms-core';
 import {
-  provideCmsUiMatIcons,
   provideCmsUiRhombusIcons,
   provideFolioKitTheme,
 } from '@foliokit/cms-ui';
@@ -23,7 +22,6 @@ import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideCmsUiMatIcons(),
     provideCmsUiRhombusIcons(),
     provideFolioKitTheme(),
     provideClientHydration(withEventReplay()),

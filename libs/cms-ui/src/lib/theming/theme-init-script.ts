@@ -12,10 +12,11 @@
  *      copy it across. This is the one-time PR1 migration, moved ahead of paint
  *      so migrating users never flash. Because it persists the key here, the
  *      runtime no longer needs a bootstrap migration initializer.
- *   2. Rhombus resolution — the VERBATIM body of
- *      `getThemeInitScript({ light: 'light', dark: 'dark', default: 'system' })`
- *      from @rhombuskit/theme-engine. Reads the (now-migrated) preference,
- *      resolves 'system' via prefers-color-scheme, and sets `data-theme`.
+ *   2. Rhombus resolution — the VERBATIM body of getThemeInitScript(config,
+ *      FOLIOKIT_REGISTERED_THEMES) from @rhombuskit/theme-engine. Reads the
+ *      (now-migrated) preference, accepts a registered palette theme name (the
+ *      `R=[…]` allow-list), resolves 'system' via prefers-color-scheme, and sets
+ *      `data-theme` — so a stored palette (e.g. 'slate-dark') paints with no flash.
  *
  * IMPORTANT: the three app index.html files
  *   - apps/blog/src/index.html
@@ -33,14 +34,17 @@ const LEGACY_MIGRATION =
   `if(g==='light'||g==='dark'){localStorage.setItem(K,g);}}}catch(e){}})();`;
 
 /**
- * Verbatim body of getThemeInitScript({ light:'light', dark:'dark', default:'system' }).
- * Sourced from @rhombuskit/theme-engine; the drift-guard test asserts this still
- * matches the package's output. Do not edit by hand without updating the script.
+ * Verbatim body of getThemeInitScript({ light:'light', dark:'dark', default:'system' },
+ * FOLIOKIT_REGISTERED_THEMES). Sourced from @rhombuskit/theme-engine; the drift-guard test
+ * asserts this still matches the package's output. The `R=[…]` allow-list mirrors the
+ * registered palette theme names so a stored palette is honoured pre-paint. Do not edit by
+ * hand — regenerate from the installed package (see theme-init-script.spec.ts) and keep the
+ * R array in sync with registered-themes.ts.
  */
 const RHOMBUS_RESOLUTION =
-  `(function(){try{var L='light',D='dark',d='system';` +
+  `(function(){try{var L='light',D='dark',d='system',R=["light","dark","slate-light","slate-dark","sandstone-light","sandstone-dark"];` +
   `var s=localStorage.getItem('rhombuskit:theme-preference');` +
-  `var p=(s===L||s===D||s==='system')?s:d;` +
+  `var p=(s===L||s===D||s==='system'||R.indexOf(s)>=0)?s:d;` +
   `var r=p==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?D:L):p;` +
   `document.documentElement.setAttribute('data-theme',r);}catch(e){}})();`;
 

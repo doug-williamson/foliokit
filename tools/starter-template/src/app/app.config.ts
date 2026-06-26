@@ -16,13 +16,13 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { providesFolioKit } from '@foliokit/cms-core';
-import { provideCmsUiMatIcons } from '@foliokit/cms-ui';
+import { provideCmsUiRhombusIcons } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideCmsUiMatIcons(),
+    provideCmsUiRhombusIcons(),
     provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
