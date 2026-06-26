@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
 import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
 import { inject } from '@angular/core';
 
@@ -14,7 +13,6 @@ import { inject } from '@angular/core';
     RouterLink,
     RouterLinkActive,
     MatListModule,
-    MatIconModule,
   ],
   template: `
     <folio-app-shell>

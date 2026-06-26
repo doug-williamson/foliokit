@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RhombusCardComponent } from '@rhombuskit/core';
+import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
 @Component({
   selector: 'docs-landing-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, MatIconModule, RhombusCardComponent],
+  imports: [RouterLink, MatButtonModule, RhombusCardComponent, RhombusIconComponent],
   styles: [`
     :host {
       display: block;
@@ -234,7 +233,7 @@ import { RhombusCardComponent } from '@rhombuskit/core';
     <section class="features">
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">web</mat-icon>
+          <rhombus-icon name="web" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
           <h3 class="text-lg font-semibold m-0">Angular 21 + SSR</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             Standalone components, signals, and full SSR prerendering out of the box.
@@ -244,7 +243,7 @@ import { RhombusCardComponent } from '@rhombuskit/core';
 
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">local_fire_department</mat-icon>
+          <rhombus-icon name="local_fire_department" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
           <h3 class="text-lg font-semibold m-0">Firebase Native</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             Firestore, Firebase Auth, and Firebase Hosting — deeply integrated, zero boilerplate.
@@ -254,7 +253,7 @@ import { RhombusCardComponent } from '@rhombuskit/core';
 
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <mat-icon class="text-4xl mb-3 text-[var(--mat-sys-primary)]">palette</mat-icon>
+          <rhombus-icon name="palette" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
           <h3 class="text-lg font-semibold m-0">Material 3 + Tailwind</h3>
           <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
             M3 design tokens with automatic light/dark theming and Tailwind utility classes.

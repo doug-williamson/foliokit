@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, Directive, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { DocsPageHeaderComponent } from '@foliokit/docs-ui';
-import { RhombusCardComponent } from '@rhombuskit/core';
+import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
 
 @Directive({
   selector: '[matTypography]',
@@ -17,7 +16,7 @@ export class MatTypographyDirective {
   selector: 'docs-tokens-overview-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatIconModule, DocsPageHeaderComponent, MatTypographyDirective, RhombusCardComponent],
+  imports: [RouterLink, DocsPageHeaderComponent, MatTypographyDirective, RhombusCardComponent, RhombusIconComponent],
   styles: [`
     .token-card-grid {
       display: grid;
@@ -56,7 +55,7 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">token</mat-icon>
+              <rhombus-icon name="token" [size]="48" style="color: var(--mat-sys-primary)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">SHELL_CONFIG</h3>
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
@@ -74,7 +73,7 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">manage_search</mat-icon>
+              <rhombus-icon name="manage_search" [size]="48" style="color: var(--mat-sys-primary)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">SeoMeta</h3>
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
@@ -92,7 +91,7 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-primary)">image</mat-icon>
+              <rhombus-icon name="image" [size]="48" style="color: var(--mat-sys-primary)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">EmbeddedMediaEntry</h3>
             <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
