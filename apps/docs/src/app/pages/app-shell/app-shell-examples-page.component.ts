@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { DocsPageHeaderComponent, DocsPreviewComponent } from '@foliokit/docs-ui';
 import { AppShellComponent, SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
 
@@ -13,18 +13,14 @@ const basicShellCode = `<folio-app-shell>
 // In providers:
 {
   provide: SHELL_CONFIG,
-  useValue: {
+  useValue: signal<ShellConfig>({
     appName: 'My App',
-    nav: [
-      { label: 'Home', url: '/' },
-      { label: 'Blog', url: '/blog' },
-    ],
-  } satisfies ShellConfig,
+  }),
 }`;
 
 const authSlotCode = `<folio-app-shell>
   <button shellAuthSlot mat-icon-button>
-    <mat-icon>account_circle</mat-icon>
+    <rhombus-icon name="account_circle" />
   </button>
   <router-outlet />
 </folio-app-shell>
@@ -32,25 +28,19 @@ const authSlotCode = `<folio-app-shell>
 // In providers:
 {
   provide: SHELL_CONFIG,
-  useValue: {
+  useValue: signal<ShellConfig>({
     appName: 'My App',
     showAuth: true,
-    nav: [{ label: 'Home', url: '/' }],
-  } satisfies ShellConfig,
+  }),
 }`;
 
 const basicConfig: ShellConfig = {
   appName: 'My App',
-  nav: [
-    { label: 'Home', url: '/' },
-    { label: 'Blog', url: '/blog' },
-  ],
 };
 
 const authConfig: ShellConfig = {
   appName: 'My App',
   showAuth: true,
-  nav: [{ label: 'Home', url: '/' }],
 };
 
 @Component({
@@ -58,7 +48,7 @@ const authConfig: ShellConfig = {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AppShellComponent],
-  providers: [{ provide: SHELL_CONFIG, useValue: basicConfig }],
+  providers: [{ provide: SHELL_CONFIG, useValue: signal(basicConfig) }],
   template: `<folio-app-shell />`,
 })
 class BasicShellPreviewComponent {}
@@ -68,7 +58,7 @@ class BasicShellPreviewComponent {}
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AppShellComponent],
-  providers: [{ provide: SHELL_CONFIG, useValue: authConfig }],
+  providers: [{ provide: SHELL_CONFIG, useValue: signal(authConfig) }],
   template: `<folio-app-shell />`,
 })
 class AuthSlotPreviewComponent {}
