@@ -173,7 +173,7 @@ const META: Record<string, DocsPageMeta> = {
     headings: [
       { id: 'live-preview', label: 'Live Preview',         level: 2 },
       { id: 'interface',    label: 'ShellConfig interface', level: 2 },
-      { id: 'nav-item',     label: 'NavItem',              level: 2 },
+      { id: 'navigation',   label: 'Navigation',           level: 2 },
       { id: 'usage',        label: 'Usage',                level: 2 },
     ],
   },
