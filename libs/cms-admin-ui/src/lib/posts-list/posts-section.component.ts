@@ -6,7 +6,6 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
 import type { BlogPost } from '@foliokit/cms-core';
 import type { PostFilterStatus } from './posts-list.store';
@@ -18,7 +17,7 @@ const DEFAULT_LIMIT = 5;
   selector: 'folio-posts-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, RhombusButtonComponent, RhombusIconComponent, PostsTableComponent],
+  imports: [RhombusButtonComponent, RhombusIconComponent, PostsTableComponent],
   styles: [`
     :host {
       display: block;
@@ -78,15 +77,15 @@ const DEFAULT_LIMIT = 5;
         <h2 class="section-title">{{ label() }}</h2>
         <span class="section-count">{{ posts().length }}</span>
         @if (collapsible()) {
-          <button
-            mat-icon-button
+          <rhombus-button
+            iconButton
+            variant="ghost"
             class="section-toggle"
-            type="button"
-            [attr.aria-label]="isOpen() ? 'Collapse ' + label() : 'Expand ' + label()"
+            [ariaLabel]="isOpen() ? 'Collapse ' + label() : 'Expand ' + label()"
             (click)="toggle()"
           >
             <rhombus-icon [name]="isOpen() ? 'expand_less' : 'expand_more'" />
-          </button>
+          </rhombus-button>
         }
       </header>
 

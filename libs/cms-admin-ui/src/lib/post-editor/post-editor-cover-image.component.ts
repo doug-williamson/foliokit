@@ -8,8 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
 import {
+  RhombusButtonComponent,
   RhombusIconComponent,
   RhombusProgressBarComponent,
 } from '@rhombuskit/core';
@@ -22,7 +22,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-cover-image',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, RhombusIconComponent, RhombusProgressBarComponent],
+  imports: [RhombusButtonComponent, RhombusIconComponent, RhombusProgressBarComponent],
   styles: [
     `
       :host {
@@ -67,22 +67,24 @@ import { PostEditorStore } from './post-editor.store';
               class="hover-overlay absolute inset-0 flex items-center justify-center gap-3"
               style="background: var(--overlay-dark)"
             >
-              <button
-                mat-icon-button
-                style="color: white"
+              <rhombus-button
+                iconButton
+                appearance="text"
+                ariaLabel="Replace image"
                 title="Replace image"
                 (click)="isBrowser && fileInput.click()"
               >
-                <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
-              </button>
-              <button
-                mat-icon-button
-                style="color: white"
+                <rhombus-icon name="swap_horiz" style="color:#fff" />
+              </rhombus-button>
+              <rhombus-button
+                iconButton
+                appearance="text"
+                ariaLabel="Delete image"
                 title="Delete image"
                 (click)="onDeleteCover()"
               >
-                <rhombus-icon name="delete" ariaLabel="Delete image" />
-              </button>
+                <rhombus-icon name="delete" style="color:#fff" />
+              </rhombus-button>
             </div>
           </div>
         </div>

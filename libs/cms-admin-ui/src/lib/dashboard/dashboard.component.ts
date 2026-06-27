@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService, BlogPost, PostService, SiteConfigService, PlanGatingService } from '@foliokit/cms-core';
-import { RhombusButtonComponent, RhombusEmptyStateComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusEmptyStateComponent, RhombusTagComponent } from '@rhombuskit/core';
 import { SetupPromptComponent } from './setup-prompt.component';
 import { SiteConfigNavStore } from '../stores/site-config-nav.store';
 
@@ -30,7 +30,7 @@ const PLAN_LABELS: Record<string, string> = {
   selector: 'admin-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, RhombusButtonComponent, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent],
+  imports: [DatePipe, RhombusButtonComponent, RouterLink, SetupPromptComponent, RhombusEmptyStateComponent, RhombusTagComponent],
   styles: [
     `
       :host {
@@ -292,7 +292,7 @@ const PLAN_LABELS: Record<string, string> = {
                 <span class="post-title">{{ post.title || '(Untitled)' }}</span>
                 <span class="post-date admin-meta">{{ post.updatedAt | date:'MMM d' }}</span>
               </div>
-              <span [class]="badgeClass(post)">{{ badgeLabel(post) }}</span>
+              <rhombus-tag size="sm" [variant]="post.status">{{ badgeLabel(post) }}</rhombus-tag>
             </div>
           }
         }
@@ -366,17 +366,10 @@ export class DashboardComponent {
     };
   });
 
-  badgeClass(post: BlogPost): string {
-    switch (post.status) {
-      case 'published': return 'badge badge-pub';
-      case 'archived': return 'badge badge-arch';
-      default: return 'badge badge-draft';
-    }
-  }
-
   badgeLabel(post: BlogPost): string {
     switch (post.status) {
       case 'published': return 'Published';
+      case 'scheduled': return 'Scheduled';
       case 'archived': return 'Archived';
       default: return 'Draft';
     }
