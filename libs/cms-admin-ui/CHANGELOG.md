@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.0](https://github.com/doug-williamson/foliokit/compare/cms-admin-ui-v1.1.0...cms-admin-ui-v1.2.0) (2026-06-27)
+
+
+### Features
+
+* **cms-ui:** self-host fonts, design tokens, enterprise admin reskin ([0a7f9ed](https://github.com/doug-williamson/foliokit/commit/0a7f9ed711233c1029a718a517224b1ad21e1370))
+* **theming:** adopt [@rhombuskit](https://github.com/rhombuskit) 1.6.0 — native per-visitor palettes + finish icon migration ([12f96b1](https://github.com/doug-williamson/foliokit/commit/12f96b1dbbdb0b1a76839f067d851d10be24ce75))
+* **theming:** adopt [@rhombuskit](https://github.com/rhombuskit) 1.6.0 native palettes (Editorial/Slate/Sandstone) ([51639ec](https://github.com/doug-williamson/foliokit/commit/51639ec56f492255892f4b4ef82b30310b6af229))
+* **ui:** adopt [@rhombuskit](https://github.com/rhombuskit) v1.5.0 — rhombus-icon + motion tokens ([3885dfc](https://github.com/doug-williamson/foliokit/commit/3885dfcd36c63d17c5e5db7ab3d2ad6cca6ba861))
+* **ui:** adopt [@rhombuskit](https://github.com/rhombuskit) v1.5.0 — rhombus-icon + motion tokens ([8d996e0](https://github.com/doug-williamson/foliokit/commit/8d996e0cc62200dfff11ebc40bacf368dbb08734))
+
+
+### Bug Fixes
+
+* **admin:** fill shell content area + align nav with enterprise reskin ([c023ced](https://github.com/doug-williamson/foliokit/commit/c023ced16247d063fcee4b34c3d0290b66bf4956))
+* **admin:** fill shell content area + align nav with enterprise reskin ([4ede293](https://github.com/doug-williamson/foliokit/commit/4ede293d015c7eb0217bc916e216c4123fb21596))
+* **admin:** gating crash, unreadable buttons, social thumbnails + RhombusKit adoption ([b348fa4](https://github.com/doug-williamson/foliokit/commit/b348fa44c05d95abcd3b4010782e68261ee77fcc))
+* **admin:** make Page Setup buttons readable (filled/secondary) ([f40fc51](https://github.com/doug-williamson/foliokit/commit/f40fc51f78523f7dd5e93313ac0ca4ccc00e296e))
+* **admin:** set public Cache-Control on image uploads for social cards ([890b74f](https://github.com/doug-williamson/foliokit/commit/890b74fffddda1f07758b735c2e46e5adb327b16))
+* **cms-admin-ui:** reactive form sync + subscription teardown ([b62469d](https://github.com/doug-williamson/foliokit/commit/b62469d19d8fe91eda7ec7a77b126d8e49a20148))
+* keyboard a11y on post overflow menus + admin selector prefix ([c97dcb7](https://github.com/doug-williamson/foliokit/commit/c97dcb751b7a8670ede769de5ed09d546143e39e))
+
 ## [1.1.0](https://github.com/doug-williamson/foliokit/compare/cms-admin-ui-v1.0.10...cms-admin-ui-v1.1.0) (2026-06-11)
 
 
