@@ -168,6 +168,11 @@
   /* Code block (always dark regardless of theme) */
   --code-block-bg:   #141920;
   --code-block-text: #CDD9E8;
+  /* Ink — theme-invariant inverse surface (constant dark pane + light text),
+     mirrors @rhombuskit/tokens' --ink-surface / --ink-on-surface. Used by
+     decorative dark UI such as the docs landing code mockup. */
+  --ink-surface:    var(--slate-900);
+  --ink-on-surface: var(--slate-50);
 }
 [data-theme="light"] {
   --bg:             var(--cloud-100);
@@ -218,21 +223,10 @@
   --status-archived-text:   var(--amber-600);
   color-scheme: light;
 }
-// ─── Badge classes ────────────────────────────────────────────────────────────
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: var(--r-sm);
-  white-space: nowrap;
-}
+// ─── Status tint classes ──────────────────────────────────────────────────────
+// Status pills are now <rhombus-tag>. These colour-only classes remain solely to
+// tint the admin posts-list status filter chips (mat-chip-option); background/text
+// flow through the shared --status-* tokens (set per theme pack).
 
 .badge-pub {
   background: var(--status-published-bg);
@@ -249,44 +243,6 @@
 .badge-arch {
   background: var(--status-archived-bg);
   color: var(--status-archived-text);
-}
-
-// ─── Avatar classes ───────────────────────────────────────────────────────────
-
-.avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--logo-bg);
-  color: var(--logo-text);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 10px;
-  flex-shrink: 0;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.avatar--lg {
-  width: 64px;
-  height: 64px;
-  font-size: 22px;
-}
-
-.avatar--xl {
-  width: 96px;
-  height: 96px;
-  font-size: 32px;
-  border: var(--border-width) solid var(--border-strong);
-  box-shadow: var(--shadow-btn-primary);
 }
 
 [data-theme="dark"] {

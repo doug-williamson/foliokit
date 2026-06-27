@@ -9,12 +9,10 @@ import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import { RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusAvatarComponent, RhombusNavListComponent, type RhombusNavSection } from '@rhombuskit/core';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
-import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'play_circle',
@@ -34,7 +32,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RhombusIconComponent, MatButtonModule, ProfileAvatarComponent],
+  imports: [RhombusAvatarComponent, RhombusNavListComponent],
   styles: [`
     :host { display: block; }
 
@@ -68,37 +66,17 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
 
     .links-nav {
       width: 100%;
-      display: flex;
-      flex-direction: column;
       margin-top: 24px;
-    }
-
-    .link-row {
-      width: 100%;
-      margin-bottom: 8px;
-    }
-
-    .link-row .link-label {
-      font-weight: 500;
-    }
-
-    .link-row .link-icon {
-      color: var(--text-accent);
-    }
-
-    .link-row .link-chevron {
-      margin-left: auto;
-      color: var(--text-muted);
     }
   `],
   template: `
     @if (page()) {
       <div class="links-container">
-        <folio-profile-avatar
-          [photoUrl]="page()!.avatarUrl"
-          [photoUrlDark]="page()!.avatarUrlDark"
-          [alt]="page()!.avatarAlt || page()!.title || ''"
-          [initialsFrom]="page()!.headline ?? page()!.title ?? ''"
+        <rhombus-avatar
+          size="xl"
+          [src]="page()!.avatarUrl ?? null"
+          [srcDark]="page()!.avatarUrlDark ?? null"
+          [name]="page()!.headline ?? page()!.title ?? ''"
         />
 
         @if (page()!.headline) {
@@ -109,21 +87,12 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
           <p class="links-bio">{{ page()!.bio }}</p>
         }
 
-        <nav class="links-nav">
-          @for (link of sortedLinks(); track link.id) {
-            <a
-              matButton="outlined"
-              class="link-row"
-              [href]="link.url"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <rhombus-icon class="link-icon" [name]="getIcon(link)" />
-              <span class="link-label">{{ link.label }}</span>
-              <rhombus-icon class="link-chevron" name="chevron_right" />
-            </a>
-          }
-        </nav>
+        <rhombus-nav-list
+          class="links-nav"
+          appearance="list"
+          ariaLabel="Links"
+          [sections]="navSections()"
+        />
       </div>
     } @else {
       <p style="padding: 40px; text-align: center; color: var(--text-muted)">No content available.</p>
@@ -142,6 +111,20 @@ export class LinksPageComponent {
   readonly sortedLinks = computed<LinksLink[]>(() =>
     [...(this.page()?.links ?? [])].sort((a, b) => a.order - b.order),
   );
+
+  /** Link rows as a single nav-list section (full-width "link-row" appearance). */
+  readonly navSections = computed<RhombusNavSection[]>(() => [
+    {
+      items: this.sortedLinks().map((link) => ({
+        label: link.label,
+        icon: this.getIcon(link),
+        href: link.url,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        trailingIcon: 'chevron_right',
+      })),
+    },
+  ]);
 
   getIcon(link: LinksLink): string {
     if (link.platform && PLATFORM_ICONS[link.platform]) {

@@ -9,10 +9,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { MarkdownComponent } from 'ngx-markdown';
-import { RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusAvatarComponent, RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
 import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
-import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'play_circle',
@@ -32,7 +31,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'folio-blog-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, RhombusButtonComponent, RhombusIconComponent, ProfileAvatarComponent],
+  imports: [MarkdownComponent, RhombusAvatarComponent, RhombusButtonComponent, RhombusIconComponent],
   styles: [`
     :host { display: block; }
 
@@ -93,11 +92,11 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   template: `
     @if (about()) {
       <div class="about-container">
-        <folio-profile-avatar
-          [photoUrl]="about()!.photoUrl"
-          [photoUrlDark]="about()!.photoUrlDark"
-          [alt]="about()!.photoAlt || about()!.headline"
-          [initialsFrom]="about()!.headline"
+        <rhombus-avatar
+          size="xl"
+          [src]="about()!.photoUrl ?? null"
+          [srcDark]="about()!.photoUrlDark ?? null"
+          [name]="about()!.headline"
         />
 
         <h1 class="about-name">{{ about()!.headline }}</h1>

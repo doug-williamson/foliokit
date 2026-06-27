@@ -17,7 +17,6 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
@@ -67,7 +66,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     MatExpansionModule,
     MatTabsModule,
     RhombusButtonComponent,
@@ -202,15 +200,18 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                           [options]="platforms"
                           [control]="asFc(group.get('platform'))"
                         />
-                        <button
-                          mat-icon-button
+                        <rhombus-button
+                          iconButton
+                          variant="danger"
+                          appearance="text"
                           type="button"
                           class="shrink-0 mt-1"
+                          ariaLabel="Remove link"
                           rhombusTooltip="Remove"
                           (click)="removeAboutSocialLink($index)"
                         >
-                          <rhombus-icon name="delete" ariaLabel="Remove link" />
-                        </button>
+                          <rhombus-icon name="delete" />
+                        </rhombus-button>
                       </div>
                       <div class="flex gap-2">
                         <rhombus-input
