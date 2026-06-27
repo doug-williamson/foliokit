@@ -17,6 +17,7 @@ import {
   RhombusIconComponent,
   RhombusOverflowMenuComponent,
   RhombusTabGroupDirective,
+  RhombusTagComponent,
   RhombusToastService,
   RhombusTooltipDirective,
   type OverflowMenuItem,
@@ -75,6 +76,7 @@ type RightTab = 'Article' | 'Card' | 'SEO';
     RhombusIconComponent,
     RhombusOverflowMenuComponent,
     RhombusTabGroupDirective,
+    RhombusTagComponent,
     RhombusTooltipDirective,
   ],
   styles: [
@@ -252,15 +254,9 @@ type RightTab = 'Article' | 'Card' | 'SEO';
 
         <div class="post-editor-toolbar-actions">
           @if (store.post()?.status; as status) {
-            <span
-              class="badge admin-meta shrink-0"
-              [class.badge-pub]="status === 'published'"
-              [class.badge-draft]="status === 'draft'"
-              [class.badge-sched]="status === 'scheduled'"
-              [class.badge-arch]="status === 'archived'"
-            >
+            <rhombus-tag class="shrink-0" [variant]="status">
               {{ editorStatusLabel(status) }}
-            </span>
+            </rhombus-tag>
           }
 
           @if (!isDesktop()) {

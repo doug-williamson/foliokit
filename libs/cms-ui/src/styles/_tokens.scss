@@ -218,21 +218,10 @@
   --status-archived-text:   var(--amber-600);
   color-scheme: light;
 }
-// ─── Badge classes ────────────────────────────────────────────────────────────
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: var(--r-sm);
-  white-space: nowrap;
-}
+// ─── Status tint classes ──────────────────────────────────────────────────────
+// Status pills are now <rhombus-tag>. These colour-only classes remain solely to
+// tint the admin posts-list status filter chips (mat-chip-option); background/text
+// flow through the shared --status-* tokens (set per theme pack).
 
 .badge-pub {
   background: var(--status-published-bg);

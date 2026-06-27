@@ -17,6 +17,7 @@ import {
   RhombusConfirmService,
   RhombusDataTableComponent,
   RhombusOverflowMenuComponent,
+  RhombusTagComponent,
   type ColumnDef,
   type OverflowMenuItem,
   type SortState,
@@ -35,6 +36,7 @@ type Cell = { $implicit: BlogPost; index: number };
     DecimalPipe,
     RhombusDataTableComponent,
     RhombusOverflowMenuComponent,
+    RhombusTagComponent,
   ],
   host: { class: 'block min-w-0' },
   styles: [`
@@ -135,7 +137,7 @@ type Cell = { $implicit: BlogPost; index: number };
     <ng-template #viewsCell let-row>{{ (row.viewCount ?? 0) | number }}</ng-template>
 
     <ng-template #statusCell let-row>
-      <span [class]="'badge ' + badgeClass(row.status)">{{ badgeLabel(row.status) }}</span>
+      <rhombus-tag size="sm" [variant]="row.status">{{ badgeLabel(row.status) }}</rhombus-tag>
     </ng-template>
 
     <ng-template #actionsCell let-row>
@@ -223,16 +225,11 @@ export class PostsTableComponent {
     this.store.toggleSort(sort.active as PostsSortColumn);
   }
 
-  badgeClass(status: BlogPost['status']): string {
-    if (status === 'published') return 'badge-pub';
-    if (status === 'archived') return 'badge-arch';
-    return 'badge-draft';
-  }
-
   badgeLabel(status: BlogPost['status']): string {
-    if (status === 'published') return 'PUBLISHED';
-    if (status === 'archived') return 'ARCHIVED';
-    return 'DRAFT';
+    if (status === 'published') return 'Published';
+    if (status === 'scheduled') return 'Scheduled';
+    if (status === 'archived') return 'Archived';
+    return 'Draft';
   }
 
   protected confirmArchive(post: BlogPost): void {

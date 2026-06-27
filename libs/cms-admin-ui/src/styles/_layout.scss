@@ -251,19 +251,5 @@
   padding-inline: var(--admin-page-padding-x);
 }
 
-/* Clean, flat status pills — solid tinted fill, sentence case, no hard outline.
-   Background/text come from the shared --status-* tokens (set per theme pack),
-   applied by the base .badge-* classes; no admin-specific color rules needed. */
-.folio-admin .badge {
-  border: none;
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-  padding-inline: 10px;
-  min-height: 22px;
-  align-items: center;
-  justify-content: center;
-}
+/* Status pills are now <rhombus-tag> (a sentence-case sans pill keyed off the
+   shared --status-* tokens), so no admin-specific .badge override is needed. */
