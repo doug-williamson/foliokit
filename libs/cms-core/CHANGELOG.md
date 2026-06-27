@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.3.0...cms-core-v1.3.1) (2026-06-27)
+
+
+### Bug Fixes
+
+* **admin:** gating crash, unreadable buttons, social thumbnails + RhombusKit adoption ([b348fa4](https://github.com/doug-williamson/foliokit/commit/b348fa44c05d95abcd3b4010782e68261ee77fcc))
+* **core:** provide plan-gating bypass via DI token, not import.meta.env ([96a2398](https://github.com/doug-williamson/foliokit/commit/96a239833c0b6cbcc57907b550d2e8dba6f6fb6c))
+
 ## [1.3.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.2.0...cms-core-v1.3.0) (2026-06-11)
 
 
