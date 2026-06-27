@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.0](https://github.com/doug-williamson/foliokit/compare/cms-ui-v1.1.0...cms-ui-v2.0.0) (2026-06-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cms-ui:** FolioThemeControlComponent is no longer exported from @foliokit/cms-ui.
+
+### refactor
+
+* **cms-ui:** drop dead Material FolioThemeControlComponent ([c39c143](https://github.com/doug-williamson/foliokit/commit/c39c143c7ddc6b9474243f220ad4b4b23b0b130e))
+
+
+### Features
+
+* **cms-ui:** self-host fonts, design tokens, enterprise admin reskin ([0a7f9ed](https://github.com/doug-williamson/foliokit/commit/0a7f9ed711233c1029a718a517224b1ad21e1370))
+* **theming:** adopt [@rhombuskit](https://github.com/rhombuskit) 1.6.0 — native per-visitor palettes + finish icon migration ([12f96b1](https://github.com/doug-williamson/foliokit/commit/12f96b1dbbdb0b1a76839f067d851d10be24ce75))
+* **theming:** adopt [@rhombuskit](https://github.com/rhombuskit) 1.6.0 native palettes (Editorial/Slate/Sandstone) ([51639ec](https://github.com/doug-williamson/foliokit/commit/51639ec56f492255892f4b4ef82b30310b6af229))
+* **ui:** adopt [@rhombuskit](https://github.com/rhombuskit) v1.5.0 — rhombus-icon + motion tokens ([3885dfc](https://github.com/doug-williamson/foliokit/commit/3885dfcd36c63d17c5e5db7ab3d2ad6cca6ba861))
+* **ui:** adopt [@rhombuskit](https://github.com/rhombuskit) v1.5.0 — rhombus-icon + motion tokens ([8d996e0](https://github.com/doug-williamson/foliokit/commit/8d996e0cc62200dfff11ebc40bacf368dbb08734))
+
+
+### Bug Fixes
+
+* **admin:** gating crash, unreadable buttons, social thumbnails + RhombusKit adoption ([b348fa4](https://github.com/doug-williamson/foliokit/commit/b348fa44c05d95abcd3b4010782e68261ee77fcc))
+
 ## [1.1.0](https://github.com/doug-williamson/foliokit/compare/cms-ui-v1.0.9...cms-ui-v1.1.0) (2026-06-11)
 
 
