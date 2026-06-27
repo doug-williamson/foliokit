@@ -11,15 +11,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownComponent } from 'ngx-markdown';
-import { RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusAvatarComponent, RhombusIconComponent } from '@rhombuskit/core';
 import type { AboutPageConfig } from '@foliokit/cms-core';
-import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 @Component({
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, RhombusIconComponent, ProfileAvatarComponent],
+  imports: [MarkdownComponent, RhombusAvatarComponent, RhombusIconComponent],
   styles: [`
     :host { display: block; }
 
@@ -98,11 +97,11 @@ import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.compone
   template: `
     @if (about()) {
       <div class="about-container">
-        <folio-profile-avatar
-          [photoUrl]="about()!.photoUrl"
-          [photoUrlDark]="about()!.photoUrlDark"
-          [alt]="about()!.photoAlt || about()!.headline"
-          [initialsFrom]="about()!.headline"
+        <rhombus-avatar
+          size="xl"
+          [src]="about()!.photoUrl ?? null"
+          [srcDark]="about()!.photoUrlDark ?? null"
+          [name]="about()!.headline"
         />
 
         <h1 class="about-name">{{ about()!.headline }}</h1>

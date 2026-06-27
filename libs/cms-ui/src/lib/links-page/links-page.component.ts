@@ -9,11 +9,10 @@ import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { RhombusNavListComponent, type RhombusNavSection } from '@rhombuskit/core';
+import { RhombusAvatarComponent, RhombusNavListComponent, type RhombusNavSection } from '@rhombuskit/core';
 import type { LinksPageConfig, LinksLink } from '@foliokit/cms-core';
 import type { SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
-import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
 
 const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   youtube: 'play_circle',
@@ -33,7 +32,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'cms-links-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RhombusNavListComponent, ProfileAvatarComponent],
+  imports: [RhombusAvatarComponent, RhombusNavListComponent],
   styles: [`
     :host { display: block; }
 
@@ -73,11 +72,11 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   template: `
     @if (page()) {
       <div class="links-container">
-        <folio-profile-avatar
-          [photoUrl]="page()!.avatarUrl"
-          [photoUrlDark]="page()!.avatarUrlDark"
-          [alt]="page()!.avatarAlt || page()!.title || ''"
-          [initialsFrom]="page()!.headline ?? page()!.title ?? ''"
+        <rhombus-avatar
+          size="xl"
+          [src]="page()!.avatarUrl ?? null"
+          [srcDark]="page()!.avatarUrlDark ?? null"
+          [name]="page()!.headline ?? page()!.title ?? ''"
         />
 
         @if (page()!.headline) {
