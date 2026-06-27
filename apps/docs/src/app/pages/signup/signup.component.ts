@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, computed } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RhombusInputComponent, RhombusButtonComponent } from '@rhombuskit/core';
 import { environment } from '../../../environments/environment';
 import type { SignupFormValue, SubdomainAvailability, ProvisionResult } from '@foliokit/cms-core';
 
@@ -17,12 +19,12 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
   selector: 'docs-signup-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [RhombusInputComponent, RhombusButtonComponent],
   styles: [`
     :host {
       display: block;
       min-height: 80vh;
-      background: linear-gradient(160deg, var(--mat-sys-surface-container-lowest) 0%, var(--mat-sys-surface-container) 100%);
+      background: linear-gradient(160deg, var(--bg) 0%, var(--bg-subtle) 100%);
       padding: 4rem 1.5rem;
     }
     .signup-container {
@@ -32,93 +34,31 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
     h1 {
       font-size: 2rem;
       font-weight: 700;
-      color: var(--mat-sys-primary);
+      color: var(--text-accent);
       margin: 0 0 0.5rem;
     }
     .subtitle {
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--text-secondary);
       margin: 0 0 2rem;
       font-size: 1rem;
       line-height: 1.5;
     }
     .form-group {
-      margin-bottom: 1.25rem;
-    }
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--mat-sys-on-surface);
-      margin-bottom: 0.375rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.625rem 0.75rem;
-      font-size: 0.9375rem;
-      border: 1px solid var(--mat-sys-outline-variant);
-      border-radius: 8px;
-      background: var(--mat-sys-surface);
-      color: var(--mat-sys-on-surface);
-      outline: none;
-      transition: border-color 0.15s;
-      box-sizing: border-box;
-    }
-    input:focus {
-      border-color: var(--mat-sys-primary);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
-    }
-    input:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .subdomain-input-row {
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-    .subdomain-input-row input {
-      border-radius: 8px 0 0 8px;
-      flex: 1;
-    }
-    .subdomain-suffix {
-      padding: 0.625rem 0.75rem;
-      font-size: 0.875rem;
-      color: var(--mat-sys-on-surface-variant);
-      background: var(--mat-sys-surface-container);
-      border: 1px solid var(--mat-sys-outline-variant);
-      border-left: none;
-      border-radius: 0 8px 8px 0;
-      white-space: nowrap;
-      user-select: none;
+      margin-bottom: 1rem;
     }
     .availability-status {
       font-size: 0.8125rem;
-      margin-top: 0.375rem;
+      margin-top: 0.25rem;
       min-height: 1.25rem;
     }
-    .status-checking { color: var(--mat-sys-on-surface-variant); }
-    .status-available { color: var(--mat-sys-tertiary, #00897b); }
-    .status-taken, .status-invalid, .status-reserved { color: var(--error); }
-    .status-error { color: var(--mat-sys-on-surface-variant); }
-    .submit-btn {
-      width: 100%;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      background: var(--mat-sys-primary);
-      color: var(--mat-sys-on-primary);
-      cursor: pointer;
-      transition: opacity 0.15s;
+    .status-checking,
+    .status-error { color: var(--text-muted); }
+    .status-available { color: var(--status-published-text); }
+    .status-taken,
+    .status-invalid,
+    .status-reserved { color: var(--error); }
+    .submit-row {
       margin-top: 0.5rem;
-    }
-    .submit-btn:hover:not(:disabled) {
-      opacity: 0.9;
-    }
-    .submit-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
     .error-message {
       color: var(--error);
@@ -133,22 +73,11 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
     .success-container h1 {
       margin-bottom: 1rem;
     }
-    .blog-link {
-      display: inline-block;
-      font-size: 1.125rem;
-      color: var(--mat-sys-primary);
-      text-decoration: none;
-      font-weight: 500;
-      margin-bottom: 1.5rem;
-    }
-    .blog-link:hover {
-      text-decoration: underline;
-    }
     .success-body {
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--text-secondary);
       font-size: 0.9375rem;
       line-height: 1.6;
-      margin: 0;
+      margin: 1rem 0 0;
     }
   `],
   template: `
@@ -156,9 +85,14 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
       @if (submitState() === 'success') {
         <div class="success-container">
           <h1>Your site is ready</h1>
-          <a class="blog-link" [href]="provisionResult()!.blogUrl" target="_blank" rel="noopener noreferrer">
+          <rhombus-button
+            appearance="text"
+            [href]="provisionResult()!.blogUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {{ provisionResult()!.blogUrl }}
-          </a>
+          </rhombus-button>
           <p class="success-body">
             Check your email for a sign-in link to your admin dashboard.
             It may take a minute to arrive.
@@ -169,49 +103,39 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
         <p class="subtitle">Create your FolioKit site in seconds.</p>
 
         <div class="form-group">
-          <label for="displayName">Display name</label>
-          <input
-            id="displayName"
-            type="text"
+          <rhombus-input
+            label="Display name"
             placeholder="Jane Doe"
-            [ngModel]="formValue().displayName"
-            (ngModelChange)="updateField('displayName', $event)"
-            [disabled]="submitState() === 'submitting'"
+            autocomplete="name"
+            [control]="displayName"
           />
         </div>
 
         <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
+          <rhombus-input
+            label="Email"
             type="email"
             placeholder="you@example.com"
-            [ngModel]="formValue().email"
-            (ngModelChange)="updateField('email', $event)"
-            [disabled]="submitState() === 'submitting'"
+            autocomplete="email"
+            [control]="email"
           />
         </div>
 
         <div class="form-group">
-          <label for="subdomain">Subdomain</label>
-          <div class="subdomain-input-row">
-            <input
-              id="subdomain"
-              type="text"
-              placeholder="mysite"
-              [ngModel]="formValue().subdomain"
-              (ngModelChange)="onSubdomainChange($event)"
-              [disabled]="submitState() === 'submitting'"
-            />
-            <span class="subdomain-suffix">.foliokitcms.com</span>
-          </div>
+          <rhombus-input
+            label="Subdomain"
+            placeholder="mysite"
+            [control]="subdomain"
+          >
+            <span matTextSuffix>.foliokitcms.com</span>
+          </rhombus-input>
           <div class="availability-status">
             @switch (subdomainAvailability().status) {
               @case ('checking') {
                 <span class="status-checking">Checking availability…</span>
               }
               @case ('available') {
-                <span class="status-available">{{ formValue().subdomain }}.foliokitcms.com is available ✓</span>
+                <span class="status-available">{{ subdomainValue() }}.foliokitcms.com is available ✓</span>
               }
               @case ('taken') {
                 <span class="status-taken">That subdomain is taken</span>
@@ -229,17 +153,19 @@ const SUBDOMAIN_RE = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
           </div>
         </div>
 
-        <button
-          class="submit-btn"
-          [disabled]="!canSubmit()"
-          (click)="onSubmit()"
-        >
-          @if (submitState() === 'submitting') {
-            Creating your site…
-          } @else {
-            Create site
-          }
-        </button>
+        <div class="submit-row">
+          <rhombus-button
+            variant="primary"
+            [disabled]="!canSubmit()"
+            (click)="onSubmit()"
+          >
+            @if (submitState() === 'submitting') {
+              Creating your site…
+            } @else {
+              Create site
+            }
+          </rhombus-button>
+        </div>
 
         @if (submitState() === 'error' && errorMessage()) {
           <p class="error-message">{{ errorMessage() }}</p>
@@ -252,36 +178,62 @@ export class SignupComponent {
   private readonly destroyRef = inject(DestroyRef);
   private checkTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly formValue = signal<SignupFormValue>({ email: '', subdomain: '', displayName: '' });
+  readonly displayName = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.maxLength(80)],
+  });
+  readonly email = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern(EMAIL_RE)],
+  });
+  readonly subdomain = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern(SUBDOMAIN_RE)],
+  });
+
+  readonly subdomainValue = signal('');
   readonly subdomainAvailability = signal<SubdomainAvailability>({ status: 'idle' });
   readonly submitState = signal<'idle' | 'submitting' | 'success' | 'error'>('idle');
   readonly provisionResult = signal<ProvisionResult | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
+  /** Bumped on any control change so `canSubmit` re-derives from control validity. */
+  private readonly rev = signal(0);
+
   readonly canSubmit = computed(() => {
-    const { email, subdomain, displayName } = this.formValue();
+    this.rev();
     return (
-      displayName.trim().length > 0 &&
-      EMAIL_RE.test(email) &&
-      SUBDOMAIN_RE.test(subdomain) &&
+      this.displayName.valid &&
+      this.email.valid &&
+      this.subdomain.valid &&
       this.subdomainAvailability().status === 'available' &&
       this.submitState() !== 'submitting'
     );
   });
 
   constructor() {
+    this.displayName.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.rev.update(n => n + 1));
+    this.email.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.rev.update(n => n + 1));
+    this.subdomain.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(v => this.onSubdomainChange(v));
+
     this.destroyRef.onDestroy(() => {
       if (this.checkTimer) clearTimeout(this.checkTimer);
     });
   }
 
-  updateField(field: keyof SignupFormValue, value: string): void {
-    this.formValue.update(v => ({ ...v, [field]: value }));
-  }
-
-  onSubdomainChange(value: string): void {
+  private onSubdomainChange(value: string): void {
     const normalized = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    this.formValue.update(v => ({ ...v, subdomain: normalized }));
+    if (normalized !== value) {
+      this.subdomain.setValue(normalized, { emitEvent: false });
+    }
+    this.subdomainValue.set(normalized);
+    this.rev.update(n => n + 1);
 
     if (this.checkTimer) {
       clearTimeout(this.checkTimer);
@@ -324,6 +276,12 @@ export class SignupComponent {
   async onSubmit(): Promise<void> {
     if (!this.canSubmit()) return;
 
+    const formValue: SignupFormValue = {
+      email: this.email.value,
+      subdomain: this.subdomain.value,
+      displayName: this.displayName.value,
+    };
+
     this.submitState.set('submitting');
     this.errorMessage.set(null);
 
@@ -331,7 +289,7 @@ export class SignupComponent {
       const res = await fetch(cfUrl('provisionTenant'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.formValue()),
+        body: JSON.stringify(formValue),
       });
 
       const data = await res.json();

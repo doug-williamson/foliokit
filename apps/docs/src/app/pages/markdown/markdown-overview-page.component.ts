@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DocsPageHeaderComponent,
-  DocsCalloutComponent,
 } from '@foliokit/docs-ui';
-import { RhombusCodeBlockComponent } from '@rhombuskit/core';
+import { RhombusAlertComponent, RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const basicUsage = `import { MarkdownComponent } from '@foliokit/cms-markdown';
 
@@ -55,7 +54,7 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
   selector: 'docs-markdown-overview-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, DocsCalloutComponent],
+  imports: [DocsPageHeaderComponent, RhombusCodeBlockComponent, RhombusAlertComponent],
   template: `
     <docs-page-header />
 
@@ -67,10 +66,10 @@ const embeddedMedia: Record<string, EmbeddedMediaEntry> = {
         <code>prose</code> classes for consistent styling and supports custom embedded media
         tokens for inline images stored in Firebase Storage.
       </p>
-      <docs-callout variant="info">
+      <rhombus-alert variant="info">
         <code>ngx-markdown</code> is a peer dependency. Ensure it is installed in your project:
         <code>npm install ngx-markdown marked</code>
-      </docs-callout>
+      </rhombus-alert>
     </section>
 
     <section class="mt-8">

@@ -16,6 +16,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
+  RhombusAvatarComponent,
   RhombusButtonComponent,
   RhombusDataTableComponent,
   RhombusEmptyStateComponent,
@@ -39,6 +40,7 @@ type Cell = { $implicit: Author; index: number };
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
+    RhombusAvatarComponent,
     RhombusIconComponent,
     RhombusTooltipDirective,
     RhombusButtonComponent,
@@ -90,18 +92,7 @@ type Cell = { $implicit: Author; index: number };
 
     <!-- ── Cell templates ───────────────────────────────────────────────── -->
     <ng-template #avatarCell let-author>
-      @if (author.photoUrl) {
-        <img
-          [src]="author.photoUrl"
-          [alt]="author.displayName"
-          class="w-9 h-9 rounded-full object-cover"
-        />
-      } @else {
-        <div class="w-9 h-9 rounded-full flex items-center justify-center"
-             style="background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent)">
-          <rhombus-icon name="person" ariaLabel="No photo" style="--rhombus-icon-size: 1.2rem; color: var(--mat-sys-primary)" />
-        </div>
-      }
+      <rhombus-avatar [src]="author.photoUrl ?? null" [name]="author.displayName" size="md" />
     </ng-template>
 
     <ng-template #nameCell let-author>

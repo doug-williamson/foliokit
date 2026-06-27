@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
 @Component({
   selector: 'docs-landing-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, RhombusCardComponent, RhombusIconComponent],
+  imports: [RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent],
   styles: [`
     :host {
       display: block;
@@ -26,7 +24,7 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
     }
     .social-proof {
       padding: 48px 1.5rem;
-      background-color: var(--mat-sys-surface-container);
+      background-color: var(--surface-1);
       text-align: center;
     }
     .social-proof-inner {
@@ -36,7 +34,7 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
     .placeholder-image {
       width: 100%;
       height: 200px;
-      background-color: var(--mat-sys-primary);
+      background-color: var(--text-accent);
       border-radius: 12px 12px 0 0;
     }
     .browser-mockup {
@@ -77,7 +75,7 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
       border-radius: 999px;
       padding: 0.2rem 0.85rem;
       font-size: 0.72rem;
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--text-secondary);
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -160,27 +158,27 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
   template: `
     <section
       class="flex flex-col items-center justify-center text-center min-h-[80vh] px-6 py-16"
-      style="background: linear-gradient(160deg, var(--mat-sys-surface-container-lowest) 0%, var(--mat-sys-surface-container) 100%)"
+      style="background: linear-gradient(160deg, var(--bg) 0%, var(--surface-1) 100%)"
     >
-      <h1 class="text-6xl font-bold tracking-tight mb-4" style="color: var(--mat-sys-primary)">
+      <h1 class="text-6xl font-bold tracking-tight mb-4" style="color: var(--text-accent)">
         FolioKit
       </h1>
-      <p class="text-xl max-w-2xl mb-10 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
+      <p class="text-xl max-w-2xl mb-10 leading-relaxed" style="color: var(--text-secondary)">
         A headless Angular CMS toolkit built on Firebase, Material 3, and Nx
       </p>
       <div class="flex flex-wrap gap-4 justify-center">
-        <a mat-flat-button routerLink="/signup" class="!text-base !px-6 !py-3">
+        <rhombus-button variant="primary" size="lg" routerLink="/signup">
           Get Started Free
-        </a>
-        <a
-          mat-stroked-button
+        </rhombus-button>
+        <rhombus-button
+          appearance="outlined"
+          size="lg"
           href="https://blog.foliokitcms.com"
           target="_blank"
           rel="noopener noreferrer"
-          class="!text-base !px-6 !py-3"
         >
           View Live Demo
-        </a>
+        </rhombus-button>
       </div>
 
       <div class="browser-mockup hidden md:block">
@@ -233,9 +231,9 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
     <section class="features">
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <rhombus-icon name="web" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
+          <rhombus-icon name="web" [size]="36" class="mb-3 text-[var(--text-accent)]" />
           <h3 class="text-lg font-semibold m-0">Angular 21 + SSR</h3>
-          <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
+          <p class="text-sm m-0 leading-relaxed" style="color: var(--text-secondary)">
             Standalone components, signals, and full SSR prerendering out of the box.
           </p>
         </div>
@@ -243,9 +241,9 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
 
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <rhombus-icon name="local_fire_department" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
+          <rhombus-icon name="local_fire_department" [size]="36" class="mb-3 text-[var(--text-accent)]" />
           <h3 class="text-lg font-semibold m-0">Firebase Native</h3>
-          <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
+          <p class="text-sm m-0 leading-relaxed" style="color: var(--text-secondary)">
             Firestore, Firebase Auth, and Firebase Hosting — deeply integrated, zero boilerplate.
           </p>
         </div>
@@ -253,9 +251,9 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
 
       <rhombus-card class="overflow-visible" [hasHeader]="false" [padding]="'none'">
         <div class="flex flex-col gap-3 pt-6 px-6 pb-6">
-          <rhombus-icon name="palette" [size]="36" class="mb-3 text-[var(--mat-sys-primary)]" />
+          <rhombus-icon name="palette" [size]="36" class="mb-3 text-[var(--text-accent)]" />
           <h3 class="text-lg font-semibold m-0">Material 3 + Tailwind</h3>
-          <p class="text-sm m-0 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
+          <p class="text-sm m-0 leading-relaxed" style="color: var(--text-secondary)">
             M3 design tokens with automatic light/dark theming and Tailwind utility classes.
           </p>
         </div>
@@ -268,18 +266,18 @@ import { RhombusCardComponent, RhombusIconComponent } from '@rhombuskit/core';
         <rhombus-card>
           <div class="placeholder-image"></div>
           <span slot="title">blog.foliokitcms.com</span>
-          <p class="text-sm leading-relaxed m-0" style="color: var(--mat-sys-on-surface-variant)">
+          <p class="text-sm leading-relaxed m-0" style="color: var(--text-secondary)">
             A fully SSR Angular blog built with @foliokit/cms-ui, Firebase, and Angular Material 3.
           </p>
           <div slot="actions">
-            <a
-              mat-stroked-button
+            <rhombus-button
+              appearance="outlined"
               href="https://blog.foliokitcms.com"
               target="_blank"
               rel="noopener noreferrer"
             >
               Visit Site
-            </a>
+            </rhombus-button>
           </div>
         </rhombus-card>
       </div>

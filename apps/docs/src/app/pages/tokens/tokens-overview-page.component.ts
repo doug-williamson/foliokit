@@ -40,7 +40,7 @@ export class MatTypographyDirective {
   template: `
     <docs-page-header />
 
-    <p class="mat-body-medium mb-8 leading-relaxed" style="color: var(--mat-sys-on-surface-variant)">
+    <p class="mat-body-medium mb-8 leading-relaxed" style="color: var(--text-secondary)">
       FolioKit exposes its configuration surface through Angular injection tokens and TypeScript
       interfaces. These form the stable public API — your app talks to FolioKit through
       tokens, not component inputs.
@@ -55,10 +55,10 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <rhombus-icon name="token" [size]="48" style="color: var(--mat-sys-primary)" />
+              <rhombus-icon name="token" [size]="48" style="color: var(--text-accent)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">SHELL_CONFIG</h3>
-            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
+            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--text-secondary)">
               Configure <code>AppShellComponent</code> — app name, logo, navigation, and auth visibility.
             </p>
           </div>
@@ -73,10 +73,10 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <rhombus-icon name="manage_search" [size]="48" style="color: var(--mat-sys-primary)" />
+              <rhombus-icon name="manage_search" [size]="48" style="color: var(--text-accent)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">SeoMeta</h3>
-            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
+            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--text-secondary)">
               TypeScript interface for page-level SEO metadata — title, description, og:image, canonical URL.
             </p>
           </div>
@@ -91,10 +91,10 @@ export class MatTypographyDirective {
         <rhombus-card class="h-full cursor-pointer hover:shadow-md transition-shadow" [hasHeader]="false" [padding]="'none'">
           <div class="flex flex-col gap-3 p-5">
             <div class="token-card-icon">
-              <rhombus-icon name="image" [size]="48" style="color: var(--mat-sys-primary)" />
+              <rhombus-icon name="image" [size]="48" style="color: var(--text-accent)" />
             </div>
             <h3 matTypography="title-medium" class="m-0">EmbeddedMediaEntry</h3>
-            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--mat-sys-on-surface-variant)">
+            <p matTypography="body-small" class="m-0 token-card-body" style="color: var(--text-secondary)">
               Describes a Firebase Storage media file for inline rendering inside Markdown content.
             </p>
           </div>

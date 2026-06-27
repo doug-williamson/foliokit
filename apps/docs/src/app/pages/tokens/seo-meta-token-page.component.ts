@@ -17,7 +17,7 @@ const seo: SeoMeta = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     .og-card {
-      border: 1px solid var(--mat-sys-outline-variant, #ccc);
+      border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       max-width: 500px;
@@ -38,22 +38,22 @@ const seo: SeoMeta = {
     }
     .og-url {
       font-size: 12px;
-      color: var(--mat-sys-on-surface-variant, #666);
+      color: var(--text-secondary);
       text-transform: uppercase;
     }
     .og-title {
       font-size: 16px;
       font-weight: 600;
-      color: var(--mat-sys-on-surface, #111);
+      color: var(--text-primary);
       margin: 4px 0;
     }
     .og-desc {
       font-size: 13px;
-      color: var(--mat-sys-on-surface-variant, #666);
+      color: var(--text-secondary);
     }
   `],
   template: `
-    <p class="mat-body-small mb-2" style="color: var(--mat-sys-on-surface-variant)">
+    <p class="mat-body-small mb-2" style="color: var(--text-secondary)">
       How this SeoMeta renders as an Open Graph card:
     </p>
     <div class="og-card">

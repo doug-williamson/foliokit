@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   DocsPageHeaderComponent,
-  DocsCalloutComponent,
   DocsApiTableComponent,
   ApiTableRow,
 } from '@foliokit/docs-ui';
-import { RhombusCodeBlockComponent } from '@rhombuskit/core';
+import { RhombusAlertComponent, RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const tokenRows: ApiTableRow[] = [
   { name: '--bg', type: 'color', description: 'Page background', required: false },
@@ -85,7 +84,7 @@ this.theme.setTheme('dark');`;
   imports: [
     RouterLink,
     DocsPageHeaderComponent,
-    DocsCalloutComponent,
+    RhombusAlertComponent,
     RhombusCodeBlockComponent,
     DocsApiTableComponent,
   ],
@@ -126,10 +125,10 @@ this.theme.setTheme('dark');`;
         win. Both light and dark variants should be overridden for consistency.
       </p>
       <rhombus-code-block [code]="overrideExample" language="scss" />
-      <docs-callout variant="tip">
+      <rhombus-alert variant="success">
         The <a href="https://github.com/doug-williamson/foliokit-demo-stark" target="_blank" rel="noopener noreferrer">
         Iron Man demo</a> uses this technique to shift the logo dot to an arc-reactor cyan.
-      </docs-callout>
+      </rhombus-alert>
     </section>
 
     <section class="mt-8">

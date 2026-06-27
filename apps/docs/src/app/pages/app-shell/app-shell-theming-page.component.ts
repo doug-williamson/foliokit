@@ -59,7 +59,7 @@ module.exports = {
         FolioKit components use Angular Material's <code>--mat-sys-*</code> custom properties
         for all colors. Key tokens used internally:
       </p>
-      <ul class="list-disc list-inside space-y-1 mt-2" style="color: var(--mat-sys-on-surface-variant)">
+      <ul class="list-disc list-inside space-y-1 mt-2" style="color: var(--text-secondary)">
         <li><code>--mat-sys-primary</code> — brand accent color</li>
         <li><code>--mat-sys-surface</code> — page background</li>
         <li><code>--mat-sys-surface-container</code> — card / sidenav surface</li>
