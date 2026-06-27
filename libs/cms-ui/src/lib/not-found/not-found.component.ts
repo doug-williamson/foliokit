@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
 
 @Component({
   selector: 'folio-not-found',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, MatButtonModule, RhombusIconComponent],
+  imports: [RhombusButtonComponent, RhombusIconComponent],
   template: `
     <div class="min-h-screen flex flex-col items-center justify-center text-center px-4" style="color: var(--mat-sys-on-surface)">
       <p class="text-8xl font-bold mb-4" style="color: var(--mat-sys-outline)">404</p>
@@ -15,10 +13,10 @@ import { RhombusIconComponent } from '@rhombuskit/core';
       <p class="text-lg mb-8 max-w-md" style="color: var(--mat-sys-on-surface-variant)">
         The page you're looking for doesn't exist or has been moved.
       </p>
-      <a mat-flat-button routerLink="/">
+      <rhombus-button variant="primary" routerLink="/">
         <rhombus-icon name="home" />
         Back to home
-      </a>
+      </rhombus-button>
     </div>
   `,
 })

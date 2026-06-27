@@ -9,8 +9,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { MarkdownComponent } from 'ngx-markdown';
-import { MatButtonModule } from '@angular/material/button';
-import { RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusIconComponent } from '@rhombuskit/core';
 import type { AboutPageConfig, SocialPlatform } from '@foliokit/cms-core';
 import { BLOG_SEO_SERVICE } from '@foliokit/cms-core';
 import { ProfileAvatarComponent } from '../profile-avatar/profile-avatar.component';
@@ -33,7 +32,7 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
   selector: 'folio-blog-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, MatButtonModule, RhombusIconComponent, ProfileAvatarComponent],
+  imports: [MarkdownComponent, RhombusButtonComponent, RhombusIconComponent, ProfileAvatarComponent],
   styles: [`
     :host { display: block; }
 
@@ -110,15 +109,15 @@ const PLATFORM_ICONS: Record<SocialPlatform, string> = {
         @if (about()!.socialLinks?.length) {
           <div class="social-links">
             @for (link of about()!.socialLinks; track link.url) {
-              <a
-                matButton="outlined"
+              <rhombus-button
+                appearance="outlined"
                 [href]="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <rhombus-icon [name]="platformIcon(link.platform)" />
                 {{ link.label || link.platform }}
-              </a>
+              </rhombus-button>
             }
           </div>
         }
