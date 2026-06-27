@@ -4,9 +4,12 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { RhombusIconComponent, RhombusTooltipDirective } from '@rhombuskit/core';
+import {
+  RhombusNavListComponent,
+  type RhombusNavItem,
+  type RhombusNavSection,
+} from '@rhombuskit/core';
 import { isBlogPageNavEnabled, type SiteConfig } from '@foliokit/cms-core';
 import type { AdminNavRow, NavItemState } from './admin-nav.types';
 import { EnablePageSheetComponent, type EnablePageSheetData } from './enable-page-sheet.component';
@@ -41,197 +44,35 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
   return config?.pages?.home?.enabled === true;
 }
 
+/**
+ * Admin sidebar navigation. Renders through `<rhombus-nav-list>` (the app-shell
+ * `[shellNav]` primitive): routed items self-highlight, and gated pages render as
+ * `locked` items — focusable rows that, instead of navigating, open the
+ * enable-page / plan-upgrade bottom sheets via `onDisabledTap`.
+ */
 @Component({
   selector: 'folio-admin-nav',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'folio-admin-nav' },
-  imports: [RouterLink, RouterLinkActive, RhombusIconComponent, RhombusTooltipDirective],
+  imports: [RhombusNavListComponent],
   styles: [
     `
-      /* Nav-content styling re-homed from folio-app-shell's app-shell.component.scss
-         (formerly '::ng-deep mat-sidenav .nav-*'). rhombus-app-shell is structure-only
-         and ships no nav-item styling; admin-nav owns this markup, so these rules now
-         live here and travel with the component regardless of the host shell. */
       :host {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        padding: 16px 12px;
-      }
-
-      .nav-group-label {
-        font-family: var(--font-body);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin: 16px 12px 4px;
         display: block;
-
-        &:first-child {
-          margin-top: 0;
-        }
-
-        &.nav-group-label--disabled {
-          opacity: 0.45;
-        }
-      }
-
-      .nav-item {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 400;
-        font-family: var(--font-body);
-        letter-spacing: normal;
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard);
-
-        &:hover {
-          background: var(--surface-2);
-          color: var(--text-primary);
-        }
-
-        .nav-icon {
-          --rhombus-icon-size: 20px;
-          flex-shrink: 0;
-        }
-
-        &.active-link {
-          background: color-mix(in srgb, var(--text-accent) 12%, transparent);
-          color: var(--text-accent);
-          font-weight: 500;
-        }
-
-        &.nav-item--disabled {
-          cursor: not-allowed;
-          opacity: 0.45;
-        }
-      }
-
-      .nav-plan-badge {
-        font-family: var(--font-body);
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-        padding: 1px 7px;
-        border-radius: 100px;
-        margin-left: auto;
-        flex-shrink: 0;
-        line-height: 1.6;
-      }
-
-      :host-context([data-theme='light']) .nav-plan-badge--pro {
-        background: var(--teal-100);
-        color: var(--teal-700);
-      }
-      :host-context([data-theme='dark']) .nav-plan-badge--pro {
-        background: color-mix(in srgb, var(--teal-500) 20%, transparent);
-        color: var(--teal-200);
-      }
-      :host-context([data-theme='light']) .nav-plan-badge--agency {
-        background: var(--amber-100);
-        color: var(--amber-600);
-      }
-      :host-context([data-theme='dark']) .nav-plan-badge--agency {
-        background: color-mix(in srgb, var(--amber-600) 20%, transparent);
-        color: var(--amber-400);
-      }
-
-      @media (max-width: 959.98px) {
-        .nav-item,
-        .nav-item.nav-child {
-          min-height: 48px;
-        }
-      }
-
-      .folio-admin-nav__hint-icon {
-        font-size: 18px !important;
-        width: 18px !important;
-        height: 18px !important;
-        margin-inline-start: 4px;
-        opacity: 0.75;
+        padding: 16px 12px;
       }
     `,
   ],
   template: `
-    @for (row of navRows(); track row.id) {
-      @switch (row.kind) {
-        @case ('header') {
-          <span
-            class="nav-group-label"
-            [class.nav-group-label--disabled]="row.muted === true"
-            >{{ row.label }}</span
-          >
-        }
-        @case ('item') {
-          @if (row.enabled) {
-            <a
-              class="nav-item"
-              [class.nav-child]="row.id !== 'dashboard'"
-              [routerLink]="row.route"
-              routerLinkActive="active-link"
-              [routerLinkActiveOptions]="rlaOpts(row)"
-              [rhombusTooltip]="row.label"
-              rhombusTooltipPosition="right"
-              [rhombusTooltipDisabled]="true"
-            >
-              <rhombus-icon class="nav-icon" [name]="row.icon" />
-              <span class="nav-label">{{ row.label }}</span>
-              @if (row.proTier === 'pro') {
-                <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
-              }
-            </a>
-          } @else {
-            <button
-              type="button"
-              class="nav-item nav-item--disabled"
-              [class.nav-child]="row.id !== 'dashboard'"
-              [attr.aria-disabled]="true"
-              (click)="onDisabledTap(row)"
-              [rhombusTooltip]="row.label"
-              rhombusTooltipPosition="right"
-              [rhombusTooltipDisabled]="true"
-            >
-              <rhombus-icon class="nav-icon" [name]="row.icon" />
-              <span class="nav-label">{{ row.label }}</span>
-              @if (row.proTier === 'pro') {
-                <span class="nav-plan-badge nav-plan-badge--pro">PRO</span>
-              }
-              @if (row.showPageBeforePlanHint) {
-                <rhombus-icon
-                  class="folio-admin-nav__hint-icon"
-                  name="info"
-                  rhombusTooltip="Enable Publish first — plan upgrade alone will not unlock this until the section is on."
-                  rhombusTooltipPosition="right"
-                  [rhombusTooltipDisabled]="true"
-                />
-              }
-            </button>
-          }
-        }
-      }
-    }
-
-    <span class="nav-group-label">Configure</span>
-    <a class="nav-item nav-child" routerLink="/settings" routerLinkActive="active-link" rhombusTooltip="Settings" rhombusTooltipPosition="right" [rhombusTooltipDisabled]="true">
-      <rhombus-icon class="nav-icon" name="tune" />
-      <span class="nav-label">Settings</span>
-    </a>
+    <rhombus-nav-list ariaLabel="Admin" [sections]="navSections()" />
   `,
 })
 export class AdminNavComponent {
   private readonly navStore = inject(SiteConfigNavStore);
   private readonly bottomSheet = inject(MatBottomSheet);
 
-  /** Rows for dashboard, Pages + children, Publish + children (Configure appended in template). */
+  /** Rows for dashboard, Pages + children, Publish + children (Configure appended below). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {
     const c = this.navStore.config();
     const homeOn = isHomePageEnabled(c);
@@ -343,8 +184,50 @@ export class AdminNavComponent {
     return rows;
   });
 
-  protected rlaOpts(row: NavItemState): { exact: boolean } {
-    return { exact: row.id === 'dashboard' || row.id === 'page-config' };
+  /** Group the flat rows into nav-list sections, then append the static Configure section. */
+  protected readonly navSections = computed<RhombusNavSection[]>(() => {
+    const sections: RhombusNavSection[] = [];
+    let current: RhombusNavSection = { items: [] };
+    sections.push(current);
+    for (const row of this.navRows()) {
+      if (row.kind === 'header') {
+        current = { heading: row.label, items: [] };
+        sections.push(current);
+      } else {
+        current.items.push(this.toNavItem(row));
+      }
+    }
+    sections.push({
+      heading: 'Configure',
+      items: [{ label: 'Settings', icon: 'tune', routerLink: '/settings' }],
+    });
+    return sections.filter((s) => s.items.length > 0);
+  });
+
+  /**
+   * Map an admin row to a nav-list item. Gated pages become `locked` items —
+   * focusable rows that fire `action` instead of navigating, so the tap still
+   * opens the enable-page / plan-upgrade sheet via `onDisabledTap`.
+   */
+  private toNavItem(row: NavItemState): RhombusNavItem {
+    const badge =
+      row.proTier === 'pro' ? 'PRO' : row.proTier ? 'AGENCY' : undefined;
+    if (row.enabled) {
+      return {
+        label: row.label,
+        icon: row.icon,
+        routerLink: row.route,
+        exact: row.id === 'dashboard' || row.id === 'page-config',
+        ...(badge ? { badge } : {}),
+      };
+    }
+    return {
+      label: row.label,
+      icon: row.icon,
+      locked: true,
+      action: () => this.onDisabledTap(row),
+      ...(badge ? { badge } : {}),
+    };
   }
 
   protected onDisabledTap(item: NavItemState): void {
