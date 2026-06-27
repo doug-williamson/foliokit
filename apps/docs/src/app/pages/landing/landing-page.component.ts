@@ -43,8 +43,8 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       margin: 4rem auto 0;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: var(--mat-sys-level2);
-      border: 1px solid var(--mat-sys-outline-variant);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
       text-align: left;
     }
     .browser-bar {
@@ -52,7 +52,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       align-items: center;
       gap: 0.75rem;
       padding: 0.6rem 1rem;
-      background: var(--mat-sys-surface-container-high);
+      background: var(--surface-2);
     }
     .traffic-lights {
       display: flex;
@@ -71,7 +71,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
     .tl.green  { background: #27C93F; }
     .url-bar {
       flex: 1;
-      background: var(--mat-sys-surface-container-highest);
+      background: var(--surface-3);
       border-radius: 999px;
       padding: 0.2rem 0.85rem;
       font-size: 0.72rem;
@@ -92,13 +92,13 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       overflow: hidden;
     }
     .markdown-panel {
-      background: var(--mat-sys-inverse-surface);
-      color: var(--mat-sys-inverse-on-surface);
-      border-right: 1px solid var(--mat-sys-outline-variant);
+      background: var(--ink-surface);
+      color: var(--ink-on-surface);
+      border-right: 1px solid var(--border);
     }
     .preview-panel {
-      background: var(--mat-sys-surface);
-      color: var(--mat-sys-on-surface);
+      background: var(--surface-0);
+      color: var(--text-primary);
     }
     .panel-label {
       padding: 0.35rem 0.75rem;
@@ -107,13 +107,13 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       letter-spacing: 0.05em;
       text-transform: uppercase;
       opacity: 0.6;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      border-bottom: 1px solid var(--border);
     }
     .markdown-panel .panel-label {
-      background: color-mix(in srgb, var(--mat-sys-inverse-surface) 90%, transparent);
+      background: color-mix(in srgb, var(--ink-surface) 90%, transparent);
     }
     .preview-panel .panel-label {
-      background: var(--mat-sys-surface-container-low);
+      background: var(--surface-1);
     }
     .panel-content {
       flex: 1;
@@ -126,7 +126,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
     .code-line {
       height: 9px;
       border-radius: 3px;
-      background: var(--mat-sys-inverse-on-surface);
+      background: var(--ink-on-surface);
       opacity: 0.25;
     }
     .code-line.short { width: 0; height: 16px; opacity: 0; }
@@ -134,7 +134,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       height: 14px;
       width: 50%;
       border-radius: 3px;
-      background: var(--mat-sys-on-surface);
+      background: var(--text-primary);
       opacity: 0.55;
       margin-bottom: 4px;
     }
@@ -142,7 +142,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
       height: 11px;
       width: 38%;
       border-radius: 3px;
-      background: var(--mat-sys-on-surface);
+      background: var(--text-primary);
       opacity: 0.4;
       margin-top: 4px;
       margin-bottom: 2px;
@@ -150,7 +150,7 @@ import { RhombusButtonComponent, RhombusCardComponent, RhombusIconComponent } fr
     .preview-line {
       height: 9px;
       border-radius: 3px;
-      background: var(--mat-sys-on-surface);
+      background: var(--text-primary);
       opacity: 0.18;
     }
     .preview-line.short { width: 0; height: 10px; opacity: 0; }

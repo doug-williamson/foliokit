@@ -168,6 +168,11 @@
   /* Code block (always dark regardless of theme) */
   --code-block-bg:   #141920;
   --code-block-text: #CDD9E8;
+  /* Ink — theme-invariant inverse surface (constant dark pane + light text),
+     mirrors @rhombuskit/tokens' --ink-surface / --ink-on-surface. Used by
+     decorative dark UI such as the docs landing code mockup. */
+  --ink-surface:    var(--slate-900);
+  --ink-on-surface: var(--slate-50);
 }
 [data-theme="light"] {
   --bg:             var(--cloud-100);
