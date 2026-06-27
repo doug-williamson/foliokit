@@ -3,10 +3,9 @@ import { RouterLink } from '@angular/router';
 import {
   DocsPageHeaderComponent,
   DocsTabsComponent,
-  DocsCalloutComponent,
   DocsTab,
 } from '@foliokit/docs-ui';
-import { RhombusCodeBlockComponent } from '@rhombuskit/core';
+import { RhombusAlertComponent, RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const installTabs: DocsTab[] = [
   { label: 'npm',  content: 'npm install @foliokit/cms-core @foliokit/cms-ui @foliokit/cms-markdown' },
@@ -105,7 +104,7 @@ export class AppComponent {}`;
     RouterLink,
     DocsPageHeaderComponent,
     DocsTabsComponent,
-    DocsCalloutComponent,
+    RhombusAlertComponent,
     RhombusCodeBlockComponent,
   ],
   template: `
@@ -128,11 +127,11 @@ export class AppComponent {}`;
 
     <section class="mt-8">
       <h2 id="material-theme" class="mat-headline-small">Angular Material Theme</h2>
-      <docs-callout variant="warning">
+      <rhombus-alert variant="warning">
         Angular Material M3 theming <strong>must be configured in your global stylesheet</strong>.
         It cannot be bundled inside a library. If you skip this, Material components render without
         colour or typography.
-      </docs-callout>
+      </rhombus-alert>
       <rhombus-code-block [code]="materialThemeCode" language="scss" />
     </section>
 
@@ -144,10 +143,10 @@ export class AppComponent {}`;
         <code>SiteConfigService</code>, and optionally stores a <code>siteId</code>.
       </p>
       <rhombus-code-block [code]="appConfigCode" language="typescript" />
-      <docs-callout variant="tip">
+      <rhombus-alert variant="success">
         The default service bindings can be overridden. Add your own provider <em>after</em>
         <code>provideFolioKit()</code> in the array — Angular's DI uses last-provider-wins.
-      </docs-callout>
+      </rhombus-alert>
     </section>
 
     <section class="mt-8">

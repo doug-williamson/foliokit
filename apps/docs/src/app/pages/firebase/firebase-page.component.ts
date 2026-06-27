@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   DocsPageHeaderComponent,
-  DocsCalloutComponent,
 } from '@foliokit/docs-ui';
-import { RhombusCodeBlockComponent } from '@rhombuskit/core';
+import { RhombusAlertComponent, RhombusCodeBlockComponent } from '@rhombuskit/core';
 
 const firestoreSchema = `// Firestore collections used by FolioKit
 
@@ -111,7 +110,7 @@ provideFolioKit({
   imports: [
     RouterLink,
     DocsPageHeaderComponent,
-    DocsCalloutComponent,
+    RhombusAlertComponent,
     RhombusCodeBlockComponent,
   ],
   template: `
@@ -128,12 +127,12 @@ provideFolioKit({
         <li><strong>Firebase Auth</strong> — admin authentication (email/password or Google)</li>
         <li><strong>Firebase Hosting</strong> — optional, for deploying your site</li>
       </ul>
-      <docs-callout variant="info">
+      <rhombus-alert variant="info">
         Create a project at
         <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer">
           console.firebase.google.com</a>.
         Enable Firestore, Storage, and Authentication in the console before proceeding.
-      </docs-callout>
+      </rhombus-alert>
     </section>
 
     <section class="mt-8">
@@ -166,10 +165,10 @@ provideFolioKit({
         <code>your-admin&#64;example.com</code> with your actual admin email:
       </p>
       <rhombus-code-block [code]="securityRules" language="typescript" />
-      <docs-callout variant="warning">
+      <rhombus-alert variant="warning">
         These rules are a starting point. For production, implement proper role-based
         access control — do not rely on email-matching alone.
-      </docs-callout>
+      </rhombus-alert>
     </section>
 
     <section class="mt-8">
