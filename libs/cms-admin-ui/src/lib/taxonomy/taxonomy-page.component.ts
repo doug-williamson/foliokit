@@ -71,7 +71,7 @@ import { TaxonomyStore } from './taxonomy.store';
                     <rhombus-button iconButton variant="ghost" ariaLabel="Edit series" rhombusTooltip="Edit" (click)="openEditSeries(s)">
                       <rhombus-icon name="edit" />
                     </rhombus-button>
-                    <rhombus-button iconButton variant="danger" ariaLabel="Delete series" rhombusTooltip="Delete" (click)="deleteSeries(s)">
+                    <rhombus-button iconButton variant="danger" appearance="text" ariaLabel="Delete series" rhombusTooltip="Delete" (click)="deleteSeries(s)">
                       <rhombus-icon name="delete" />
                     </rhombus-button>
                   </div>

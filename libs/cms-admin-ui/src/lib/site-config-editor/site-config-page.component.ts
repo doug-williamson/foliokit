@@ -235,6 +235,7 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                         <rhombus-button
                           iconButton
                           variant="danger"
+                          appearance="text"
                           type="button"
                           class="shrink-0 mt-1"
                           ariaLabel="Remove link"

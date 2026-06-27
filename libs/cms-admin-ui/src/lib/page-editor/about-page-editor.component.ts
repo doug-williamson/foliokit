@@ -203,6 +203,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                         <rhombus-button
                           iconButton
                           variant="danger"
+                          appearance="text"
                           type="button"
                           class="shrink-0 mt-1"
                           ariaLabel="Remove link"

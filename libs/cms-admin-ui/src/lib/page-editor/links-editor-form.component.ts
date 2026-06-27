@@ -149,6 +149,7 @@ interface LinkRowValue {
                   <rhombus-button
                     iconButton
                     variant="danger"
+                    appearance="text"
                     ariaLabel="Delete link"
                     rhombusTooltip="Delete link"
                     (click)="removeLink($index)"

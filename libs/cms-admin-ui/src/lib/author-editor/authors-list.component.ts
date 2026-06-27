@@ -102,24 +102,27 @@ type Cell = { $implicit: Author; index: number };
     </ng-template>
 
     <ng-template #actionsCell let-author>
-      <rhombus-button
-        iconButton
-        variant="ghost"
-        ariaLabel="Edit"
-        rhombusTooltip="Edit"
-        (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
-      >
-        <rhombus-icon name="edit" />
-      </rhombus-button>
-      <rhombus-button
-        iconButton
-        variant="danger"
-        ariaLabel="Delete"
-        rhombusTooltip="Delete"
-        (click)="$event.stopPropagation(); confirmDelete(author)"
-      >
-        <rhombus-icon name="delete" />
-      </rhombus-button>
+      <div class="flex items-center justify-end gap-1">
+        <rhombus-button
+          iconButton
+          variant="ghost"
+          ariaLabel="Edit"
+          rhombusTooltip="Edit"
+          (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
+        >
+          <rhombus-icon name="edit" />
+        </rhombus-button>
+        <rhombus-button
+          iconButton
+          variant="danger"
+          appearance="text"
+          ariaLabel="Delete"
+          rhombusTooltip="Delete"
+          (click)="$event.stopPropagation(); confirmDelete(author)"
+        >
+          <rhombus-icon name="delete" />
+        </rhombus-button>
+      </div>
     </ng-template>
   `,
 })
@@ -155,7 +158,7 @@ export class AuthorsListComponent implements OnInit {
       key: 'actions',
       header: '',
       align: 'end',
-      width: '100px',
+      width: '120px',
       cellTemplate: this.actionsCell()!,
     });
     return cols;
