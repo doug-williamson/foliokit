@@ -23,7 +23,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
 import { CollectionPaths, FIREBASE_STORAGE, SocialPlatform } from '@foliokit/cms-core';
@@ -64,7 +63,6 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     RhombusButtonComponent,
     RhombusIconComponent,
     RhombusInputComponent,
@@ -166,12 +164,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <img [src]="url" alt="Author photo (light)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
-                      <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoInput.click()">
-                        <rhombus-icon name="swap_horiz" ariaLabel="Replace photo" />
-                      </button>
-                      <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('light')">
-                        <rhombus-icon name="delete" ariaLabel="Remove photo" />
-                      </button>
+                      <rhombus-button iconButton appearance="text" ariaLabel="Replace photo" title="Replace" (click)="isBrowser && photoInput.click()">
+                        <rhombus-icon name="swap_horiz" style="color:#fff" />
+                      </rhombus-button>
+                      <rhombus-button iconButton appearance="text" ariaLabel="Remove photo" title="Remove" (click)="removePhoto('light')">
+                        <rhombus-icon name="delete" style="color:#fff" />
+                      </rhombus-button>
                     </div>
                   </div>
                 } @else {
@@ -196,12 +194,12 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
-                      <button mat-icon-button style="color:white" title="Replace" (click)="isBrowser && photoDarkInput.click()">
-                        <rhombus-icon name="swap_horiz" ariaLabel="Replace photo" />
-                      </button>
-                      <button mat-icon-button style="color:white" title="Remove" (click)="removePhoto('dark')">
-                        <rhombus-icon name="delete" ariaLabel="Remove photo" />
-                      </button>
+                      <rhombus-button iconButton appearance="text" ariaLabel="Replace photo" title="Replace" (click)="isBrowser && photoDarkInput.click()">
+                        <rhombus-icon name="swap_horiz" style="color:#fff" />
+                      </rhombus-button>
+                      <rhombus-button iconButton appearance="text" ariaLabel="Remove photo" title="Remove" (click)="removePhoto('dark')">
+                        <rhombus-icon name="delete" style="color:#fff" />
+                      </rhombus-button>
                     </div>
                   </div>
                 } @else {
@@ -278,15 +276,17 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                       [options]="platforms"
                       [control]="asFc(group.get('platform'))"
                     />
-                    <button
-                      mat-icon-button
+                    <rhombus-button
+                      iconButton
+                      variant="danger"
                       type="button"
                       class="shrink-0 mt-1"
+                      ariaLabel="Remove link"
                       rhombusTooltip="Remove"
                       (click)="removeSocialLink($index)"
                     >
-                      <rhombus-icon name="delete" ariaLabel="Remove link" />
-                    </button>
+                      <rhombus-icon name="delete" />
+                    </rhombus-button>
                   </div>
                   <div class="flex gap-2">
                     <rhombus-input

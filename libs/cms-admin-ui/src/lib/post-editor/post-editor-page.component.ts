@@ -24,7 +24,6 @@ import {
 import { BlogPost } from '@foliokit/cms-core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorStore } from './post-editor.store';
@@ -62,7 +61,6 @@ type RightTab = 'Article' | 'Card' | 'SEO';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     MatSidenavModule,
     MatTabsModule,
     PostPublishButtonComponent,
@@ -153,6 +151,9 @@ type RightTab = 'Article' | 'Card' | 'SEO';
         justify-content: center;
         --rhombus-icon-size: 24px;
         line-height: 0;
+        /* Keep the toolbar glyphs neutral (rhombus-button text/primary would
+           otherwise tint them with the accent). */
+        color: var(--text-primary);
       }
 
       .post-editor-toolbar {
@@ -228,16 +229,17 @@ type RightTab = 'Article' | 'Card' | 'SEO';
       <!-- Toolbar -->
       <div class="post-editor-toolbar">
         <div class="post-editor-toolbar-lead">
-          <button
-            mat-icon-button
+          <rhombus-button
+            iconButton
+            appearance="text"
             type="button"
             class="toolbar-icon-btn shrink-0"
             (click)="backToPosts()"
             rhombusTooltip="Back to Posts"
-            aria-label="Back to Posts"
+            ariaLabel="Back to Posts"
           >
             <rhombus-icon name="arrow_back" />
-          </button>
+          </rhombus-button>
           <input
             class="post-editor-toolbar-title post-editor-title-input"
             type="text"
@@ -262,27 +264,30 @@ type RightTab = 'Article' | 'Card' | 'SEO';
           }
 
           @if (!isDesktop()) {
-            <button
-              mat-icon-button
+            <rhombus-button
+              iconButton
+              appearance="text"
               type="button"
               class="toolbar-icon-btn shrink-0"
               (click)="togglePreview()"
               [rhombusTooltip]="previewOpen() ? 'Close preview' : 'Open preview'"
-              [attr.aria-label]="previewOpen() ? 'Close preview' : 'Open preview'"
+              [ariaLabel]="previewOpen() ? 'Close preview' : 'Open preview'"
             >
               <rhombus-icon [name]="previewOpen() ? 'close' : 'preview'" />
-            </button>
-            <button
-              mat-icon-button
+            </rhombus-button>
+            <rhombus-button
+              iconButton
+              appearance="text"
               type="button"
               class="toolbar-icon-btn shrink-0"
               (click)="onManualSave()"
               [disabled]="store.isSaving() || !store.isDirty()"
               [rhombusTooltip]="store.isDirty() ? 'Save' : 'No changes to save'"
               rhombusTooltipPosition="below"
+              ariaLabel="Save"
             >
               <rhombus-icon name="save" />
-            </button>
+            </rhombus-button>
           } @else {
             <rhombus-button
               appearance="outlined"

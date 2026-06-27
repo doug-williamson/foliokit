@@ -3,7 +3,6 @@ import {
   Component,
   inject,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { Series } from '@foliokit/cms-core';
 import {
   RhombusButtonComponent,
@@ -23,7 +22,6 @@ import { TaxonomyStore } from './taxonomy.store';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     RhombusButtonComponent,
     RhombusEmptyStateComponent,
     RhombusIconComponent,
@@ -70,12 +68,12 @@ import { TaxonomyStore } from './taxonomy.store';
                       (checkedChange)="store.setSeriesActive(s.id, $event)"
                       rhombusTooltip="Active"
                     />
-                    <button mat-icon-button rhombusTooltip="Edit" (click)="openEditSeries(s)">
-                      <rhombus-icon name="edit" ariaLabel="Edit series" />
-                    </button>
-                    <button mat-icon-button rhombusTooltip="Delete" (click)="deleteSeries(s)">
-                      <rhombus-icon name="delete" ariaLabel="Delete series" />
-                    </button>
+                    <rhombus-button iconButton variant="ghost" ariaLabel="Edit series" rhombusTooltip="Edit" (click)="openEditSeries(s)">
+                      <rhombus-icon name="edit" />
+                    </rhombus-button>
+                    <rhombus-button iconButton variant="danger" ariaLabel="Delete series" rhombusTooltip="Delete" (click)="deleteSeries(s)">
+                      <rhombus-icon name="delete" />
+                    </rhombus-button>
                   </div>
                 }
               </div>

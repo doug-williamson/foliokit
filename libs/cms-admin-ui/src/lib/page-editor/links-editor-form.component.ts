@@ -12,7 +12,6 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import {
   RhombusButtonComponent,
   RhombusIconComponent,
@@ -52,7 +51,6 @@ interface LinkRowValue {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     RhombusButtonComponent,
     RhombusIconComponent,
     RhombusInputComponent,
@@ -148,13 +146,15 @@ interface LinkRowValue {
                     rhombusTooltip="Highlighted"
                     [control]="asFc(group.get('highlighted'))"
                   />
-                  <button
-                    mat-icon-button
-                    (click)="removeLink($index)"
+                  <rhombus-button
+                    iconButton
+                    variant="danger"
+                    ariaLabel="Delete link"
                     rhombusTooltip="Delete link"
+                    (click)="removeLink($index)"
                   >
-                    <rhombus-icon name="delete" ariaLabel="Delete link" />
-                  </button>
+                    <rhombus-icon name="delete" />
+                  </rhombus-button>
                 </div>
 
                 <div class="flex gap-3">

@@ -4,8 +4,8 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import {
+  RhombusButtonComponent,
   RhombusIconComponent,
   RhombusTooltipDirective,
 } from '@rhombuskit/core';
@@ -16,7 +16,7 @@ import { PostEditorStore } from './post-editor.store';
   selector: 'folio-post-editor-embedded-media-item',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, RhombusIconComponent, RhombusTooltipDirective],
+  imports: [RhombusButtonComponent, RhombusIconComponent, RhombusTooltipDirective],
   styles: [
     `
       :host {
@@ -44,22 +44,24 @@ import { PostEditorStore } from './post-editor.store';
           class="hover-overlay absolute inset-0 flex items-center justify-center gap-2"
           style="background: var(--overlay-dark)"
         >
-          <button
-            mat-icon-button
-            style="color: white"
+          <rhombus-button
+            iconButton
+            appearance="text"
+            ariaLabel="Insert at cursor"
             rhombusTooltip="Insert at cursor"
             (click)="onInsert()"
           >
-            <rhombus-icon name="add_photo_alternate" ariaLabel="Insert at cursor" />
-          </button>
-          <button
-            mat-icon-button
-            style="color: white"
+            <rhombus-icon name="add_photo_alternate" style="color:#fff" />
+          </rhombus-button>
+          <rhombus-button
+            iconButton
+            appearance="text"
+            ariaLabel="Delete"
             rhombusTooltip="Delete"
             (click)="onDelete()"
           >
-            <rhombus-icon name="delete" ariaLabel="Delete" />
-          </button>
+            <rhombus-icon name="delete" style="color:#fff" />
+          </rhombus-button>
         </div>
       </div>
       <span class="text-xs opacity-60 truncate" [title]="entry().alt">

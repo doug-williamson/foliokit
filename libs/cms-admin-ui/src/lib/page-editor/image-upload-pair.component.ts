@@ -6,8 +6,8 @@ import {
   input,
   output,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import {
+  RhombusButtonComponent,
   RhombusIconComponent,
   RhombusProgressBarComponent,
 } from '@rhombuskit/core';
@@ -16,7 +16,7 @@ import {
   selector: 'admin-image-upload-pair',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, RhombusIconComponent, RhombusProgressBarComponent],
+  imports: [RhombusButtonComponent, RhombusIconComponent, RhombusProgressBarComponent],
   template: `
     <div class="flex flex-col gap-2">
       <span class="text-sm font-semibold">{{ label() }}</span>
@@ -29,14 +29,14 @@ import {
               <img [src]="url" alt="Image (light)" class="w-full h-full object-cover" />
               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                    style="background: rgba(0,0,0,0.5)">
-                <button mat-icon-button style="color:white" title="Replace" type="button"
+                <rhombus-button iconButton appearance="text" ariaLabel="Replace image" title="Replace" type="button"
                         (click)="lightInput.click()">
-                  <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
-                </button>
-                <button mat-icon-button style="color:white" title="Remove" type="button"
+                  <rhombus-icon name="swap_horiz" style="color:#fff" />
+                </rhombus-button>
+                <rhombus-button iconButton appearance="text" ariaLabel="Remove image" title="Remove" type="button"
                         (click)="lightRemoved.emit()">
-                  <rhombus-icon name="delete" ariaLabel="Remove image" />
-                </button>
+                  <rhombus-icon name="delete" style="color:#fff" />
+                </rhombus-button>
               </div>
             </div>
           } @else {
@@ -62,14 +62,14 @@ import {
               <img [src]="url" alt="Image (dark)" class="w-full h-full object-cover" />
               <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                    style="background: rgba(0,0,0,0.5)">
-                <button mat-icon-button style="color:white" title="Replace" type="button"
+                <rhombus-button iconButton appearance="text" ariaLabel="Replace image" title="Replace" type="button"
                         (click)="darkInput.click()">
-                  <rhombus-icon name="swap_horiz" ariaLabel="Replace image" />
-                </button>
-                <button mat-icon-button style="color:white" title="Remove" type="button"
+                  <rhombus-icon name="swap_horiz" style="color:#fff" />
+                </rhombus-button>
+                <rhombus-button iconButton appearance="text" ariaLabel="Remove image" title="Remove" type="button"
                         (click)="darkRemoved.emit()">
-                  <rhombus-icon name="delete" ariaLabel="Remove image" />
-                </button>
+                  <rhombus-icon name="delete" style="color:#fff" />
+                </rhombus-button>
               </div>
             </div>
           } @else {

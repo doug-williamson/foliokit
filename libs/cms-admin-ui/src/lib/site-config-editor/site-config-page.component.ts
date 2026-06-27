@@ -20,7 +20,6 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IMAGE_UPLOAD_METADATA } from '../shared/upload-metadata';
-import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthorService, CollectionPaths, SiteProfile, SocialLink, SocialPlatform } from '@foliokit/cms-core';
 import {
@@ -51,7 +50,6 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
-    MatButtonModule,
     MatTabsModule,
     RhombusButtonComponent,
     RhombusIconComponent,
@@ -234,15 +232,17 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                           [options]="platforms"
                           [control]="asFc(group.get('platform'))"
                         />
-                        <button
-                          mat-icon-button
+                        <rhombus-button
+                          iconButton
+                          variant="danger"
                           type="button"
                           class="shrink-0 mt-1"
+                          ariaLabel="Remove link"
                           rhombusTooltip="Remove"
                           (click)="removeProfileSocialLink($index)"
                         >
-                          <rhombus-icon name="delete" ariaLabel="Remove link" />
-                        </button>
+                          <rhombus-icon name="delete" />
+                        </rhombus-button>
                       </div>
                       <div class="flex gap-2">
                         <rhombus-input

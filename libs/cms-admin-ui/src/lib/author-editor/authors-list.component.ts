@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatButtonModule } from '@angular/material/button';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
   RhombusAvatarComponent,
@@ -39,7 +38,6 @@ type Cell = { $implicit: Author; index: number };
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
     RhombusAvatarComponent,
     RhombusIconComponent,
     RhombusTooltipDirective,
@@ -104,20 +102,24 @@ type Cell = { $implicit: Author; index: number };
     </ng-template>
 
     <ng-template #actionsCell let-author>
-      <button
-        mat-icon-button
+      <rhombus-button
+        iconButton
+        variant="ghost"
+        ariaLabel="Edit"
         rhombusTooltip="Edit"
         (click)="$event.stopPropagation(); router.navigate(['/authors', author.id, 'edit'])"
       >
-        <rhombus-icon name="edit" ariaLabel="Edit" />
-      </button>
-      <button
-        mat-icon-button
+        <rhombus-icon name="edit" />
+      </rhombus-button>
+      <rhombus-button
+        iconButton
+        variant="danger"
+        ariaLabel="Delete"
         rhombusTooltip="Delete"
         (click)="$event.stopPropagation(); confirmDelete(author)"
       >
-        <rhombus-icon name="delete" ariaLabel="Delete" />
-      </button>
+        <rhombus-icon name="delete" />
+      </rhombus-button>
     </ng-template>
   `,
 })
