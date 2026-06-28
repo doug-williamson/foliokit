@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { RouterLink } from '@angular/router';
-import { RhombusDialogService } from '@rhombuskit/core';
+import { Router } from '@angular/router';
+import { RhombusButtonComponent, RhombusDialogService } from '@rhombuskit/core';
 import { PlanComparisonDialogComponent } from '../plan-gate/plan-comparison-dialog.component';
 
 const UPGRADE_URL = '/settings';
@@ -12,23 +11,21 @@ const UPGRADE_FRAGMENT = 'billing';
   selector: 'folio-plan-upgrade-nav-sheet',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatBottomSheetModule, MatButtonModule, RouterLink],
+  imports: [MatBottomSheetModule, RhombusButtonComponent],
   template: `
     <div class="folio-upgrade-sheet">
       <h2 class="folio-upgrade-sheet__title">Upgrade plan</h2>
       <p class="folio-upgrade-sheet__body">
         This area needs a higher FolioKit plan. Open billing to upgrade, or compare plans below.
       </p>
-      <a
-        mat-flat-button
-        color="primary"
+      <rhombus-button
+        appearance="filled"
+        variant="primary"
         class="folio-upgrade-sheet__cta"
-        [routerLink]="upgradeUrl"
-        [fragment]="upgradeFragment"
-        (click)="close()"
+        (click)="goToBillingAndClose()"
       >
         View billing and upgrade
-      </a>
+      </rhombus-button>
       <button type="button" class="folio-upgrade-sheet__link" (click)="openComparison()">
         See what is included
       </button>
@@ -72,11 +69,17 @@ const UPGRADE_FRAGMENT = 'billing';
 export class PlanUpgradeNavSheetComponent {
   private readonly sheetRef = inject(MatBottomSheetRef<PlanUpgradeNavSheetComponent>);
   private readonly dialog = inject(RhombusDialogService);
+  private readonly router = inject(Router);
 
   protected readonly upgradeUrl = UPGRADE_URL;
   protected readonly upgradeFragment = UPGRADE_FRAGMENT;
 
   protected close(): void {
+    this.sheetRef.dismiss();
+  }
+
+  protected goToBillingAndClose(): void {
+    this.router.navigate([this.upgradeUrl], { fragment: this.upgradeFragment });
     this.sheetRef.dismiss();
   }
 

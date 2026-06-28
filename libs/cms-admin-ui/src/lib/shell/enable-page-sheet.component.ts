@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { take } from 'rxjs/operators';
 import type { EnablePageKey } from '../stores/site-config-nav.store';
@@ -15,7 +15,7 @@ export interface EnablePageSheetData {
   selector: 'folio-enable-page-sheet',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatBottomSheetModule, MatButtonModule],
+  imports: [MatBottomSheetModule, RhombusButtonComponent],
   template: `
     <div class="folio-enable-sheet">
       <h2 class="folio-enable-sheet__title">{{ data.title }}</h2>
@@ -23,16 +23,15 @@ export interface EnablePageSheetData {
       @if (store.saveError()) {
         <p class="folio-enable-sheet__err">{{ store.saveError() }}</p>
       }
-      <button
-        type="button"
-        mat-flat-button
-        color="primary"
+      <rhombus-button
+        appearance="filled"
+        variant="primary"
         class="folio-enable-sheet__cta"
         [disabled]="store.isSaving()"
         (click)="enable()"
       >
         {{ store.isSaving() ? 'Saving…' : 'Enable Page' }}
-      </button>
+      </rhombus-button>
     </div>
   `,
   styles: [
