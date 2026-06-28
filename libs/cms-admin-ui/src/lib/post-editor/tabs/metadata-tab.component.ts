@@ -8,16 +8,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
-  RhombusChipDirective,
   RhombusDatePickerComponent,
-  RhombusIconComponent,
   RhombusInputComponent,
   RhombusSelectComponent,
+  RhombusTagInputComponent,
   RhombusTextareaComponent,
   type SelectOption,
 } from '@rhombuskit/core';
@@ -54,14 +51,12 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
-    RhombusChipDirective,
     RhombusDatePickerComponent,
-    RhombusIconComponent,
     RhombusInputComponent,
     RhombusSelectComponent,
+    RhombusTagInputComponent,
     RhombusTextareaComponent,
   ],
   styles: [
@@ -92,26 +87,13 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
           [control]="subtitleControl"
         />
 
-        <!-- Tags (Material chip-grid) -->
-        <mat-form-field class="w-full">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipGrid>
-            @for (tag of post.tags; track tag) {
-              <mat-chip-row rhombusChip (removed)="removeTag(tag, post.tags)">
-                {{ tag }}
-                <button matChipRemove aria-label="Remove tag">
-                  <rhombus-icon name="cancel" />
-                </button>
-              </mat-chip-row>
-            }
-          </mat-chip-grid>
-          <input
-            placeholder="Type and press Enter to add…"
-            [matChipInputFor]="chipGrid"
-            [matChipInputSeparatorKeyCodes]="separatorKeys"
-            (matChipInputTokenEnd)="addTag($event, post.tags)"
-          />
-        </mat-form-field>
+        <!-- Tags -->
+        <rhombus-tag-input
+          label="Tags"
+          placeholder="Type and press Enter to add…"
+          [tags]="post.tags"
+          (tagsChange)="updateTags($event)"
+        />
 
         <!-- Author -->
         <rhombus-select
@@ -182,7 +164,6 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
 })
 export class MetadataTabComponent {
   readonly store = inject(PostEditorStore);
-  readonly separatorKeys = [ENTER, COMMA];
   protected readonly scheduledDate = signal<Date | null>(null);
   protected readonly scheduledTime = signal<string>('09:00');
 
@@ -329,19 +310,9 @@ export class MetadataTabComponent {
     if (control.value !== want) control.setValue(want, { emitEvent: false });
   }
 
-  addTag(event: MatChipInputEvent, currentTags: string[]): void {
-    const value = (event.value ?? '').trim();
-    if (value && !currentTags.includes(value)) {
-      this.store.updateField('tags', [...currentTags, value]);
-    }
-    event.chipInput.clear();
-  }
-
-  removeTag(tag: string, currentTags: string[]): void {
-    this.store.updateField(
-      'tags',
-      currentTags.filter((t) => t !== tag),
-    );
+  /** Persist the tag array emitted by rhombus-tag-input (add/remove). */
+  updateTags(tags: string[]): void {
+    this.store.updateField('tags', tags);
   }
 
   /** epoch ms → `YYYY-MM-DD` in LOCAL time (matches the picker's date-only, local semantics). */
