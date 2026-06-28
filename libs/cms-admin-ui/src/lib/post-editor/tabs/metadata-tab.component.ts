@@ -13,6 +13,7 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
+  RhombusChipDirective,
   RhombusDatePickerComponent,
   RhombusIconComponent,
   RhombusInputComponent,
@@ -56,6 +57,7 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
     MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
+    RhombusChipDirective,
     RhombusDatePickerComponent,
     RhombusIconComponent,
     RhombusInputComponent,
@@ -95,7 +97,7 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
           <mat-label>Tags</mat-label>
           <mat-chip-grid #chipGrid>
             @for (tag of post.tags; track tag) {
-              <mat-chip-row (removed)="removeTag(tag, post.tags)">
+              <mat-chip-row rhombusChip (removed)="removeTag(tag, post.tags)">
                 {{ tag }}
                 <button matChipRemove aria-label="Remove tag">
                   <rhombus-icon name="cancel" />
