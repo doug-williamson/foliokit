@@ -4,7 +4,11 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import {
+  RhombusBreadcrumbsComponent,
+  type BreadcrumbItem as RhombusBreadcrumbItem,
+} from '@rhombuskit/core';
 import { DOCS_ROUTE_MANIFEST } from '../../tokens/docs-tokens';
 import { DocsRouteNode } from '../../models/docs-route-node.model';
 
@@ -42,8 +46,8 @@ function findCrumbs(
   selector: 'docs-breadcrumb',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
-  templateUrl: './docs-breadcrumb.component.html',
+  imports: [RhombusBreadcrumbsComponent],
+  template: `<rhombus-breadcrumbs ariaLabel="Breadcrumb" [items]="breadcrumbItems()" />`,
 })
 export class DocsBreadcrumbComponent {
   private readonly route = inject(ActivatedRoute);
@@ -53,5 +57,19 @@ export class DocsBreadcrumbComponent {
     const snapshot = this.route.snapshot;
     const segments = snapshot.url.map((s) => s.path);
     return findCrumbs(this.manifest, segments, '') ?? [];
+  });
+
+  /**
+   * Adapt the docs crumbs to `rhombus-breadcrumbs` items. The trailing crumb is
+   * the current page, so it gets no `link` — rhombus-breadcrumbs renders the last
+   * linkless item as the `aria-current` page, matching the prior behaviour.
+   */
+  readonly breadcrumbItems = computed<RhombusBreadcrumbItem[]>(() => {
+    const crumbs = this.crumbs();
+    return crumbs.map((crumb, i) =>
+      i === crumbs.length - 1
+        ? { label: crumb.label }
+        : { label: crumb.label, link: crumb.path },
+    );
   });
 }
