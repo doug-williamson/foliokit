@@ -2,21 +2,22 @@
      routes; the non-docs branch hand-rolls one. Both pull this content so the
      chrome can't drift. -->
 <ng-template #headerActions>
-  <a mat-button routerLink="/docs" class="docs-nav-link">Docs</a>
+  <rhombus-button appearance="text" variant="secondary" routerLink="/docs">Docs</rhombus-button>
 
-  <span class="docs-version-badge">v1.0.0</span>
+  <rhombus-tag size="sm">v1.0.0</rhombus-tag>
 
-  <a
-    mat-icon-button
+  <rhombus-button
+    iconButton
+    variant="ghost"
     href="https://github.com/foliokit"
     target="_blank"
     rel="noopener noreferrer"
-    aria-label="FolioKit on GitHub"
+    ariaLabel="FolioKit on GitHub"
   >
     <rhombus-icon name="github" />
-  </a>
+  </rhombus-button>
 
-  <a mat-flat-button routerLink="/signup">Get Started</a>
+  <rhombus-button appearance="filled" variant="primary" routerLink="/signup">Get Started</rhombus-button>
 
   <rhombus-theme-menu />
 </ng-template>
