@@ -11,6 +11,7 @@ import { concatMap } from 'rxjs/operators';
 import {
   RhombusButtonComponent,
   RhombusCheckboxComponent,
+  RhombusTagComponent,
   RhombusToastService,
 } from '@rhombuskit/core';
 import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-nav.store';
@@ -19,7 +20,7 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
   selector: 'admin-setup-prompt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RhombusButtonComponent, RhombusCheckboxComponent],
+  imports: [RhombusButtonComponent, RhombusCheckboxComponent, RhombusTagComponent],
   styles: [
     `
       :host {
@@ -85,45 +86,6 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
         min-width: 0;
       }
 
-      .required-page-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 0;
-        border-bottom: var(--border-width) solid var(--border);
-      }
-
-      .required-check-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-        background: var(--btn-primary-bg);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 700;
-        flex-shrink: 0;
-      }
-
-      .required-label {
-        flex: 1;
-        font-size: 14px;
-      }
-
-      .required-pill {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 2px 8px;
-        border-radius: 100px;
-        background: var(--surface-2);
-        color: var(--text-muted);
-        border: var(--border-width) solid var(--border);
-      }
-
       .save-btn {
         width: 100%;
       }
@@ -139,15 +101,13 @@ import { SiteConfigNavStore, type EnablePageKey } from '../stores/site-config-na
           </div>
 
           <div class="page-rows">
-            <div class="required-page-row">
-              <div class="required-check-icon">✓</div>
-              <span class="required-label">Home page</span>
-              <span class="required-pill">Required</span>
+            <div class="page-row">
+              <rhombus-checkbox label="Home page" [checked]="true" [disabled]="true" />
+              <rhombus-tag size="sm">Required</rhombus-tag>
             </div>
-            <div class="required-page-row">
-              <div class="required-check-icon">✓</div>
-              <span class="required-label">Blog page</span>
-              <span class="required-pill">Required</span>
+            <div class="page-row">
+              <rhombus-checkbox label="Blog page" [checked]="true" [disabled]="true" />
+              <rhombus-tag size="sm">Required</rhombus-tag>
             </div>
             <div class="page-row">
               <rhombus-checkbox label="About page" [control]="aboutControl" />
