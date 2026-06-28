@@ -6,10 +6,13 @@ import {
   signal,
 } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatButtonModule } from '@angular/material/button';
 import { DocsPreviewDefinition } from '../../models/docs-preview-definition.model';
 import { DocsPreviewHostComponent } from '../docs-preview-host/docs-preview-host.component';
-import { RhombusCodeBlockComponent, RhombusButtonComponent } from '@rhombuskit/core';
+import {
+  RhombusButtonComponent,
+  RhombusCodeBlockComponent,
+  RhombusIconComponent,
+} from '@rhombuskit/core';
 
 type PreviewTab = 'preview' | 'code';
 
@@ -19,10 +22,10 @@ type PreviewTab = 'preview' | 'code';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonToggleModule,
-    MatButtonModule,
     DocsPreviewHostComponent,
-    RhombusCodeBlockComponent,
     RhombusButtonComponent,
+    RhombusCodeBlockComponent,
+    RhombusIconComponent,
   ],
   templateUrl: './docs-live-preview.component.html',
   styleUrl: './docs-live-preview.component.scss',
