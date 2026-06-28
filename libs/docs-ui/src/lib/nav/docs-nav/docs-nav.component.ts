@@ -1,40 +1,48 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
-  signal,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { RhombusIconComponent } from '@rhombuskit/core';
+import {
+  RhombusNavListComponent,
+  type RhombusNavItem,
+  type RhombusNavSection,
+} from '@rhombuskit/core';
 import { DocsRouteNode } from '../../models/docs-route-node.model';
 
+/**
+ * Docs sidebar. Maps the 2-level `DocsRouteNode[]` manifest onto a single
+ * `rhombus-nav-list` section: each top-level node is a navigable item that also
+ * carries its `children` (RhombusKit 1.10.0+ renders a routed parent with
+ * `children` as a navigable row whose children sit nested beneath it). Active
+ * highlighting is handled by the nav-list's own `routerLinkActive`.
+ */
 @Component({
   selector: 'docs-nav',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, MatExpansionModule, RhombusIconComponent],
-  templateUrl: './docs-nav.component.html',
-  styleUrl: './docs-nav.component.scss',
+  imports: [RhombusNavListComponent],
+  template: `<rhombus-nav-list ariaLabel="Documentation" [sections]="navSections()" />`,
 })
 export class DocsNavComponent {
   readonly manifest = input.required<DocsRouteNode[]>();
 
-  readonly expanded = signal<Set<string>>(new Set());
+  readonly navSections = computed<RhombusNavSection[]>(() => [
+    { items: this.manifest().map((node) => this.toNavItem(node)) },
+  ]);
 
-  isExpanded(path: string): boolean {
-    return this.expanded().has(path);
-  }
-
-  toggle(path: string): void {
-    this.expanded.update((set) => {
-      const next = new Set(set);
-      if (next.has(path)) {
-        next.delete(path);
-      } else {
-        next.add(path);
-      }
-      return next;
-    });
+  private toNavItem(node: DocsRouteNode): RhombusNavItem {
+    const item: RhombusNavItem = {
+      label: node.label,
+      routerLink: node.path,
+      ...(node.icon ? { icon: node.icon } : {}),
+      ...(node.badge ? { badge: node.badge } : {}),
+    };
+    if (node.children?.length) {
+      item.children = node.children.map((child) => this.toNavItem(child));
+      item.expanded = true;
+    }
+    return item;
   }
 }
