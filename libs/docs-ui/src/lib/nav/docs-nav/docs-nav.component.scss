@@ -37,7 +37,7 @@
   border-radius: 6px;
   border-left: 3px solid transparent;
   font-size: 0.875rem;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--text-secondary);
   text-decoration: none;
   transition:
     background 150ms ease,
@@ -45,14 +45,14 @@
     border-left-color 150ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
-    color: var(--mat-sys-on-surface);
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+    color: var(--text-primary);
   }
 
   &.nav-l1--active {
-    border-left-color: var(--mat-sys-primary);
-    background: var(--mat-sys-primary-container);
-    color: var(--mat-sys-on-primary-container);
+    border-left-color: var(--focus-border);
+    background: color-mix(in srgb, var(--text-accent) 12%, transparent);
+    color: var(--text-accent);
     font-weight: 500;
   }
 }
@@ -98,19 +98,19 @@
   padding: 5px 8px 5px 24px; // 8px base + 16px indent
   border-radius: 6px;
   font-size: 0.8125rem;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--text-secondary);
   text-decoration: none;
   transition:
     background 150ms ease,
     color 150ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
-    color: var(--mat-sys-on-surface);
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+    color: var(--text-primary);
   }
 
   &.nav-l2--active {
-    color: var(--mat-sys-primary);
+    color: var(--text-accent);
     font-weight: 500;
   }
 }
@@ -130,6 +130,6 @@
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
-  background: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
+  background: var(--surface-2);
+  color: var(--text-secondary);
 }

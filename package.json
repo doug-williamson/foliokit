@@ -38,7 +38,8 @@
     "dev:blog": "npm run dev:wait-emulator && npm run start:blog",
     "dev:admin": "npm run dev:wait-emulator && npm run start:admin",
     "dev:all": "concurrently --kill-others-on-fail --names \"emulator,seed,blog,admin\" -c \"cyan,yellow,green,blue\" \"npm run emulator\" \"npm run dev:seed-after-emulator\" \"npm run dev:blog\" \"npm run dev:admin\"",
-    "check:peers": "node --require @swc-node/register tools/scripts/check-peer-deps.ts"
+    "check:peers": "node --require @swc-node/register tools/scripts/check-peer-deps.ts",
+    "check:design-tokens": "node tools/scripts/check-design-tokens.mjs"
   },
   "private": false,
   "devDependencies": {
@@ -105,10 +106,10 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@ngrx/signals": "^21.0.1",
-    "@rhombuskit/core": "1.8.0",
-    "@rhombuskit/material-preset": "1.8.0",
-    "@rhombuskit/theme-engine": "1.8.0",
-    "@rhombuskit/tokens": "1.8.0",
+    "@rhombuskit/core": "1.9.0",
+    "@rhombuskit/material-preset": "1.9.0",
+    "@rhombuskit/theme-engine": "1.9.0",
+    "@rhombuskit/tokens": "1.9.0",
     "autoprefixer": "^10.4.27",
     "express": "^4.21.2",
     "firebase": "^11.10.0",

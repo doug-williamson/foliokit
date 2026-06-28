@@ -137,13 +137,27 @@
   /* CONTRACT aliases consumed by @rhombuskit/* — map onto FolioKit-owned fonts. */
   --font-sans:    var(--font-body);
   --font-prose:   var(--font-body);
-  /* Radii */
+  /* Radii — FolioKit-owned source values (brand uses softer 10px/14px corners). */
   --r-xs:  2px;
   --r-sm:  4px;
   --r-md:  6px;
   --r-lg:  10px;
   --r-xl:  14px;
   --r-2xl: 20px;
+  /* CONTRACT aliases consumed by @rhombuskit/* — map onto the FolioKit radii so
+     RhombusKit components (var(--radius-lg) etc.) and FolioKit CSS round
+     IDENTICALLY. @rhombuskit/tokens ships its own --radius-* defaults (lg=8px,
+     xl=12px); this :root block is emitted after @use '@rhombuskit/tokens' in
+     index.scss, so these win. Note --radius-{sm,xs} mirror the contract's
+     intentional ordering (xs > sm). --radius-2xl is a FolioKit-local extension. */
+  --radius-none: 0;
+  --radius-sm:   var(--r-xs);  /* 2px */
+  --radius-xs:   var(--r-sm);  /* 4px */
+  --radius-md:   var(--r-md);  /* 6px */
+  --radius-lg:   var(--r-lg);  /* 10px (overrides contract 8px) */
+  --radius-xl:   var(--r-xl);  /* 14px (overrides contract 12px) */
+  --radius-2xl:  var(--r-2xl); /* 20px — FolioKit-local extension */
+  --radius-full: 9999px;
   /* Spacing scale — 4px base grid. Use via var(--space-*) instead of magic px. */
   --space-2xs: 2px;
   --space-xs:  4px;

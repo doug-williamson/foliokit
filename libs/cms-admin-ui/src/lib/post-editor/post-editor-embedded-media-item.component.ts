@@ -33,7 +33,7 @@ import { PostEditorStore } from './post-editor.store';
   ],
   template: `
     <div class="item-wrapper flex flex-col gap-1">
-      <div class="relative aspect-square rounded-md overflow-hidden bg-[var(--mat-sys-surface-container-high)]">
+      <div class="relative aspect-square rounded-md overflow-hidden bg-[var(--surface-2)]">
         <img
           [src]="entry().downloadUrl"
           [alt]="entry().alt"
@@ -51,7 +51,7 @@ import { PostEditorStore } from './post-editor.store';
             rhombusTooltip="Insert at cursor"
             (click)="onInsert()"
           >
-            <rhombus-icon name="add_photo_alternate" style="color:#fff" />
+            <rhombus-icon name="add_photo_alternate" style="color:var(--text-on-accent)" />
           </rhombus-button>
           <rhombus-button
             iconButton
@@ -60,7 +60,7 @@ import { PostEditorStore } from './post-editor.store';
             rhombusTooltip="Delete"
             (click)="onDelete()"
           >
-            <rhombus-icon name="delete" style="color:#fff" />
+            <rhombus-icon name="delete" style="color:var(--text-on-accent)" />
           </rhombus-button>
         </div>
       </div>

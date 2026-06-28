@@ -334,14 +334,14 @@ interface PostShareLinks {
       text-decoration: none;
       padding: 2px 8px;
       border-radius: 100px;
-      background: var(--teal-50);
+      background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       border: 1px solid var(--border-accent);
       transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
       &:hover { opacity: 0.85; }
     }
 
     :host-context([data-theme="dark"]) .series-eyebrow-link {
-      background: rgba(42, 151, 151, 0.12);
+      background: color-mix(in srgb, var(--text-accent) 12%, transparent);
     }
 
     .series-eyebrow-pos {

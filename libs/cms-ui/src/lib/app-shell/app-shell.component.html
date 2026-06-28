@@ -51,10 +51,12 @@
     </ng-container>
   }
 
-  <!-- Default slot = main content + powered-by footer. -->
+  <!-- Default slot = main content. -->
   <ng-content />
+  <!-- Powered-by footer → rhombus [shellFooter] (pinned below the main scroll
+       region by the shell; no .rhombus-app-shell__main flexbox hack needed). -->
   @if (!config().features?.removeBranding && !config().showNewPostButton) {
-    <footer class="folio-powered-footer">
+    <footer shellFooter class="folio-powered-footer">
       <span>Powered by </span>
       <a
         href="https://blog.foliokitcms.com"

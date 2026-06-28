@@ -25,7 +25,7 @@ type Cell = { $implicit: ApiTableRow; index: number };
     />
 
     <ng-template #nameCell let-row>
-      <code class="text-[var(--mat-sys-primary)] font-medium text-sm">{{
+      <code class="text-[var(--text-accent)] font-medium text-sm">{{
         row.name
       }}</code>
       @if (row.required) {
@@ -34,12 +34,12 @@ type Cell = { $implicit: ApiTableRow; index: number };
     </ng-template>
 
     <ng-template #typeCell let-row>
-      <code class="text-[var(--mat-sys-tertiary)] text-sm">{{ row.type }}</code>
+      <code class="text-[var(--text-secondary)] text-sm">{{ row.type }}</code>
     </ng-template>
 
     <ng-template #defaultCell let-row>
       @if (row.default !== undefined && row.default !== null) {
-        <code class="text-sm text-[var(--mat-sys-on-surface-variant)]">{{
+        <code class="text-sm text-[var(--text-secondary)]">{{
           row.default
         }}</code>
       } @else {
@@ -48,7 +48,7 @@ type Cell = { $implicit: ApiTableRow; index: number };
     </ng-template>
 
     <ng-template #descCell let-row>
-      <span class="text-sm text-[var(--mat-sys-on-surface-variant)]">{{
+      <span class="text-sm text-[var(--text-secondary)]">{{
         row.description
       }}</span>
     </ng-template>

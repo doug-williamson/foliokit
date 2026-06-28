@@ -45,7 +45,7 @@ type HomeLoadState =
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-accent);
-      background: var(--teal-50);
+      background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       border: 1px solid var(--border-accent);
       padding: 3px 10px;
       border-radius: 100px;
@@ -53,14 +53,14 @@ type HomeLoadState =
     }
 
     :host-context([data-theme="dark"]) .hero-eyebrow {
-      background: rgba(42, 151, 151, 0.1);
+      background: color-mix(in srgb, var(--text-accent) 10%, transparent);
     }
 
     .hero-eyebrow-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: var(--teal-400);
+      background: var(--text-accent);
       flex-shrink: 0;
     }
 

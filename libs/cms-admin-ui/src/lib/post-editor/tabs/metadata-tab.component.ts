@@ -10,10 +10,10 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
+  RhombusDatePickerComponent,
   RhombusIconComponent,
   RhombusInputComponent,
   RhombusSelectComponent,
@@ -24,7 +24,6 @@ import { take } from 'rxjs/operators';
 import {
   Author,
   AuthorService,
-  BlogPost,
   Series,
   SeriesService,
   SiteConfigService,
@@ -55,9 +54,9 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatChipsModule,
-    MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
+    RhombusDatePickerComponent,
     RhombusIconComponent,
     RhombusInputComponent,
     RhombusSelectComponent,
@@ -136,32 +135,12 @@ function slugValidator(control: AbstractControl): ValidationErrors | null {
           />
         }
 
-        <!-- Published At — only when status is published (Material datepicker) -->
+        <!-- Published At — only when status is published -->
         @if (post.status === 'published') {
-          <mat-form-field class="w-full">
-            <mat-label>Published At</mat-label>
-            <input
-              matInput
-              [matDatepicker]="publishedPicker"
-              [value]="toDate(post.publishedAt)"
-              (dateChange)="onPublishedAtChange($event.value, post)"
-            />
-            <mat-datepicker-toggle matIconSuffix [for]="publishedPicker" />
-            <mat-datepicker #publishedPicker />
-          </mat-form-field>
+          <rhombus-date-picker label="Published At" [control]="publishedAtControl" />
         }
         @if (post.status === 'scheduled') {
-          <mat-form-field class="w-full">
-            <mat-label>Scheduled Date</mat-label>
-            <input
-              matInput
-              [matDatepicker]="scheduledPicker"
-              [value]="scheduledDate()"
-              (dateChange)="onScheduledDateChange($event.value)"
-            />
-            <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker" />
-            <mat-datepicker #scheduledPicker />
-          </mat-form-field>
+          <rhombus-date-picker label="Scheduled Date" [control]="scheduledDateControl" />
           <mat-form-field class="w-full">
             <mat-label>Scheduled Time</mat-label>
             <input
@@ -219,6 +198,9 @@ export class MetadataTabComponent {
     nonNullable: true,
     validators: [slugValidator],
   });
+  /** ISO `YYYY-MM-DD` bound to <rhombus-date-picker>; synced from the store. */
+  protected readonly publishedAtControl = new FormControl<string | null>(null);
+  protected readonly scheduledDateControl = new FormControl<string | null>(null);
   /** Local-only scratch notes; never written to the store. */
   protected readonly internalNotesControl = new FormControl('', {
     nonNullable: true,
@@ -260,6 +242,7 @@ export class MetadataTabComponent {
       this.syncControl(this.seriesControl, post.seriesId ?? '');
       this.syncControl(this.seriesOrderControl, post.seriesOrder ?? null);
       this.syncControl(this.slugControl, post.slug);
+      this.syncControl(this.publishedAtControl, this.msToIso(post.publishedAt));
     });
 
     // Controls → store.
@@ -286,6 +269,18 @@ export class MetadataTabComponent {
     this.slugControl.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((v) => this.store.updateField('slug', v));
+    this.publishedAtControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((iso) => {
+        const d = this.isoToLocalDate(iso);
+        if (d) this.store.updateField('publishedAt', d.getTime());
+      });
+    this.scheduledDateControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((iso) => {
+        const d = this.isoToLocalDate(iso);
+        if (d) this.onScheduledDateChange(d);
+      });
 
     // Auto-set authorId from site default on new posts
     effect(() => {
@@ -320,6 +315,7 @@ export class MetadataTabComponent {
         return;
       const d = new Date(post.scheduledPublishAt);
       this.scheduledDate.set(d);
+      this.syncControl(this.scheduledDateControl, this.msToIso(post.scheduledPublishAt));
       const hh = String(d.getHours()).padStart(2, '0');
       const mm = String(d.getMinutes()).padStart(2, '0');
       this.scheduledTime.set(`${hh}:${mm}`);
@@ -346,13 +342,22 @@ export class MetadataTabComponent {
     );
   }
 
-  toDate(ms: number | null | undefined): Date | null {
-    return ms ? new Date(ms) : null;
+  /** epoch ms → `YYYY-MM-DD` in LOCAL time (matches the picker's date-only, local semantics). */
+  private msToIso(ms: number | null | undefined): string | null {
+    if (!ms) return null;
+    const d = new Date(ms);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
-  onPublishedAtChange(date: Date | null, _post: BlogPost): void {
-    if (!date) return;
-    this.store.updateField('publishedAt', date.getTime());
+  /** `YYYY-MM-DD` → a local Date at midnight (avoids the UTC day-shift of `new Date(iso)`). */
+  private isoToLocalDate(iso: string | null): Date | null {
+    if (!iso) return null;
+    const [y, m, d] = iso.split('-').map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
   }
 
   onSeriesChange(seriesId: string): void {

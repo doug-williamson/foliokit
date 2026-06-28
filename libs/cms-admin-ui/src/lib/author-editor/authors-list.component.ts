@@ -10,13 +10,14 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Author, AuthorService } from '@foliokit/cms-core';
 import {
   RhombusAvatarComponent,
   RhombusButtonComponent,
+  RhombusConfirmService,
   RhombusDataTableComponent,
   RhombusEmptyStateComponent,
   RhombusIconComponent,
@@ -130,6 +131,7 @@ export class AuthorsListComponent implements OnInit {
   protected readonly router = inject(Router);
   private readonly authorService = inject(AuthorService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly confirm = inject(RhombusConfirmService);
 
   protected readonly loading = signal(true);
   protected readonly authors = signal<Author[] | null>(null);
@@ -175,14 +177,25 @@ export class AuthorsListComponent implements OnInit {
   }
 
   protected confirmDelete(author: Author): void {
-    if (!window.confirm(`Delete "${author.displayName}"? This cannot be undone.`)) return;
-    this.authorService.delete(author.id).subscribe({
-      next: () => {
-        this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
-      },
-      error: (err) => {
-        console.error('[AuthorsListComponent] delete failed', err);
-      },
-    });
+    const name = author.displayName?.trim() || 'this author';
+    this.confirm
+      .confirm({
+        title: 'Delete author?',
+        message: `Permanently delete "${name}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        variant: 'danger',
+      })
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.authorService.delete(author.id).subscribe({
+          next: () => {
+            this.authors.update((list) => list?.filter((a) => a.id !== author.id) ?? []);
+          },
+          error: (err) => {
+            console.error('[AuthorsListComponent] delete failed', err);
+          },
+        });
+      });
   }
 }

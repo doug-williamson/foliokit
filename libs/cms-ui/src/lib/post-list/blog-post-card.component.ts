@@ -102,13 +102,13 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
     }
 
     .chip--primary {
-      background: var(--teal-50);
+      background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       border-color: var(--border-accent);
       color: var(--text-accent);
     }
 
     :host-context([data-theme="dark"]) .chip--primary {
-      background: rgba(42, 151, 151, 0.12);
+      background: color-mix(in srgb, var(--text-accent) 12%, transparent);
     }
 
     .card-title {
@@ -274,7 +274,7 @@ import { FolioSkeletonComponent } from '../skeleton/folio-skeleton.component';
       padding: 2px 10px;
       border-radius: 100px;
       background: var(--hero-chip-bg);
-      color: white;
+      color: var(--text-on-accent);
       backdrop-filter: blur(4px);
       transition: background var(--motion-duration-fast) var(--motion-ease-standard);
       position: relative;

@@ -15,8 +15,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { startWith } from 'rxjs/operators';
-import { MatExpansionModule } from '@angular/material/expansion';
 import {
+  RhombusAccordionComponent,
+  RhombusAccordionPanelComponent,
   RhombusCheckboxComponent,
   RhombusInputComponent,
   RhombusPageHeaderComponent,
@@ -41,7 +42,8 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatExpansionModule,
+    RhombusAccordionComponent,
+    RhombusAccordionPanelComponent,
     RhombusCheckboxComponent,
     RhombusInputComponent,
     RhombusPageHeaderComponent,
@@ -122,16 +124,11 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                 [control]="asFc(homeForm.get('showRecentPosts'))"
               />
 
-              <mat-expansion-panel [expanded]="false" togglePosition="after" class="!shadow-none mt-2"
-                style="border: 1px solid color-mix(in srgb, currentColor 12%, transparent); border-radius: 8px">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>SEO</mat-panel-title>
-                  <mat-panel-description class="text-xs opacity-60 flex items-center">
-                    Defaults apply if left empty.
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-                <folio-seo-fields [group]="seoGroup" />
-              </mat-expansion-panel>
+              <rhombus-accordion class="mt-2">
+                <rhombus-accordion-panel title="SEO" description="Defaults apply if left empty.">
+                  <folio-seo-fields [group]="seoGroup" />
+                </rhombus-accordion-panel>
+              </rhombus-accordion>
             </form>
           </div>
         </div>

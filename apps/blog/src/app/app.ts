@@ -160,7 +160,7 @@ export class App implements OnInit {
     const features = getPlanFeatures(billing?.plan ?? 'starter');
     return {
       appName: config?.siteName ?? 'FolioKit Blog',
-      logoUrl: features.removeBranding ? config?.logo : undefined,
+      logoUrl: features.removeBranding ? (config?.logo ?? null) : null,
       showAuth: false,
       features,
       toolbarHomeRoute: '/',

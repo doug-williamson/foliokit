@@ -44,14 +44,14 @@ export interface AnchorLink {
   `,
   styles: `
     .anchor-nav-link {
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--text-secondary);
 
       &:hover {
-        color: var(--mat-sys-on-surface);
+        color: var(--text-primary);
       }
 
       &.anchor-nav-link--active {
-        color: var(--mat-sys-primary);
+        color: var(--text-accent);
         font-weight: 500;
       }
     }

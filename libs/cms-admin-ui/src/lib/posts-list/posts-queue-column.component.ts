@@ -20,7 +20,7 @@ import { RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent 
     .cdk-drag-preview {
       box-shadow: var(--shadow-md);
       border-radius: 4px;
-      background: var(--mat-sys-surface-container-high);
+      background: var(--surface-2);
     }
     .cdk-drag-placeholder { opacity: 0.3; }
     .cdk-drag-animating { transition: transform var(--motion-duration-slow) var(--motion-ease-decelerate); }
@@ -28,11 +28,11 @@ import { RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent 
       transition: transform var(--motion-duration-slow) var(--motion-ease-decelerate);
     }
     .column-header {
-      border-left: 3px solid var(--blue-600);
+      border-left: 3px solid var(--border-accent);
       padding-left: 12px;
     }
     :host-context([data-theme="dark"]) .column-header {
-      border-left-color: var(--blue-400);
+      border-left-color: var(--border-accent);
     }
     .post-item {
       transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard), background-color var(--motion-duration-fast) var(--motion-ease-standard);
@@ -44,23 +44,23 @@ import { RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent 
   `],
   template: `
     <rhombus-card variant="outlined" [hasHeader]="false" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 60ms">
-      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
+      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--border)]">
         <span class="text-sm font-semibold">Queued</span>
-        <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
+        <span class="inline-flex items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
           {{ posts().length }}
         </span>
       </div>
 
       <div
-        class="post-list kanban-column-body flex-1 divide-y divide-[var(--mat-sys-outline-variant)]"
+        class="post-list kanban-column-body flex-1 divide-y divide-[var(--border)]"
         cdkDropList
         (cdkDropListDropped)="onDrop($event)"
       >
         @for (post of posts(); track post.id) {
-          <div class="post-item post-row flex items-center gap-2 pr-4 hover:bg-[var(--mat-sys-surface-container-high)]" cdkDrag>
+          <div class="post-item post-row flex items-center gap-2 pr-4 hover:bg-[var(--surface-2)]" cdkDrag>
             <button
               type="button"
-              class="flex items-center gap-1 px-2 py-3 cursor-grab active:cursor-grabbing text-[var(--mat-sys-outline)] hover:text-[var(--mat-sys-on-surface)] transition-colors"
+              class="flex items-center gap-1 px-2 py-3 cursor-grab active:cursor-grabbing text-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
               cdkDragHandle
               aria-label="Drag to reorder"
             >
@@ -78,7 +78,7 @@ import { RhombusCardComponent, RhombusEmptyStateComponent, RhombusIconComponent 
               </span>
             </button>
 
-            <div *cdkDragPlaceholder class="h-12 rounded bg-[var(--mat-sys-surface-container)]"></div>
+            <div *cdkDragPlaceholder class="h-12 rounded bg-[var(--surface-1)]"></div>
           </div>
         } @empty {
           <rhombus-empty-state

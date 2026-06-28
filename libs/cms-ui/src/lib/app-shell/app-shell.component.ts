@@ -9,6 +9,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import {
   RhombusAppShellComponent,
+  RhombusShellFooterDirective,
   RhombusShellNavFooterDirective,
   RhombusThemeMenuComponent,
 } from '@rhombuskit/core';
@@ -39,6 +40,7 @@ const DEFAULT_MOBILE_MAX_PX = 767;
   standalone: true,
   imports: [
     RhombusAppShellComponent,
+    RhombusShellFooterDirective,
     RhombusShellNavFooterDirective,
     NgTemplateOutlet,
     RouterLink,

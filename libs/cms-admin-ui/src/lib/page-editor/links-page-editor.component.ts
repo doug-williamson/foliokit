@@ -8,8 +8,9 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
 import {
+  RhombusAccordionComponent,
+  RhombusAccordionPanelComponent,
   RhombusInputComponent,
   RhombusPageHeaderComponent,
   RhombusSpinnerComponent,
@@ -33,7 +34,8 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatExpansionModule,
+    RhombusAccordionComponent,
+    RhombusAccordionPanelComponent,
     RhombusInputComponent,
     RhombusPageHeaderComponent,
     RhombusTextareaComponent,
@@ -74,24 +76,23 @@ import { ProfilePreviewComponent } from '../shared/profile-preview/profile-previ
 
             <admin-links-editor-form />
 
-            <mat-expansion-panel class="!shadow-none">
-              <mat-expansion-panel-header>
-                <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="flex flex-col gap-4 pt-2">
-                <rhombus-input
-                  label="Meta Title"
-                  placeholder="My Links"
-                  [control]="linksSeoForm.controls.metaTitle"
-                />
-                <rhombus-textarea
-                  label="Meta Description"
-                  placeholder="Short description…"
-                  [rows]="3"
-                  [control]="linksSeoForm.controls.metaDescription"
-                />
-              </div>
-            </mat-expansion-panel>
+            <rhombus-accordion>
+              <rhombus-accordion-panel title="SEO overrides">
+                <div class="flex flex-col gap-4 pt-2">
+                  <rhombus-input
+                    label="Meta Title"
+                    placeholder="My Links"
+                    [control]="linksSeoForm.controls.metaTitle"
+                  />
+                  <rhombus-textarea
+                    label="Meta Description"
+                    placeholder="Short description…"
+                    [rows]="3"
+                    [control]="linksSeoForm.controls.metaDescription"
+                  />
+                </div>
+              </rhombus-accordion-panel>
+            </rhombus-accordion>
           </div>
         </div>
       }

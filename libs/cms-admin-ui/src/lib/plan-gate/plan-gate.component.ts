@@ -191,8 +191,8 @@ const UPGRADE_FRAGMENT = 'billing';
 
     .pg-plan-pill {
       display: inline-block;
-      background: var(--teal-100);
-      color: var(--teal-700);
+      background: color-mix(in srgb, var(--text-accent) 12%, transparent);
+      color: var(--text-accent);
       font-size: 11px;
       font-weight: 500;
       font-family: var(--font-mono);
@@ -203,8 +203,8 @@ const UPGRADE_FRAGMENT = 'billing';
     }
 
     [data-theme="dark"] .pg-plan-pill {
-      background: color-mix(in srgb, var(--teal-500) 22%, transparent);
-      color: var(--teal-200);
+      background: color-mix(in srgb, var(--text-accent) 22%, transparent);
+      color: var(--text-accent);
     }
 
     .pg-heading {

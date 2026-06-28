@@ -6,15 +6,15 @@
   }
 
   &__label-btn--active {
-    color: var(--mat-sys-primary) !important;
+    color: var(--text-accent) !important;
     font-weight: 500;
   }
 
   &__viewport-btn--active {
-    color: var(--mat-sys-primary) !important;
+    color: var(--text-accent) !important;
   }
 
   &__stage {
-    background: var(--mat-sys-surface);
+    background: var(--surface-0);
   }
 }

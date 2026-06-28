@@ -112,7 +112,7 @@ import { RhombusThemeService } from '@rhombuskit/theme-engine';
 
       .login-error {
         font-size: 13px;
-        color: var(--red-600);
+        color: var(--error);
         text-align: center;
         margin-top: 14px;
         line-height: 1.4;

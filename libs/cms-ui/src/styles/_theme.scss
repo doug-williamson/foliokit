@@ -3,6 +3,7 @@
 // Standardized on mat.theme() — replaces per-app M3 configs.
 
 @use '@angular/material' as mat;
+@use '@rhombuskit/material-preset/scss' as rhombus;
 
 // ─── FolioKit → M3 system-token bridge ──────────────────────────────────────────
 // One mixin, applied per mode. Every colour token references a FolioKit *semantic*
@@ -22,18 +23,16 @@
     density: 0,
   ));
 
-  // Primary + surfaces + outline — all via FolioKit semantic tokens.
-  --mat-sys-primary:                 var(--btn-primary-bg);
-  --mat-sys-on-primary:              var(--btn-primary-text);
-  --mat-sys-primary-container:       var(--btn-primary-hover);
-  --mat-sys-on-primary-container:    var(--text-primary);
-  --mat-sys-surface:                 var(--surface-0);
-  --mat-sys-on-surface:              var(--text-primary);
-  --mat-sys-surface-container:       var(--surface-1);
-  --mat-sys-surface-container-high:  var(--surface-2);
-  --mat-sys-outline:                 var(--border-strong);
-  --mat-sys-outline-variant:         var(--border);
-  --mat-sys-background:              var(--bg);
+  // Generic --mat-sys-* → CONTRACT bridge (primary, surface, outline, error,
+  // state-layer opacities, corner + typography scale) is now owned upstream by
+  // @rhombuskit/material-preset's material-bridge() mixin — replaces the ~10
+  // hand-maintained mappings FolioKit used to carry here. FolioKit only overrides
+  // its brand DELTAS below; everything after the include wins.
+  @include rhombus.material-bridge();
+
+  // FolioKit deltas that intentionally differ from the generic bridge:
+  --mat-sys-primary-container:       var(--btn-primary-hover); // bridge: --surface-2
+  --mat-sys-outline:                 var(--border-strong);     // bridge: --border
 
   // Secondary / tertiary — shared editorial teal/violet accents (palette-agnostic).
   @if $theme-type == light {

@@ -26,7 +26,7 @@
 
 .docs-topbar {
   flex-shrink: 0;
-  box-shadow: var(--mat-sys-level2);
+  box-shadow: var(--shadow-md);
   z-index: 10;
 }
 
@@ -34,12 +34,12 @@
   font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--mat-sys-on-surface);
+  color: var(--text-primary);
   text-decoration: none;
   margin-right: 0.25rem;
 
   &:hover {
-    color: var(--mat-sys-primary);
+    color: var(--text-accent);
   }
 }
 
@@ -67,8 +67,8 @@
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.5;
-  background: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
+  background: var(--surface-2);
+  color: var(--text-secondary);
   margin-right: 0.25rem;
   white-space: nowrap;
 }
