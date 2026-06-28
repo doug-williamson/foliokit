@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import { RhombusButtonComponent } from '@rhombuskit/core';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { BlogPost, SiteConfig } from '@foliokit/cms-core';
@@ -17,7 +17,7 @@ type HomeLoadState =
   selector: 'folio-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, MatButtonModule, FolioSkeletonComponent],
+  imports: [RouterLink, RhombusButtonComponent, FolioSkeletonComponent],
   styles: [`
     :host { display: block; height: 100%; }
 
@@ -233,9 +233,9 @@ type HomeLoadState =
           }
 
           <div class="hero-cta-row">
-            <a matButton="filled" [routerLink]="ctaUrl()">{{ ctaLabel() }}</a>
+            <rhombus-button appearance="filled" variant="primary" [routerLink]="ctaUrl()">{{ ctaLabel() }}</rhombus-button>
             @if (secondaryCtaUrl()) {
-              <a matButton="outlined" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</a>
+              <rhombus-button appearance="outlined" variant="secondary" [routerLink]="secondaryCtaUrl()">{{ secondaryCtaLabel() }}</rhombus-button>
             }
           </div>
 
