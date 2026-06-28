@@ -1,19 +1,14 @@
 <folio-app-shell>
   <nav shellNav class="blog-nav">
-    @if (navPending()) { @for (row of [1, 2, 3, 4]; track row) {
-    <div class="nav-item nav-skeleton">
-      <folio-skeleton width="5.5rem" height="1rem" borderRadius="var(--r-md)" />
-    </div>
-    } } @else { @for (item of navItems(); track item.url) {
-    <a
-      class="nav-item"
-      [routerLink]="item.url"
-      routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <span class="nav-label">{{ item.label }}</span>
-    </a>
-    } }
+    @if (navPending()) {
+      @for (row of [1, 2, 3, 4]; track row) {
+        <div class="nav-skeleton">
+          <folio-skeleton width="5.5rem" height="1rem" borderRadius="var(--r-md)" />
+        </div>
+      }
+    } @else {
+      <rhombus-nav-list ariaLabel="Blog" [sections]="navSections()" />
+    }
   </nav>
 
   <router-outlet />
