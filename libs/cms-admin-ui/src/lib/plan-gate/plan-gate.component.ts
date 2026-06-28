@@ -8,7 +8,6 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { PlanGatingService } from '@foliokit/cms-core';
 import type { PlatformFeatures } from '@foliokit/cms-core';
 import { RhombusButtonComponent, RhombusDialogService, RhombusTagComponent } from '@rhombuskit/core';
@@ -73,7 +72,8 @@ const UPGRADE_FRAGMENT = 'billing';
             appearance="text"
             variant="secondary"
             class="pg-settings-link"
-            (click)="goToSettings()"
+            [routerLink]="upgradeUrl"
+            [fragment]="upgradeFragment"
           >
             Open Settings
           </rhombus-button>
@@ -262,7 +262,6 @@ export class PlanGateComponent {
   private readonly dialog = inject(RhombusDialogService);
   private readonly billingCheckout = inject(BillingCheckoutService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly router = inject(Router);
 
   protected readonly isEnabled = computed(
     () => this.planGatingService.features().platform[this.feature()],
@@ -297,10 +296,6 @@ export class PlanGateComponent {
     } finally {
       this.checkoutLoading.set(false);
     }
-  }
-
-  protected goToSettings(): void {
-    this.router.navigate([this.upgradeUrl], { fragment: this.upgradeFragment });
   }
 
   protected openComparison(): void {

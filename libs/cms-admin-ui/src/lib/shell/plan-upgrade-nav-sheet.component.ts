@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { Router } from '@angular/router';
 import { RhombusButtonComponent, RhombusDialogService } from '@rhombuskit/core';
 import { PlanComparisonDialogComponent } from '../plan-gate/plan-comparison-dialog.component';
 
@@ -22,7 +21,9 @@ const UPGRADE_FRAGMENT = 'billing';
         appearance="filled"
         variant="primary"
         class="folio-upgrade-sheet__cta"
-        (click)="goToBillingAndClose()"
+        [routerLink]="upgradeUrl"
+        [fragment]="upgradeFragment"
+        (click)="close()"
       >
         View billing and upgrade
       </rhombus-button>
@@ -69,17 +70,11 @@ const UPGRADE_FRAGMENT = 'billing';
 export class PlanUpgradeNavSheetComponent {
   private readonly sheetRef = inject(MatBottomSheetRef<PlanUpgradeNavSheetComponent>);
   private readonly dialog = inject(RhombusDialogService);
-  private readonly router = inject(Router);
 
   protected readonly upgradeUrl = UPGRADE_URL;
   protected readonly upgradeFragment = UPGRADE_FRAGMENT;
 
   protected close(): void {
-    this.sheetRef.dismiss();
-  }
-
-  protected goToBillingAndClose(): void {
-    this.router.navigate([this.upgradeUrl], { fragment: this.upgradeFragment });
     this.sheetRef.dismiss();
   }
 
