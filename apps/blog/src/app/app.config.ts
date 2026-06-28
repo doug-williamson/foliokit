@@ -12,18 +12,14 @@ import {
   provideDefaultBlogSeo,
   providesFolioKit,
 } from '@foliokit/cms-core';
-import {
-  provideCmsUiRhombusIcons,
-  provideFolioKitTheme,
-} from '@foliokit/cms-ui';
+import { provideFolioKitUi } from '@foliokit/cms-ui';
 import { environment } from '../environments/environment';
 import { BLOG_STATIC_SITE_ID } from './blog-app-tenant';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideCmsUiRhombusIcons(),
-    provideFolioKitTheme(),
+    provideFolioKitUi(),
     provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes, withComponentInputBinding()),

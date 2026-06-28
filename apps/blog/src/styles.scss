@@ -23,20 +23,6 @@
   --tw-prose-invert-headings: var(--mat-sys-on-surface);
 }
 
-/* Pin the "Powered by FolioKit" footer to the bottom of the shell on short pages;
-   tall pages still scroll naturally. Scoped to the blog shell (folio-app-shell)
-   so admin/docs shells are unaffected. */
-folio-app-shell .rhombus-app-shell__main {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-folio-app-shell .rhombus-app-shell__main > :not(.folio-powered-footer) {
-  min-height: 0;
-  height: auto;
-}
-
-folio-app-shell .folio-powered-footer {
-  margin-top: auto;
-}
+/* The "Powered by FolioKit" footer is now projected into rhombus-app-shell's
+   native [shellFooter] slot (see AppShellComponent), which pins it below the main
+   scroll region — no .rhombus-app-shell__main flexbox override needed here. */

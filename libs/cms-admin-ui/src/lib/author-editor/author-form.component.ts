@@ -103,7 +103,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
       }
 
       .author-toolbar-back:focus-visible {
-        outline: 2px solid var(--mat-sys-primary);
+        outline: 2px solid var(--focus-border);
         outline-offset: 2px;
       }
 
@@ -165,10 +165,10 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <rhombus-button iconButton appearance="text" ariaLabel="Replace photo" title="Replace" (click)="isBrowser && photoInput.click()">
-                        <rhombus-icon name="swap_horiz" style="color:#fff" />
+                        <rhombus-icon name="swap_horiz" style="color:var(--text-on-accent)" />
                       </rhombus-button>
                       <rhombus-button iconButton appearance="text" ariaLabel="Remove photo" title="Remove" (click)="removePhoto('light')">
-                        <rhombus-icon name="delete" style="color:#fff" />
+                        <rhombus-icon name="delete" style="color:var(--text-on-accent)" />
                       </rhombus-button>
                     </div>
                   </div>
@@ -190,15 +190,15 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
               <!-- Dark mode -->
               <div class="flex flex-col items-center gap-1">
                 @if (store.author()?.photoUrlDark; as url) {
-                  <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: #1a1a1a">
+                  <div class="relative w-24 h-24 shrink-0 rounded-full overflow-hidden group" style="background: var(--surface-3)">
                     <img [src]="url" alt="Author photo (dark)" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                          style="background: rgba(0,0,0,0.5)">
                       <rhombus-button iconButton appearance="text" ariaLabel="Replace photo" title="Replace" (click)="isBrowser && photoDarkInput.click()">
-                        <rhombus-icon name="swap_horiz" style="color:#fff" />
+                        <rhombus-icon name="swap_horiz" style="color:var(--text-on-accent)" />
                       </rhombus-button>
                       <rhombus-button iconButton appearance="text" ariaLabel="Remove photo" title="Remove" (click)="removePhoto('dark')">
-                        <rhombus-icon name="delete" style="color:#fff" />
+                        <rhombus-icon name="delete" style="color:var(--text-on-accent)" />
                       </rhombus-button>
                     </div>
                   </div>

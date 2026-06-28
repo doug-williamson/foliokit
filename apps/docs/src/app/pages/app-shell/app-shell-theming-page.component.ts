@@ -56,16 +56,16 @@ module.exports = {
     <section class="mt-8">
       <h2 id="css-vars" class="mat-headline-small">CSS Variables</h2>
       <p class="mat-body-medium">
-        FolioKit components use Angular Material's <code>--mat-sys-*</code> custom properties
-        for all colors. Key tokens used internally:
+        FolioKit components are themed through the RhombusKit token contract — semantic
+        CSS custom properties you override per <code>[data-theme]</code> block. Key tokens:
       </p>
       <ul class="list-disc list-inside space-y-1 mt-2" style="color: var(--text-secondary)">
-        <li><code>--mat-sys-primary</code> — brand accent color</li>
-        <li><code>--mat-sys-surface</code> — page background</li>
-        <li><code>--mat-sys-surface-container</code> — card / sidenav surface</li>
-        <li><code>--mat-sys-on-surface</code> — default text color</li>
-        <li><code>--mat-sys-on-surface-variant</code> — secondary text</li>
-        <li><code>--mat-sys-outline-variant</code> — subtle borders and dividers</li>
+        <li><code>--text-accent</code> — brand accent color (links, highlights)</li>
+        <li><code>--bg</code> — page background</li>
+        <li><code>--surface-1</code> — card / sidenav surface</li>
+        <li><code>--text-primary</code> — default text color</li>
+        <li><code>--text-secondary</code> — secondary text</li>
+        <li><code>--border</code> — subtle borders and dividers</li>
       </ul>
     </section>
 

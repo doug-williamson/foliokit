@@ -34,11 +34,11 @@ import {
   host: { class: 'contents' },
   styles: [`
     .column-header {
-      border-left: 3px solid var(--green-600);
+      border-left: 3px solid var(--status-published-text);
       padding-left: 12px;
     }
     :host-context([data-theme="dark"]) .column-header {
-      border-left-color: var(--green-400);
+      border-left-color: var(--status-published-text);
     }
     .post-item {
       transition: box-shadow var(--motion-duration-base) var(--motion-ease-standard), transform var(--motion-duration-base) var(--motion-ease-standard), background-color var(--motion-duration-fast) var(--motion-ease-standard);
@@ -50,17 +50,17 @@ import {
   `],
   template: `
     <rhombus-card variant="outlined" [hasHeader]="false" class="flex flex-col overflow-hidden page-enter" style="animation-delay: 120ms">
-      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
+      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--border)]">
         <span class="text-sm font-semibold">Published</span>
-        <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
+        <span class="inline-flex items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
           {{ posts().length }}
         </span>
       </div>
 
-      <div class="kanban-column-body flex-1 divide-y divide-[var(--mat-sys-outline-variant)]">
+      <div class="kanban-column-body flex-1 divide-y divide-[var(--border)]">
         @for (post of posts(); track post.id) {
           <div
-            class="post-item flex items-center hover:bg-[var(--mat-sys-surface-container-high)]"
+            class="post-item flex items-center hover:bg-[var(--surface-2)]"
           >
             <button
               type="button"
@@ -102,7 +102,7 @@ import {
       </div>
 
       @if (archivedPosts().length > 0) {
-        <div class="shrink-0 border-t border-[var(--mat-sys-outline-variant)] px-4 py-2">
+        <div class="shrink-0 border-t border-[var(--border)] px-4 py-2">
           <rhombus-button
             appearance="text"
             variant="secondary"

@@ -38,7 +38,7 @@ import { PostEditorStore } from '../post-editor.store';
         border-radius: 4px;
       }
       .markdown-textarea:focus {
-        border-color: var(--mat-sys-primary);
+        border-color: var(--focus-border);
         outline: none;
       }
     `,

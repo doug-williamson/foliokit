@@ -24,18 +24,18 @@ import { RhombusCardComponent, RhombusEmptyStateComponent } from '@rhombuskit/co
   `],
   template: `
     <rhombus-card variant="outlined" [hasHeader]="false" class="flex flex-col overflow-hidden page-enter">
-      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--mat-sys-outline-variant)]">
+      <div class="column-header shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--border)]">
         <span class="text-sm font-semibold">Draft</span>
-        <span class="inline-flex items-center justify-center rounded-full bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
+        <span class="inline-flex items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-medium min-w-[1.25rem] h-5 px-1.5">
           {{ posts().length }}
         </span>
       </div>
 
-      <div class="kanban-column-body flex-1 divide-y divide-[var(--mat-sys-outline-variant)]">
+      <div class="kanban-column-body flex-1 divide-y divide-[var(--border)]">
         @for (post of posts(); track post.id) {
           <button
             type="button"
-            class="post-item w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--mat-sys-surface-container-high)]"
+            class="post-item w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--surface-2)]"
             (click)="postSelected.emit(post.id)"
           >
             <span class="truncate text-sm font-medium">{{ post.title || '(Untitled)' }}</span>

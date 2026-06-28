@@ -17,9 +17,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
+  RhombusAccordionComponent,
+  RhombusAccordionPanelComponent,
   RhombusButtonComponent,
   RhombusIconComponent,
   RhombusInputComponent,
@@ -66,8 +67,9 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatExpansionModule,
     MatTabsModule,
+    RhombusAccordionComponent,
+    RhombusAccordionPanelComponent,
     RhombusButtonComponent,
     RhombusIconComponent,
     RhombusInputComponent,
@@ -113,7 +115,7 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
           @if (isAboutNew()) {
             <div class="shrink-0 px-6 pt-6 max-w-2xl w-full mx-auto">
               <div class="flex items-start gap-3 p-4 rounded-lg border"
-                   style="border-color: color-mix(in srgb, currentColor 20%, transparent); background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent)">
+                   style="border-color: color-mix(in srgb, currentColor 20%, transparent); background: color-mix(in srgb, var(--text-accent) 8%, transparent)">
                 <rhombus-icon class="shrink-0 opacity-60" name="info" />
                 <p class="text-sm opacity-70 m-0">
                   No About page exists yet. Fill in the form below and save to create one.
@@ -165,14 +167,13 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
                   </rhombus-textarea>
                 </form>
 
-                <mat-expansion-panel class="!shadow-none">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title class="text-sm font-medium">SEO overrides</mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div class="pt-2">
-                    <folio-seo-fields [group]="aboutSeoForm" />
-                  </div>
-                </mat-expansion-panel>
+                <rhombus-accordion>
+                  <rhombus-accordion-panel title="SEO overrides">
+                    <div class="pt-2">
+                      <folio-seo-fields [group]="aboutSeoForm" />
+                    </div>
+                  </rhombus-accordion-panel>
+                </rhombus-accordion>
               </div>
             </mat-tab>
 

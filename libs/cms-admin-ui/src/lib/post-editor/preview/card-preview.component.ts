@@ -25,7 +25,7 @@ import { PostEditorStore } from '../post-editor.store';
         padding: 20px;
       }
       .thumbnail-placeholder {
-        background: color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
+        background: color-mix(in srgb, var(--text-primary) 10%, transparent);
       }
     `,
   ],

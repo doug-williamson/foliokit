@@ -24,12 +24,12 @@ const seo: SeoMeta = {
       font-family: system-ui, sans-serif;
     }
     .og-image {
-      background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-400) 100%);
+      background: linear-gradient(135deg, var(--text-accent) 0%, color-mix(in srgb, var(--text-accent) 60%, var(--surface-0)) 100%);
       height: 160px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: var(--text-on-accent);
       font-size: 14px;
       font-weight: 500;
     }

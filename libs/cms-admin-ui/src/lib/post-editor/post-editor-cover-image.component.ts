@@ -34,8 +34,8 @@ import { PostEditorStore } from './post-editor.store';
         transition: border-color var(--motion-duration-base) var(--motion-ease-standard), background var(--motion-duration-base) var(--motion-ease-standard);
       }
       .drop-zone.drag-over {
-        border-color: var(--mat-sys-primary);
-        background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+        border-color: var(--text-accent);
+        background: color-mix(in srgb, var(--text-accent) 8%, transparent);
       }
       .image-wrapper {
         position: relative;
@@ -74,7 +74,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Replace image"
                 (click)="isBrowser && fileInput.click()"
               >
-                <rhombus-icon name="swap_horiz" style="color:#fff" />
+                <rhombus-icon name="swap_horiz" style="color:var(--text-on-accent)" />
               </rhombus-button>
               <rhombus-button
                 iconButton
@@ -83,7 +83,7 @@ import { PostEditorStore } from './post-editor.store';
                 title="Delete image"
                 (click)="onDeleteCover()"
               >
-                <rhombus-icon name="delete" style="color:#fff" />
+                <rhombus-icon name="delete" style="color:var(--text-on-accent)" />
               </rhombus-button>
             </div>
           </div>

@@ -10,7 +10,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
 import { DOCS_ROUTE_MANIFEST } from '@foliokit/docs-ui';
-import { provideFolioKitTheme } from '@foliokit/cms-ui';
+import { provideFolioKitUi } from '@foliokit/cms-ui';
 import { appRoutes } from './app.routes';
 import { DOCS_MANIFEST } from './docs-route-manifest';
 
@@ -27,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
     provideMarkdown(),
-    provideFolioKitTheme(),
+    provideFolioKitUi(),
     { provide: DOCS_ROUTE_MANIFEST, useValue: DOCS_MANIFEST },
   ],
 };

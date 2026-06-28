@@ -24,7 +24,7 @@ import { RhombusButtonComponent, RhombusSpinnerComponent } from '@rhombuskit/cor
         gap: var(--space-md);
         padding: var(--space-md) var(--space-lg);
         padding-bottom: max(var(--space-md), env(safe-area-inset-bottom, 0px));
-        background: var(--mat-sys-surface-container-high, var(--mat-sys-surface));
+        background: var(--surface-2, var(--surface-0));
         border-top: var(--border-width) solid var(--border);
         box-shadow: 0 -4px 12px color-mix(in srgb, currentColor 8%, transparent);
         transform: translateY(100%);

@@ -113,7 +113,7 @@ const FEATURE_ROWS: FeatureRow[] = [
     }
 
     .pcd-col-tier--pro {
-      color: var(--teal-600);
+      color: var(--text-accent);
     }
 
     .pcd-check {
@@ -126,7 +126,7 @@ const FEATURE_ROWS: FeatureRow[] = [
     }
 
     .pcd-check--yes {
-      color: var(--teal-500);
+      color: var(--text-accent);
     }
 
     .pcd-check--no {

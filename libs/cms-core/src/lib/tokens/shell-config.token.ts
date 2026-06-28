@@ -3,7 +3,7 @@ import type { PlanFeatures } from '../models/plan-features.model';
 
 export interface ShellConfig {
   appName: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
   showAuth?: boolean;
   features?: PlanFeatures;
   /** Admin-only: shows a global "+ New post" icon button in the shell header. Defaults to false. */

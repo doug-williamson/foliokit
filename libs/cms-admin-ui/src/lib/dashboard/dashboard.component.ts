@@ -203,14 +203,14 @@ const PLAN_LABELS: Record<string, string> = {
         color: var(--text-primary);
         line-height: 1.2;
       }
-      .tile-value--teal { color: var(--teal-400); }
+      .tile-value--teal { color: var(--text-accent); }
       .tile-value--muted { color: var(--text-muted); }
       .tile-action {
         margin-top: 4px;
         align-self: flex-start;
         font-size: 12px;
         font-weight: 600;
-        color: var(--mat-sys-on-primary);
+        color: var(--text-on-accent);
         background: var(--text-accent);
         border: none;
         border-radius: 999px;
