@@ -10,12 +10,13 @@ import { filter, map, startWith } from 'rxjs/operators';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgTemplateOutlet } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
 import {
   RhombusAppShellComponent,
+  RhombusButtonComponent,
   RhombusIconComponent,
   RhombusIconRegistry,
   RhombusShellAsideDirective,
+  RhombusTagComponent,
   RhombusThemeMenuComponent,
 } from '@rhombuskit/core';
 // Side-effect import: registers docs-ui's FolioKit ThemeRegistry augmentation.
@@ -38,10 +39,11 @@ const GITHUB_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
     RouterLink,
     NgTemplateOutlet,
     MatToolbarModule,
-    MatButtonModule,
     RhombusAppShellComponent,
+    RhombusButtonComponent,
     RhombusIconComponent,
     RhombusShellAsideDirective,
+    RhombusTagComponent,
     DocsNavComponent,
     DocsPageHeaderComponent,
     DocsAnchorNavComponent,

@@ -7,19 +7,7 @@
 
   <mat-tab label="Code">
     <div class="docs-preview__code-pane">
-      <button
-        mat-icon-button
-        type="button"
-        class="docs-preview__copy-btn"
-        [title]="copied() ? 'Copied!' : 'Copy code'"
-        (click)="copy()"
-      >
-        <rhombus-icon [name]="copied() ? 'check' : 'content_copy'" />
-      </button>
-      <pre class="docs-preview__pre"><code
-        class="hljs"
-        [innerHTML]="highlightedHtml() ?? escapedCode()"
-      ></code></pre>
+      <rhombus-code-block [code]="code" />
     </div>
   </mat-tab>
 </mat-tab-group>

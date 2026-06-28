@@ -8,11 +8,10 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { PlanGatingService } from '@foliokit/cms-core';
 import type { PlatformFeatures } from '@foliokit/cms-core';
-import { RhombusButtonComponent, RhombusDialogService } from '@rhombuskit/core';
+import { RhombusButtonComponent, RhombusDialogService, RhombusTagComponent } from '@rhombuskit/core';
 import { BillingCheckoutService } from '../services/billing-checkout.service';
 import { PlanComparisonDialogComponent } from './plan-comparison-dialog.component';
 
@@ -23,7 +22,7 @@ const UPGRADE_FRAGMENT = 'billing';
   selector: 'admin-plan-gate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatButtonModule, RhombusButtonComponent],
+  imports: [RhombusButtonComponent, RhombusTagComponent],
   template: `
     @if (isEnabled()) {
       <ng-content />
@@ -54,7 +53,7 @@ const UPGRADE_FRAGMENT = 'billing';
 
         <!-- Upgrade CTA card — centered over the preview -->
         <div class="plan-gate-cta" role="region" aria-label="Feature requires upgrade">
-          <span class="pg-plan-pill">{{ planLabel() }}</span>
+          <rhombus-tag class="pg-plan-tag" variant="info" size="sm">{{ planLabel() }}</rhombus-tag>
           <h2 class="pg-heading">{{ featureLabel() }}</h2>
           <p class="pg-description">{{ featureDescription() }}</p>
           <p class="pg-price-note">
@@ -70,14 +69,14 @@ const UPGRADE_FRAGMENT = 'billing';
           >
             {{ checkoutLoading() ? 'Starting checkout…' : ('Upgrade to ' + planLabel()) }}
           </rhombus-button>
-          <a
-            mat-button
+          <rhombus-button
+            appearance="text"
+            variant="secondary"
             class="pg-settings-link"
-            [routerLink]="upgradeUrl"
-            [fragment]="upgradeFragment"
+            (click)="goToSettings()"
           >
             Open Settings
-          </a>
+          </rhombus-button>
           <button class="pg-compare-link" type="button" (click)="openComparison()">
             See what's included →
           </button>
@@ -189,22 +188,8 @@ const UPGRADE_FRAGMENT = 'billing';
       align-items: center;
     }
 
-    .pg-plan-pill {
-      display: inline-block;
-      background: color-mix(in srgb, var(--text-accent) 12%, transparent);
-      color: var(--text-accent);
-      font-size: 11px;
-      font-weight: 500;
-      font-family: var(--font-mono);
-      letter-spacing: 0.05em;
-      padding: 3px 10px;
-      border-radius: 100px;
+    .pg-plan-tag {
       margin-bottom: 12px;
-    }
-
-    [data-theme="dark"] .pg-plan-pill {
-      background: color-mix(in srgb, var(--text-accent) 22%, transparent);
-      color: var(--text-accent);
     }
 
     .pg-heading {
@@ -277,6 +262,7 @@ export class PlanGateComponent {
   private readonly dialog = inject(RhombusDialogService);
   private readonly billingCheckout = inject(BillingCheckoutService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
 
   protected readonly isEnabled = computed(
     () => this.planGatingService.features().platform[this.feature()],
@@ -311,6 +297,10 @@ export class PlanGateComponent {
     } finally {
       this.checkoutLoading.set(false);
     }
+  }
+
+  protected goToSettings(): void {
+    this.router.navigate([this.upgradeUrl], { fragment: this.upgradeFragment });
   }
 
   protected openComparison(): void {

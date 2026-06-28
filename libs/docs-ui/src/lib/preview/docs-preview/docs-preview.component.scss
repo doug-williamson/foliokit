@@ -7,40 +7,9 @@
     margin-top: 16px;
   }
 
+  // rhombus-code-block is self-contained (own surface, padding, copy button);
+  // the pane only supplies spacing parity with the preview tab.
   &__code-pane {
-    position: relative;
-    background: var(--code-block-bg);
-    padding: 16px;
-    overflow-x: auto;
     margin-top: 16px;
-    border-radius: 8px;
-  }
-
-  &__copy-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    color: color-mix(in srgb, var(--code-block-text) 60%, transparent);
-
-    &:hover {
-      color: color-mix(in srgb, var(--code-block-text) 90%, transparent);
-    }
-  }
-
-  &__pre {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.7;
-    tab-size: 2;
-    padding-right: 40px;
-
-    code {
-      font-family: inherit;
-      font-size: inherit;
-      background: transparent;
-      padding: 0;
-      color: var(--code-block-text);
-    }
   }
 }

@@ -35,15 +35,18 @@
     <!-- Viewport buttons -->
     @if (activeTab() === 'preview' && activePreview().viewports?.length) {
       <div class="ml-auto flex items-center gap-1">
-        <button
-          mat-icon-button
+        <rhombus-button
+          iconButton
+          appearance="text"
+          variant="secondary"
           type="button"
           title="Full width"
+          ariaLabel="Full width"
           [class.docs-live-preview__viewport-btn--active]="activeViewport() === null"
           (click)="setViewport(null)"
         >
-          <span class="material-icons text-base">fullscreen</span>
-        </button>
+          <rhombus-icon name="fullscreen" />
+        </rhombus-button>
         @for (vp of activePreview().viewports!; track vp.label) {
           <rhombus-button
             appearance="text"

@@ -11,14 +11,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { MarkdownComponent } from 'ngx-markdown';
-import { RhombusAvatarComponent, RhombusIconComponent } from '@rhombuskit/core';
+import { RhombusAvatarComponent, RhombusButtonComponent } from '@rhombuskit/core';
 import type { AboutPageConfig } from '@foliokit/cms-core';
 
 @Component({
   selector: 'cms-about-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MarkdownComponent, RhombusAvatarComponent, RhombusIconComponent],
+  imports: [MarkdownComponent, RhombusAvatarComponent, RhombusButtonComponent],
   styles: [`
     :host { display: block; }
 
@@ -58,30 +58,6 @@ import type { AboutPageConfig } from '@foliokit/cms-core';
       margin-top: 20px;
     }
 
-    .social-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--r-md);
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--surface-0);
-      text-decoration: none;
-      transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard);
-
-      rhombus-icon {
-        --rhombus-icon-size: 18px;
-      }
-
-      &:hover {
-        background: var(--surface-2);
-        color: var(--text-primary);
-      }
-    }
-
     .about-prose {
       width: 100%;
       margin-top: 32px;
@@ -113,15 +89,17 @@ import type { AboutPageConfig } from '@foliokit/cms-core';
         @if (about()!.socialLinks?.length) {
           <div class="social-links">
             @for (link of about()!.socialLinks; track link.url) {
-              <a
-                class="social-link"
+              <rhombus-button
+                appearance="outlined"
+                variant="secondary"
+                size="sm"
+                leadingIcon="link"
                 [href]="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <rhombus-icon name="link" />
                 {{ link.label || link.platform }}
-              </a>
+              </rhombus-button>
             }
           </div>
         }

@@ -3,9 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   OnInit,
-  ViewChild,
   computed,
   effect,
   inject,
@@ -16,6 +14,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DOCUMENT, DatePipe, isPlatformBrowser } from '@angular/common';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { RhombusOverflowMenuComponent, type MenuItem } from '@rhombuskit/core';
 import { MarkdownComponent } from '@foliokit/cms-markdown';
 import type { Tag, PostRouteData, Series, SeriesNavItem } from '@foliokit/cms-core';
 import {
@@ -47,7 +46,7 @@ interface PostShareLinks {
   selector: 'folio-post-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent, SeriesNavComponent],
+  imports: [RouterLink, DatePipe, MarkdownComponent, TagLabelPipe, FolioSkeletonComponent, SeriesNavComponent, RhombusOverflowMenuComponent],
   template: `
     <div
       class="px-4 md:px-6 py-8 lg:py-12"
@@ -151,28 +150,13 @@ interface PostShareLinks {
               }
             </div>
 
-            @if (postShareLinks(); as sl) {
-              <details #shareDetails class="share-menu shrink-0">
-                <summary
-                  class="share-menu-trigger inline-flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors"
-                  style="color: var(--text-accent)"
-                  aria-label="Share this post"
-                >
-                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.935-2.186 2.25 2.25 0 00-3.935 2.186z" />
-                  </svg>
-                  Share
-                </summary>
-                <div class="share-menu-panel" role="menu">
-                  <a class="share-menu-item" [href]="sl.x" target="_blank" rel="noopener noreferrer" role="menuitem">X (Twitter)</a>
-                  <a class="share-menu-item" [href]="sl.facebook" target="_blank" rel="noopener noreferrer" role="menuitem">Facebook</a>
-                  <a class="share-menu-item" [href]="sl.linkedin" target="_blank" rel="noopener noreferrer" role="menuitem">LinkedIn</a>
-                  <a class="share-menu-item" [href]="sl.reddit" target="_blank" rel="noopener noreferrer" role="menuitem">Reddit</a>
-                  <a class="share-menu-item" [href]="sl.bluesky" target="_blank" rel="noopener noreferrer" role="menuitem">Bluesky</a>
-                  <a class="share-menu-item" [href]="sl.email" role="menuitem">Email</a>
-                  <button type="button" class="share-menu-item" role="menuitem" (click)="copyShareLink()">Copy link</button>
-                </div>
-              </details>
+            @if (postShareLinks()) {
+              <rhombus-overflow-menu
+                class="shrink-0"
+                triggerIcon="share"
+                ariaLabel="Share this post"
+                [items]="shareMenuItems()"
+              />
             }
           </div>
 
@@ -263,59 +247,6 @@ interface PostShareLinks {
       color: var(--text-muted);
     }
 
-    .share-menu {
-      position: relative;
-    }
-
-    .share-menu summary {
-      cursor: pointer;
-      list-style: none;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .share-menu summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .share-menu-trigger:hover {
-      background: color-mix(in srgb, var(--text-accent) 10%, transparent);
-    }
-
-    .share-menu-panel {
-      position: absolute;
-      right: 0;
-      top: calc(100% + 4px);
-      min-width: 11rem;
-      padding: 0.375rem 0;
-      background: var(--surface-0);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid color-mix(in srgb, var(--text-muted) 22%, transparent);
-      z-index: 20;
-    }
-
-    .share-menu-item {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 0.5rem 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      text-decoration: none;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      transition: background var(--motion-duration-base) var(--motion-ease-standard), color var(--motion-duration-base) var(--motion-ease-standard);
-    }
-
-    .share-menu-item:hover {
-      background: color-mix(in srgb, var(--text-accent) 8%, transparent);
-      color: var(--text-primary);
-    }
-
     /* ── Series eyebrow — above title ─────────────────────────────── */
     .series-eyebrow {
       display: flex;
@@ -353,8 +284,6 @@ interface PostShareLinks {
   `],
 })
 export class BlogPostDetailComponent implements OnInit {
-  @ViewChild('shareDetails') private shareDetails?: ElementRef<HTMLDetailsElement>;
-
   private readonly route = inject(ActivatedRoute);
   private readonly tagService = inject(TagService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -434,6 +363,22 @@ export class BlogPostDetailComponent implements OnInit {
     };
   });
 
+  /** Share targets as rhombus-overflow-menu items (the menu handles focus/keyboard). */
+  protected readonly shareMenuItems = computed<MenuItem[]>(() => {
+    const sl = this.postShareLinks();
+    if (!sl) return [];
+    const ext = { target: '_blank', rel: 'noopener noreferrer' } as const;
+    return [
+      { label: 'X (Twitter)', href: sl.x, ...ext },
+      { label: 'Facebook', href: sl.facebook, ...ext },
+      { label: 'LinkedIn', href: sl.linkedin, ...ext },
+      { label: 'Reddit', href: sl.reddit, ...ext },
+      { label: 'Bluesky', href: sl.bluesky, ...ext },
+      { label: 'Email', href: sl.email },
+      { label: 'Copy link', action: () => this.copyShareLink(), dividerBefore: true },
+    ];
+  });
+
   protected async copyShareLink(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
     const url = this.sharePageUrl();
@@ -443,7 +388,6 @@ export class BlogPostDetailComponent implements OnInit {
     } catch {
       window.prompt('Copy link:', url);
     }
-    this.shareDetails?.nativeElement.removeAttribute('open');
   }
 
   ngOnInit(): void {

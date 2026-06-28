@@ -148,21 +148,26 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                       }
                     </div>
                     <span class="text-xs opacity-60 leading-none">Light mode</span>
-                    <label class="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        (change)="onProfilePhotoSelected($event, 'light')"
-                      />
-                      <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
-                        @if (photoUploadState() === 'uploading') {
-                          <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
-                        } @else {
-                          Upload
-                        }
-                      </span>
-                    </label>
+                    <input
+                      #lightPhotoInput
+                      type="file"
+                      accept="image/*"
+                      class="hidden"
+                      (change)="onProfilePhotoSelected($event, 'light')"
+                    />
+                    <rhombus-button
+                      appearance="outlined"
+                      size="sm"
+                      type="button"
+                      [disabled]="photoUploadState() === 'uploading'"
+                      (click)="lightPhotoInput.click()"
+                    >
+                      @if (photoUploadState() === 'uploading') {
+                        <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
+                      } @else {
+                        Upload
+                      }
+                    </rhombus-button>
                   </div>
 
                   <div class="flex flex-col items-center gap-3">
@@ -179,21 +184,26 @@ import { SaveBarComponent } from '../components/save-bar/save-bar.component';
                       }
                     </div>
                     <span class="text-xs opacity-60 leading-none">Dark mode</span>
-                    <label class="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        (change)="onProfilePhotoSelected($event, 'dark')"
-                      />
-                      <span class="mat-mdc-button mat-mdc-outlined-button text-xs cursor-pointer">
-                        @if (photoDarkUploadState() === 'uploading') {
-                          <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
-                        } @else {
-                          Upload
-                        }
-                      </span>
-                    </label>
+                    <input
+                      #darkPhotoInput
+                      type="file"
+                      accept="image/*"
+                      class="hidden"
+                      (change)="onProfilePhotoSelected($event, 'dark')"
+                    />
+                    <rhombus-button
+                      appearance="outlined"
+                      size="sm"
+                      type="button"
+                      [disabled]="photoDarkUploadState() === 'uploading'"
+                      (click)="darkPhotoInput.click()"
+                    >
+                      @if (photoDarkUploadState() === 'uploading') {
+                        <rhombus-spinner [diameter]="14" style="display: inline-block" /> Uploading…
+                      } @else {
+                        Upload
+                      }
+                    </rhombus-button>
                   </div>
                 </div>
 

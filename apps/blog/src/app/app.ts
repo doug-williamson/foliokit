@@ -9,7 +9,11 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import {
+  RhombusNavListComponent,
+  type RhombusNavSection,
+} from '@rhombuskit/core';
 import { doc, getDoc } from 'firebase/firestore';
 import { concat, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -51,8 +55,7 @@ type NavLoadState =
   imports: [
     AppShellComponent,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
+    RhombusNavListComponent,
     FolioSkeletonComponent,
   ],
   styles: [
@@ -62,36 +65,12 @@ type NavLoadState =
         padding-top: 8px;
       }
 
-      .blog-nav .nav-item {
-        position: relative;
+      .blog-nav .nav-skeleton {
         height: 40px;
         margin: 0 8px;
         padding: 0 8px;
-        border-radius: 8px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 12px;
-        font-family: var(--font-body);
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition:
-          background 0.12s,
-          color 0.12s;
-
-        &:hover {
-          background: var(--surface-2);
-          color: var(--text-primary);
-        }
-
-        &.active-link {
-          background: var(--nav-active-bg);
-          color: var(--nav-active-text);
-          font-weight: 700;
-        }
-      }
-
-      .blog-nav .nav-skeleton {
         pointer-events: none;
       }
     `,
@@ -153,6 +132,17 @@ export class App implements OnInit {
     const existingUrls = new Set(base.map((i) => i.url));
     return [...base, ...extra.filter((e) => !existingUrls.has(e.url))];
   });
+
+  /** Blog nav items as a single nav-list section, matching the admin shell sidebar. */
+  protected readonly navSections = computed<RhombusNavSection[]>(() => [
+    {
+      items: this.navItems().map((item) => ({
+        label: item.label,
+        routerLink: item.url,
+        exact: true,
+      })),
+    },
+  ]);
 
   readonly shellConfig = computed((): ShellConfig => {
     const config = this.siteConfig();
