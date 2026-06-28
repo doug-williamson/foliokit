@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import {
   RhombusAppShellComponent,
   RhombusIconComponent,
@@ -78,7 +77,6 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
     RhombusTooltipDirective,
     RouterLink,
     RouterOutlet,
-    MatToolbarModule,
     AdminNavComponent,
     MatBottomSheetModule,
     RhombusThemeMenuComponent,
@@ -211,6 +209,11 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
 
       .onboarding-toolbar {
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 64px;
+        padding: 0 16px;
         background: var(--surface-1);
         border-bottom: var(--border-width) solid var(--border);
         color: var(--text-primary);
@@ -290,7 +293,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
   template: `
     @if (isOnboarding()) {
       <div class="onboarding-shell">
-        <mat-toolbar class="onboarding-toolbar">
+        <header class="onboarding-toolbar">
           <a class="folio-toolbar-brand" routerLink="/dashboard" aria-label="FolioKit Admin">
             <div class="folio-logo-mark">
               <span class="folio-logo-mark-f">F</span>
@@ -300,7 +303,7 @@ function adminShellConfigFactory(shell: AdminShellComponent) {
           </a>
           <span class="flex-1"></span>
           <rhombus-theme-menu />
-        </mat-toolbar>
+        </header>
         <main class="onboarding-main">
           <router-outlet />
         </main>
