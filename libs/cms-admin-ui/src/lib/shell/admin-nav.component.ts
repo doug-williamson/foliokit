@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ViewContainerRef,
   computed,
   inject,
 } from '@angular/core';
@@ -71,6 +72,13 @@ function isHomePageEnabled(config: SiteConfig | null): boolean {
 export class AdminNavComponent {
   private readonly navStore = inject(SiteConfigNavStore);
   private readonly bottomSheet = inject(MatBottomSheet);
+  /**
+   * Opened bottom sheets are created from this view container's injector so the
+   * route-scoped {@link SiteConfigNavStore} (provided on AdminShellComponent) is
+   * resolvable inside the sheet. Without it the CDK overlay falls back to the
+   * root injector and the sheet throws NG0201.
+   */
+  private readonly viewContainerRef = inject(ViewContainerRef);
 
   /** Rows for dashboard, Pages + children, Publish + children (Configure appended below). */
   protected readonly navRows = computed<AdminNavRow[]>(() => {
@@ -240,11 +248,16 @@ export class AdminNavComponent {
         title: copy.title,
         description: copy.description,
       };
-      this.bottomSheet.open(EnablePageSheetComponent, { data });
+      this.bottomSheet.open(EnablePageSheetComponent, {
+        data,
+        viewContainerRef: this.viewContainerRef,
+      });
       return;
     }
     if (item.planLocked) {
-      this.bottomSheet.open(PlanUpgradeNavSheetComponent);
+      this.bottomSheet.open(PlanUpgradeNavSheetComponent, {
+        viewContainerRef: this.viewContainerRef,
+      });
     }
   }
 }
