@@ -61,10 +61,45 @@ jobs:
           fi
 
       - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          channelId: live
-          projectId: foliokit-6f974
-          target: foliokit-docs
+        shell: bash
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set +e
+          set -o pipefail
+          TOOLS_VERSION=15.22.3
+          TARGET=foliokit-docs
+          LIVE_URL=https://foliokit-docs.web.app
+
+          # Authenticate firebase-tools via Application Default Credentials,
+          # mirroring what action-hosting-deploy did internally.
+          cred="$RUNNER_TEMP/firebase-sa.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$cred"
+          export GOOGLE_APPLICATION_CREDENTIALS="$cred"
+          trap 'rm -f "$cred"' EXIT
+
+          out=$(npx -y "firebase-tools@${TOOLS_VERSION}" deploy \
+            --only "hosting:${TARGET}" \
+            --project foliokit-6f974 \
+            --non-interactive 2>&1)
+          code=$?
+          echo "$out"
+
+          if [ "$code" -ne 0 ]; then
+            # On the live channel firebase-tools exits non-zero with FAILED_PRECONDITION
+            # ("is the current active version") in two benign cases:
+            #   (a) built content is byte-identical to what's already live (no-op), or
+            #   (b) a transient "premature close" retries a release that already landed.
+            # Both mean the live site already holds the intended content -> success.
+            if echo "$out" | grep -q "is the current active version"; then
+              echo "::notice::Hosting version already active (benign no-op / retried release); treating as success."
+            else
+              echo "::error::Firebase deploy failed (exit ${code})."
+              exit "$code"
+            fi
+          fi
+
+          # Guard: the live site must actually serve.
+          status=$(curl -s -o /dev/null -w '%{http_code}' -L "$LIVE_URL")
+          echo "Live ${LIVE_URL} -> HTTP ${status}"
+          [ "$status" = "200" ] || { echo "::error::Live site not returning 200 (${status})."; exit 1; }
