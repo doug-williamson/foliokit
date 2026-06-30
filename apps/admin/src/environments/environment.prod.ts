@@ -17,7 +17,11 @@ export interface Environment {
 export const environment: Environment = {
   isProd: true,
   useEmulator: false,
-  bypassGating: import.meta.env['NG_APP_BYPASS_GATING'] === 'true',
+  // Never bypass plan gating in production. Reading import.meta.env here is unsafe:
+  // the application builder only substitutes NG_APP_* vars present at build time, and
+  // NG_APP_BYPASS_GATING is not set in CI — leaving a raw import.meta.env reference
+  // that is undefined at runtime and crashes the app on boot.
+  bypassGating: false,
   adminEmail: 'dev.foliokit@gmail.com',
   firebase: {
     apiKey: import.meta.env['NG_APP_FIREBASE_API_KEY'],
