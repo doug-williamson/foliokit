@@ -1,0 +1,70 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'apps/docs/**'
+      - 'libs/cms-core/**'
+      - 'libs/cms-ui/**'
+      - 'libs/docs-ui/**'
+      - 'libs/cms-markdown/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch: # Allow manual trigger
+
+concurrency:
+  group: deploy-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build & Deploy Docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build docs app
+        run: npx nx build docs --configuration=production
+        # Firebase Web client config is PUBLIC (it ships to browsers and already
+        # lives in apphosting.yaml). Inlined here so the build needs no extra
+        # secrets — the ONLY credential this workflow requires is the deploy-step
+        # FIREBASE_SERVICE_ACCOUNT. Keep these values in sync with apphosting.yaml.
+        env:
+          NG_APP_FIREBASE_API_KEY: AIzaSyDlmd0n-lwYUbSr9sC5tiye1icCIQ0D4ss
+          NG_APP_FIREBASE_AUTH_DOMAIN: foliokit-6f974.firebaseapp.com
+          NG_APP_FIREBASE_PROJECT_ID: foliokit-6f974
+          NG_APP_FIREBASE_STORAGE_BUCKET: foliokit-6f974.firebasestorage.app
+          NG_APP_FIREBASE_MESSAGING_SENDER_ID: "897410998393"
+          NG_APP_FIREBASE_APP_ID: "1:897410998393:web:80cc5f51627f499c20b4a8"
+
+      - name: Verify deploy credential is configured
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::error::Missing required secret FIREBASE_SERVICE_ACCOUNT. Add a Firebase service-account JSON (role: Firebase Hosting Admin) under Settings → Secrets and variables → Actions. Easiest path: run 'firebase init hosting:github' from an account with access to project foliokit-6f974."
+            exit 1
+          fi
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: foliokit-6f974
+          target: foliokit-docs
