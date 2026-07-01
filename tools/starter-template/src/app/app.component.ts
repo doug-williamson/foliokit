@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
@@ -27,11 +34,11 @@ const DEFAULT_NAV: NavItem[] = [
   providers: [
     {
       provide: SHELL_CONFIG,
-      useFactory: (): ShellConfig => ({
-        appName: 'My Blog',
-        showAuth: false,
-        nav: DEFAULT_NAV,
-      }),
+      useFactory: (): Signal<ShellConfig> =>
+        signal<ShellConfig>({
+          appName: 'My Blog',
+          showAuth: false,
+        }),
     },
   ],
 })
@@ -45,7 +52,7 @@ export class AppComponent {
 
   protected readonly navItems = computed(() => {
     const config = this.siteConfig();
-    const base = config?.nav ?? DEFAULT_NAV;
+    const base = DEFAULT_NAV;
     const extra: NavItem[] = [];
     if (config?.pages?.about?.enabled) {
       extra.push({ label: 'About', url: '/about' });

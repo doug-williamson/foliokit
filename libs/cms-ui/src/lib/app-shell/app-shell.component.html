@@ -1,6 +1,8 @@
 <rhombus-app-shell
   [mobileBreakpoint]="sidenavMobileMaxPx()"
   [closeOnNavigate]="true"
+  [hasNav]="hasNav()"
+  [frame]="frame()"
 >
   <!-- Brand → rhombus [shellBrand]; links to toolbarHomeRoute when set. -->
   @if (config().toolbarHomeRoute; as home) {

@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 // STEP 1: Replace environment.ts Firebase config
 // STEP 2: Set siteId to your Firestore site-config document ID
-// STEP 3: Update shell.appName and shell.nav as desired
+// STEP 3: Update the shell appName in app.component.ts (nav is projected via [shellNav])
 // ─────────────────────────────────────────────
 
 import {
