@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { AppShellComponent, SHELL_CONFIG } from '@foliokit/cms-ui';
-import { inject } from '@angular/core';
+import { AppShellComponent } from '@foliokit/cms-ui';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +34,10 @@ import { inject } from '@angular/core';
   `],
 })
 export class App {
-  private readonly config = inject(SHELL_CONFIG);
-  readonly navItems = this.config.nav ?? [];
+  readonly navItems = [
+    { label: 'Home', url: '/' },
+    { label: 'Lab Notes', url: '/blog' },
+    { label: 'About', url: '/about' },
+    { label: 'Links', url: '/links' },
+  ];
 }

@@ -2,13 +2,14 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
+  signal,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
 import { provideFolioKit } from '@foliokit/cms-core';
-import { SHELL_CONFIG } from '@foliokit/cms-ui';
+import { SHELL_CONFIG, type ShellConfig } from '@foliokit/cms-ui';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -32,11 +33,10 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: SHELL_CONFIG,
-      useValue: {
+      useValue: signal<ShellConfig>({
         appName: 'FolioKit Smoke Test',
         showAuth: false,
-        nav: [],
-      },
+      }),
     },
   ],
 };
