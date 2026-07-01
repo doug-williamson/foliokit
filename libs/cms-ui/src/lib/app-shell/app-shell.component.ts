@@ -4,6 +4,7 @@ import {
   ContentChild,
   computed,
   inject,
+  input,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -49,6 +50,19 @@ const DEFAULT_MOBILE_MAX_PX = 767;
 })
 export class AppShellComponent {
   protected readonly config = inject(SHELL_CONFIG);
+
+  /**
+   * Forwarded to `rhombus-app-shell`. Set `false` for bare routes (404,
+   * sign-up, marketing): the nav drawer is omitted and content spans full
+   * width while the toolbar/brand chrome is retained. Defaults to `true`.
+   */
+  readonly hasNav = input(true);
+
+  /**
+   * Forwarded to `rhombus-app-shell`. `'phone'` centers content at a phone
+   * width; `'fill'` (default) spans the viewport.
+   */
+  readonly frame = input<'fill' | 'phone'>('fill');
 
   @ContentChild(ShellNavFooterDirective)
   protected navFooter?: ShellNavFooterDirective;
