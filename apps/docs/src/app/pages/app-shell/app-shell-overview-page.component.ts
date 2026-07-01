@@ -34,10 +34,7 @@ import { SHELL_CONFIG, ShellConfig } from '@foliokit/cms-ui';
       provide: SHELL_CONFIG,
       useValue: {
         appName: 'My App',
-        nav: [
-          { label: 'Home', url: '/' },
-          { label: 'Blog', url: '/blog' },
-        ],
+        showAuth: false,
       } satisfies ShellConfig,
     },
   ],

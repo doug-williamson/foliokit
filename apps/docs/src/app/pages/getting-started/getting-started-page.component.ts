@@ -39,11 +39,6 @@ export const appConfig: ApplicationConfig = {
       useValue: {
         appName: 'My App',
         showAuth: false,
-        nav: [
-          { label: 'Home', url: '/' },
-          { label: 'Blog', url: '/blog' },
-          { label: 'About', url: '/about' },
-        ],
       },
     },
   ],
