@@ -1,8 +1,12 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { App } from './app';
 import { FIRESTORE } from '@foliokit/cms-core';
+
+@Component({ standalone: true, template: '', changeDetection: ChangeDetectionStrategy.OnPush })
+class BlankComponent {}
 
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn(() => ({})),
@@ -40,7 +44,10 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        provideRouter([]),
+        provideRouter([
+          { path: '', component: BlankComponent },
+          { path: 'not-found', data: { bareShell: true }, component: BlankComponent },
+        ]),
         provideNoopAnimations(),
         { provide: FIRESTORE, useValue: firestoreStub },
       ],
@@ -51,5 +58,24 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('renders the nav drawer on standard routes and omits it on bare routes', async () => {
+    const fixture = TestBed.createComponent(App);
+    const router = TestBed.inject(Router);
+
+    await router.navigate(['/']);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    // Standard route: hasNav() true → the shell renders its <mat-sidenav> drawer.
+    expect(fixture.nativeElement.querySelector('mat-sidenav')).not.toBeNull();
+
+    await router.navigate(['/not-found']);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    // Bare route (data.bareShell): hasNav() false → the drawer is omitted.
+    expect(fixture.nativeElement.querySelector('mat-sidenav')).toBeNull();
   });
 });

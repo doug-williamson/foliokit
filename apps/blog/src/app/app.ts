@@ -9,14 +9,17 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import {
+  RhombusAppShellComponent,
   RhombusNavListComponent,
   type RhombusNavSection,
+  RhombusShellFooterDirective,
+  RhombusThemeMenuComponent,
 } from '@rhombuskit/core';
 import { doc, getDoc } from 'firebase/firestore';
 import { concat, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { filter, map, startWith, take } from 'rxjs/operators';
 import type { SiteConfig } from '@foliokit/cms-core';
 
 interface NavItem {
@@ -32,7 +35,6 @@ import {
 } from '@foliokit/cms-core';
 import type { BillingRecord } from '@foliokit/cms-core';
 import {
-  AppShellComponent,
   FolioSkeletonComponent,
   SHELL_CONFIG,
   ShellConfig,
@@ -53,8 +55,11 @@ type NavLoadState =
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    AppShellComponent,
+    RhombusAppShellComponent,
+    RhombusShellFooterDirective,
+    RhombusThemeMenuComponent,
     RouterOutlet,
+    RouterLink,
     RhombusNavListComponent,
     FolioSkeletonComponent,
   ],
@@ -73,6 +78,98 @@ type NavLoadState =
         align-items: center;
         pointer-events: none;
       }
+
+      /* ── Shell brand (projected into rhombus-app-shell [shellBrand]) ──
+         Re-homed from folio-app-shell as blog now consumes rhombus-app-shell
+         directly. */
+      .folio-shell-brand {
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+        text-decoration: none;
+        color: inherit;
+        border-radius: var(--r-sm);
+      }
+
+      .folio-shell-brand:focus-visible {
+        outline: 2px solid var(--focus-border);
+        outline-offset: 2px;
+      }
+
+      .folio-shell-brand:hover .folio-app-name {
+        color: var(--text-accent);
+      }
+
+      .folio-logo-mark {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        background: var(--logo-bg);
+        border-radius: var(--r-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .folio-logo-mark-f {
+        font-family: var(--font-display);
+        font-size: 17px;
+        font-weight: 900;
+        color: var(--logo-text);
+        line-height: 1;
+      }
+
+      .folio-logo-dot {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--logo-dot);
+      }
+
+      .folio-app-name {
+        font-family: var(--font-display);
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.04em;
+        margin-left: 6px;
+        white-space: nowrap;
+      }
+
+      .folio-custom-logo {
+        height: 32px;
+        width: auto;
+        object-fit: contain;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      /* ── Powered-by footer (projected into [shellFooter]) ── */
+      .folio-powered-footer {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 16px;
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        border-top: var(--border-width) solid var(--border);
+      }
+
+      .folio-powered-footer a {
+        color: var(--text-accent);
+        text-decoration: none;
+      }
+
+      .folio-powered-footer a:hover {
+        text-decoration: underline;
+      }
     `,
   ],
   providers: [
@@ -88,7 +185,31 @@ export class App implements OnInit {
   private readonly siteId =
     inject(SITE_ID, { optional: true }) ?? 'foliokitcms';
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
   private readonly billingRecord = signal<BillingRecord | null>(null);
+
+  /**
+   * Bare-route detection. Routes flagged `data.bareShell` (404 / wildcard) drive
+   * `rhombus-app-shell [hasNav]="false"` — the nav drawer is omitted and content
+   * spans full width, while the toolbar chrome is retained. Read from the deepest
+   * activated route so the wildcard route is covered too. Route data is
+   * deterministic per-URL, so this is SSR/hydration-safe (no platform guards).
+   */
+  private readonly bareShell = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        let route = this.router.routerState.snapshot.root;
+        while (route.firstChild) route = route.firstChild;
+        return route.data?.['bareShell'] === true;
+      }),
+    ),
+    { initialValue: false },
+  );
+
+  /** False on bare routes (404/wildcard); true for the standard blog chrome. */
+  protected readonly hasNav = computed(() => !this.bareShell());
 
   private readonly navLoadState = toSignal(
     concat(

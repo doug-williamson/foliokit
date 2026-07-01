@@ -148,10 +148,15 @@ export const FOLIO_BLOG_ROUTES: Routes = [
   },
   {
     path: 'not-found',
+    // `bareShell` signals shell consumers to render this route without the nav
+    // drawer (full-width content, toolbar chrome retained). Route data resolves
+    // identically on server and client, so it is SSR/hydration-safe.
+    data: { bareShell: true },
     loadComponent: () => loadUi().then((m) => m['NotFoundComponent'] as any),
   },
   {
     path: '**',
+    data: { bareShell: true },
     loadComponent: () => loadUi().then((m) => m['NotFoundComponent'] as any),
   },
 ];
