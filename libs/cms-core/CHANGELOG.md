@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.3.0...cms-core-v1.4.0) (2026-07-01)
+
+
+### Features
+
+* **blog:** migrate shell to rhombus-app-shell with bare-route no-nav (Gate C) ([b8a93c6](https://github.com/doug-williamson/foliokit/commit/b8a93c6eeb21af6d0a0aa34e6f2f893293aa005d))
+* **blog:** migrate to rhombus-app-shell with bare-route no-nav (Gate C) ([805ae61](https://github.com/doug-williamson/foliokit/commit/805ae61dbf59b91e7b67dfbfea2ef20aeaf24818))
+* **rhombuskit:** adopt 1.9.0 and complete conformity sweep ([3b0ff81](https://github.com/doug-williamson/foliokit/commit/3b0ff81a0dd8db955caae1550d2196be66a1796c))
+* **rhombuskit:** adopt 1.9.0 and complete conformity sweep ([58fc15b](https://github.com/doug-williamson/foliokit/commit/58fc15ba72f8ec9b0ac54b62b7a38be30553a2c7))
+
+
+### Bug Fixes
+
+* **admin:** gating crash, unreadable buttons, social thumbnails + RhombusKit adoption ([b348fa4](https://github.com/doug-williamson/foliokit/commit/b348fa44c05d95abcd3b4010782e68261ee77fcc))
+* **core:** provide plan-gating bypass via DI token, not import.meta.env ([96a2398](https://github.com/doug-williamson/foliokit/commit/96a239833c0b6cbcc57907b550d2e8dba6f6fb6c))
+
 ## [1.3.0](https://github.com/doug-williamson/foliokit/compare/cms-core-v1.2.0...cms-core-v1.3.0) (2026-06-11)
 
 
